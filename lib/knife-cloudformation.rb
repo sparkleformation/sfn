@@ -1,0 +1,1 @@
+require 'knife-cloudformation/version'
