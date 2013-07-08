@@ -11,6 +11,6 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.add_dependency 'chef'
   s.add_dependency 'fog', '~> 1.12.1'
-  s.add_dependency 'attribute_struct', '~> 0.1.0'
+  s.add_dependency 'attribute_struct', '~> 0.1.2'
   s.files = Dir['**/*']
 end
