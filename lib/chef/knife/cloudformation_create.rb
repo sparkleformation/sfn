@@ -42,15 +42,15 @@ class Chef
           Chef::Config[:knife][:cloudformation][:options][:capabilities].push(val).uniq!
         }
       )
-      option(:disable_processing,
-        :long => '--disable-processing',
-        :description => 'Treat file as JSON and do not process.',
-        :proc => lambda { Chef::Config[:knife][:cloudformation][:options][:disable_processing] = true }
+      option(:enable_processing,
+        :long => '--enable-processing',
+        :description => 'Call the unicorns.',
+        :proc => lambda { Chef::Config[:knife][:cloudformation][:options][:enable_processing] = true }
       )
       option(:disable_polling,
         :long => '--disable-polling',
         :description => 'Disable stack even polling.',
-        :proc => lambda { Chef::Config[:knife][:cloudformation][:options][:disable_processing] = true }
+        :proc => lambda { Chef::Config[:knife][:cloudformation][:options][:disable_polling] = true }
       )
       option(:notifications,
         :long => '--notification ARN',
@@ -79,7 +79,7 @@ class Chef
           exit 1
         end
         name = name_args.first
-        unless(Chef::Config[:knife][:cloudformation][:disable_processing])
+        if(Chef::Config[:knife][:cloudformation][:enable_processing])
           file = KnifeCloudformation::SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
         else
           file = File.read(Chef::Config[:knife][:cloudformation][:file])
@@ -88,7 +88,7 @@ class Chef
         ui.info "  -> #{ui.color('Name:', :bold)} #{name} #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]} #{ui.color('(not pre-processed)', :yellow) if Chef::Config[:knife][:cloudformation][:disable_processing]}"
         stack = build_stack(file)
         create_stack(name, stack)
-        unless(Chef::Config[:knife][:cloudformation][:disable_processing])
+        unless(Chef::Config[:knife][:cloudformation][:disable_polling])
           poll_stack(name)
         else
           ui.warn 'Stack state polling has been disabled.'
