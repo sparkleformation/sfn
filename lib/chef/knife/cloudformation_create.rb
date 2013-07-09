@@ -31,7 +31,7 @@ class Chef
         :short => '-R',
         :long => '--disable-rollback',
         :description => 'Disable rollback on stack creation failure',
-        :proc => lambda { Chef::Config[:knife][:cloudformation][:options][:disable_rollback] = true }
+        :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:options][:disable_rollback] = true }
       )
       option(:capability,
         :short => '-C CAPABILITY',
@@ -45,12 +45,12 @@ class Chef
       option(:enable_processing,
         :long => '--enable-processing',
         :description => 'Call the unicorns.',
-        :proc => lambda { Chef::Config[:knife][:cloudformation][:options][:enable_processing] = true }
+        :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:options][:enable_processing] = true }
       )
       option(:disable_polling,
         :long => '--disable-polling',
         :description => 'Disable stack even polling.',
-        :proc => lambda { Chef::Config[:knife][:cloudformation][:options][:disable_polling] = true }
+        :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:options][:disable_polling] = true }
       )
       option(:notifications,
         :long => '--notification ARN',
@@ -61,7 +61,7 @@ class Chef
         }
       )
       option(:file,
-        :short => '-F PATH',
+        :short => '-f PATH',
         :long => '--file PATH',
         :description => 'Path to Cloud Formation to process',
         :proc => lambda {|val|
@@ -82,7 +82,7 @@ class Chef
         if(Chef::Config[:knife][:cloudformation][:enable_processing])
           file = KnifeCloudformation::SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
         else
-          file = File.read(Chef::Config[:knife][:cloudformation][:file])
+          file = _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
         end
         ui.info "#{ui.color('Cloud Formation: ', :bold)} #{ui.color('CREATE', :green)}"
         ui.info "  -> #{ui.color('Name:', :bold)} #{name} #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]} #{ui.color('(not pre-processed)', :yellow) if Chef::Config[:knife][:cloudformation][:disable_processing]}"
