@@ -2,6 +2,18 @@ require 'chef/knife'
 
 class Chef
   class Knife
+
+    # Populate up the hashes so they are available for knife config
+    # with issues of nils
+    ['knife.cloudformation.credentials', 'knife.cloudformation.options'].each do |stack|
+      stack.split('.').inject(Chef::Config) do |memo, item|
+        memo[item.to_sym] = Mash.new unless memo[item.to_sym]
+        memo[item.to_sym]
+      end
+    end
+    
+    Chef::Config[:knife][:cloudformation] ||= Mash.new
+    
     module CloudformationDefault
       class << self
         def included(klass)
@@ -89,9 +101,13 @@ class Chef
 
       def get_titles(thing, format=false)
         unless(@titles)
-          hash = thing.is_a?(Array) ? thing.first : thing
-          hash ||= {}
-          @titles = hash.keys.map do |key|
+          attrs = allowed_attributes
+          if(attrs.empty?)
+            hash = thing.is_a?(Array) ? thing.first : thing
+            hash ||= {}
+            attrs = hash.keys
+          end
+          @titles = attrs.map do |key|
             next unless attribute_allowed?(key)
             key.gsub(/([a-z])([A-Z])/, '\1 \2')
           end.compact
@@ -170,6 +186,15 @@ class Chef
           Chef::JSONCompat.from_json(thing)
         else
           JSON.read(thing)
+        end
+      end
+
+      def _format_json(thing)
+        thing = _from_json(thing) if thing.is_a?(String)
+        if(try_json_compat)
+          Chef::JSONCompat.to_json_pretty(thing)
+        else
+          JSON.pretty_generate(thing)
         end
       end
     end

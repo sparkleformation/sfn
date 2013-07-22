@@ -78,7 +78,7 @@ class Chef
       end
 
       def default_attributes
-        %w(Timestamp LogicalResourceId ResourceType ResourceStatus)
+        %w(Timestamp LogicalResourceId ResourceType ResourceStatus ResourceStatusReason)
       end
     end
   end
