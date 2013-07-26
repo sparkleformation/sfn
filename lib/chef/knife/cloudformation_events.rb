@@ -63,7 +63,7 @@ class Chef
           unless(output.empty?)
             ui.info ui.list(output, :uneven_columns_across, allowed_attributes.size)
           end
-          sleep(1)
+          sleep((ENV['CLOUDFORMATION_POLL'] || 15).to_i)
         end
         # One more to see completion
         events = stack_events(name)
