@@ -125,25 +125,9 @@ class Chef
         Chef::Config[:knife][:cloudformation][:options].each do |key, value|
           format_key = key.split('_').map(&:capitalize).join
           stack[format_key] = value
-=begin          
-          case value
-          when Hash && key.to_sym != :parameters
-            i = 1
-            value.each do |k, v|
-              stack["#{format_key}.member.#{i}.#{format_key[0, (format_key.length - 1)]}Key"] = k
-              stack["#{format_key}.member.#{i}.#{format_key[0, (format_key.length - 1)]}Value"] = v
-            end
-          when Array
-            value.each_with_index do |v, i|
-              stack["#{format_key}.member.#{i+1}"] = v
-            end
-          else
-
-          end
-=end
         end
         enable_capabilities!(stack, template)
-        stack['TemplateBody'] = Chef::JSONCompat.to_json(template)
+        stack['TemplateBody'] = _format_json(template)
         stack
       end
 
