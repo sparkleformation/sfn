@@ -1,3 +1,6 @@
+## v0.1.2
+* Update dependency restriction to get later version
+
 ## v0.1.0
 * Stable-ish release
 
