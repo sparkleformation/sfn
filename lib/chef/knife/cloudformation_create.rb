@@ -123,24 +123,10 @@ class Chef
         stack = Mash.new
         populate_parameters!(template)
         Chef::Config[:knife][:cloudformation][:options].each do |key, value|
-          format_key = key.split('_').map(&:capitalize).join
+          format_key = key.split('_').map do |k|
+            "#{k.slice(0,1).upcase}#{k.slice(1,k.length)}"
+          end.join
           stack[format_key] = value
-=begin          
-          case value
-          when Hash && key.to_sym != :parameters
-            i = 1
-            value.each do |k, v|
-              stack["#{format_key}.member.#{i}.#{format_key[0, (format_key.length - 1)]}Key"] = k
-              stack["#{format_key}.member.#{i}.#{format_key[0, (format_key.length - 1)]}Value"] = v
-            end
-          when Array
-            value.each_with_index do |v, i|
-              stack["#{format_key}.member.#{i+1}"] = v
-            end
-          else
-
-          end
-=end
         end
         enable_capabilities!(stack, template)
         stack['TemplateBody'] = Chef::JSONCompat.to_json(template)
