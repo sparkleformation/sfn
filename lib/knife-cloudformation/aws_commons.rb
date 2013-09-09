@@ -1,15 +1,26 @@
+require 'fog'
 require 'knife-cloudformation/utils'
 
 module KnifeCloudformation
   class AwsCommon
 
     include KnifeCloudformation::Utils::JSON
+    include KnifeCloudformation::Utils::AnimalStrings
 
     class Stack
 
       include KnifeCloudformation::Utils::JSON
 
       attr_reader :name, :raw_stack, :raw_resources, :common
+
+      class << self
+
+        def create(name, definition, aws_common)
+          aws_common.aws(:cloud_formation).create(name, definition)
+          new(name, aws_common)
+        end
+
+      end
 
       def initialize(name, common)
         @name = name
@@ -24,7 +35,9 @@ module KnifeCloudformation
 
       ## Actions ##
 
-      def update
+      def update(definition)
+        common.aws(:cloud_formation).update_stack(name, definition)
+        reload!
       end
 
       def destroy
@@ -43,13 +56,27 @@ module KnifeCloudformation
         bool || (bool.nil? && @force_refresh)
       end
 
+      def reload!
+        load_stack
+        load_resources
+        @memo = {
+          :events => []
+        }
+        true
+      end
+
       ## Information ##
 
       def serialize
+        _to_json(to_hash)
+      end
+
+      def to_hash(extra_data={})
         {
-          :template => _to_json(template),
-          :parameters => _to_json(parameters)
-        }
+          :template => template,
+          :parameters => parameters,
+          :capabilities => capabilities
+        }.merge(extra_data)
       end
 
       def template
@@ -71,6 +98,10 @@ module KnifeCloudformation
           )]
         end
         @memo[:parameters]
+      end
+
+      def capabilities
+        @raw_stack['Capabilities']
       end
 
       def status(force_refresh=nil)
@@ -173,7 +204,6 @@ module KnifeCloudformation
       type = type.to_sym
       type = FOG_MAP[type] if FOG_MAP[type]
       unless(@connections[type])
-        puts "TYPE: #{type}"
         if(type == :compute)
           @connections[:compute] = Fog::Compute::AWS.new(@creds)
         else
@@ -233,14 +263,5 @@ module KnifeCloudformation
         titles
       end
     end
-
-    def camel(string)
-      string.to_s.split('_').map{|k| "#{k.slice(0,1).upcase}#{k.slice(1,k.length)}"}.join
-    end
-
-    def snake(string)
-      string.to_s.gsub(/([a-z])([A-Z])/, '\1_\2').downcase.to_sym
-    end
-
   end
 end
