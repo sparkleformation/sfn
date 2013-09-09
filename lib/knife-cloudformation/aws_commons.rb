@@ -1,7 +1,13 @@
+require 'knife-cloudformation/utils'
+
 module KnifeCloudformation
   class AwsCommon
 
+    include KnifeCloudformation::Utils::JSON
+
     class Stack
+
+      include KnifeCloudformation::Utils::JSON
 
       attr_reader :name, :raw_stack, :raw_resources, :common
 
@@ -16,19 +22,42 @@ module KnifeCloudformation
         @force_refresh = in_progress?
       end
 
+      ## Actions ##
+
+      def update
+      end
+
+      def destroy
+        common.aws(:cloud_formation).destroy_stack(name)
+      end
+
+      def load_stack
+        @raw_stack = common.aws(:cloud_formation).describe_stacks('StackName' => name).body['Stacks'].first
+      end
+
+      def load_resources
+        @raw_resources = common.aws(:cloud_formation).list_stack_resources('StackName' => name).body['StackResourceSummaries']
+      end
+
+      def refresh?(bool)
+        bool || (bool.nil? && @force_refresh)
+      end
+
+      ## Information ##
+
       def serialize
-        unless(@memo[:serialized])
-          @memo[:serialized] = {
-            :template => template,
-            :parameters => parameters
-          }
-        end
-        @memo[:serialized]
+        {
+          :template => _to_json(template),
+          :parameters => _to_json(parameters)
+        }
       end
 
       def template
         unless(@memo[:template])
-          @memo[:template] = common.aws(:cloud_formation).get_template(name).body['TemplateBody']
+          @memo[:template] = _from_json(
+            common.aws(:cloud_formation)
+              .get_template(name).body['TemplateBody']
+          )
         end
         @memo[:template]
       end
@@ -44,18 +73,6 @@ module KnifeCloudformation
         @memo[:parameters]
       end
 
-      def load_stack
-        @raw_stack = common.aws(:cloud_formation).describe_stacks('StackName' => name).body['Stacks'].first
-      end
-
-      def load_resources
-        @raw_resources = common.aws(:cloud_formation).list_stack_resources('StackName' => name).body['StackResourceSummaries']
-      end
-
-      def refresh?(bool)
-        bool || (bool.nil? && @force_refresh)
-      end
-
       def status(force_refresh=nil)
         load_stack if refresh?(force_refresh)
         @raw_stack['StackStatus']
@@ -66,32 +83,11 @@ module KnifeCloudformation
         @raw_resources
       end
 
-      def destroy
-        common.aws(:cloud_formation).destroy_stack(name)
-      end
-
       def events
         options = @memo[:events][name] ? {'NextToken' => @memo[:events][name]} : {}
         res = common.aws(:cloud_formation).describe_stack_events(name, options)
         @memo[:events][name] = res.body['StackToken']
         res.body['StackEvents']
-      end
-
-      def in_progress?
-        status.to_s.downcase.end_with?('in_progress')
-      end
-
-      def complete?
-        stat = status.to_s.downcase
-        stat.end_with?('complete') || stat.end_with?('failed')
-      end
-
-      def failed?
-        status.to_s.downcase.end_with?('failed')
-      end
-
-      def success?
-        status.to_s.downcase.end_with?('complete')
       end
 
       def outputs(style=:unformatted)
@@ -117,6 +113,27 @@ module KnifeCloudformation
         end
       end
 
+      ## State ##
+
+      def in_progress?
+        status.to_s.downcase.end_with?('in_progress')
+      end
+
+      def complete?
+        stat = status.to_s.downcase
+        stat.end_with?('complete') || stat.end_with?('failed')
+      end
+
+      def failed?
+        status.to_s.downcase.end_with?('failed')
+      end
+
+      def success?
+        status.to_s.downcase.end_with?('complete')
+      end
+
+      ## Fog instance helpers ##
+
       RESOURCE_FILTER_KEYS = {
         :auto_scaling_group => 'AutoScalingGroupNames'
       }
@@ -128,7 +145,7 @@ module KnifeCloudformation
         aws.send("#{common.snake(resource['ResourceType'].split('::').last).to_s.split('_').last}s").get(resource['PhysicalResourceId'])
       end
 
-      def instances
+      def nodes
         as_resource = resources.detect{|r|r['ResourceType'] == 'AWS::AutoScaling::AutoScalingGroup'}
         as_group = expand_resource(as_resource)
         as_group.instances.map do |inst|
