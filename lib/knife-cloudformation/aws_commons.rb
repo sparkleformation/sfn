@@ -4,7 +4,7 @@ module KnifeCloudformation
     class Stack
 
       attr_reader :name, :raw_stack, :raw_resources, :common
-      
+
       def initialize(name, common)
         @name = name
         @common = common
@@ -14,6 +14,34 @@ module KnifeCloudformation
         load_stack
         @force_refresh = false
         @force_refresh = in_progress?
+      end
+
+      def serialize
+        unless(@memo[:serialized])
+          @memo[:serialized] = {
+            :template => template,
+            :parameters => parameters
+          }
+        end
+        @memo[:serialized]
+      end
+
+      def template
+        unless(@memo[:template])
+          @memo[:template] = common.aws(:cloud_formation).get_template(name).body['TemplateBody']
+        end
+        @memo[:template]
+      end
+
+      def parameters
+        unless(@memo[:parameters])
+          @memo[:parameters] = Hash[*(
+              @raw_stack['Parameters'].map do |ary|
+                [ary['ParameterKey'], ary['ParameterValue']]
+              end.flatten
+          )]
+        end
+        @memo[:parameters]
       end
 
       def load_stack
@@ -27,7 +55,7 @@ module KnifeCloudformation
       def refresh?(bool)
         bool || (bool.nil? && @force_refresh)
       end
-      
+
       def status(force_refresh=nil)
         load_stack if refresh?(force_refresh)
         @raw_stack['StackStatus']
@@ -92,7 +120,7 @@ module KnifeCloudformation
       RESOURCE_FILTER_KEYS = {
         :auto_scaling_group => 'AutoScalingGroupNames'
       }
-      
+
       def expand_resource(resource)
         kind = resource['ResourceType'].split('::')[1]
         kind_snake = common.snake(kind)
@@ -107,13 +135,13 @@ module KnifeCloudformation
           common.aws(:ec2).servers.get(inst.id)
         end
       end
-      
+
     end
 
     FOG_MAP = {
       :ec2 => :compute
     }
-    
+
     def initialize(args={})
       @ui = args[:ui]
       @creds = args[:fog]
@@ -148,7 +176,7 @@ module KnifeCloudformation
       end
       @memo[:stack_list]
     end
-    
+
     def stack(name)
       unless(@memo[:stacks][name])
         @memo[:stacks][name] = Stack.new(name, self)
@@ -196,6 +224,6 @@ module KnifeCloudformation
     def snake(string)
       string.to_s.gsub(/([a-z])([A-Z])/, '\1_\2').downcase.to_sym
     end
-    
+
   end
 end
