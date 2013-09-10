@@ -2,98 +2,11 @@ require 'chef/knife'
 require 'knife-cloudformation/utils'
 require 'knife-cloudformation/aws_commons'
 
-class Chef
-  class Knife
+module KnifeCloudformation
 
-    # Populate up the hashes so they are available for knife config
-    # with issues of nils
-    ['knife.cloudformation.credentials', 'knife.cloudformation.options'].each do |stack|
-      stack.split('.').inject(Chef::Config) do |memo, item|
-        memo[item.to_sym] = Mash.new unless memo[item.to_sym]
-        memo[item.to_sym]
-      end
-    end
+  module KnifeBase
 
-    Chef::Config[:knife][:cloudformation] ||= Mash.new
-
-    module CloudformationDefault
-      class << self
-        def included(klass)
-          klass.instance_eval do
-
-            include KnifeCloudformation::Utils::JSON
-            include KnifeCloudformation::Utils::AnimalStrings
-
-            deps do
-              require 'fog'
-              Chef::Config[:knife][:cloudformation] ||= Mash.new
-              Chef::Config[:knife][:cloudformation][:credentials] ||= Mash.new
-              Chef::Config[:knife][:cloudformation][:options] ||= Mash.new
-            end
-
-            option(:key,
-              :short => '-K KEY',
-              :long => '--key KEY',
-              :description => 'AWS access key id',
-              :proc => lambda {|val|
-                Chef::Config[:knife][:cloudformation][:credentials][:key] = val
-              }
-            )
-            option(:secret,
-              :short => '-S SECRET',
-              :long => '--secret SECRET',
-              :description => 'AWS secret access key',
-              :proc => lambda {|val|
-                Chef::Config[:knife][:cloudformation][:credentials][:secret] = val
-              }
-            )
-            option(:region,
-              :short => '-r REGION',
-              :long => '--region REGION',
-              :description => 'AWS region',
-              :proc => lambda {|val|
-                Chef::Config[:knife][:cloudformation][:credentials][:region] = val
-              }
-            )
-          end
-        end
-      end
-    end
-
-    class CloudformationBase < Knife
-
-      class << self
-
-        def con(ui=nil)
-          unless(@common)
-            @common = KnifeCloudformation::AwsCommons.new(
-              :ui => ui,
-              :fog => {
-                :aws_access_key_id => _key,
-                :aws_secret_access_key => _secret,
-                :region => _region
-              }
-            )
-          end
-          @common
-        end
-
-        def _key
-          Chef::Config[:knife][:cloudformation][:credentials][:key] ||
-            Chef::Config[:knife][:aws_access_key_id]
-        end
-
-        def _secret
-          Chef::Config[:knife][:cloudformation][:credentials][:secret] ||
-            Chef::Config[:knife][:aws_secret_access_key]
-        end
-
-        def _region
-          Chef::Config[:knife][:cloudformation][:credentials][:region] ||
-            Chef::Config[:knife][:region]
-        end
-
-      end
+    module InstanceMethods
 
       def aws
         self.class.con(ui)
@@ -158,6 +71,98 @@ class Chef
           exit 1
         end
       end
+
+    end
+
+    module ClassMethods
+
+      def con(ui=nil)
+        unless(@common)
+          @common = KnifeCloudformation::AwsCommons.new(
+            :ui => ui,
+            :fog => {
+              :aws_access_key_id => _key,
+              :aws_secret_access_key => _secret,
+              :region => _region
+            }
+          )
+        end
+        @common
+      end
+
+      def _key
+        Chef::Config[:knife][:cloudformation][:credentials][:key] ||
+          Chef::Config[:knife][:aws_access_key_id]
+      end
+
+      def _secret
+        Chef::Config[:knife][:cloudformation][:credentials][:secret] ||
+          Chef::Config[:knife][:aws_secret_access_key]
+      end
+
+      def _region
+        Chef::Config[:knife][:cloudformation][:credentials][:region] ||
+          Chef::Config[:knife][:region]
+      end
+
+    end
+
+    class << self
+      def included(klass)
+        klass.instance_eval do
+
+          extend KnifeCloudformation::KnifeBase::ClassMethods
+          include KnifeCloudformation::KnifeBase::InstanceMethods
+          include KnifeCloudformation::Utils::JSON
+          include KnifeCloudformation::Utils::AnimalStrings
+
+          deps do
+            require 'fog'
+            Chef::Config[:knife][:cloudformation] ||= Mash.new
+            Chef::Config[:knife][:cloudformation][:credentials] ||= Mash.new
+            Chef::Config[:knife][:cloudformation][:options] ||= Mash.new
+          end
+
+          option(:key,
+            :short => '-K KEY',
+            :long => '--key KEY',
+            :description => 'AWS access key id',
+            :proc => lambda {|val|
+              Chef::Config[:knife][:cloudformation][:credentials][:key] = val
+            }
+          )
+          option(:secret,
+            :short => '-S SECRET',
+            :long => '--secret SECRET',
+            :description => 'AWS secret access key',
+            :proc => lambda {|val|
+              Chef::Config[:knife][:cloudformation][:credentials][:secret] = val
+            }
+          )
+          option(:region,
+            :short => '-r REGION',
+            :long => '--region REGION',
+            :description => 'AWS region',
+            :proc => lambda {|val|
+              Chef::Config[:knife][:cloudformation][:credentials][:region] = val
+            }
+          )
+
+
+          # Populate up the hashes so they are available for knife config
+          # with issues of nils
+          ['knife.cloudformation.credentials', 'knife.cloudformation.options'].each do |stack|
+            stack.split('.').inject(Chef::Config) do |memo, item|
+              memo[item.to_sym] = Mash.new unless memo[item.to_sym]
+              memo[item.to_sym]
+            end
+          end
+
+          Chef::Config[:knife][:cloudformation] ||= Mash.new
+
+        end
+      end
     end
   end
+
 end

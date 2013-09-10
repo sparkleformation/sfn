@@ -2,9 +2,9 @@ require 'chef/knife/cloudformation_base'
 
 class Chef
   class Knife
-    class CloudformationDestroy < CloudformationBase
+    class CloudformationDestroy < Knife
 
-      include CloudformationDefault
+      include KnifeCloudformation::KnifeBase
 
       banner 'knife cloudformation destroy NAME'
 

@@ -3,7 +3,9 @@ require 'chef/knife/cloudformation_base'
 
 class Chef
   class Knife
-    class CloudformationCreate < CloudformationBase
+    class CloudformationCreate < Knife
+
+      include KnifeCloudformation::KnifeBase
 
       banner 'knife cloudformation create NAME'
 
@@ -101,7 +103,6 @@ class Chef
         end
       end
 
-      include CloudformationDefault
       include Options
 
       def run

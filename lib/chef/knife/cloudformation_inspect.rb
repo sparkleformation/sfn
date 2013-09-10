@@ -3,8 +3,9 @@ require 'knife-cloudformation/utils'
 
 class Chef
   class Knife
-    class CloudformationInspect < CloudformationBase
-      include CloudformationDefault
+    class CloudformationInspect < Knife
+
+      include KnifeCloudformation::KnifeBase
       include KnifeCloudformation::Utils::Ssher
 
       banner 'knife cloudformation inspect NAME'

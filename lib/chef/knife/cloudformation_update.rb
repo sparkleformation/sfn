@@ -2,12 +2,12 @@ require 'chef/knife/cloudformation_create'
 
 class Chef
   class Knife
-    class CloudformationUpdate < CloudformationCreate
+    class CloudformationUpdate < Knife
       banner 'knife cloudformation update NAME'
 
-      include CloudformationDefault
+      include KnifeCloudformation::KnifeBase
       include CloudformationCreate::Options
-      
+
       def create_stack(name, stack)
         begin
           res = aws_con.update_stack(name, stack)

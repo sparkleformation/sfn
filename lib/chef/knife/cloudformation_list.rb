@@ -2,8 +2,8 @@ require 'chef/knife/cloudformation_base'
 
 class Chef
   class Knife
-    class CloudformationList < CloudformationBase
-      include CloudformationDefault
+    class CloudformationList < Knife
+      include KnifeCloudformation::KnifeBase
 
       banner 'knife cloudformation list NAME'
 

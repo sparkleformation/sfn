@@ -2,11 +2,11 @@ require 'chef/knife/cloudformation_base'
 
 class Chef
   class Knife
-    class CloudformationEvents < CloudformationBase
+    class CloudformationEvents < Knife
 
       banner 'knife cloudformation events NAME'
 
-      include CloudformationDefault
+      include KnifeCloudformation::KnifeBase
 
       option(:polling,
         :short => '-p',
