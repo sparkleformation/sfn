@@ -7,12 +7,12 @@ class Chef
       banner 'knife cloudformation events NAME'
 
       include CloudformationDefault
-      
-      option(:poll,
+
+      option(:polling,
         :short => '-p',
-        :long => '--poll',
+        :long => '--[no-]poll',
         :description => 'Poll events while stack status is "in progress"',
-        :proc => lambda {|v| Chef::Config[:knife][:cloudformation][:poll] = true }
+        :proc => lambda {|v| Chef::Config[:knife][:cloudformation][:polling] = v }
       )
 
       option(:attribute,
@@ -25,6 +25,15 @@ class Chef
         }
       )
 
+      option(:poll_delay,
+        :short => '-D secs',
+        :long => '--poll-delay secs',
+        :description => 'Number of seconds to pause between event poll',
+        :proc => lambda {|val|
+          Chef::Config[:knife][:cloudformation][:poll_delay] = val.to_i
+        }
+      )
+
       option(:all_attributes,
         :long => '--all-attributes',
         :description => 'Print all attributes'
@@ -33,48 +42,21 @@ class Chef
       def run
         name = name_args.first
         ui.info "Cloud Formation Events for Stack: #{ui.color(name, :bold)}\n"
-        events = stack_events(name)
-        output = get_titles(events, :format)
-        output += process(events)
-        ui.info ui.list(output.flatten, :uneven_columns_across, allowed_attributes.size)
+        things_output(name, get_events(name), 'events')
         if(Chef::Config[:knife][:cloudformation][:poll])
-          poll_stack(name)
-        end
-      end
-      
-      def stack_events(name, continue_from_last=true)
-        get_things(name) do
-          @_stack_events ||= Mash.new
-          if(@_stack_events[name])
-            options = {'NextToken' => @_stack_events[name]}
-          else
-            options = {}
+          while(stack(name).in_progress?)
+            sleep(Chef::Config[:knife][:cloudformation][:poll_delay] || 15)
+            things_output(nil, get_events(name), 'events', :no_title)
           end
-          res = aws_con.describe_stack_events(name, options)
-          @_stack_events[name] = res.body['StackToken']
-          res.body['StackEvents']
+          # Extra to see completion
+          things_output(nil, get_events(name), 'events', :no_title)
         end
       end
 
-      def poll_stack(name)
-        while(stack_in_progress?(name))
-          events = stack_events(name)
-          output = process(events)
-          unless(output.empty?)
-            ui.info ui.list(output, :uneven_columns_across, allowed_attributes.size)
-          end
-          sleep((ENV['CLOUDFORMATION_POLL'] || 15).to_i)
+      def get_events(name)
+        get_things do
+          stack(name).events
         end
-        # One more to see completion
-        events = stack_events(name)
-        output = process(events)
-        unless(output.empty?)
-          ui.info ui.list(output, :uneven_columns_across, allowed_attributes.size)
-        end
-      end
-
-      def stack_in_progress?(name)
-        stack_status(name).downcase.include?('in_progress')
       end
 
       def default_attributes

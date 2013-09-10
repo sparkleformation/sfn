@@ -1,4 +1,6 @@
 require 'chef/knife'
+require 'knife-cloudformation/utils'
+require 'knife-cloudformation/aws_commons'
 
 class Chef
   class Knife
@@ -11,13 +13,17 @@ class Chef
         memo[item.to_sym]
       end
     end
-    
+
     Chef::Config[:knife][:cloudformation] ||= Mash.new
-    
+
     module CloudformationDefault
       class << self
         def included(klass)
           klass.instance_eval do
+
+            include KnifeCloudformation::Utils::JSON
+            include KnifeCloudformation::Utils::AnimalStrings
+
             deps do
               require 'fog'
               Chef::Config[:knife][:cloudformation] ||= Mash.new
@@ -57,12 +63,19 @@ class Chef
     class CloudformationBase < Knife
 
       class << self
-        def aws_con
-          @connection ||= Fog::AWS::CloudFormation.new(
-            :aws_access_key_id => _key,
-            :aws_secret_access_key => _secret,
-            :region => _region
-          )
+
+        def con(ui=nil)
+          unless(@common)
+            @common = KnifeCloudformation::AwsCommons.new(
+              :ui => ui,
+              :fog => {
+                :aws_access_key_id => _key,
+                :aws_secret_access_key => _secret,
+                :region => _region
+              }
+            )
+          end
+          @common
         end
 
         def _key
@@ -82,6 +95,10 @@ class Chef
 
       end
 
+      def aws
+        self.class.con(ui)
+      end
+
       def _debug(e, *args)
         if(ENV['DEBUG'])
           ui.fatal "Exception information: #{e.class}: #{e}\n#{e.backtrace.join("\n")}\n"
@@ -91,43 +108,8 @@ class Chef
         end
       end
 
-      def aws_con
-        self.class.aws_con
-      end
-      
-      def stack_status(name)
-        aws_con.describe_stacks('StackName' => name).body['Stacks'].first['StackStatus']
-      end
-
-      def get_titles(thing, format=false)
-        unless(@titles)
-          attrs = allowed_attributes
-          if(attrs.empty?)
-            hash = thing.is_a?(Array) ? thing.first : thing
-            hash ||= {}
-            attrs = hash.keys
-          end
-          @titles = attrs.map do |key|
-            next unless attribute_allowed?(key)
-            key.gsub(/([a-z])([A-Z])/, '\1 \2')
-          end.compact
-        end
-        if(format)
-          @titles.map{|s| ui.color(s, :bold)}
-        else
-          @titles
-        end
-      end
-
-      def process(things)
-        @event_ids ||= []
-        things.reverse.map do |thing|
-          next if @event_ids.include?(thing['EventId'])
-          @event_ids.push(thing['EventId']).compact!
-          get_titles(thing).map do |key|
-            thing[key.gsub(' ', '')].to_s
-          end
-        end.flatten.compact
+      def stack(name)
+        self.class.con(ui).stack(name)
       end
 
       def allowed_attributes
@@ -142,15 +124,27 @@ class Chef
         config[:all_attributes] || allowed_attributes.include?(attr)
       end
 
-      def things_output(stack, things, what)
-        output = get_titles(things, :format)
-        output += process(things)
+      def poll_stack(name)
+        knife_events = Chef::Knife::CloudformationEvents.new
+        knife_events.name_args.push(name)
+        Chef::Config[:knife][:cloudformation][:poll] = true
+        knife_events.run
+      end
+
+      def things_output(stack, things, what, *args)
+        unless(args.include?(:no_title))
+          output = aws.get_titles(things, :format => true, :attributes => allowed_attributes)
+        else
+          output = []
+        end
+        columns = allowed_attributes.size
+        output += aws.process(things, :flat => true, :attributes => allowed_attributes)
         output.compact.flatten
         if(output.empty?)
           ui.warn 'No information found'
         else
           ui.info "#{what.to_s.capitalize} for stack: #{ui.color(stack, :bold)}" if stack
-          ui.info "#{ui.list(output, :uneven_columns_across, get_titles(things).size)}\n"
+          ui.info "#{ui.list(output, :uneven_columns_across, columns)}"
         end
       end
 
@@ -162,39 +156,6 @@ class Chef
           ui.fatal "Reason: #{e}"
           _debug(e)
           exit 1
-        end
-      end
-
-      def try_json_compat
-        begin
-          require 'chef/json_compat'
-        rescue
-        end
-        defined?(Chef::JSONCompat)
-      end
-      
-      def _to_json(thing)
-        if(try_json_compat)
-          Chef::JSONCompat.to_json(thing)
-        else
-          JSON.dump(thing)
-        end
-      end
-
-      def _from_json(thing)
-        if(try_json_compat)
-          Chef::JSONCompat.from_json(thing)
-        else
-          JSON.read(thing)
-        end
-      end
-
-      def _format_json(thing)
-        thing = _from_json(thing) if thing.is_a?(String)
-        if(try_json_compat)
-          Chef::JSONCompat.to_json_pretty(thing)
-        else
-          JSON.pretty_generate(thing)
         end
       end
     end

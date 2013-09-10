@@ -5,24 +5,24 @@ class Chef
     class CloudformationDestroy < CloudformationBase
 
       include CloudformationDefault
-      
-      banner 'knife cloudformation destroy NAME[ NAME ...]'
+
+      banner 'knife cloudformation destroy NAME'
 
       def run
-        name_args.each do |stack_name|
-          ui.warn "Destroying Cloud Formation: #{ui.color(stack_name, :bold)}"
-          ui.confirm 'Destroy this formation'
-          destroy_formation!(stack_name)
-          ui.info "  -> Destroyed Cloud Formation: #{ui.color(stack_name, :bold, :red)}"
-        end
+        stack_name = name_args.last
+        ui.warn "Destroying Cloud Formation: #{ui.color(stack_name, :bold)}"
+        ui.confirm 'Destroy this formation'
+        destroy_formation!(stack_name)
+        poll_stack(stack_name)
+        ui.info "  -> Destroyed Cloud Formation: #{ui.color(stack_name, :bold, :red)}"
       end
 
       def destroy_formation!(stack_name)
         get_things(stack_name, 'Failed to perform destruction') do
-          aws_con.delete_stack(stack_name)
+          stack(stack_name).destroy
         end
       end
-      
+
     end
   end
 end
