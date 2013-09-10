@@ -1,190 +1,12 @@
 require 'fog'
 require 'knife-cloudformation/utils'
 
+Dir.glob(File.join(File.dirname(__FILE__), 'aws_commons/*.rb')).each do |item|
+  require "knife-cloudformation/aws_commons/#{File.basename(item).sub('.rb', '')}"
+end
+
 module KnifeCloudformation
-  class AwsCommon
-
-    include KnifeCloudformation::Utils::JSON
-    include KnifeCloudformation::Utils::AnimalStrings
-
-    class Stack
-
-      include KnifeCloudformation::Utils::JSON
-
-      attr_reader :name, :raw_stack, :raw_resources, :common
-
-      class << self
-
-        def create(name, definition, aws_common)
-          aws_common.aws(:cloud_formation).create(name, definition)
-          new(name, aws_common)
-        end
-
-      end
-
-      def initialize(name, common)
-        @name = name
-        @common = common
-        @memo = {
-          :events => []
-        }
-        load_stack
-        @force_refresh = false
-        @force_refresh = in_progress?
-      end
-
-      ## Actions ##
-
-      def update(definition)
-        common.aws(:cloud_formation).update_stack(name, definition)
-        reload!
-      end
-
-      def destroy
-        common.aws(:cloud_formation).destroy_stack(name)
-      end
-
-      def load_stack
-        @raw_stack = common.aws(:cloud_formation).describe_stacks('StackName' => name).body['Stacks'].first
-      end
-
-      def load_resources
-        @raw_resources = common.aws(:cloud_formation).list_stack_resources('StackName' => name).body['StackResourceSummaries']
-      end
-
-      def refresh?(bool)
-        bool || (bool.nil? && @force_refresh)
-      end
-
-      def reload!
-        load_stack
-        load_resources
-        @memo = {
-          :events => []
-        }
-        true
-      end
-
-      ## Information ##
-
-      def serialize
-        _to_json(to_hash)
-      end
-
-      def to_hash(extra_data={})
-        {
-          :template => template,
-          :parameters => parameters,
-          :capabilities => capabilities
-        }.merge(extra_data)
-      end
-
-      def template
-        unless(@memo[:template])
-          @memo[:template] = _from_json(
-            common.aws(:cloud_formation)
-              .get_template(name).body['TemplateBody']
-          )
-        end
-        @memo[:template]
-      end
-
-      def parameters
-        unless(@memo[:parameters])
-          @memo[:parameters] = Hash[*(
-              @raw_stack['Parameters'].map do |ary|
-                [ary['ParameterKey'], ary['ParameterValue']]
-              end.flatten
-          )]
-        end
-        @memo[:parameters]
-      end
-
-      def capabilities
-        @raw_stack['Capabilities']
-      end
-
-      def status(force_refresh=nil)
-        load_stack if refresh?(force_refresh)
-        @raw_stack['StackStatus']
-      end
-
-      def resources(force_refresh=nil)
-        load_resources if @raw_resources.nil? || refresh?(force_refresh)
-        @raw_resources
-      end
-
-      def events
-        options = @memo[:events][name] ? {'NextToken' => @memo[:events][name]} : {}
-        res = common.aws(:cloud_formation).describe_stack_events(name, options)
-        @memo[:events][name] = res.body['StackToken']
-        res.body['StackEvents']
-      end
-
-      def outputs(style=:unformatted)
-        case style
-        when :formatted
-          Hash[*(
-              @raw_stack.map do |item|
-                item.map do |k,v|
-                  [k.gsub(/(?<![A-Z])([A-Z])/, '_\1').sub(/^_/, '').downcase.to_sym, v]
-                end
-              end.flatten
-          )]
-        when :unformatted
-          Hash[*(
-              @raw_stack.map do |item|
-                item.map do |k,v|
-                  [k,v]
-                end
-              end.flatten
-          )]
-        else
-          @raw_stack['Outputs']
-        end
-      end
-
-      ## State ##
-
-      def in_progress?
-        status.to_s.downcase.end_with?('in_progress')
-      end
-
-      def complete?
-        stat = status.to_s.downcase
-        stat.end_with?('complete') || stat.end_with?('failed')
-      end
-
-      def failed?
-        status.to_s.downcase.end_with?('failed')
-      end
-
-      def success?
-        status.to_s.downcase.end_with?('complete')
-      end
-
-      ## Fog instance helpers ##
-
-      RESOURCE_FILTER_KEYS = {
-        :auto_scaling_group => 'AutoScalingGroupNames'
-      }
-
-      def expand_resource(resource)
-        kind = resource['ResourceType'].split('::')[1]
-        kind_snake = common.snake(kind)
-        aws = common.aws(kind_snake)
-        aws.send("#{common.snake(resource['ResourceType'].split('::').last).to_s.split('_').last}s").get(resource['PhysicalResourceId'])
-      end
-
-      def nodes
-        as_resource = resources.detect{|r|r['ResourceType'] == 'AWS::AutoScaling::AutoScalingGroup'}
-        as_group = expand_resource(as_resource)
-        as_group.instances.map do |inst|
-          common.aws(:ec2).servers.get(inst.id)
-        end
-      end
-
-    end
+  class AwsCommons
 
     FOG_MAP = {
       :ec2 => :compute
@@ -196,7 +18,8 @@ module KnifeCloudformation
       @connections = {}
       @memo = {
         :stacks => {},
-        :event_ids => []
+        :event_ids => [],
+        :stack_list => {}
       }
     end
 
@@ -216,12 +39,34 @@ module KnifeCloudformation
     end
     alias_method :aws, :build_connection
 
-    def stacks(force_refresh=false)
-      @memo.delete(:stack_list) if force_refresh
-      unless(@memo[:stack_list])
-        @memo[:stack_list] = cf.list_stacks(aws_filter_hash).body['StackSummaries']
+    DEFAULT_STACK_STATUS = %w(
+      CREATE_IN_PROGRESS CREATE_COMPLETE CREATE_FAILED
+      ROLLBACK_IN_PROGRESS ROLLBACK_COMPLETE ROLLBACK_FAILED
+      UPDATE_IN_PROGRESS UPDATE_COMPLETE UPDATE_COMPLETE_CLEANUP_IN_PROGRESS
+      UPDATE_ROLLBACK_IN_PROGRESS UPDATE_ROLLBACK_FAILED
+      UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS UPDATE_ROLLBACK_COMPLETE
+      DELETE_IN_PROGRESS DELETE_FAILED
+    )
+
+    def stacks(args={})
+      status = args[:status] || DEFAULT_STACK_STATUS
+      key = status.hash
+      @memo[:stack_list].delete(key) if args[:force_refresh]
+      count = 0
+      if(status.map(&:downcase).include?('none'))
+        filter = {}
+      else
+        filter = Hash[*(
+            status.map do |n|
+              count += 1
+              ["StackStatusFilter.member.#{count}", n]
+            end.flatten
+        )]
       end
-      @memo[:stack_list]
+      unless(@memo[:stack_list][key])
+        @memo[:stack_list][key] = aws(:cloud_formation).list_stacks(filter).body['StackSummaries']
+      end
+      @memo[:stack_list][key]
     end
 
     def stack(name)
@@ -230,6 +75,12 @@ module KnifeCloudformation
       end
       @memo[:stacks][name]
     end
+
+    def create_stack(name, definition)
+      Stack.create(name, definition, self)
+    end
+
+    # Output Helpers
 
     def process(things, args={})
       @event_ids ||= []
@@ -241,13 +92,13 @@ module KnifeCloudformation
             thing[key].to_s
           end
         else
-          thing
+          thing.values
         end
       end
       args[:flat] ? processed.flatten : processed
     end
 
-    def get_titles(thing, args={})#format=false)
+    def get_titles(thing, args={})
       attrs = args[:attributes] || []
       if(attrs.empty?)
         hash = thing.is_a?(Array) ? thing.first : thing
