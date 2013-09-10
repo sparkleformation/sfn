@@ -52,5 +52,18 @@ module KnifeCloudformation
       end
 
     end
+
+    module Ssher
+      def remote_file_contents(address, user, path, ssh_opts={})
+        require 'net/sftp'
+        content = nil
+        Net::SFTP.start(address, user, ssh_opts) do |con|
+          con.file.open(path) do |f|
+            content = f.read
+          end
+        end
+        content
+      end
+    end
   end
 end
