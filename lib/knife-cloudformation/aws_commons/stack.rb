@@ -5,6 +5,7 @@ module KnifeCloudformation
     class Stack
 
       include KnifeCloudformation::Utils::JSON
+      include KnifeCloudformation::Utils::AnimalStrings
 
       attr_reader :name, :raw_stack, :raw_resources, :common
 
