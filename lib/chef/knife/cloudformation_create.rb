@@ -40,7 +40,7 @@ class Chef
                 :description => 'Rollback on stack creation failure',
                 :boolean => true,
                 :default => true,
-                :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:options][:disable_rollback] = val }
+                :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:options][:disable_rollback] = !val }
               )
               option(:capability,
                 :short => '-C CAPABILITY',
@@ -117,19 +117,19 @@ class Chef
         else
           file = _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
         end
+        if(config[:print_only])
+          ui.warn 'Print only requested'
+          ui.info _format_json(file)
+          exit 1
+        end
         ui.info "#{ui.color('Cloud Formation: ', :bold)} #{ui.color(action_type, :green)}"
         ui.info "  -> #{ui.color('Name:', :bold)} #{name} #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]} #{ui.color('(not pre-processed)', :yellow) if Chef::Config[:knife][:cloudformation][:disable_processing]}"
         populate_parameters!(file)
         stack_def = KnifeCloudformation::AwsCommons::Stack.build_stack_definition(file, Chef::Config[:knife][:cloudformation][:options])
-        if(config[:print_only])
-          ui.warn 'Print only requested'
-          ui.info _format_json(stack_def['TemplateBody'])
-          exit 1
-        end
         aws.create_stack(name, stack_def)
         if(Chef::Config[:knife][:cloudformation][:polling])
           poll_stack(name)
-          if(stack(name).complete?)
+          if(stack(name).success?)
             ui.info "Stack #{action_type} complete: #{ui.color('SUCCESS', :green)}"
             knife_output = Chef::Knife::CloudformationDescribe.new
             knife_output.name_args.push(name)
@@ -165,7 +165,7 @@ class Chef
                   valid = true
                 else
                   validation.each do |validation_error|
-                    ui.error validation.last
+                    ui.error validation_error.last
                   end
                 end
               end
