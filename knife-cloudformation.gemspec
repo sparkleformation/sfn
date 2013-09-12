@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.add_dependency 'chef'
   s.add_dependency 'fog', '~> 1.12.1'
+  s.add_dependency 'net-sftp'
   s.add_dependency 'attribute_struct', '~> 0.1.6'
   s.files = Dir['**/*']
 end
