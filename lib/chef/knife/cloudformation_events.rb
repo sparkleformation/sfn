@@ -46,10 +46,10 @@ class Chef
         if(Chef::Config[:knife][:cloudformation][:poll])
           while(stack(name).in_progress?)
             sleep(Chef::Config[:knife][:cloudformation][:poll_delay] || 15)
-            things_output(nil, get_events(name), 'events', :no_title)
+            things_output(nil, get_events(name), 'events', :no_title, :ignore_empty_output)
           end
           # Extra to see completion
-          things_output(nil, get_events(name), 'events', :no_title)
+          things_output(nil, get_events(name), 'events', :no_title, :ignore_empty_output)
         end
       end
 
