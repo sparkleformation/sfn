@@ -185,11 +185,12 @@ module KnifeCloudformation
       end
 
       def failed?
-        status.to_s.downcase.end_with?('failed')
+        stat = status.to_s.downcase
+        stat.end_with?('failed') || (stat.include?('rollback') && stat.end_with?('complete'))
       end
 
       def success?
-        status.to_s.downcase.end_with?('complete')
+        !failed?
       end
 
       ## Fog instance helpers ##
