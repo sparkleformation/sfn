@@ -140,7 +140,7 @@ class Chef
             ui.info ""
             knife_inspect = Chef::Knife::CloudformationInspect.new
             knife_inspect.name_args.push(name)
-            knife_inspect.config[:inspect_failure] = true
+            knife_inspect.config[:instance_failure] = true
             knife_inspect.run
             exit 1
           end
