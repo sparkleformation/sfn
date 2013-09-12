@@ -11,8 +11,10 @@ class Chef
       option(:polling,
         :short => '-p',
         :long => '--[no-]poll',
+        :boolean => true,
+        :default => false,
         :description => 'Poll events while stack status is "in progress"',
-        :proc => lambda {|v| Chef::Config[:knife][:cloudformation][:polling] = v }
+        :proc => lambda {|v| Chef::Config[:knife][:cloudformation][:poll] = v }
       )
 
       option(:attribute,
