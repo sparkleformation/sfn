@@ -53,7 +53,7 @@ module KnifeCloudformation
         columns = allowed_attributes.size
         output += aws.process(things, :flat => true, :attributes => allowed_attributes)
         output.compact.flatten
-        if(output.empty?)
+        if(output.empty? && !args.include?(:ignore_empty_output))
           ui.warn 'No information found'
         else
           ui.info "#{what.to_s.capitalize} for stack: #{ui.color(stack, :bold)}" if stack
