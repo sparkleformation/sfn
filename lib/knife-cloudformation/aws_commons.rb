@@ -69,11 +69,44 @@ module KnifeCloudformation
       @memo[:stack_list][key]
     end
 
-    def stack(name)
-      unless(@memo[:stacks][name])
-        @memo[:stacks][name] = Stack.new(name, self)
+    def name_from_stack_id(name)
+      found = stacks.detect do |s|
+        s['StackId'] == name
       end
-      @memo[:stacks][name]
+      if(found)
+        s['StackName']
+      else
+        raise "Failed to locate stack with ID: #{name}"
+      end
+    end
+
+    def stack(*names)
+      names = names.map do |name|
+        if(name.start_with?('arn:'))
+          name_from_stack_id(name)
+        else
+          name
+        end
+      end
+      if(names.size == 1)
+        name = names.first
+        unless(@memo[:stacks][name])
+          @memo[:stacks][name] = Stack.new(name, self)
+        end
+        @memo[:stacks][name]
+      else
+        to_fetch = names - @memo[:stacks].keys
+        slim_stacks = {}
+        unless(to_fetch.empty?)
+          to_fetch.each do |name|
+            slim_stacks[name] = Stack.new(name, self, stacks.detect{|s| s['StackName'] == name})
+          end
+        end
+        result = names.map do |n|
+          @memo[:stacks][n] || slim_stacks[n]
+        end
+        result
+      end
     end
 
     def create_stack(name, definition)
