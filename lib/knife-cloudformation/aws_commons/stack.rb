@@ -206,8 +206,9 @@ module KnifeCloudformation
       def events(all=false)
         res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
         @memo[:events] ||= []
-        res.delete_if{|e| @memo[:events].include?(e['EventId'])}
-        @memo[:events] += res.map{|e| e['EventId']}
+        current = @memo[:events].map{|e| e['EventId']}
+        res.delete_if{|e| current.include?(e['EventId'])}
+        @memo[:events] += res
         @memo[:events].uniq!
         all ? @memo[:events] : res
       end
