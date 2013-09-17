@@ -11,6 +11,12 @@ module KnifeCloudformation
 
       class << self
 
+        ALLOWED_PARAMETER_ATTRIBUTES = %w(
+          Type Default NoEcho AllowedValues AllowedPattern
+          MaxLength MinLength MaxValue MinValue Description
+          ConstraintDescription
+        )
+
         include KnifeCloudformation::Utils::JSON
 
         def create(name, definition, aws_common)
@@ -27,6 +33,7 @@ module KnifeCloudformation
             stack[format_key] = value
           end
           enable_capabilities!(stack, template)
+          clean_parameters!(template)
           stack['TemplateBody'] = _to_json(template)
           stack
         end
@@ -41,13 +48,25 @@ module KnifeCloudformation
           nil
         end
 
+        def clean_parameters!(template)
+          template['Parameters'].each do |name, options|
+            options.delete_if do |attribute, value|
+              !ALLOWED_PARAMETER_ATTRIBUTES.include?(attribute)
+            end
+          end
+        end
+
       end
 
-      def initialize(name, common)
+      def initialize(name, common, raw_stack=nil)
         @name = name
         @common = common
         @memo = {}
-        load_stack
+        if(raw_stack)
+          @raw_stack = raw_stack
+        else
+          load_stack
+        end
         @force_refresh = false
         @force_refresh = in_progress?
       end
@@ -55,9 +74,23 @@ module KnifeCloudformation
       ## Actions ##
 
       def update(definition)
+        if(definition.keys.detect{|k|k.is_a?(Symbol)})
+          definition = format_definition(definition)
+        end
         res = common.aws(:cloud_formation).update_stack(name, definition)
         reload!
         res
+      end
+
+      def format_definition(def_hash)
+        new_hash = {}
+        def_hash.each do |k,v|
+          new_hash[camel(k)] = v
+        end
+        if(new_hash['TemplateBody'].is_a?(Hash))
+          new_hash['TemplateBody'] = _to_json(new_hash['TemplateBody'])
+        end
+        new_hash
       end
 
       def destroy
@@ -67,14 +100,18 @@ module KnifeCloudformation
       end
 
       def load_stack
-        @raw_stack = common.aws(:cloud_formation).describe_stacks('StackName' => name).body['Stacks'].first
+        @raw_stack = common.aws(:cloud_formation)
+          .describe_stacks('StackName' => name)
+          .body['Stacks'].first
       end
 
       def load_resources
-        @raw_resources = common.aws(:cloud_formation).describe_stack_resources('StackName' => name).body['StackResources']
+        @raw_resources = common.aws(:cloud_formation)
+          .describe_stack_resources('StackName' => name)
+          .body['StackResources']
       end
 
-      def refresh?(bool)
+      def refresh?(bool=false)
         bool || (bool.nil? && @force_refresh)
       end
 
@@ -94,7 +131,7 @@ module KnifeCloudformation
 
       def to_hash(extra_data={})
         {
-          :template => template,
+          :template_body => template,
           :parameters => parameters,
           :capabilities => capabilities,
           :disable_rollback => disable_rollback,
@@ -113,15 +150,20 @@ module KnifeCloudformation
         @memo[:template]
       end
 
-      def parameters
-        unless(@memo[:parameters])
-          @memo[:parameters] = Hash[*(
-              @raw_stack['Parameters'].map do |ary|
-                [ary['ParameterKey'], ary['ParameterValue']]
-              end.flatten
-          )]
+      ## Stack metadata ##
+      def parameters(raw=false)
+        if(raw)
+          @raw_stack['Parameters']
+        else
+          unless(@memo[:parameters])
+            @memo[:parameters] = Hash[*(
+                @raw_stack['Parameters'].map do |ary|
+                  [ary['ParameterKey'], ary['ParameterValue']]
+                end.flatten
+            )]
+          end
+          @memo[:parameters]
         end
-        @memo[:parameters]
       end
 
       def capabilities
@@ -135,6 +177,21 @@ module KnifeCloudformation
       def notification_arns
         @raw_stack['NotificationARNs']
       end
+
+      def timeout_in_minutes
+        @raw_stack['TimeoutInMinutes']
+      end
+      alias_method :timeout_in_minutes, :timeout
+
+      def stack_id
+        @raw_stack['StackId']
+      end
+      alias_method :id, :stack_id
+
+      def creation_time
+        @raw_stack['CreationTime']
+      end
+      alias_method :created_at, :creation_time
 
       def status(force_refresh=nil)
         load_stack if refresh?(force_refresh)
@@ -152,7 +209,7 @@ module KnifeCloudformation
         res.delete_if{|e| @memo[:events].include?(e['EventId'])}
         @memo[:events] += res.map{|e| e['EventId']}
         @memo[:events].uniq!
-        res
+        all ? @memo[:events] : res
       end
 
       def outputs(style=:unformatted)
@@ -202,19 +259,24 @@ module KnifeCloudformation
 
       def expand_resource(resource)
         kind = resource['ResourceType'].split('::')[1]
-        kind_snake = common.snake(kind)
+        kind_snake = snake(kind)
         aws = common.aws(kind_snake)
-        aws.send("#{common.snake(resource['ResourceType'].split('::').last).to_s.split('_').last}s").get(resource['PhysicalResourceId'])
+        aws.send("#{snake(resource['ResourceType'].split('::').last).to_s.split('_').last}s").get(resource['PhysicalResourceId'])
       end
 
       def nodes
-        as_resources = resources.find_all{|r|r['ResourceType'] == 'AWS::AutoScaling::AutoScalingGroup'}
-        as_resources.map do |as_resource|
-          as_group = expand_resource(as_resource)
-          as_group.instances.map do |inst|
-            common.aws(:ec2).servers.get(inst.id)
-          end
-        end.flatten
+        reload! if refresh?
+        unless(@memo[:nodes])
+          as_resources = resources.find_all{|r|r['ResourceType'] == 'AWS::AutoScaling::AutoScalingGroup'}
+          @memo[:nodes] =
+            as_resources.map do |as_resource|
+            as_group = expand_resource(as_resource)
+            as_group.instances.map do |inst|
+              common.aws(:ec2).servers.get(inst.id)
+            end
+          end.flatten
+        end
+        @memo[:nodes]
       end
 
     end
