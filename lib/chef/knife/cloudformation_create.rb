@@ -59,11 +59,11 @@ class Chef
                 :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:processing] = val }
               )
               option(:polling,
-                :long => '--[no-]polling',
+                :long => '--[no-]poll',
                 :description => 'Enable stack event polling.',
                 :boolean => true,
                 :default => true,
-                :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:polling] = val }
+                :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:poll] = val }
               )
               option(:notifications,
                 :long => '--notification ARN',
@@ -158,7 +158,7 @@ class Chef
               valid = false
               until(valid)
                 default = Chef::Config[:knife][:cloudformation][:options][:parameters][k] || v['Default']
-                answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')} ", :default => default)
+                answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}: ", :default => default)
                 validation = KnifeCloudformation::AwsCommons::Stack::ParameterValidator.validate(answer, v)
                 if(validation == true)
                   Chef::Config[:knife][:cloudformation][:options][:parameters][k] = answer
