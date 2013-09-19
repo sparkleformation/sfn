@@ -26,6 +26,13 @@ class Chef
         }
       )
 
+      option(:nodes,
+        :short => '-N',
+        :long => '--nodes',
+        :boolean => true,
+        :description => 'Display ec2 nodes of stack'
+      )
+
       option(:ssh_user,
         :short => '-x SSH_USER',
         :long => '--ssh-user SSH_USER',
@@ -40,6 +47,17 @@ class Chef
         if(config[:instance_failure])
           do_instance_failure(stack_name)
         end
+        if(config[:nodes])
+          do_node_list(stack_name)
+        end
+      end
+
+      def do_node_list(stack_name)
+        nodes = stack(stack_name).nodes.map do |n|
+          [n.id, n.public_ip_address]
+        end.flatten
+        ui.info "Nodes for stack: #{ui.color(stack_name, :bold)}"
+        ui.info "#{ui.list(nodes, :uneven_columns_across, 2)}"
       end
 
       def do_instance_failure(stack_name)
