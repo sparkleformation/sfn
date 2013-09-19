@@ -6,15 +6,31 @@ class Chef
 
       include KnifeCloudformation::KnifeBase
 
-      banner 'knife cloudformation destroy NAME'
+      banner 'knife cloudformation destroy NAME [NAME]'
+
+      option(:polling,
+        :long => '--[no-]poll',
+        :description => 'Enable stack event polling.',
+        :boolean => true,
+        :default => true,
+        :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:poll] = val }
+      )
 
       def run
-        stack_name = name_args.last
-        ui.warn "Destroying Cloud Formation: #{ui.color(stack_name, :bold)}"
-        ui.confirm 'Destroy this formation'
-        destroy_formation!(stack_name)
-        poll_stack(stack_name)
-        ui.info "  -> Destroyed Cloud Formation: #{ui.color(stack_name, :bold, :red)}"
+        stacks = name_args.sort
+        plural = 's' if stacks.size > 1
+        ui.warn "Destroying Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold)}"
+        ui.confirm "Destroy formation#{plural}"
+        stacks.each do |stack_name|
+          destroy_formation!(stack_name)
+          ui.info "Destroy request sent for stack: #{ui.color(stack_name, :bold)}"
+        end
+        if(config[:polling])
+          stacks.each do |stack_name|
+            poll_stack(stack_name)
+          end
+          ui.info "  -> Destroyed Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold, :red)}"
+        end
       end
 
       def destroy_formation!(stack_name)
