@@ -11,6 +11,7 @@ module KnifeCloudformation
           include KnifeCloudformation::Utils::AnimalStrings
 
           def validate(value, parameter_definition)
+            return [[:blank, 'Value cannot be blank']] if value.to_s.strip.empty?
             result = %w(AllowedValues AllowedPattern MaxLength MinLength MaxValue MinValue).map do |key|
               if(parameter_definition[key])
                 res = self.send(snake(key), value, parameter_definition)
