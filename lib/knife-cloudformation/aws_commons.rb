@@ -23,12 +23,25 @@ module KnifeCloudformation
       }
     end
 
+    def clear_cache(*types)
+      keys = types.empty? ? @memo.keys : types.map(&:to_sym)
+      keys.each do |key|
+        @memo[key].clear if @memo[key]
+      end
+      true
+    end
+
     def build_connection(type)
       type = type.to_sym
       type = FOG_MAP[type] if FOG_MAP[type]
       unless(@connections[type])
-        if(type == :compute)
+        case type
+        when :compute
           @connections[:compute] = Fog::Compute::AWS.new(@creds)
+        when :dns
+          dns_creds = @creds.dup
+          dns_creds.delete(:region) || dns_creds.delete('region')
+          @connections[:dns] = Fog::DNS::AWS.new(dns_creds)
         else
           Fog.credentials = Fog.symbolize_credentials(@creds)
           @connections[type] = Fog::AWS[type]
