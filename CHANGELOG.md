@@ -1,3 +1,9 @@
+## v0.1.6
+* Adds inspect action
+* Updates to commons
+* Allow multiple stack destroys at once
+* Updates to options to make consistent
+
 ## v0.1.4
 * Support outputs on stack creation
 * Poll on destroy by default
