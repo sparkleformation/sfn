@@ -80,10 +80,26 @@ class Chef
         ui.info "Displaying stack #{ui.color(stack_name, :bold)} failure on instance #{ui.color(inst_id, :bold)}"
         opts = ssh_key ? {:keys => [ssh_key]} : {}
         remote_path = '/var/log/cfn-init.log'
-        content = remote_file_contents(inst_addr, ssh_user, remote_path, opts)
-        ui.info "  content of #{remote_path}:"
-        ui.info ""
-        ui.info content
+        content = nil
+        attempt_ssh_users.each do |ssh_user_name|
+          begin
+            content = remote_file_contents(inst_addr, ssh_user_name, remote_path, opts)
+            break
+          rescue Net::SSH::AuthenticationFailed
+            ui.warn "Authentication failed for user: #{ssh_user_name} on instance: #{inst_addr}"
+          end
+        end
+        if(content)
+          ui.info "  content of #{remote_path}:"
+          ui.info ""
+          ui.info content
+        else
+          ui.error "Failed to retreive content from node at: #{inst_addr}"
+        end
+      end
+
+      def attempt_ssh_users
+        ([ssh_user] + Array(Chef::Config[:knife][:cloudformation][:ssh_attempt_users])).flatten.compact
       end
 
       def ssh_user
