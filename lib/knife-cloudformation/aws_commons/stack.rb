@@ -111,7 +111,7 @@ module KnifeCloudformation
           .body['StackResources']
       end
 
-      def refresh?(bool=false)
+      def refresh?(bool=nil)
         bool || (bool.nil? && @force_refresh)
       end
 
@@ -204,12 +204,17 @@ module KnifeCloudformation
       end
 
       def events(all=false)
-        res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
-        @memo[:events] ||= []
-        current = @memo[:events].map{|e| e['EventId']}
-        res.delete_if{|e| current.include?(e['EventId'])}
-        @memo[:events] += res
-        @memo[:events].uniq!
+        if(@memo[:events].nil? || refresh?)
+          res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
+          @memo[:events] ||= []
+          current = @memo[:events].map{|e| e['EventId']}
+          res.delete_if{|e| current.include?(e['EventId'])}
+          @memo[:events] += res
+          @memo[:events].uniq!
+          @memo[:events].sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
+        else
+          res = []
+        end
         all ? @memo[:events] : res
       end
 
