@@ -1,3 +1,7 @@
+## v0.1.8
+* Update event cache handling
+* Allow multiple users for node connect attempts
+
 ## v0.1.6
 * Adds inspect action
 * Updates to commons
