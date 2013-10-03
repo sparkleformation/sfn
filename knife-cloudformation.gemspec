@@ -13,5 +13,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'fog', '~> 1.15'
   s.add_dependency 'net-sftp'
   s.add_dependency 'attribute_struct', '~> 0.1.6'
+  s.add_dependency 'redis-objects'
   s.files = Dir['**/*']
 end
