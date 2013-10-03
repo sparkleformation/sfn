@@ -1,5 +1,6 @@
 require 'fog'
 require 'knife-cloudformation/utils'
+require 'knife-cloudformation/cache'
 
 Dir.glob(File.join(File.dirname(__FILE__), 'aws_commons/*.rb')).each do |item|
   require "knife-cloudformation/aws_commons/#{File.basename(item).sub('.rb', '')}"
@@ -12,22 +13,17 @@ module KnifeCloudformation
       :ec2 => :compute
     }
 
+    attr_reader :credentials
+
     def initialize(args={})
       @ui = args[:ui]
-      @creds = args[:fog]
+      @credentials = @creds = args[:fog]
       @connections = {}
-      @memo = {
-        :stacks => {},
-        :event_ids => [],
-        :stack_list => {}
-      }
+      @memo = Cache.new(credentials)
     end
 
     def clear_cache(*types)
-      keys = types.empty? ? @memo.keys : types.map(&:to_sym)
-      keys.each do |key|
-        @memo[key].clear if @memo[key]
-      end
+      @memo.clear!(*types)
       true
     end
 
@@ -63,23 +59,32 @@ module KnifeCloudformation
 
     def stacks(args={})
       status = args[:status] || DEFAULT_STACK_STATUS
-      key = status.hash
-      @memo[:stack_list].delete(key) if args[:force_refresh]
-      count = 0
-      if(status.map(&:downcase).include?('none'))
-        filter = {}
-      else
-        filter = Hash[*(
-            status.map do |n|
-              count += 1
-              ["StackStatusFilter.member.#{count}", n]
-            end.flatten
-        )]
-      end
+      cache_key = ['stack_list', status.hash.to_s].join('_')
+      cache_key_lock = [cache_key, 'lock'].join('_')
+      @memo.init(cache_key, :value)
+      @memo[cache_key].value = nil if args[:force_refresh]
       unless(@memo[:stack_list][key])
-        @memo[:stack_list][key] = aws(:cloud_formation).list_stacks(filter).body['StackSummaries']
+        begin
+          @memo.init(cache_key_lock, :lock)
+          @memo[cache_key_lock] do
+            count = 0
+            if(status.map(&:downcase).include?('none'))
+              filter = {}
+            else
+              filter = Hash[*(
+                  status.map do |n|
+                    count += 1
+                    ["StackStatusFilter.member.#{count}", n]
+                  end.flatten
+              )]
+            end
+            @memo[cache_key].value = aws(:cloud_formation).list_stacks(filter).body['StackSummaries']
+          end
+        rescue Redis::Lock::LockTimeout
+          debug 'Got lock timeout on stacks list'
+        end
       end
-      @memo[:stack_list][key]
+      @memo[cache_key].value
     end
 
     def name_from_stack_id(name)
@@ -101,6 +106,7 @@ module KnifeCloudformation
           name
         end
       end
+      @memo.init(:stacks, :hash)
       if(names.size == 1)
         name = names.first
         unless(@memo[:stacks][name])
@@ -131,7 +137,7 @@ module KnifeCloudformation
     def process(things, args={})
       @event_ids ||= []
       processed = things.reverse.map do |thing|
-        next if @memo[:event_ids].include?(thing['EventId'])
+        next if @event_ids.include?(thing['EventId'])
         @event_ids.push(thing['EventId']).compact!
         if(args[:attributes])
           args[:attributes].map do |key|

@@ -1,4 +1,5 @@
-require 'knife-cloudformation/aws_commons.rb'
+require 'knife-cloudformation/cache'
+require 'knife-cloudformation/aws_commons'
 
 module KnifeCloudformation
   class AwsCommons
@@ -27,7 +28,7 @@ module KnifeCloudformation
         def build_stack_definition(template, options={})
           stack = Mash.new
           options.each do |key, value|
-            format_key = key.split('_').map do |k|
+            format_key = key.to_s.split('_').map do |k|
               "#{k.slice(0,1).upcase}#{k.slice(1,k.length)}"
             end.join
             stack[format_key] = value
@@ -61,11 +62,12 @@ module KnifeCloudformation
       def initialize(name, common, raw_stack=nil)
         @name = name
         @common = common
-        @memo = {}
+        @memo = Cache.new(common.credentials.merge(:stack => name))
+        @memo.init(:raw_stack, :value)
         if(raw_stack)
-          @raw_stack = raw_stack
+          @memo[:raw_stack].value = raw_stack
         else
-          load_stack
+          load_stack unless @memo[:raw_stack].value
         end
         @force_refresh = false
         @force_refresh = in_progress?
@@ -100,15 +102,33 @@ module KnifeCloudformation
       end
 
       def load_stack
-        @raw_stack = common.aws(:cloud_formation)
-          .describe_stacks('StackName' => name)
-          .body['Stacks'].first
+        @memo.init(:raw_stack, :value)
+        begin
+          @memo.init(:raw_stack_lock, :lock)
+          @memo[:raw_stack_lock] do
+            @memo[:raw_stack].value = common.aws(:cloud_formation)
+              .describe_stacks('StackName' => name)
+              .body['Stacks'].first
+          end
+        rescue Redis::Lock::LockTimeout
+          # someone else is updating
+          debug 'Got lock timeout on stack load'
+        end
       end
 
       def load_resources
-        @raw_resources = common.aws(:cloud_formation)
-          .describe_stack_resources('StackName' => name)
-          .body['StackResources']
+        @memo.init(:raw_resources, :value)
+        begin
+          @memo.init(:raw_resources_lock, :lock)
+          @memo[:raw_resources_lock] do
+            @memo[:raw_resources].value = common.aws(:cloud_formation)
+              .describe_stack_resources('StackName' => name)
+              .body['StackResources']
+          end
+        rescue Redis::Lock::LockTimeout
+          debug 'Got lock timeout on resource load'
+          # some one else is updating
+        end
       end
 
       def refresh?(bool=nil)
@@ -116,10 +136,11 @@ module KnifeCloudformation
       end
 
       def reload!
-        load_stack
-        load_resources
-        @force_refresh = in_progress?
-        @memo = {}
+        @cache.clear! do
+          load_stack
+          load_resources
+          @force_refresh = in_progress?
+        end
         true
       end
 
@@ -141,99 +162,110 @@ module KnifeCloudformation
       end
 
       def template
-        unless(@memo[:template])
-          @memo[:template] = _from_json(
+        @memo.init(:template, :value)
+        unless(@memo[:template].value)
+          @memo[:template].value = _from_json(
             common.aws(:cloud_formation)
               .get_template(name).body['TemplateBody']
           )
         end
-        @memo[:template]
+        @memo[:template].value
       end
 
       ## Stack metadata ##
       def parameters(raw=false)
         if(raw)
-          @raw_stack['Parameters']
+          @memo[:raw_stack].value['Parameters']
         else
-          unless(@memo[:parameters])
-            @memo[:parameters] = Hash[*(
-                @raw_stack['Parameters'].map do |ary|
+          @memo.init(:parameters, :value)
+          unless(@memo[:parameters].value)
+            @memo[:parameters].value = Hash[*(
+                @memo[:raw_stack].value['Parameters'].map do |ary|
                   [ary['ParameterKey'], ary['ParameterValue']]
                 end.flatten
             )]
           end
-          @memo[:parameters]
+          @memo[:parameters].value
         end
       end
 
       def capabilities
-        @raw_stack['Capabilities']
+        @memo[:raw_stack].value['Capabilities']
       end
 
       def disable_rollback
-        @raw_stack['DisableRollback']
+        @memo[:raw_stack].value['DisableRollback']
       end
 
       def notification_arns
-        @raw_stack['NotificationARNs']
+        @memo[:raw_stack].value['NotificationARNs']
       end
 
       def timeout_in_minutes
-        @raw_stack['TimeoutInMinutes']
+        @memo[:raw_stack].value['TimeoutInMinutes']
       end
       alias_method :timeout_in_minutes, :timeout
 
       def stack_id
-        @raw_stack['StackId']
+        @memo[:raw_stack].value['StackId']
       end
       alias_method :id, :stack_id
 
       def creation_time
-        @raw_stack['CreationTime']
+        @memo[:raw_stack].value['CreationTime']
       end
       alias_method :created_at, :creation_time
 
       def status(force_refresh=nil)
         load_stack if refresh?(force_refresh)
-        @raw_stack['StackStatus']
+        @memo[:raw_stack].value['StackStatus']
       end
 
       def resources(force_refresh=nil)
-        load_resources if @raw_resources.nil? || refresh?(force_refresh)
-        @raw_resources
+        load_resources if @memo[:raw_resources].nil? || refresh?(force_refresh)
+        @memo[:raw_resources].value
       end
 
       def events(all=false)
-        if(@memo[:events].nil? || refresh?)
-          res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
-          @memo[:events] ||= []
-          current = @memo[:events].map{|e| e['EventId']}
-          res.delete_if{|e| current.include?(e['EventId'])}
-          @memo[:events] += res
-          @memo[:events].uniq!
-          @memo[:events].sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
-        else
-          res = []
+        @memo.init(:events, :array)
+        res = []
+        if(@memo[:events].value.nil? || refresh?)
+          begin
+            @memo.init(:events_lock, :lock)
+            @memo[:events_lock] do
+              res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
+              current = @memo[:events].dup
+              current_events = current.map{|e| e['EventId']}
+              res.delete_if{|e| current_events.include?(e['EventId'])}
+              current += res
+              current.uniq!
+              current.sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
+              @memo[:events].clear
+              @memo[:events] += current
+            end
+          rescue Redis::Lock::LockTimeout
+            debug 'Got lock timeout on events'
+          end
         end
-        all ? @memo[:events] : res
+        all ? @memo[:events].value : res
       end
 
       def outputs(style=:unformatted)
         case style
         when :formatted
           Hash[*(
-              @raw_stack['Outputs'].map do |item|
+              @memo[:raw_stack].value['Outputs'].map do |item|
                 [item['OutputKey'].gsub(/(?<![A-Z])([A-Z])/, '_\1').sub(/^_/, '').downcase.to_sym, item['OutputValue']]
               end.flatten
           )]
         when :unformatted
           Hash[*(
-              @raw_stack['Outputs'].map do |item|
+              @memo[:raw_stack].value['Outputs'].map do |item|
                 [item['OutputKey'], item['OutputValue']]
               end.flatten
           )]
         else
-          @raw_stack['Outputs']
+          @memo[:raw_stack].value['Outputs']
         end
       end
 
@@ -271,10 +303,10 @@ module KnifeCloudformation
       end
 
       def nodes
-        reload! if refresh?
-        unless(@memo[:nodes])
+        @memo.init(:nodes, :value)
+        unless(@memo[:nodes].value)
           as_resources = resources.find_all{|r|r['ResourceType'] == 'AWS::AutoScaling::AutoScalingGroup'}
-          @memo[:nodes] =
+          @memo[:nodes].value =
             as_resources.map do |as_resource|
             as_group = expand_resource(as_resource)
             as_group.instances.map do |inst|
@@ -282,7 +314,7 @@ module KnifeCloudformation
             end
           end.flatten
         end
-        @memo[:nodes]
+        @memo[:nodes].value
       end
 
     end
