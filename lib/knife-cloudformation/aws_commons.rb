@@ -9,6 +9,8 @@ end
 module KnifeCloudformation
   class AwsCommons
 
+    include KnifeCloudformation::Utils::Debug
+
     FOG_MAP = {
       :ec2 => :compute
     }
@@ -20,6 +22,7 @@ module KnifeCloudformation
       @credentials = @creds = args[:fog]
       @connections = {}
       @memo = Cache.new(credentials)
+      @local = {:stacks => {}}
     end
 
     def clear_cache(*types)
@@ -63,10 +66,10 @@ module KnifeCloudformation
       cache_key_lock = [cache_key, 'lock'].join('_')
       @memo.init(cache_key, :value)
       @memo[cache_key].value = nil if args[:force_refresh]
-      unless(@memo[:stack_list][key])
+      unless(@memo[cache_key].value)
         begin
           @memo.init(cache_key_lock, :lock)
-          @memo[cache_key_lock] do
+          @memo[cache_key_lock].lock do
             count = 0
             if(status.map(&:downcase).include?('none'))
               filter = {}
@@ -106,15 +109,14 @@ module KnifeCloudformation
           name
         end
       end
-      @memo.init(:stacks, :hash)
       if(names.size == 1)
         name = names.first
-        unless(@memo[:stacks][name])
-          @memo[:stacks][name] = Stack.new(name, self)
+        unless(@local[:stacks][name])
+          @local[:stacks][name] = Stack.new(name, self)
         end
-        @memo[:stacks][name]
+        @local[:stacks][name]
       else
-        to_fetch = names - @memo[:stacks].keys
+        to_fetch = names - @local[:stacks].keys
         slim_stacks = {}
         unless(to_fetch.empty?)
           to_fetch.each do |name|
@@ -122,7 +124,7 @@ module KnifeCloudformation
           end
         end
         result = names.map do |n|
-          @memo[:stacks][n] || slim_stacks[n]
+          @local[:stacks][n] || slim_stacks[n]
         end
         result
       end

@@ -125,7 +125,7 @@ module KnifeCloudformation
     end
 
     def internal_lock
-      get_storage(:lock, :internal_access, :timeout => 20) do
+      get_storage(self.class.type, :lock, :internal_access, :timeout => 20).lock do
         yield
       end
     end

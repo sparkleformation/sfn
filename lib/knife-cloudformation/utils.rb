@@ -1,5 +1,23 @@
 module KnifeCloudformation
   module Utils
+
+    module Debug
+      module Output
+        def debug(msg)
+          puts "<KnifeCloudformation>: #{msg}" if ENV['DEBUG']
+        end
+      end
+
+      class << self
+        def included(klass)
+          klass.class_eval do
+            include Output
+            extend Output
+          end
+        end
+      end
+    end
+
     module JSON
 
       def try_json_compat

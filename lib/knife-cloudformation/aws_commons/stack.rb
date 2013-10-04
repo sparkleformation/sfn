@@ -5,6 +5,7 @@ module KnifeCloudformation
   class AwsCommons
     class Stack
 
+      include KnifeCloudformation::Utils::Debug
       include KnifeCloudformation::Utils::JSON
       include KnifeCloudformation::Utils::AnimalStrings
 
@@ -63,6 +64,7 @@ module KnifeCloudformation
         @name = name
         @common = common
         @memo = Cache.new(common.credentials.merge(:stack => name))
+        reset_local
         @memo.init(:raw_stack, :value)
         if(raw_stack)
           @memo[:raw_stack].value = raw_stack
@@ -105,7 +107,7 @@ module KnifeCloudformation
         @memo.init(:raw_stack, :value)
         begin
           @memo.init(:raw_stack_lock, :lock)
-          @memo[:raw_stack_lock] do
+          @memo[:raw_stack_lock].lock do
             @memo[:raw_stack].value = common.aws(:cloud_formation)
               .describe_stacks('StackName' => name)
               .body['Stacks'].first
@@ -120,7 +122,7 @@ module KnifeCloudformation
         @memo.init(:raw_resources, :value)
         begin
           @memo.init(:raw_resources_lock, :lock)
-          @memo[:raw_resources_lock] do
+          @memo[:raw_resources_lock].lock do
             @memo[:raw_resources].value = common.aws(:cloud_formation)
               .describe_stack_resources('StackName' => name)
               .body['StackResources']
@@ -135,8 +137,14 @@ module KnifeCloudformation
         bool || (bool.nil? && @force_refresh)
       end
 
+      def reset_local
+        @local = {
+          :nodes => []
+        }
+      end
+
       def reload!
-        @cache.clear! do
+        @memo.clear! do
           load_stack
           load_resources
           @force_refresh = in_progress?
@@ -232,7 +240,7 @@ module KnifeCloudformation
         if(@memo[:events].value.nil? || refresh?)
           begin
             @memo.init(:events_lock, :lock)
-            @memo[:events_lock] do
+            @memo[:events_lock].lock do
               res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
               current = @memo[:events].dup
               current_events = current.map{|e| e['EventId']}
@@ -303,18 +311,31 @@ module KnifeCloudformation
       end
 
       def nodes
-        @memo.init(:nodes, :value)
-        unless(@memo[:nodes].value)
-          as_resources = resources.find_all{|r|r['ResourceType'] == 'AWS::AutoScaling::AutoScalingGroup'}
-          @memo[:nodes].value =
-            as_resources.map do |as_resource|
+        if(@local[:nodes].empty?)
+          as_resources = resources.find_all do |r|
+            r['ResourceType'] == 'AWS::AutoScaling::AutoScalingGroup'
+          end
+          @local[:nodes] = as_resources.map do |as_resource|
             as_group = expand_resource(as_resource)
             as_group.instances.map do |inst|
               common.aws(:ec2).servers.get(inst.id)
             end
           end.flatten
         end
-        @memo[:nodes].value
+        @local[:nodes]
+      end
+
+      def nodes_data(*args)
+        cache_key = ['nd', Digest::SHA256.hexdigest(args.map(&:to_s).join)].join('_')
+        @memo.init(cache_key, :value)
+        unless(@memo[cache_key].value)
+          @memo[cache_key].value = nodes.map do |n|
+            [:id, args].flatten.compact.map do |k|
+              n.send(k)
+            end
+          end
+        end
+        @memo[cache_key].value
       end
 
     end
