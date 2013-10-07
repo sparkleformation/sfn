@@ -65,7 +65,7 @@ module KnifeCloudformation
     end
 
     def get_storage(store_type, data_type, full_name, args={})
-      case store_type
+      case store_type.to_sym
       when :redis
         get_redis_storage(data_type, full_name, args)
       when :local
@@ -76,7 +76,7 @@ module KnifeCloudformation
     end
 
     def get_redis_storage(data_type, full_name, args={})
-      case data_type
+      case data_type.to_sym
       when :array
         Redis::List.new(full_name, {:marshal => true}.merge(args))
       when :hash
@@ -91,7 +91,7 @@ module KnifeCloudformation
     end
 
     def get_local_storage(data_type, full_name, args={})
-      case data_type
+      case data_type.to_sym
       when :array
         []
       when :hash
