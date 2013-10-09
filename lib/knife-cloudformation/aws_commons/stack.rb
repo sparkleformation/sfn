@@ -59,14 +59,6 @@ module KnifeCloudformation
           end
         end
 
-        def api_limit(kind, seconds=nil)
-          @api_limit ||= {}
-          if(seconds)
-            @api_limit[kind.to_sym] = seconds.to_i
-          end
-          @api_limit[kind.to_sym]
-        end
-
       end
 
       def initialize(name, common, raw_stack=nil)
@@ -74,12 +66,12 @@ module KnifeCloudformation
         @common = common
         @memo = Cache.new(common.credentials.merge(:stack => name))
         reset_local
-        @memo.init(:raw_stack, :value)
+        @memo.init(:raw_stack, :stamped)
         if(raw_stack)
           @memo[:raw_stack].value = raw_stack.merge(:slim_stack => true)
         else
           if(@memo[:raw_stack].value.nil? || (@memo[:raw_stack].value[:slim_stack] && raw_stack.nil?))
-            load_stack
+            load_stack(:force)
           end
         end
         @force_refresh = false
@@ -114,14 +106,16 @@ module KnifeCloudformation
         res
       end
 
-      def load_stack
-        @memo.init(:raw_stack, :value)
+      def load_stack(*args)
+        @memo.init(:raw_stack, :stamped)
         begin
           @memo.init(:raw_stack_lock, :lock)
           @memo[:raw_stack_lock].lock do
-            @memo[:raw_stack].value = common.aws(:cloud_formation)
-              .describe_stacks('StackName' => name)
-              .body['Stacks'].first
+            if(args.include?(:force) || @memo[:raw_stack].update_allowed?)
+              @memo[:raw_stack].value = common.aws(:cloud_formation)
+                .describe_stacks('StackName' => name)
+                .body['Stacks'].first
+            end
           end
         rescue => e
           if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
@@ -134,13 +128,15 @@ module KnifeCloudformation
       end
 
       def load_resources
-        @memo.init(:raw_resources, :value)
+        @memo.init(:raw_resources, :stamped)
         begin
           @memo.init(:raw_resources_lock, :lock)
           @memo[:raw_resources_lock].lock do
-            @memo[:raw_resources].value = common.aws(:cloud_formation)
-              .describe_stack_resources('StackName' => name)
-              .body['StackResources']
+            if(@memo[:raw_resources].updated_allowed?)
+              @memo[:raw_resources].value = common.aws(:cloud_formation)
+                .describe_stack_resources('StackName' => name)
+                .body['StackResources']
+            end
           end
         rescue => e
           if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
@@ -253,21 +249,21 @@ module KnifeCloudformation
       end
 
       def events(all=false)
-        @memo.init(:events, :value)
+        @memo.init(:events, :stamped)
         res = []
         if(@memo[:events].value.nil? || refresh?)
           begin
-            if(@memo[:events].value && (Time.now.to_i - @memo[:events].value[:stamp]) > self.class.api_limit(:events))
-              @memo.init(:events_lock, :lock)
-              @memo[:events_lock].lock do
+            @memo.init(:events_lock, :lock)
+            @memo[:events_lock].lock do
+              if(@memo[:events].updated_allowed?)
                 res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
-                current = @memo[:events].value ? @memo[:events].value[:events] : []
+                current = @memo[:events].value || []
                 current_events = current.map{|e| e['EventId']}
                 res.delete_if{|e| current_events.include?(e['EventId'])}
                 current += res
                 current.uniq!
                 current.sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
-                @memo[:events].value = {:events => current, :stamp => Time.now.to_i}
+                @memo[:events].value = current
               end
             rescue => e
               if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
@@ -280,7 +276,7 @@ module KnifeCloudformation
             debug 'Event fetching restricted due to request time'
           end
         end
-        all ? @memo[:events].value[:events] : res
+        all ? @memo[:events].value : res
       end
 
       def outputs(style=:unformatted)
@@ -299,6 +295,31 @@ module KnifeCloudformation
           )]
         else
           @memo[:raw_stack].value['Outputs']
+        end
+      end
+
+      def event_start_index(events, status)
+        all_events.rindex do |e|
+          e['ResourceType'] == 'AWS::CloudFormation::Stack' &&
+            e['ResourceStatus'] == status.to_s.upcase
+        end.to_i
+      end
+
+      # Returns Numeric < 100 to represent estimate of completed
+      # percentage
+      def percent_complete
+        if(complete?)
+          100
+        else
+          all_events = events(:all)
+          total_expected = template['Resources'].size
+          action = performing
+          start = event_start_index(all_events, "#{action}_in_progress".to_sym)
+          finished = all_events.find_all do |e|
+            e['ResourceStatus'] == "#{action}_complete".upcase ||
+            e['ResourceStatus'] == "#{action}_failed".upcase
+          end
+          ((finished / total_expected.to_f) * 100).to_i
         end
       end
 
@@ -336,6 +357,12 @@ module KnifeCloudformation
 
       def rollbacking?
         in_progress? && status.to_s.downcase.start_with?('rollback')
+      end
+
+      def performing
+        if(in_progress?)
+          status.to_s.downcase.split('_').first.to_sym
+        end
       end
 
       # Lets build in some color coding!
