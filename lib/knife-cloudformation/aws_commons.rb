@@ -62,9 +62,18 @@ module KnifeCloudformation
 
     def stacks(args={})
       status = args[:status] || DEFAULT_STACK_STATUS
-      cache_key = ['stack_list', status.hash.to_s].join('_')
+      stat_hash = Digest::SHA256.hexdigest(status.to_s)
+      cache_key = ['stack_list', stat_hash].join('_')
       cache_key_lock = [cache_key, 'lock'].join('_')
       @memo.init(cache_key, :value)
+      if(args[:cache_time] && @memo[cache_key].value)
+        return @memo[cache_key].value[:stamp]
+      end
+      if(args[:refresh_every] && @memo[cache_key].value)
+        if(Time.now.to_i - @memo[cache_key].value[:stamp].to_i > args[:refresh_every].to_i)
+          @memo[cache_key].value = nil
+        end
+      end
       @memo[cache_key].value = nil if args[:force_refresh]
       unless(@memo[cache_key].value)
         begin
@@ -81,13 +90,20 @@ module KnifeCloudformation
                   end.flatten
               )]
             end
-            @memo[cache_key].value = aws(:cloud_formation).list_stacks(filter).body['StackSummaries']
+            @memo[cache_key].value = {
+              :stacks => aws(:cloud_formation).list_stacks(filter).body['StackSummaries'],
+              :stamp => Time.now.to_i
+            }
           end
-        rescue Redis::Lock::LockTimeout
-          debug 'Got lock timeout on stacks list'
+        rescue => e
+          if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
+            debug 'Got lock timeout on stacks list'
+          else
+            raise
+          end
         end
       end
-      @memo[cache_key].value
+      @memo[cache_key].value[:stacks]
     end
 
     def name_from_stack_id(name)
