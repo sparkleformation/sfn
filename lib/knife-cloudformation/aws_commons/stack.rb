@@ -1,5 +1,6 @@
 require 'knife-cloudformation/cache'
 require 'knife-cloudformation/aws_commons'
+require 'digest/sha2'
 
 module KnifeCloudformation
   class AwsCommons
@@ -58,6 +59,14 @@ module KnifeCloudformation
           end
         end
 
+        def api_limit(kind, seconds=nil)
+          @api_limit ||= {}
+          if(seconds)
+            @api_limit[kind.to_sym] = seconds.to_i
+          end
+          @api_limit[kind.to_sym]
+        end
+
       end
 
       def initialize(name, common, raw_stack=nil)
@@ -67,9 +76,11 @@ module KnifeCloudformation
         reset_local
         @memo.init(:raw_stack, :value)
         if(raw_stack)
-          @memo[:raw_stack].value = raw_stack
+          @memo[:raw_stack].value = raw_stack.merge(:slim_stack => true)
         else
-          load_stack unless @memo[:raw_stack].value
+          if(@memo[:raw_stack].value.nil? || (@memo[:raw_stack].value[:slim_stack] && raw_stack.nil?))
+            load_stack
+          end
         end
         @force_refresh = false
         @force_refresh = in_progress?
@@ -112,9 +123,13 @@ module KnifeCloudformation
               .describe_stacks('StackName' => name)
               .body['Stacks'].first
           end
-        rescue Redis::Lock::LockTimeout
-          # someone else is updating
-          debug 'Got lock timeout on stack load'
+        rescue => e
+          if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
+            # someone else is updating
+            debug 'Got lock timeout on stack load'
+          else
+            raise
+          end
         end
       end
 
@@ -127,9 +142,12 @@ module KnifeCloudformation
               .describe_stack_resources('StackName' => name)
               .body['StackResources']
           end
-        rescue Redis::Lock::LockTimeout
-          debug 'Got lock timeout on resource load'
-          # some one else is updating
+        rescue => e
+          if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
+            debug 'Got lock timeout on resource load'
+          else
+            raise e
+          end
         end
       end
 
@@ -235,27 +253,34 @@ module KnifeCloudformation
       end
 
       def events(all=false)
-        @memo.init(:events, :array)
+        @memo.init(:events, :value)
         res = []
         if(@memo[:events].value.nil? || refresh?)
           begin
-            @memo.init(:events_lock, :lock)
-            @memo[:events_lock].lock do
-              res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
-              current = @memo[:events].dup
-              current_events = current.map{|e| e['EventId']}
-              res.delete_if{|e| current_events.include?(e['EventId'])}
-              current += res
-              current.uniq!
-              current.sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
-              @memo[:events].clear
-              @memo[:events] += current
+            if(@memo[:events].value && (Time.now.to_i - @memo[:events].value[:stamp]) > self.class.api_limit(:events))
+              @memo.init(:events_lock, :lock)
+              @memo[:events_lock].lock do
+                res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
+                current = @memo[:events].value ? @memo[:events].value[:events] : []
+                current_events = current.map{|e| e['EventId']}
+                res.delete_if{|e| current_events.include?(e['EventId'])}
+                current += res
+                current.uniq!
+                current.sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
+                @memo[:events].value = {:events => current, :stamp => Time.now.to_i}
+              end
+            rescue => e
+              if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
+                debug 'Got lock timeout on events'
+              else
+                raise
+              end
             end
-          rescue Redis::Lock::LockTimeout
-            debug 'Got lock timeout on events'
+          else
+            debug 'Event fetching restricted due to request time'
           end
         end
-        all ? @memo[:events].value : res
+        all ? @memo[:events].value[:events] : res
       end
 
       def outputs(style=:unformatted)
@@ -294,7 +319,36 @@ module KnifeCloudformation
       end
 
       def success?
-        !failed?
+        !failed? && complete?
+      end
+
+      def creating?
+        in_progress? && status.to_s.downcase.start_with?('create')
+      end
+
+      def deleting?
+        in_progress? && status.to_s.downcase.start_with?('delete')
+      end
+
+      def updating?
+        in_progress? && status.to_s.downcase.start_with?('update')
+      end
+
+      def rollbacking?
+        in_progress? && status.to_s.downcase.start_with?('rollback')
+      end
+
+      # Lets build in some color coding!
+      def red?
+        failed? || deleting?
+      end
+
+      def yellow?
+        !red? && !green?
+      end
+
+      def green?
+        success? || creating? || updating?
       end
 
       ## Fog instance helpers ##
