@@ -132,7 +132,7 @@ module KnifeCloudformation
         begin
           @memo.init(:raw_resources_lock, :lock)
           @memo[:raw_resources_lock].lock do
-            if(@memo[:raw_resources].updated_allowed?)
+            if(@memo[:raw_resources].update_allowed?)
               @memo[:raw_resources].value = common.aws(:cloud_formation)
                 .describe_stack_resources('StackName' => name)
                 .body['StackResources']
@@ -159,7 +159,7 @@ module KnifeCloudformation
 
       def reload!
         @memo.clear! do
-          load_stack
+          load_stack(:force)
           load_resources
           @force_refresh = in_progress?
         end
@@ -255,7 +255,7 @@ module KnifeCloudformation
           begin
             @memo.init(:events_lock, :lock)
             @memo[:events_lock].lock do
-              if(@memo[:events].updated_allowed?)
+              if(@memo[:events].update_allowed?)
                 res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
                 current = @memo[:events].value || []
                 current_events = current.map{|e| e['EventId']}
@@ -265,15 +265,13 @@ module KnifeCloudformation
                 current.sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
                 @memo[:events].value = current
               end
-            rescue => e
-              if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
-                debug 'Got lock timeout on events'
-              else
-                raise
-              end
             end
-          else
-            debug 'Event fetching restricted due to request time'
+          rescue => e
+            if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
+              debug 'Got lock timeout on events'
+            else
+              raise
+            end
           end
         end
         all ? @memo[:events].value : res
@@ -298,16 +296,17 @@ module KnifeCloudformation
         end
       end
 
-      def event_start_index(events, status)
-        all_events.rindex do |e|
+      def event_start_index(given_events, status)
+        given_events.rindex do |e|
           e['ResourceType'] == 'AWS::CloudFormation::Stack' &&
             e['ResourceStatus'] == status.to_s.upcase
         end.to_i
       end
 
-      # Returns Numeric < 100 to represent estimate of completed
-      # percentage
-      def percent_complete
+      # min:: do not return value lower than this (defaults to 5)
+      # Returns Numeric < 100 to represent completed resources
+      # percentage (never returns less than 5)
+      def percent_complete(min=5)
         if(complete?)
           100
         else
@@ -318,8 +317,9 @@ module KnifeCloudformation
           finished = all_events.find_all do |e|
             e['ResourceStatus'] == "#{action}_complete".upcase ||
             e['ResourceStatus'] == "#{action}_failed".upcase
-          end
-          ((finished / total_expected.to_f) * 100).to_i
+          end.size
+          calculated = ((finished / total_expected.to_f) * 100).to_i
+          calculated < min ? min : calculated
         end
       end
 
@@ -410,13 +410,16 @@ module KnifeCloudformation
         cache_key = ['nd', Digest::SHA256.hexdigest(args.map(&:to_s).join)].join('_')
         @memo.init(cache_key, :value)
         unless(@memo[cache_key].value)
-          @memo[cache_key].value = nodes.map do |n|
+          data = nodes.map do |n|
             [:id, args].flatten.compact.map do |k|
               n.send(k)
             end
           end
         end
-        @memo[cache_key].value
+        unless(data.empty?)
+          @memo[cache_key].value = data
+        end
+        @memo[cache_key].value || data
       end
 
     end
