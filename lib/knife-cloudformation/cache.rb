@@ -27,7 +27,7 @@ module KnifeCloudformation
       end
 
       def time_check_allow?(key, stamp)
-        Time.now.to_i - stamp.to_i > apply_limit[key]
+        Time.now.to_i - stamp.to_i > apply_limit(key)
       end
 
       def apply_limit(kind, seconds=nil)
@@ -165,7 +165,11 @@ module KnifeCloudformation
       end
 
       def value
-        @base.value[:value]
+        if(@base.value.is_a?(Hash))
+          @base.value[:value]
+        else
+          @base.value
+        end
       end
 
       def value=(v)
@@ -174,7 +178,7 @@ module KnifeCloudformation
 
       def update_allowed?
         @base.value.nil? ||
-          Cache.time_check_allow?(name, @base.value[:stamp])
+          Cache.time_check_allow?(@name, @base.value[:stamp])
       end
     end
 
