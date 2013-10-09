@@ -407,7 +407,7 @@ module KnifeCloudformation
       end
 
       def nodes_data(*args)
-        cache_key = ['nd', Digest::SHA256.hexdigest(args.map(&:to_s).join)].join('_')
+        cache_key = ['nd', name, Digest::SHA256.hexdigest(args.map(&:to_s).join)].join('_')
         @memo.init(cache_key, :value)
         unless(@memo[cache_key].value)
           data = nodes.map do |n|
