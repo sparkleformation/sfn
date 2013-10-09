@@ -297,7 +297,7 @@ module KnifeCloudformation
       end
 
       def event_start_index(given_events, status)
-        given_events.rindex do |e|
+        Array(given_events).flatten.compact.rindex do |e|
           e['ResourceType'] == 'AWS::CloudFormation::Stack' &&
             e['ResourceStatus'] == status.to_s.upcase
         end.to_i
