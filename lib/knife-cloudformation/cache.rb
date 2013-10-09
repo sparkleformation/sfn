@@ -26,6 +26,18 @@ module KnifeCloudformation
         @type || :local
       end
 
+      def time_check_allow?(key, stamp)
+        Time.now.to_i - stamp.to_i > apply_limit[key]
+      end
+
+      def apply_limit(kind, seconds=nil)
+        @apply_limit ||= {}
+        if(seconds)
+          @apply_limit[kind.to_sym] = seconds.to_i
+        end
+        @apply_limit[kind.to_sym].to_i
+      end
+
     end
 
     attr_reader :key
@@ -86,6 +98,8 @@ module KnifeCloudformation
         Redis::Value.new(full_name, {:marshal => true}.merge(args))
       when :lock
         Redis::Lock.new(full_name, {:expiration => 3, :timeout => 0.1}.merge(args))
+      when :stamped
+        Stamped.new(full_name.sub("#{key}_", '').to_sym, get_redis_storage(:value, full_name))
       else
         raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
       end
@@ -101,9 +115,27 @@ module KnifeCloudformation
         LocalValue.new
       when :lock
         LocalLock.new
+      when :stamped
+        Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name))
       else
         raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
       end
+    end
+
+    def internal_lock
+      get_storage(self.class.type, :lock, :internal_access, :timeout => 20).lock do
+        yield
+      end
+    end
+
+    def [](name)
+      internal_lock do
+        @direct_store[name.to_sym]
+      end
+    end
+
+    def []=(key, val)
+      raise 'Setting backend data is not allowed'
     end
 
     class LocalValue
@@ -125,20 +157,25 @@ module KnifeCloudformation
       end
     end
 
-    def internal_lock
-      get_storage(self.class.type, :lock, :internal_access, :timeout => 20).lock do
-        yield
-      end
-    end
+    class Stamped
 
-    def [](name)
-      internal_lock do
-        @direct_store[name.to_sym]
+      def initialize(name, base)
+        @name = name.to_sym
+        @base = base
       end
-    end
 
-    def []=(key, val)
-      raise 'Setting backend data is not allowed'
+      def value
+        @base.value[:value]
+      end
+
+      def value=(v)
+        @base.value = {:stamp => Time.now.to_i, :value => v}
+      end
+
+      def update_allowed?
+        @base.value.nil? ||
+          Cache.time_check_allow?(name, @base.value[:stamp])
+      end
     end
 
   end
