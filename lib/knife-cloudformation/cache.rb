@@ -33,7 +33,8 @@ module KnifeCloudformation
 
     def initialize(key)
       if(key.respond_to?(:sort))
-        key = key.sort
+        key = key.flatten if key.respond_to?(:flatten)
+        key = key.map(&:to_s).sort
       end
       @key = Digest::SHA256.hexdigest(key.to_s)
       @direct_store = {}
