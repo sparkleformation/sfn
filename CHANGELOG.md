@@ -1,3 +1,6 @@
+## v0.1.10
+* Fix parameter passing via the CLI (data loss issue when value contained ':')
+
 ## v0.1.8
 * Update event cache handling
 * Allow multiple users for node connect attempts
