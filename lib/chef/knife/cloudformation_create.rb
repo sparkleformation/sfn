@@ -21,7 +21,9 @@ class Chef
                 :long => '--parameter KEY:VALUE',
                 :description => 'Set parameter. Can be used multiple times.',
                 :proc => lambda {|val|
-                  key,value = val.split(':')
+                  parts = val.split(':')
+                  key = parts.first
+                  value = parts[1, parts.size].join
                   Chef::Config[:knife][:cloudformation][:options][:parameters] ||= Mash.new
                   Chef::Config[:knife][:cloudformation][:options][:parameters][key] = value
                 }
