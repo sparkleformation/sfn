@@ -1,3 +1,6 @@
+## v0.1.12
+* Use the split value when re-joining parameters
+
 ## v0.1.10
 * Fix parameter passing via the CLI (data loss issue when value contained ':')
 
