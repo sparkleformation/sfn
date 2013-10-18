@@ -23,7 +23,7 @@ class Chef
                 :proc => lambda {|val|
                   parts = val.split(':')
                   key = parts.first
-                  value = parts[1, parts.size].join
+                  value = parts[1, parts.size].join(':')
                   Chef::Config[:knife][:cloudformation][:options][:parameters] ||= Mash.new
                   Chef::Config[:knife][:cloudformation][:options][:parameters][key] = value
                 }
