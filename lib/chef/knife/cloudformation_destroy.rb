@@ -26,8 +26,12 @@ class Chef
           ui.info "Destroy request sent for stack: #{ui.color(stack_name, :bold)}"
         end
         if(config[:polling])
-          stacks.each do |stack_name|
-            poll_stack(stack_name)
+          begin
+            stacks.each do |stack_name|
+              poll_stack(stack_name)
+            end
+          rescue Fog::AWS::CloudFormation::NotFound
+            # ignore this error since this is the end result we want!
           end
           ui.info "  -> Destroyed Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold, :red)}"
         end
