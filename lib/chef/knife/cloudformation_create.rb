@@ -1,4 +1,5 @@
-require 'knife-cloudformation/sparkle_formation'
+require 'sparkle_formation'
+require 'pathname'
 require 'chef/knife/cloudformation_base'
 
 class Chef
@@ -94,6 +95,16 @@ class Chef
                 :long => '--print-only',
                 :description => 'Print template and exit'
               )
+              option(:base_directory,
+                :long => '--cloudformation-directory PATH',
+                :description => 'Path to cloudformation directory',
+                :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:base_directory] = val}
+              )
+              option(:no_base_directory,
+                :long => '--no-cloudformation-directory',
+                :description => 'Unset any value used for cloudformation path',
+                :proc => lambda {|*val| Chef::Config[:knife][:cloudformation][:base_directory] = nil}
+              )
 
               %w(rollback polling interactive_parameters).each do |key|
                 if(Chef::Config[:knife][:cloudformation][key].nil?)
@@ -109,13 +120,20 @@ class Chef
 
       def run
         @action_type = self.class.name.split('::').last.sub('Cloudformation', '').upcase
+        name = name_args.first
+        unless(name)
+          ui.fatal "Formation name must be specified!"
+          exit 1
+        end
+
+        set_paths_and_discover_file!
         unless(File.exists?(Chef::Config[:knife][:cloudformation][:file].to_s))
           ui.fatal "Invalid formation file path provided: #{Chef::Config[:knife][:cloudformation][:file]}"
           exit 1
         end
-        name = name_args.first
+
         if(Chef::Config[:knife][:cloudformation][:processing])
-          file = KnifeCloudformation::SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
+          file = SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
         else
           file = _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
         end
@@ -171,6 +189,94 @@ class Chef
                   end
                 end
               end
+            end
+          end
+        end
+      end
+
+      private
+
+      def set_paths_and_discover_file!
+        if(Chef::Config[:knife][:cloudformation][:base_directory])
+          SparkleFormation.components_path = File.join(
+            Chef::Config[:knife][:cloudformation][:base_directory], 'components'
+          )
+          SparkleFormation.dynamics_path = File.join(
+            Chef::Config[:knife][:cloudformation][:base_directory], 'dynamics'
+          )
+        end
+        unless(Chef::Config[:knife][:cloudformation][:file])
+          Chef::Config[:knife][:cloudformation][:file] = prompt_for_file(
+            Chef::Config[:knife][:cloudformation][:base_directory] || File.join(Dir.pwd, 'cloudformation')
+          )
+        else
+          unless(Pathname(Chef::Config[:knife][:cloudformation][:file]).absolute?)
+            Chef::Config[:knife][:cloudformation][:file] = File.join(
+              Chef::Config[:knife][:cloudformation][:base_directory] || File.join(Dir.pwd, 'cloudformation'),
+              Chef::Config[:knife][:cloudformation][:file]
+            )
+          end
+        end
+      end
+
+      IGNORE_CF_DIRS = %w(dynamics components)
+
+      def prompt_for_file(dir)
+        directory = Dir.new(dir)
+        directories = directory.map do |d|
+          if(!d.start_with?('.') && !IGNORE_CF_DIRS.include?(d) && File.directory?(path = File.join(dir, d)))
+            path
+          end
+        end.compact.sort
+        files = directory.map do |f|
+          if(!f.start_with?('.') && File.file?(path = File.join(dir, f)))
+            path
+          end
+        end.compact.sort
+        if(directories.empty? && files.empty?)
+          ui.fatal 'No formation paths discoverable!'
+        else
+          output = ['Please select the formation to create']
+          output << '(or directory to list):' unless directories.empty?
+          ui.info output.join(' ')
+          output.clear
+          idx = 1
+          valid = {}
+          unless(directories.empty?)
+            output << ui.color('Directories:', :bold)
+            directories.each do |path|
+              valid[idx] = {:path => path, :type => :directory}
+              output << [idx, "#{File.basename(path).sub('.rb', '').split(/[-_]/).map(&:capitalize).join(' ')}"]
+              idx += 1
+            end
+          end
+          unless(files.empty?)
+            output << ui.color('Templates:', :bold)
+            files.each do |path|
+              valid[idx] = {:path => path, :type => :file}
+              output << [idx, "#{File.basename(path).sub('.rb', '').split(/[-_]/).map(&:capitalize).join(' ')}"]
+              idx += 1
+            end
+          end
+          max = idx.to_s.length
+          output.map! do |o|
+            if(o.is_a?(Array))
+              "  #{o.first}.#{' ' * (max - o.first.to_s.length)} #{o.last}"
+            else
+              o
+            end
+          end
+          ui.info "#{output.join("\n")}\n"
+          response = ask_question('Enter selection: ').to_i
+          unless(valid[response])
+            ui.fatal 'How about using a real value'
+            exit 1
+          else
+            entry = valid[response.to_i]
+            if(entry[:type] == :directory)
+              prompt_for_file(entry[:path])
+            else
+              Chef::Config[:knife][:cloudformation][:file] = entry[:path]
             end
           end
         end
