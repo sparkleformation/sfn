@@ -9,6 +9,7 @@ end
 module KnifeCloudformation
   class AwsCommons
 
+    include KnifeCloudformation::Utils::AnimalStrings
     include KnifeCloudformation::Utils::Debug
 
     FOG_MAP = {
@@ -23,6 +24,10 @@ module KnifeCloudformation
       @connections = {}
       @memo = Cache.new(credentials)
       @local = {:stacks => {}}
+    end
+
+    def cache
+      @memo
     end
 
     def clear_cache(*types)
@@ -42,9 +47,20 @@ module KnifeCloudformation
           dns_creds.delete(:region) || dns_creds.delete('region')
           @connections[:dns] = Fog::DNS::AWS.new(dns_creds)
         else
-          Fog.credentials = Fog.symbolize_credentials(@creds)
-          @connections[type] = Fog::AWS[type]
-          Fog.credentials = {}
+          begin
+            Fog.credentials = Fog.symbolize_credentials(@creds)
+            @connections[type] = Fog::AWS[type]
+            Fog.credentials = {}
+          rescue NameError
+            klass = [camel(type.to_s), 'AWS'].inject(Fog) do |memo, item|
+              memo.const_defined?(item) ? memo.const_get(item) : break
+            end
+            if(klass)
+              @connections[type] = klass.new(Fog.symbolize_credentials(@creds))
+            else
+              raise
+            end
+          end
         end
       end
       @connections[type]
@@ -61,88 +77,53 @@ module KnifeCloudformation
     )
 
     def stacks(args={})
-      status = args[:status] || DEFAULT_STACK_STATUS
-      stat_hash = Digest::SHA256.hexdigest(status.to_s)
-      cache_key = ['stack_list', stat_hash].join('_')
-      cache_key_lock = [cache_key, 'lock'].join('_')
-      @memo.init(cache_key, :value)
-      if(args[:cache_time] && @memo[cache_key].value)
-        return @memo[cache_key].value[:stamp]
+      status = Array(args[:status] || DEFAULT_STACK_STATUS).flatten.compact.map do |stat|
+        stat.to_s.upcase
       end
-      if(args[:refresh_every] && @memo[cache_key].value)
-        if(Time.now.to_i - @memo[cache_key].value[:stamp].to_i > args[:refresh_every].to_i)
-          @memo[cache_key].value = nil
+      @memo.init(:stacks_lock, :lock)
+      @memo.init(:stacks, :stamped)
+      if(args[:cache_time])
+        @memo[:stacks].stamp
+      else
+        if(args[:refresh_every])
+          cache.apply_limit(:stacks, args[:refresh_every].to_i)
         end
-      end
-      @memo[cache_key].value = nil if args[:force_refresh]
-      unless(@memo[cache_key].value)
-        begin
-          @memo.init(cache_key_lock, :lock)
-          @memo[cache_key_lock].lock do
-            count = 0
-            if(status.map(&:downcase).include?('none'))
-              filter = {}
-            else
-              filter = Hash[*(
-                  status.map do |n|
-                    count += 1
-                    ["StackStatusFilter.member.#{count}", n]
-                  end.flatten
-              )]
-            end
-            @memo[cache_key].value = {
-              :stacks => aws(:cloud_formation).list_stacks(filter).body['StackSummaries'],
-              :stamp => Time.now.to_i
-            }
-          end
-        rescue => e
-          if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
-            debug 'Got lock timeout on stacks list'
-          else
-            raise
+        if(@memo[:stacks].update_allowed? || args[:force_refresh])
+          @memo[:stacks_lock].lock do
+            @memo[:stacks].value = aws(:cloud_formation).describe_stacks.body['Stacks']
           end
         end
       end
-      @memo[cache_key].value[:stacks]
+      @memo[:stacks].value.find_all do |s|
+        status.include?(s['StackStatus'])
+      end
     end
 
-    def name_from_stack_id(name)
+    def name_from_stack_id(s_id)
       found = stacks.detect do |s|
-        s['StackId'] == name
+        s['StackId'] == s_id
       end
-      if(found)
-        s['StackName']
-      else
-        raise "Failed to locate stack with ID: #{name}"
+      found ? found['StackName'] : raise(IndexError.new("Failed to locate stack with ID: #{s_id}"))
+    end
+
+    def id_from_stack_name(name)
+      found = stacks.detect do |s|
+        s['StackName'] == name
       end
+      found ? found['StackId'] : raise(IndexError.new("Failed to locate stack with name: #{name}"))
     end
 
     def stack(*names)
-      names = names.map do |name|
-        if(name.start_with?('arn:'))
-          name_from_stack_id(name)
-        else
-          name
-        end
-      end
-      if(names.size == 1)
-        name = names.first
-        unless(@local[:stacks][name])
-          @local[:stacks][name] = Stack.new(name, self)
-        end
-        @local[:stacks][name]
-      else
-        to_fetch = names - @local[:stacks].keys
-        slim_stacks = {}
-        unless(to_fetch.empty?)
-          to_fetch.each do |name|
-            slim_stacks[name] = Stack.new(name, self, stacks.detect{|s| s['StackName'] == name})
+      names.map do |name|
+        name.start_with?('arn:') ? name : id_from_stack_name(name)
+      end.map do |s_id|
+        unless(@local[:stacks][s_id])
+          seed = stacks.detect do |stk|
+            stk['StackId'] == s_id
           end
+          @local[:stacks][s_id] = Stack.new(name, self, seed)
         end
-        result = names.map do |n|
-          @local[:stacks][n] || slim_stacks[n]
-        end
-        result
+        @local[:stacks][s_id]
       end
     end
 

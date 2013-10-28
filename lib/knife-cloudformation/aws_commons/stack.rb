@@ -68,12 +68,15 @@ module KnifeCloudformation
         reset_local
         @memo.init(:raw_stack, :stamped)
         if(raw_stack)
-          @memo[:raw_stack].value = raw_stack.merge(:slim_stack => true)
-        else
-          if(@memo[:raw_stack].value.nil? || (@memo[:raw_stack].value[:slim_stack] && raw_stack.nil?))
-            load_stack(:force)
+          if(@memo[:stacks])
+            if(@memo[:stacks].stamp > @memo[:raw_stack].stamp)
+              @memo[:raw_stack].value = raw_stack
+            end
+          else
+            @memo[:raw_stack].value = raw_stack
           end
         end
+        load_stack
         @force_refresh = false
         @force_refresh = in_progress?
       end
