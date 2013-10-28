@@ -38,7 +38,7 @@ class Chef
 
       def get_list
         get_things do
-          aws.aws(:cloud_formation).list_stacks.body['StackSummaries'].sort do |x,y|
+          aws.aws(:cloud_formation).list_stacks(list_options).body['StackSummaries'].sort do |x,y|
             if(y['CreationTime'].to_s.empty?)
               -1
             elsif(x['CreationTime'].to_s.empty?)
@@ -48,6 +48,23 @@ class Chef
             end
           end
         end
+      end
+
+      def list_options
+        status = Chef::Config[:knife][:cloudformation][:status] ||
+          KnifeCloudformation::AwsCommons::DEFAULT_STACK_STATUS
+        if(status.map(&:downcase).include?('none'))
+          filter = {}
+        else
+          count = 0
+          filter = Hash[*(
+              status.map do |n|
+                count += 1
+                ["StackStatusFilter.member.#{count}", n]
+              end.flatten
+          )]
+        end
+        filter
       end
 
       def default_attributes
