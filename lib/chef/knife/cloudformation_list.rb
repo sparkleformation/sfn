@@ -38,7 +38,15 @@ class Chef
 
       def get_list
         get_things do
-          aws.stacks
+          aws.aws(:cloud_formation).list_stacks.body['StackSummaries'].sort do |x,y|
+            if(y['CreationTime'].to_s.empty?)
+              -1
+            elsif(x['CreationTime'].to_s.empty?)
+              1
+            else
+              Time.parse(y['CreationTime'].to_s) <=> Time.parse(x['CreationTime'].to_s)
+            end
+          end
         end
       end
 
