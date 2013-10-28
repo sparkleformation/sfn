@@ -114,9 +114,9 @@ module KnifeCloudformation
     end
 
     def stack(*names)
-      names.map do |name|
-        name.start_with?('arn:') ? name : id_from_stack_name(name)
-      end.map do |s_id|
+      result = names.map do |name|
+        [name, name.start_with?('arn:') ? name : id_from_stack_name(name)]
+      end.map do |name, s_id|
         unless(@local[:stacks][s_id])
           seed = stacks.detect do |stk|
             stk['StackId'] == s_id
@@ -125,6 +125,7 @@ module KnifeCloudformation
         end
         @local[:stacks][s_id]
       end
+      result.size == 1 ? result.first : result
     end
 
     def create_stack(name, definition)
