@@ -26,16 +26,16 @@ module KnifeCloudformation
         @type || :local
       end
 
-      def time_check_allow?(key, stamp)
-        Time.now.to_i - stamp.to_i > apply_limit(key)
-      end
-
       def apply_limit(kind, seconds=nil)
         @apply_limit ||= {}
         if(seconds)
           @apply_limit[kind.to_sym] = seconds.to_i
         end
         @apply_limit[kind.to_sym].to_i
+      end
+
+      def default_limits
+        (@apply_limit || {}).dup
       end
 
     end
@@ -50,13 +50,14 @@ module KnifeCloudformation
       end
       @key = Digest::SHA256.hexdigest(key.to_s)
       @direct_store = {}
+      @apply_limit = self.class.default_limits
     end
 
-    def init(name, kind)
+    def init(name, kind, args={})
       name = name.to_sym
       unless(@direct_store[name])
         full_name = [key, name.to_s].join('_')
-        @direct_store[name] = get_storage(self.class.type, kind, full_name)
+        @direct_store[name] = get_storage(self.class.type, kind, full_name, args)
       end
       true
     end
@@ -99,7 +100,7 @@ module KnifeCloudformation
       when :lock
         Redis::Lock.new(full_name, {:expiration => 3, :timeout => 0.1}.merge(args))
       when :stamped
-        Stamped.new(full_name.sub("#{key}_", '').to_sym, get_redis_storage(:value, full_name))
+        Stamped.new(full_name.sub("#{key}_", '').to_sym, get_redis_storage(:value, full_name), self)
       else
         raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
       end
@@ -116,7 +117,7 @@ module KnifeCloudformation
       when :lock
         LocalLock.new
       when :stamped
-        Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name))
+        Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name), self)
       else
         raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
       end
@@ -137,6 +138,19 @@ module KnifeCloudformation
     def []=(key, val)
       raise 'Setting backend data is not allowed'
     end
+
+    def time_check_allow?(key, stamp)
+      Time.now.to_i - stamp.to_i > apply_limit(key)
+    end
+
+    def apply_limit(kind, seconds=nil)
+      @apply_limit ||= {}
+      if(seconds)
+        @apply_limit[kind.to_sym] = seconds.to_i
+      end
+      @apply_limit[kind.to_sym].to_i
+    end
+
 
     class LocalValue
       attr_accessor :value
@@ -159,26 +173,30 @@ module KnifeCloudformation
 
     class Stamped
 
-      def initialize(name, base)
+      def initialize(name, base, cache)
         @name = name.to_sym
         @base = base
+        @cache = cache
       end
 
       def value
-        if(@base.value.is_a?(Hash))
-          @base.value[:value]
-        else
-          @base.value
-        end
+        @base.value[:value] if set?
       end
 
       def value=(v)
         @base.value = {:stamp => Time.now.to_i, :value => v}
       end
 
+      def set?
+        @base.value.is_a?(Hash)
+      end
+
+      def stamp
+        @base.value[:stamp] if set?
+      end
+
       def update_allowed?
-        @base.value.nil? ||
-          Cache.time_check_allow?(@name, @base.value[:stamp])
+        !set? || @cache.time_check_allow?(@name, @base.value[:stamp])
       end
     end
 
