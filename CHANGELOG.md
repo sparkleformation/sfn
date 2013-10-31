@@ -1,3 +1,8 @@
+## v0.1.14
+* Extract template building tools
+* Add support for custom CF locations and prompting
+* Updates in fetching and caching behavior
+
 ## v0.1.12
 * Use the split value when re-joining parameters
 
