@@ -126,13 +126,17 @@ class Chef
           exit 1
         end
 
-        set_paths_and_discover_file!
-        unless(File.exists?(Chef::Config[:knife][:cloudformation][:file].to_s))
-          ui.fatal "Invalid formation file path provided: #{Chef::Config[:knife][:cloudformation][:file]}"
-          exit 1
+        unless(Chef::Config[:knife][:cloudformation][:template])
+          set_paths_and_discover_file!
+          unless(File.exists?(Chef::Config[:knife][:cloudformation][:file].to_s))
+            ui.fatal "Invalid formation file path provided: #{Chef::Config[:knife][:cloudformation][:file]}"
+            exit 1
+          end
         end
 
-        if(Chef::Config[:knife][:cloudformation][:processing])
+        if(Chef::Config[:knife][:cloudformation][:template])
+          file = Chef::Config[:knife][:cloudformation][:template]
+        elsif(Chef::Config[:knife][:cloudformation][:processing])
           file = SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
         else
           file = _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
@@ -175,6 +179,7 @@ class Chef
           if(stack['Parameters'])
             Chef::Config[:knife][:cloudformation][:options][:parameters] ||= Mash.new
             stack['Parameters'].each do |k,v|
+              next if Chef::Config[:knife][:cloudformation][:options][:parameters][k]
               valid = false
               until(valid)
                 default = Chef::Config[:knife][:cloudformation][:options][:parameters][k] || v['Default']
