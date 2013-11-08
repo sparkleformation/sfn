@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.add_dependency 'chef'
   s.add_dependency 'fog', '~> 1.17'
+  s.add_dependency 'unf'
   s.add_dependency 'net-sftp'
   s.add_dependency 'sparkle_formation', '~> 0.1.2'
   s.add_dependency 'redis-objects'
