@@ -1,4 +1,3 @@
-require 'pathname'
 require 'knife-cloudformation/cloudformation_base'
 require 'knife-cloudformation/export'
 
@@ -9,6 +8,8 @@ class Chef
       include KnifeCloudformation::KnifeBase
 
       banner 'knife cloudformation export NAME'
+
+      # TODO: Add option for s3 exports
 
       option(:path,
         :long => '--export-path PATH',
