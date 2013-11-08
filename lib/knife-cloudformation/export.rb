@@ -45,10 +45,36 @@ module KnifeCloudformation
       @stack
     end
 
+    def allowed_cookbook_version(cookbook)
+      restriction = environment.cookbook_versions[cookbook]
+      requirement = Gem::Requirement.new(restriction)
+      Chef::CookbookVersion.available_versions(cookbook).detect do |v|
+        requirement.satisfied_by?(Gem::Version.new(v))
+      end
+    end
+
+    def extract_runlist_item(item)
+      rl_item = item.is_a?(Chef::RunList::RunListItem) ? item : Chef::RunList::RunListItem.new(item)
+      if(rl_item.recipe?)
+        cookbook, recipe = rl_item.name.split('::')
+        peg_version = allowed_cookbook_version(cookbook)
+        "recipe[#{[cookbook, recipe].join('::')}@#{beg_version}]"
+      elsif(rl_item.role?)
+        role = Chef::Role.load(rl_item.name)
+        role.run_list.map do |item|
+          item.run_list.map do |i|
+            extract_runlist_item(i)
+          end
+        end
+      else
+        # dunno what this is
+      end
+    end
+
     def unpack_and_freeze_runlist(rl)
       new_hash = {'run_list' => []}
-      rl.each do |item|
-        # last of the freeze here
+      new_rl = rl.map do |item|
+        extract_runlist_item(cf_replace(item))
       end
       new_hash
     end
