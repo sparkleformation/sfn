@@ -1,3 +1,8 @@
+## v0.1.16
+* Fix exit code on stack destroy
+* Update stack loading for single stack requests
+* Add import and export functionality
+
 ## v0.1.14
 * Extract template building tools
 * Add support for custom CF locations and prompting
