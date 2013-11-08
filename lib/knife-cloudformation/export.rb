@@ -5,7 +5,9 @@ module KnifeCloudformation
   class Export
 
     DEFAULT_OPTIONS = {
-      :chef_popsicle => true
+      :chef_popsicle => true,
+      :ignored_parameters => ['Environment', 'StackCreator'],
+      :chef_environment_parameter => 'Environment'
     }
 
     attr_reader :stack, :stack_name, :stack_id, :options, :aws_commons
@@ -26,6 +28,7 @@ module KnifeCloudformation
       if(chef_popsicle?)
         freeze_runlists(exported)
       end
+      remove_ignored_parameters(exported)
       exported
     end
 
@@ -40,7 +43,19 @@ module KnifeCloudformation
 
     protected
 
-    # how to find?
+    def remove_ignored_parameters(export)
+      options[:ignored_parameters].each do |param|
+        export[:parameters].delete(param)
+      end
+    end
+
+    def chef_environment_name
+      if(chef_environment_parameter?)
+        name = stack[:parameters][options[:chef_environment_parameter]]
+      end
+      name || '_default'
+    end
+
     def environment
       unless(@env)
         @env = Chef::Environment.load('imdev')
