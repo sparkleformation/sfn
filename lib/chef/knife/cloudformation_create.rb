@@ -147,7 +147,14 @@ class Chef
           exit 1
         end
         ui.info "#{ui.color('Cloud Formation: ', :bold)} #{ui.color(action_type, :green)}"
-        ui.info "  -> #{ui.color('Name:', :bold)} #{name} #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]} #{ui.color('(not pre-processed)', :yellow) if Chef::Config[:knife][:cloudformation][:disable_processing]}"
+        stack_info = "#{ui.color('Name:', :bold)} #{name}"
+        if(Chef::Config[:knife][:cloudformation][:path])
+          stack_info << " #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]}"
+          if(Chef::Config[:knife][:cloudformation][:disable_processing])
+            stack_info << " #{ui.color('(not pre-processed)', :yellow)}"
+          end
+        end
+        ui.info "  -> #{stack_info}"
         populate_parameters!(file)
         stack_def = KnifeCloudformation::AwsCommons::Stack.build_stack_definition(file, Chef::Config[:knife][:cloudformation][:options])
         aws.create_stack(name, stack_def)
