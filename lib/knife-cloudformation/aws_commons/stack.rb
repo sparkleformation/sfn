@@ -229,7 +229,7 @@ module KnifeCloudformation
       def timeout_in_minutes
         @memo[:raw_stack].value['TimeoutInMinutes']
       end
-      alias_method :timeout_in_minutes, :timeout
+      alias_method :timeout, :timeout_in_minutes
 
       def stack_id
         @memo[:raw_stack].value['StackId']
