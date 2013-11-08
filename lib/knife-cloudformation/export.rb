@@ -1,4 +1,5 @@
 require 'knife-cloudformation/aws_commons'
+require 'chef'
 
 module KnifeCloudformation
   class Export
@@ -30,7 +31,7 @@ module KnifeCloudformation
 
     def method_missing(*args)
       m = args.first.to_s
-      if(args.end_with?('?') && options.has_key?(k = m.sub('?', '').to_sym))
+      if(m.end_with?('?') && options.has_key?(k = m.sub('?', '').to_sym))
         !!options[k]
       else
         super
@@ -38,6 +39,14 @@ module KnifeCloudformation
     end
 
     protected
+
+    # how to find?
+    def environment
+      unless(@env)
+        @env = Chef::Environment.load('imdev')
+      end
+      @env
+    end
 
     def load_stack
       @stack = AwsCommons::Stack.new(stack_name, aws_commons)
@@ -55,36 +64,41 @@ module KnifeCloudformation
 
     def extract_runlist_item(item)
       rl_item = item.is_a?(Chef::RunList::RunListItem) ? item : Chef::RunList::RunListItem.new(item)
+      static_content = Mash.new(:run_list => [])
       if(rl_item.recipe?)
         cookbook, recipe = rl_item.name.split('::')
         peg_version = allowed_cookbook_version(cookbook)
-        "recipe[#{[cookbook, recipe].join('::')}@#{beg_version}]"
+        static_content[:run_list] << "recipe[#{[cookbook, recipe || 'default'].join('::')}@#{peg_version}]"
       elsif(rl_item.role?)
         role = Chef::Role.load(rl_item.name)
-        role.run_list.map do |item|
-          item.run_list.map do |i|
-            extract_runlist_item(i)
-          end
+        role.run_list.each do |item|
+          static_content = Chef::Mixin::DeepMerge.merge(static_content, extract_runlist_item(item))
         end
+        static_content = Chef::Mixin::DeepMerge.merge(
+          static_content, Chef::Mixin::DeepMerge.merge(role.default_attributes, role.override_attributes)
+        )
       else
         # dunno what this is
       end
+      static_content
     end
 
-    def unpack_and_freeze_runlist(rl)
-      new_hash = {'run_list' => []}
-      new_rl = rl.map do |item|
+    def unpack_and_freeze_runlist(first_run)
+      extracted_runlists = first_run['run_list'].map do |item|
         extract_runlist_item(cf_replace(item))
       end
-      new_hash
+      first_run.delete('run_list')
+      first_run.replace(
+        extracted_runlists.inject(first_run) do |memo, first_run_item|
+          Chef::Mixin::DeepMerge.merge(memo, first_run_item)
+        end
+      )
     end
 
     def freeze_runlists(exported)
       first_runs = locate_runlists(exported)
       first_runs.each do |first_run|
-        first_run.replace(
-          'run_list' => unpack_and_freeze_runlist(first_run['run_list'])
-        )
+        unpack_and_freeze_runlist(first_run)
       end
     end
 
@@ -92,27 +106,31 @@ module KnifeCloudformation
       result = []
       case thing
       when Hash
-        if(first_run = thing['content'] && first_run['run_list'])
-          result << first_run
+        if(thing['content'] && thing['content']['run_list'])
+          result << thing['content']
         else
           thing.each do |k,v|
-            result += locate_runlists(v, ref)
+            result += locate_runlists(v)
           end
         end
       when Array
         thing.each do |v|
-          result += locate_runlists(v, ref)
+          result += locate_runlists(v)
         end
       end
       result
     end
 
     def cf_replace(hsh)
-      case hsh.keys.first
-      when 'Fn::Join'
-        cf_join(*hsh.values.first)
-      when 'Ref'
-        cf_ref(hsh.values.first)
+      if(hsh.is_a?(Hash))
+        case hsh.keys.first
+        when 'Fn::Join'
+          cf_join(*hsh.values.first)
+        when 'Ref'
+          cf_ref(hsh.values.first)
+        else
+          hsh
+        end
       else
         hsh
       end
@@ -130,7 +148,7 @@ module KnifeCloudformation
     def cf_join(delim, args)
       args.map do |arg|
         if(arg.is_a?(Hash))
-          cf_replace(hsh)
+          cf_replace(arg)
         else
           arg.to_s
         end
