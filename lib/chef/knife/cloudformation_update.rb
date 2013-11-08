@@ -1,4 +1,4 @@
-require 'chef/knife/cloudformation_create'
+require 'knife-cloudformation/cloudformation_base'
 
 class Chef
   class Knife

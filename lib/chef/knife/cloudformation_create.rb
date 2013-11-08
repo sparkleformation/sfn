@@ -1,6 +1,6 @@
 require 'sparkle_formation'
 require 'pathname'
-require 'chef/knife/cloudformation_base'
+require 'knife-cloudformation/cloudformation_base'
 
 class Chef
   class Knife
