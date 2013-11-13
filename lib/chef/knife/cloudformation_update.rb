@@ -1,4 +1,5 @@
 require 'knife-cloudformation/cloudformation_base'
+require File.join(File.dirname(__FILE__), 'cloudformation_create')
 
 class Chef
   class Knife
