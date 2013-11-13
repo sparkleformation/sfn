@@ -231,12 +231,10 @@ class Chef
         end
       end
 
-      IGNORE_CF_DIRS = %w(dynamics components)
-
       def prompt_for_file(dir)
         directory = Dir.new(dir)
         directories = directory.map do |d|
-          if(!d.start_with?('.') && !IGNORE_CF_DIRS.include?(d) && File.directory?(path = File.join(dir, d)))
+          if(!d.start_with?('.') && !%w(dynamics components).include?(d) && File.directory?(path = File.join(dir, d)))
             path
           end
         end.compact.sort
