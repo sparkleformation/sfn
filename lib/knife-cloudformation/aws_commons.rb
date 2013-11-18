@@ -21,6 +21,7 @@ module KnifeCloudformation
     def initialize(args={})
       @ui = args[:ui]
       @credentials = @creds = args[:fog]
+      @disconnect_long_jobs = args[:disconnect_long_jobs]
       @connections = {}
       @memo = Cache.new(credentials)
       @local = {:stacks => {}}
@@ -89,13 +90,41 @@ module KnifeCloudformation
           cache.apply_limit(:stacks, args[:refresh_every].to_i)
         end
         if(@memo[:stacks].update_allowed? || args[:force_refresh])
-          @memo[:stacks_lock].lock do
-            @memo[:stacks].value = aws(:cloud_formation).describe_stacks.body['Stacks']
+          long_running_job(:stacks) do
+            stack_result = aws(:cloud_formation).describe_stacks.body['Stacks']
+            @memo[:stacks_lock].lock do
+              @memo[:stacks].value = stack_result
+            end
           end
         end
       end
       @memo[:stacks].value.find_all do |s|
         status.include?(s['StackStatus'])
+      end
+    end
+
+    def long_running_job(name)
+      if(@disconnect_long_jobs)
+        @memo.init(:long_jobs_lock, :lock, :timeout => 30)
+        @memo.init(:long_jobs, :array)
+        @memo[:long_jobs_lock].lock do
+          unless(@memo[:long_jobs].include?(name))
+            Thread.new do
+              begin
+                yield
+              rescue => e
+                # need logger
+                $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+              ensure
+                @memo[:long_jobs_lock].lock do
+                  @memo[:long_jobs].delete(name)
+                end
+              end
+            end
+          end
+        end
+      else
+        yield
       end
     end
 
