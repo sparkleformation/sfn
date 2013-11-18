@@ -9,6 +9,20 @@ end
 module KnifeCloudformation
   class AwsCommons
 
+    class << self
+      def logger=(l)
+        @logger = l
+      end
+
+      def logger
+        unless(@logger)
+          require 'logger'
+          @logger = Logger.new($stdout)
+        end
+        @logger
+      end
+    end
+
     include KnifeCloudformation::Utils::AnimalStrings
     include KnifeCloudformation::Utils::Debug
 
@@ -25,6 +39,14 @@ module KnifeCloudformation
       @connections = {}
       @memo = Cache.new(credentials)
       @local = {:stacks => {}}
+    end
+
+    def logger
+      @logger || self.class.logger
+    end
+
+    def logger=(l)
+      @logger = l
     end
 
     def cache
@@ -91,10 +113,12 @@ module KnifeCloudformation
         end
         if(@memo[:stacks].update_allowed? || args[:force_refresh])
           long_running_job(:stacks) do
+            logger.debug 'Populating full cloudformation list from remote end point'
             stack_result = aws(:cloud_formation).describe_stacks.body['Stacks']
             @memo[:stacks_lock].lock do
               @memo[:stacks].value = stack_result
             end
+            logger.debug 'Full cloudformation list from remote end point complete'
           end
         end
       end
@@ -105,6 +129,7 @@ module KnifeCloudformation
 
     def long_running_job(name)
       if(@disconnect_long_jobs)
+        logger.debug "Disconnected long running jobs enabled. Starting: #{name}"
         @memo.init(:long_jobs_lock, :lock, :timeout => 30)
         @memo.init(:long_jobs, :array)
         @memo[:long_jobs_lock].lock do
@@ -114,7 +139,7 @@ module KnifeCloudformation
                 yield
               rescue => e
                 # need logger
-                $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+                logger.error "Long running job failure (#{name}): #{e.class} - #{e}\n#{e.backtrace.join("\n")}"
               ensure
                 @memo[:long_jobs_lock].lock do
                   @memo[:long_jobs].delete(name)
@@ -124,6 +149,7 @@ module KnifeCloudformation
           end
         end
       else
+        logger.debug "Disconnected long running jobs disabled. Starting #{name} inline"
         yield
       end
     end
@@ -152,6 +178,11 @@ module KnifeCloudformation
             seed = stacks.detect do |stk|
               stk['StackId'] == s_id
             end
+          end
+          if(seed)
+            logger.debug "Requested stack (#{name}) loaded via cached seed"
+          else
+            logger.debug "Requested stack (#{name}) loaded directly with no seed"
           end
           @local[:stacks][s_id] = Stack.new(name, self, seed)
         end
