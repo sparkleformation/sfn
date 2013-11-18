@@ -161,27 +161,20 @@ module KnifeCloudformation
     def long_running_job(name)
       if(@disconnect_long_jobs)
         logger.debug "Disconnected long running jobs enabled. Starting: #{name}"
-        @memo.init(:long_jobs_lock, :lock)
-        @memo.init(:long_jobs, :array)
-        @memo[:long_jobs_lock].lock do
-          unless(@memo[:long_jobs].include?(name))
-            Thread.new do
+        lock_key = "long_jobs_lock_#{name}".to_sym
+        @memo.init(lock_key, :lock)
+        Thread.new do
+          begin
+            @memo[lock_key].lock do
               begin
                 logger.info "Long running job started disconnected (#{name})"
                 yield
               rescue => e
                 logger.error "Long running job failure (#{name}): #{e.class} - #{e}\n#{e.backtrace.join("\n")}"
-              ensure
-                begin
-                  @memo[:long_jobs_lock].lock do
-                    @memo[:long_jobs].delete(name)
-                  end
-                rescue Redis::Lock::LockTimeout
-                  sleep(1)
-                  retry
-                end
               end
             end
+          rescue Redis::Lock::Timeout
+            logger.warn "Long running process failed to aquire lock. Request not run (#{name})"
           end
         end
       else
