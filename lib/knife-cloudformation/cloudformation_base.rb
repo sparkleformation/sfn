@@ -22,7 +22,7 @@ module KnifeCloudformation
       end
 
       def stack(name)
-        self.class.con(ui).stack(name)
+        self.class.con(ui).stack(name, :ignore_seeds)
       end
 
       def allowed_attributes

@@ -90,7 +90,6 @@ module KnifeCloudformation
         end
         if(@memo[:stacks].update_allowed? || args[:force_refresh])
           @memo[:stacks_lock].lock do
-            @_stacks_cached = true
             @memo[:stacks].value = aws(:cloud_formation).describe_stacks.body['Stacks']
           end
         end
@@ -115,11 +114,12 @@ module KnifeCloudformation
     end
 
     def stack(*names)
+      direct_load = names.delete(:ignore_seeds)
       result = names.map do |name|
         [name, name.start_with?('arn:') ? name : id_from_stack_name(name)]
       end.map do |name, s_id|
         unless(@local[:stacks][s_id])
-          if(@_stacks_cached)
+          unless(direct_load)
             seed = stacks.detect do |stk|
               stk['StackId'] == s_id
             end
