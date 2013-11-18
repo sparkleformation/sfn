@@ -36,6 +36,7 @@ module KnifeCloudformation
       @ui = args[:ui]
       @credentials = @creds = args[:fog]
       @disconnect_long_jobs = args[:disconnect_long_jobs]
+      @throttled = []
       @connections = {}
       @memo = Cache.new(credentials)
       @local = {:stacks => {}}
@@ -86,7 +87,13 @@ module KnifeCloudformation
           end
         end
       end
-      @connections[type]
+      if(block_given?)
+        throttleable do
+          yield @connections[type]
+        end
+      else
+        @connections[type]
+      end
     end
     alias_method :aws, :build_connection
 
@@ -114,9 +121,13 @@ module KnifeCloudformation
         if(@memo[:stacks].update_allowed? || args[:force_refresh])
           long_running_job(:stacks) do
             logger.debug 'Populating full cloudformation list from remote end point'
-            stack_result = aws(:cloud_formation).describe_stacks.body['Stacks']
-            @memo[:stacks_lock].lock do
-              @memo[:stacks].value = stack_result
+            stack_result = throttleable do
+              aws(:cloud_formation).describe_stacks.body['Stacks']
+            end
+            if(stack_result)
+              @memo[:stacks_lock].lock do
+                @memo[:stacks].value = stack_result
+              end
             end
             logger.debug 'Full cloudformation list from remote end point complete'
           end
@@ -127,10 +138,30 @@ module KnifeCloudformation
       end
     end
 
+    def throttleable
+      if(@throttled.size > 0)
+        if(Time.now.to_i - @throttled.last < Time.now.to_i - @throttled.size * 15)
+          logger.error "Currently being throttled. Not running request!"
+          return nil
+        end
+      end
+      begin
+        result = yield
+        @throttled.clear
+        result
+      rescue Fog::Service::Error => e
+        if(e.message == 'Throttling => Rate exceeded')
+          logger.error "Remote end point is is currently throttling. Rate has been exceeded."
+          @throttled << Time.now.to_i
+        end
+        nil
+      end
+    end
+
     def long_running_job(name)
       if(@disconnect_long_jobs)
         logger.debug "Disconnected long running jobs enabled. Starting: #{name}"
-        @memo.init(:long_jobs_lock, :lock, :timeout => 30)
+        @memo.init(:long_jobs_lock, :lock)
         @memo.init(:long_jobs, :array)
         @memo[:long_jobs_lock].lock do
           unless(@memo[:long_jobs].include?(name))
@@ -141,8 +172,13 @@ module KnifeCloudformation
               rescue => e
                 logger.error "Long running job failure (#{name}): #{e.class} - #{e}\n#{e.backtrace.join("\n")}"
               ensure
-                @memo[:long_jobs_lock].lock do
-                  @memo[:long_jobs].delete(name)
+                begin
+                  @memo[:long_jobs_lock].lock do
+                    @memo[:long_jobs].delete(name)
+                  end
+                rescue Redis::Lock::LockTimeout
+                  sleep(1)
+                  retry
                 end
               end
             end
