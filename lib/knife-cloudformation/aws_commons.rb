@@ -136,9 +136,9 @@ module KnifeCloudformation
           unless(@memo[:long_jobs].include?(name))
             Thread.new do
               begin
+                logger.info "Long running job started disconnected (#{name})"
                 yield
               rescue => e
-                # need logger
                 logger.error "Long running job failure (#{name}): #{e.class} - #{e}\n#{e.backtrace.join("\n")}"
               ensure
                 @memo[:long_jobs_lock].lock do
