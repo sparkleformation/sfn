@@ -7,7 +7,8 @@ module KnifeCloudformation
     DEFAULT_OPTIONS = {
       :chef_popsicle => true,
       :ignored_parameters => ['Environment', 'StackCreator'],
-      :chef_environment_parameter => 'Environment'
+      :chef_environment_parameter => 'Environment',
+      :aws_commons => nil
     }
 
     attr_reader :stack, :stack_name, :stack_id, :options, :aws_commons
