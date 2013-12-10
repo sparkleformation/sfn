@@ -57,7 +57,7 @@ class Chef
 
       def get_events(name)
         get_things do
-          stack(name, :ignore_seeds).events
+          stack(name).events
         end
       end
 
