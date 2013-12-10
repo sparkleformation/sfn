@@ -1,3 +1,9 @@
+## v0.1.20
+* Update some caching behavior
+* Add more logging especially around remote calls
+* Add support for request throttling
+* Disable local caching when stack is in `in_progress` state
+
 ## v0.1.18
 * Replace constant with inline value to prevent warnings
 * Explicitly load file to ensure proper load ordering

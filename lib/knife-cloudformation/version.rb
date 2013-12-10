@@ -2,5 +2,5 @@ module KnifeCloudformation
   class Version < Gem::Version
   end
 
-  VERSION = Version.new('0.1.19')
+  VERSION = Version.new('0.1.20')
 end
