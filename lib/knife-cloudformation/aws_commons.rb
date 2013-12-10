@@ -201,7 +201,7 @@ module KnifeCloudformation
     def stack(*names)
       direct_load = names.delete(:ignore_seeds)
       result = names.map do |name|
-        [name, name.start_with?('arn:') ? name : id_from_stack_name(name)]
+        [name, name.start_with?('arn:') || direct_load ? name : id_from_stack_name(name)]
       end.map do |name, s_id|
         unless(@local[:stacks][s_id])
           unless(direct_load)
