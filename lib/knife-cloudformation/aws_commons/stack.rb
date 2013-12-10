@@ -399,14 +399,15 @@ module KnifeCloudformation
           as_resources = resources.find_all do |r|
             r['ResourceType'] == 'AWS::AutoScaling::AutoScalingGroup'
           end
-          @local[:nodes] = as_resources.map do |as_resource|
+          value = as_resources.map do |as_resource|
             as_group = expand_resource(as_resource)
             as_group.instances.map do |inst|
               common.aws(:ec2).servers.get(inst.id)
             end
           end.flatten
+          @local[:nodes] = value unless in_progress?
         end
-        @local[:nodes]
+        value || @local[:nodes]
       end
 
       def nodes_data(*args)
@@ -420,9 +421,9 @@ module KnifeCloudformation
           end
         end
         unless(data.empty?)
-          @memo[cache_key].value = data
+          @memo[cache_key].value = data unless in_progress?
         end
-        @memo[cache_key].value || data
+        data || @memo[cache_key].value
       end
 
     end
