@@ -18,6 +18,7 @@ module KnifeCloudformation
         unless(@logger)
           require 'logger'
           @logger = Logger.new($stdout)
+          @logger.level = ENV['DEBUG'] ? Logger::DEBUG : Logger::INFO
         end
         @logger
       end
