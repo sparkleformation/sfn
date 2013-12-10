@@ -314,15 +314,19 @@ module KnifeCloudformation
           100
         else
           all_events = events(:all)
-          total_expected = template['Resources'].size
-          action = performing
-          start = event_start_index(all_events, "#{action}_in_progress".to_sym)
-          finished = all_events.find_all do |e|
-            e['ResourceStatus'] == "#{action}_complete".upcase ||
-            e['ResourceStatus'] == "#{action}_failed".upcase
-          end.size
-          calculated = ((finished / total_expected.to_f) * 100).to_i
-          calculated < min ? min : calculated
+          if(all_events)
+            total_expected = template['Resources'].size
+            action = performing
+            start = event_start_index(all_events, "#{action}_in_progress".to_sym)
+            finished = all_events.find_all do |e|
+              e['ResourceStatus'] == "#{action}_complete".upcase ||
+              e['ResourceStatus'] == "#{action}_failed".upcase
+            end.size
+            calculated = ((finished / total_expected.to_f) * 100).to_i
+            calculated < min ? min : calculated
+          else
+            100 # Assume deletion and no events == complete
+          end
         end
       end
 
