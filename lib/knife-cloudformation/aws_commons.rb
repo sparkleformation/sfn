@@ -134,8 +134,12 @@ module KnifeCloudformation
           end
         end
       end
-      @memo[:stacks].value.find_all do |s|
-        status.include?(s['StackStatus'])
+      if(@memo[:stacks].value)
+        @memo[:stacks].value.find_all do |s|
+          status.include?(s['StackStatus'])
+        end
+      else
+        []
       end
     end
 
