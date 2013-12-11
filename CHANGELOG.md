@@ -1,3 +1,8 @@
+## v0.1.22
+* Prevent full stack list loading in knife commands
+* Default logger to INFO level and allow DEBUG level via `ENV['DEBUG']`
+* Fix assumption of type when accessing cached data (cannot assume availability)
+
 ## v0.1.20
 * Update some caching behavior
 * Add more logging especially around remote calls
