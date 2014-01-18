@@ -10,7 +10,7 @@ module KnifeCloudformation
       include KnifeCloudformation::Utils::JSON
       include KnifeCloudformation::Utils::AnimalStrings
 
-      attr_reader :name, :raw_stack, :raw_resources, :common
+      attr_reader :name, :raw_resources, :common
 
       class << self
 
@@ -328,6 +328,10 @@ module KnifeCloudformation
             100 # Assume deletion and no events == complete
           end
         end
+      end
+
+      def raw_stack
+        @memo[:raw_stack].value
       end
 
       ## State ##
