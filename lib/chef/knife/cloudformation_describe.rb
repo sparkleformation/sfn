@@ -60,7 +60,7 @@ class Chef
 
       def get_description(name)
         get_things(name) do
-          [stack(name).raw_stack]
+          [stack(name).raw_stack].compact
         end
       end
 
