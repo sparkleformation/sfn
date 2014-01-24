@@ -59,7 +59,7 @@ module KnifeCloudformation
 
     def environment
       unless(@env)
-        @env = Chef::Environment.load('imdev')
+        @env = Chef::Environment.load('_default')
       end
       @env
     end

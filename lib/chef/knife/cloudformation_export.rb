@@ -11,6 +11,18 @@ class Chef
 
       # TODO: Add option for s3 exports
 
+      option(:s3_bucket,
+        :long => '--s3-bucket NAME',
+        :description => 'S3 bucket for export storage',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:s3_export] = v }
+      )
+
+      option(:s3_prefix,
+        :long => '--s3-prefix PREFIX',
+        :description => 'Directory prefix within S3 bucket to store the export',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:s3_prefix] = v }
+      )
+
       option(:path,
         :long => '--export-path PATH',
         :description => 'Path to write export JSON file',
@@ -44,17 +56,7 @@ class Chef
       )
 
       def run
-        if(Chef::Config[:knife][:cloudformation][:export_path])
-          file_path = File.join(
-            Chef::Config[:knife][:cloudformation][:export_path], "#{name_args.first}-#{Time.now.to_i}.json"
-          )
-        end
         ui.info "#{ui.color('Stack Export:', :bold)} #{name_args.first}"
-        if(file_path)
-          ui.info "  - Writing to: #{file_path}"
-        else
-          ui.info "  - Printing to console"
-        end
         ui.confirm 'Perform export'
         ex_opts = {}
         [:chef_popsicle, :chef_environment_parameter, :ignore_parameters].each do |key|
@@ -64,14 +66,40 @@ class Chef
         end
         exporter = KnifeCloudformation::Export.new(name_args.first, ex_opts.merge(:aws_commons => aws))
         result = exporter.export
-        if(file_path)
-          File.open(file_path, 'w') do |file|
-            file.puts _format_json(result)
-          end
-        else
+        outputs = [write_to_file(result), write_to_s3(result)].compact
+        if(outputs.empty?)
           ui.info _format_json(result)
         end
         ui.info "#{ui.color('Stack export', :bold)} (#{name_args.first}): #{ui.color('complete', :green)}"
+        unless(outputs.empty?)
+          outputs.each do |output|
+            ui.info ui.color("  -> #{output}", :blue)
+          end
+        end
+      end
+
+      def write_to_file(payload)
+        if(Chef::Config[:knife][:cloudformation][:export_path])
+          file_path = File.join(
+            Chef::Config[:knife][:cloudformation][:export_path],
+            "#{name_args.first}-#{Time.now.to_i}.json"
+          )
+          File.open(file_path, 'w') do |file|
+            file.puts _format_json(payload)
+          end
+          file_path
+        end
+      end
+
+      def write_to_s3(payload)
+        if(bucket = Chef::Config[:knife][:cloudformation][:s3_bucket])
+          s3_path = File.join(
+            Chef::Config[:knife][:cloudformation][:s3_prefix],
+            "#{name_args.first}-#{Time.now.to_i}.json"
+          )
+          aws.aws(:storage).put_object(bucket, s3_path, _format_json(payload))
+          "s3://#{File.join(bucket, s3_path)}"
+        end
       end
 
     end
