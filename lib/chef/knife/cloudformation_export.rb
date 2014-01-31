@@ -9,7 +9,10 @@ class Chef
 
       banner 'knife cloudformation export NAME'
 
-      # TODO: Add option for s3 exports
+      option(:export_name,
+        :long => '--export-file-name NAME',
+        :description => 'File basename to contain the export'
+      )
 
       option(:s3_bucket,
         :long => '--s3-bucket NAME',
@@ -78,11 +81,17 @@ class Chef
         end
       end
 
+      def export_file_name
+        filename = config[:export_name] || "#{name_args.first}-#{Time.now.to_i}"
+        filename << '.json' unless filename.end_with?('.json')
+        filename
+      end
+
       def write_to_file(payload)
         if(Chef::Config[:knife][:cloudformation][:export_path])
           file_path = File.join(
             Chef::Config[:knife][:cloudformation][:export_path],
-            "#{name_args.first}-#{Time.now.to_i}.json"
+            export_file_name
           )
           File.open(file_path, 'w') do |file|
             file.puts _format_json(payload)
@@ -95,9 +104,13 @@ class Chef
         if(bucket = Chef::Config[:knife][:cloudformation][:s3_bucket])
           s3_path = File.join(
             Chef::Config[:knife][:cloudformation][:s3_prefix],
-            "#{name_args.first}-#{Time.now.to_i}.json"
+            export_file_name
           )
-          aws.aws(:storage).put_object(bucket, s3_path, _format_json(payload))
+          begin
+            s3_store(bucket, s3_path, payload, aws)
+          rescue Excon::Errors::Error
+            exit 1
+          end
           "s3://#{File.join(bucket, s3_path)}"
         end
       end
