@@ -72,9 +72,21 @@ module KnifeCloudformation
         end
       end
 
+      # Disable chef configuration. Let the dep loader do that for us
+      # so it doesn't squash config values set via options
+      def configure_chef
+        true
+      end
+
     end
 
     module ClassMethods
+
+      # Configure chef here so we can have config settings be a lower
+      # precedence than options provided via user on CLI
+      def load_deps
+        Chef::Knife.new.configure_chef
+      end
 
       def con(ui=nil)
         unless(@common)
@@ -103,6 +115,10 @@ module KnifeCloudformation
       def _region
         Chef::Config[:knife][:cloudformation][:credentials][:region] ||
           Chef::Config[:knife][:region]
+      end
+
+      def use_separate_defaults?
+        false
       end
 
     end
