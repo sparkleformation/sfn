@@ -67,10 +67,10 @@ module KnifeCloudformation
         case type
         when :compute
           @connections[:compute] = Fog::Compute::AWS.new(@creds)
-        when :dns
-          dns_creds = @creds.dup
-          dns_creds.delete(:region) || dns_creds.delete('region')
-          @connections[:dns] = Fog::DNS::AWS.new(dns_creds)
+        when :dns, :storage # No regions allowed!
+          filtered_creds = @creds.dup
+          filtered_creds.delete(:region) || filtered_creds.delete('region')
+          @connections[type] = (type == :dns ? Fog::DNS::AWS : Fog::Storage::AWS).new(filtered_creds)
         else
           begin
             Fog.credentials = Fog.symbolize_credentials(@creds)
