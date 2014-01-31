@@ -59,6 +59,8 @@ module KnifeCloudformation
 
     end
 
+    extend JSON
+
     module AnimalStrings
 
       def camel(string)
@@ -70,6 +72,8 @@ module KnifeCloudformation
       end
 
     end
+
+    extend AnimalStrings
 
     module Ssher
       def remote_file_contents(address, user, path, ssh_opts={})
@@ -100,5 +104,40 @@ module KnifeCloudformation
         content.empty? ? nil : content
       end
     end
+
+    module ObjectStorage
+
+      def file_store(object, path)
+        content = object.is_a?(String) ? object : Utils._to_json(object)
+        File.open(path, 'w') do |file|
+          file.write(content)
+        end
+        true
+      end
+
+      def s3_store(object, bucket, path, aws)
+        content = object.is_a?(String) ? object : Utils._format_json(object)
+        begin
+          aws.aws(:storage).get_bucket(bucket)
+        rescue Excon::Errors::NotFound => e
+          begin
+            aws.aws(:storage).put_bucket(bucket)
+            if(defined?(ui))
+              ui.warn "Configured storage bucket was not found. Created (#{bucket})."
+            end
+          rescue Excon::Errors::Error => e
+            if(defined?(ui))
+              ui.error "Failed to create bucket! (#{e})"
+            end
+            raise e
+          end
+        end
+        aws.aws(:storage).put_object(bucket, path, content)
+        true
+      end
+    end
+
+    extend ObjectStorage
+
   end
 end
