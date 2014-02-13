@@ -120,6 +120,7 @@ module KnifeCloudformation
           cache.apply_limit(:stacks, args[:refresh_every].to_i)
         end
         if(@memo[:stacks].update_allowed? || args[:force_refresh])
+          @memo[:stacks].restamp!
           long_running_job(:stacks) do
             logger.debug 'Populating full cloudformation list from remote end point'
             @memo.locked_action(:stacks_lock) do
