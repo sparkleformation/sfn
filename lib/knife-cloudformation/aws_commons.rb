@@ -122,11 +122,11 @@ module KnifeCloudformation
         if(@memo[:stacks].update_allowed? || args[:force_refresh])
           long_running_job(:stacks) do
             logger.debug 'Populating full cloudformation list from remote end point'
-            stack_result = throttleable do
-              aws(:cloud_formation).describe_stacks.body['Stacks']
-            end
-            if(stack_result)
-              @memo[:stacks_lock].lock do
+            @memo.locked_action(:stacks_lock) do
+              stack_result = throttleable do
+                aws(:cloud_formation).describe_stacks.body['Stacks']
+              end
+              if(stack_result)
                 @memo[:stacks].value = stack_result
               end
             end
@@ -146,7 +146,7 @@ module KnifeCloudformation
     def throttleable
       if(@throttled.size > 0)
         if(Time.now.to_i - @throttled.last < Time.now.to_i - @throttled.size * 15)
-          logger.error "Currently being throttled. Not running request!"
+          logger.error "Currently being throttled. Not running request! (#{@throttled.size} throttle size)"
           return nil
         end
       end
@@ -169,17 +169,13 @@ module KnifeCloudformation
         lock_key = "long_jobs_lock_#{name}".to_sym
         @memo.init(lock_key, :lock)
         Thread.new do
-          begin
-            @memo[lock_key].lock do
-              begin
-                logger.info "Long running job started disconnected (#{name})"
-                yield
-              rescue => e
-                logger.error "Long running job failure (#{name}): #{e.class} - #{e}\n#{e.backtrace.join("\n")}"
-              end
+          @memo.locked_action(lock_key) do
+            begin
+              logger.info "Long running job started disconnected (#{name})"
+              yield
+            rescue => e
+              logger.error "Long running job failure (#{name}): #{e.class} - #{e}\n#{e.backtrace.join("\n")}"
             end
-          rescue Redis::Lock::Timeout
-            logger.warn "Long running process failed to aquire lock. Request not run (#{name})"
           end
         end
       else
