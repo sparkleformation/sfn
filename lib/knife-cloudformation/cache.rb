@@ -1,4 +1,6 @@
 require 'digest/sha2'
+require 'redis-objects'
+require 'thread'
 
 module KnifeCloudformation
   class Cache
@@ -9,7 +11,6 @@ module KnifeCloudformation
         type = type.to_sym
         case type
         when :redis
-          require 'redis-objects'
           Redis::Objects.redis = Redis.new(args)
         when :local
         else
@@ -98,7 +99,7 @@ module KnifeCloudformation
       when :value
         Redis::Value.new(full_name, {:marshal => true}.merge(args))
       when :lock
-        Redis::Lock.new(full_name, {:expiration => 3, :timeout => 0.1}.merge(args))
+        Redis::Lock.new(full_name, {:expiration => 60, :timeout => 0.1}.merge(args))
       when :stamped
         Stamped.new(full_name.sub("#{key}_", '').to_sym, get_redis_storage(:value, full_name), self)
       else
@@ -115,7 +116,7 @@ module KnifeCloudformation
       when :value
         LocalValue.new
       when :lock
-        LocalLock.new
+        LocalLock.new(full_name, {:expiration => 60, :timeout => 0.1}.merge(args))
       when :stamped
         Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name), self)
       else
@@ -124,7 +125,7 @@ module KnifeCloudformation
     end
 
     def internal_lock
-      get_storage(self.class.type, :lock, :internal_access, :timeout => 20).lock do
+      get_storage(self.class.type, :lock, :internal_access, :timeout => 60, :expiration => 120).lock do
         yield
       end
     end
@@ -151,6 +152,15 @@ module KnifeCloudformation
       @apply_limit[kind.to_sym].to_i
     end
 
+    def locked_action(lock_name, raise_on_locked=false)
+      begin
+        self[lock_name].lock do
+          yield
+        end
+      rescue Redis::Lock::LockTimeout
+        raise if raise_on_locked
+      end
+    end
 
     class LocalValue
       attr_accessor :value
@@ -160,14 +170,34 @@ module KnifeCloudformation
     end
 
     class LocalLock
-      def initialize(*args)
+
+      attr_reader :_key, :_timeout, :_lock
+
+      def initialize(name, args={})
+        @_key = name
+        @_timeout = args.fetch(:timeout, -1).to_f
+        @_lock = Mutex.new
       end
 
       def lock
-        yield
+        locked = false
+        attempt_start = Time.now.to_f
+        while(!locked && (_timeout < 0 || Time.now.to_f - attempt_start < _timeout))
+          locked = _lock.try_lock
+        end
+        if(locked)
+          begin
+            yield
+          ensure
+            _lock.unlock if _lock.locked?
+          end
+        else
+          raise Redis::Lock::LockTimeout.new "Timeout on lock #{_key} exceeded #{_timeout} sec"
+        end
       end
 
       def clear
+        # noop
       end
     end
 
