@@ -111,41 +111,24 @@ module KnifeCloudformation
 
       def load_stack(*args)
         @memo.init(:raw_stack, :stamped)
-        begin
-          @memo.init(:raw_stack_lock, :lock)
-          @memo[:raw_stack_lock].lock do
-            if(args.include?(:force) || @memo[:raw_stack].update_allowed?)
-              @memo[:raw_stack].value = common.aws(:cloud_formation)
-                .describe_stacks('StackName' => name)
-                .body['Stacks'].first
-            end
-          end
-        rescue => e
-          if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
-            # someone else is updating
-            debug 'Got lock timeout on stack load'
-          else
-            raise
+        @memo.init(:raw_stack_lock, :lock)
+        @memo.locked_action(:raw_stack_lock) do
+          if(args.include?(:force) || @memo[:raw_stack].update_allowed?)
+            @memo[:raw_stack].value = common.aws(:cloud_formation)
+              .describe_stacks('StackName' => name)
+              .body['Stacks'].first
           end
         end
       end
 
       def load_resources
         @memo.init(:raw_resources, :stamped)
-        begin
-          @memo.init(:raw_resources_lock, :lock)
-          @memo[:raw_resources_lock].lock do
-            if(@memo[:raw_resources].update_allowed?)
-              @memo[:raw_resources].value = common.aws(:cloud_formation)
-                .describe_stack_resources('StackName' => name)
-                .body['StackResources']
-            end
-          end
-        rescue => e
-          if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
-            debug 'Got lock timeout on resource load'
-          else
-            raise e
+        @memo.init(:raw_resources_lock, :lock)
+        @memo.locked_action(:raw_resources_lock) do
+          if(@memo[:raw_resources].update_allowed?)
+            @memo[:raw_resources].value = common.aws(:cloud_formation)
+              .describe_stack_resources('StackName' => name)
+              .body['StackResources']
           end
         end
       end
@@ -255,25 +238,17 @@ module KnifeCloudformation
         @memo.init(:events, :stamped)
         res = []
         if(@memo[:events].value.nil? || refresh?)
-          begin
-            @memo.init(:events_lock, :lock)
-            @memo[:events_lock].lock do
-              if(@memo[:events].update_allowed?)
-                res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
-                current = @memo[:events].value || []
-                current_events = current.map{|e| e['EventId']}
-                res.delete_if{|e| current_events.include?(e['EventId'])}
-                current += res
-                current.uniq!
-                current.sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
-                @memo[:events].value = current
-              end
-            end
-          rescue => e
-            if(defined?(Redis) && e.is_a?(Redis::Lock::LockTimeout))
-              debug 'Got lock timeout on events'
-            else
-              raise
+          @memo.init(:events_lock, :lock)
+          @memo.locked_action(:events_lock) do
+            if(@memo[:events].update_allowed?)
+              res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
+              current = @memo[:events].value || []
+              current_events = current.map{|e| e['EventId']}
+              res.delete_if{|e| current_events.include?(e['EventId'])}
+              current += res
+              current.uniq!
+              current.sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
+              @memo[:events].value = current
             end
           end
         end
