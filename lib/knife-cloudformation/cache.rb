@@ -214,7 +214,7 @@ module KnifeCloudformation
       end
 
       def value=(v)
-        @base.value = {:stamp => Time.now.to_i, :value => v}
+        @base.value = {:stamp => Time.now.to_f, :value => v}
       end
 
       def set?
@@ -223,6 +223,10 @@ module KnifeCloudformation
 
       def stamp
         @base.value[:stamp] if set?
+      end
+
+      def restamp!
+        @base.value[:stamp] = Time.now.to_f if set?
       end
 
       def update_allowed?
