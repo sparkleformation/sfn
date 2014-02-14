@@ -41,9 +41,6 @@ module KnifeCloudformation
       @connections = {}
       @memo = Cache.new(credentials)
       @memo.init(:lookup_map, :value)
-      @_lookup_set = 0
-      @_lookup_reset = 3
-      @_lookup = {}
       @local = {
         :stacks => {},
         :lookup_map => {},
@@ -168,7 +165,7 @@ module KnifeCloudformation
         result = @memo[:stacks].value.find_all do |s|
           status.include?(s['StackStatus'])
         end
-        lookup_map_set(Hash[result.map{|s| [s['StatusName'], s['StatusId']]}])
+        lookup_map_set(Hash[result.map{|s| [s['StackName'], s['StackId']]}])
         result
       else
         []
