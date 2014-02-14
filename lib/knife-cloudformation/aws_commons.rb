@@ -74,6 +74,9 @@ module KnifeCloudformation
       local[:lookup_map] = hash
       local[:lookup_set] = Time.now.to_f
       cache[:lookup_map].value = hash
+      long_running_job(:lookup_set_stack_cacher) do
+        stacks(*hash.keys)
+      end
     end
 
     def clear_cache(*types)
