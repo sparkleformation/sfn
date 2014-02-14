@@ -11,6 +11,7 @@ module KnifeCloudformation
         type = type.to_sym
         case type
         when :redis
+          @_pid = Process.pid
           Redis::Objects.redis = Redis.new(args)
         when :local
         else
@@ -37,6 +38,12 @@ module KnifeCloudformation
 
       def default_limits
         (@apply_limit || {}).dup
+      end
+
+      def redis_ping!
+        if(@_pid && @_pid != Process.pid)
+          Redis::Objects.redis.client.reconnect
+        end
       end
 
     end
@@ -91,6 +98,7 @@ module KnifeCloudformation
     end
 
     def get_redis_storage(data_type, full_name, args={})
+      self.class.redis_ping!
       case data_type.to_sym
       when :array
         Redis::List.new(full_name, {:marshal => true}.merge(args))
