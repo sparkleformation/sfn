@@ -41,9 +41,10 @@ module KnifeCloudformation
       @connections = {}
       @memo = Cache.new(credentials)
       @memo.init(:lookup_map, :value)
+      @memo[:lookup_map].value = {} unless @memo[:lookup_map].value
       @local = {
         :stacks => {},
-        :lookup_map => {},
+        :lookup_map => @memo[:lookup_map].value,
         :lookup_set => 0,
         :lookup_reset => 3
       }
@@ -140,12 +141,16 @@ module KnifeCloudformation
           cache.apply_limit(:stacks, args[:refresh_every].to_i)
         end
         if(@memo[:stacks].update_allowed? || args[:force_refresh])
+          trigger_population = false
           @memo.locked_action(:stacks_lock) do
             if(@memo[:stacks].set?)
               @memo[:stacks].restamp!
             else
               @memo[:stacks].value = []
             end
+            trigger_population = true
+          end
+          if(trigger_population)
             long_running_job(:stacks) do
               logger.debug 'Populating full cloudformation list from remote end point'
               @memo.locked_action(:stacks_lock) do
@@ -155,6 +160,9 @@ module KnifeCloudformation
                 if(stack_result)
                   @memo[:stacks].value = stack_result
                 end
+                lookup_map_set(Hash[stack_result.map{|s| [s['StackName'], s['StackId']]}])
+                # Force preload
+                stack(*stack_result.map{|s| s['StackName']})
               end
               logger.debug 'Full cloudformation list from remote end point complete'
             end
@@ -162,11 +170,9 @@ module KnifeCloudformation
         end
       end
       if(@memo[:stacks].value)
-        result = @memo[:stacks].value.find_all do |s|
+        @memo[:stacks].value.find_all do |s|
           status.include?(s['StackStatus'])
         end
-        lookup_map_set(Hash[result.map{|s| [s['StackName'], s['StackId']]}])
-        result
       else
         []
       end
@@ -225,25 +231,31 @@ module KnifeCloudformation
 
     def stack(*names)
       direct_load = names.delete(:ignore_seeds)
+      uncached_stacks = []
       result = names.map do |name|
         [name, name.start_with?('arn:') || direct_load ? name : id_from_stack_name(name)]
       end.map do |name, s_id|
         unless(@local[:stacks][s_id])
-          long_running_job("stack_loader_#{name}") do
+          uncached_stacks << {:name => name, :id => s_id}
+        end
+        @local[:stacks][s_id]
+      end
+      unless(uncached_stacks.empty?)
+        long_running_job(:cache_stack_loader) do
+          uncached_stacks.each do |stack_info|
             unless(direct_load)
               seed = stacks.detect do |stk|
-                stk['StackId'] == s_id
+                stk['StackId'] == stack_info[:id]
               end
             end
             if(seed)
-              logger.debug "Requested stack (#{name}) loaded via cached seed"
+              logger.debug "Requested stack (#{stack_info[:name]}) loaded via cached seed"
             else
-              logger.debug "Requested stack (#{name}) loaded directly with no seed"
+              logger.debug "Requested stack (#{stack_info[:name]}) loaded directly with no seed"
             end
-            @local[:stacks][s_id] = Stack.new(name, self, seed)
+            @local[:stacks][stack_info[:id]] = Stack.new(stack_info[:name], self, seed)
           end
         end
-        @local[:stacks][s_id]
       end
       result.size == 1 ? result.first : result.compact
     end
