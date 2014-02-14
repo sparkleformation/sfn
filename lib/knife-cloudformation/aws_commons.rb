@@ -31,7 +31,7 @@ module KnifeCloudformation
       :ec2 => :compute
     }
 
-    attr_reader :credentials
+    attr_reader :credentials, :local
 
     def initialize(args={})
       @ui = args[:ui]
@@ -40,7 +40,16 @@ module KnifeCloudformation
       @throttled = []
       @connections = {}
       @memo = Cache.new(credentials)
-      @local = {:stacks => {}}
+      @memo.init(:lookup_map, :value)
+      @_lookup_set = 0
+      @_lookup_reset = 3
+      @_lookup = {}
+      @local = {
+        :stacks => {},
+        :lookup_map => {},
+        :lookup_set => 0,
+        :lookup_reset => 3
+      }
     end
 
     def logger
@@ -53,6 +62,20 @@ module KnifeCloudformation
 
     def cache
       @memo
+    end
+
+    def lookup_map
+      if(Time.now.to_f - local[:lookup_set] > local[:lookup_reset])
+        local[:lookup_set] = Time.now.to_f
+        local[:lookup_map] = cache[:lookup_map].value
+      end
+      local[:lookup_map]
+    end
+
+    def lookup_map_set(hash)
+      local[:lookup_map] = hash
+      local[:lookup_set] = Time.now.to_f
+      cache[:lookup_map].value = hash
     end
 
     def clear_cache(*types)
@@ -120,25 +143,33 @@ module KnifeCloudformation
           cache.apply_limit(:stacks, args[:refresh_every].to_i)
         end
         if(@memo[:stacks].update_allowed? || args[:force_refresh])
-          @memo[:stacks].restamp!
-          long_running_job(:stacks) do
-            logger.debug 'Populating full cloudformation list from remote end point'
-            @memo.locked_action(:stacks_lock) do
-              stack_result = throttleable do
-                aws(:cloud_formation).describe_stacks.body['Stacks']
-              end
-              if(stack_result)
-                @memo[:stacks].value = stack_result
-              end
+          @memo.locked_action(:stacks_lock) do
+            if(@memo[:stacks].set?)
+              @memo[:stacks].restamp!
+            else
+              @memo[:stacks].value = []
             end
-            logger.debug 'Full cloudformation list from remote end point complete'
+            long_running_job(:stacks) do
+              logger.debug 'Populating full cloudformation list from remote end point'
+              @memo.locked_action(:stacks_lock) do
+                stack_result = throttleable do
+                  aws(:cloud_formation).describe_stacks.body['Stacks']
+                end
+                if(stack_result)
+                  @memo[:stacks].value = stack_result
+                end
+              end
+              logger.debug 'Full cloudformation list from remote end point complete'
+            end
           end
         end
       end
       if(@memo[:stacks].value)
-        @memo[:stacks].value.find_all do |s|
+        result = @memo[:stacks].value.find_all do |s|
           status.include?(s['StackStatus'])
         end
+        lookup_map_set(Hash[result.map{|s| [s['StatusName'], s['StatusId']]}])
+        result
       else
         []
       end
@@ -186,17 +217,13 @@ module KnifeCloudformation
     end
 
     def name_from_stack_id(s_id)
-      found = stacks.detect do |s|
-        s['StackId'] == s_id
-      end
-      found ? found['StackName'] : raise(IndexError.new("Failed to locate stack with ID: #{s_id}"))
+      lookup_map.key(s_id) ||
+        raise(IndexError.new("Failed to locate stack with ID: #{s_id}"))
     end
 
     def id_from_stack_name(name)
-      found = stacks.detect do |s|
-        s['StackName'] == name
-      end
-      found ? found['StackId'] : raise(IndexError.new("Failed to locate stack with name: #{name}"))
+      lookup_map[name] ||
+        raise(IndexError.new("Failed to locate stack with name: #{name}"))
     end
 
     def stack(*names)
@@ -205,21 +232,23 @@ module KnifeCloudformation
         [name, name.start_with?('arn:') || direct_load ? name : id_from_stack_name(name)]
       end.map do |name, s_id|
         unless(@local[:stacks][s_id])
-          unless(direct_load)
-            seed = stacks.detect do |stk|
-              stk['StackId'] == s_id
+          long_running_job("stack_loader_#{name}") do
+            unless(direct_load)
+              seed = stacks.detect do |stk|
+                stk['StackId'] == s_id
+              end
             end
+            if(seed)
+              logger.debug "Requested stack (#{name}) loaded via cached seed"
+            else
+              logger.debug "Requested stack (#{name}) loaded directly with no seed"
+            end
+            @local[:stacks][s_id] = Stack.new(name, self, seed)
           end
-          if(seed)
-            logger.debug "Requested stack (#{name}) loaded via cached seed"
-          else
-            logger.debug "Requested stack (#{name}) loaded directly with no seed"
-          end
-          @local[:stacks][s_id] = Stack.new(name, self, seed)
         end
         @local[:stacks][s_id]
       end
-      result.size == 1 ? result.first : result
+      result.size == 1 ? result.first : result.compact
     end
 
     def create_stack(name, definition)
