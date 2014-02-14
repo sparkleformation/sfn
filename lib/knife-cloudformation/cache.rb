@@ -41,7 +41,7 @@ module KnifeCloudformation
       end
 
       def redis_ping!
-        if(@_pid && @_pid != Process.pid)
+        if((@_pid && @_pid != Process.pid) || !Redis::Objects.redis.connected?)
           Redis::Objects.redis.client.reconnect
         end
       end
@@ -133,7 +133,7 @@ module KnifeCloudformation
     end
 
     def internal_lock
-      get_storage(self.class.type, :lock, :internal_access, :timeout => 60, :expiration => 120).lock do
+      get_storage(self.class.type, :lock, :internal_access, :timeout => 20, :expiration => 120).lock do
         yield
       end
     end
@@ -234,7 +234,7 @@ module KnifeCloudformation
       end
 
       def restamp!
-        @base.value[:stamp] = Time.now.to_f if set?
+        self.value = value
       end
 
       def update_allowed?
