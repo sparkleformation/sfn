@@ -78,9 +78,6 @@ module KnifeCloudformation
       local[:lookup_map] = hash
       local[:lookup_set] = Time.now.to_f
       cache[:lookup_map].value = hash
-      long_running_job(:lookup_set_stack_cacher) do
-        stack(*hash.keys)
-      end
     end
 
     def clear_cache(*types)
@@ -178,8 +175,6 @@ module KnifeCloudformation
                 @memo[:stacks].value = stack_result
               end
               lookup_map_set(Hash[stack_result.map{|s| [s['StackName'], s['StackId']]}])
-              # Force preload
-              stack(*stack_result.map{|s| s['StackName']})
             end
             logger.info "Full cloudformation list from remote end point complete (#{Thread.current.inspect})"
           end
@@ -243,14 +238,19 @@ module KnifeCloudformation
       uncached_stacks = []
       result = names.map do |name|
         [name, name.start_with?('arn:') || direct_load ? name : id_from_stack_name(name)]
-      end.map do |name, s_id|
+      end.compact.map do |name, s_id|
         unless(@local[:stacks][s_id])
           uncached_stacks << {:name => name, :id => s_id}
         end
         @local[:stacks][s_id]
+      end.compact
+      if(names.size == 1 && result.empty?)
+        fetched_stack = Stack.new(names.first, self)
+        @local[:stacks][fetched_stack.stack_id] = fetched_stack
+      else
+        load_stack_cache!(uncached_stacks, direct_load)
+        names.size == 1 ? result.first : result.compact
       end
-      load_stack_cache!(uncached_stacks, direct_load)
-      names.size == 1 ? result.first : result.compact
     end
 
     def load_stack_cache!(stack_loads, direct_load = false)
