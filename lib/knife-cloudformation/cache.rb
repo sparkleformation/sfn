@@ -43,6 +43,7 @@ module KnifeCloudformation
       def redis_ping!
         if((@_pid && @_pid != Process.pid) || !Redis::Objects.redis.connected?)
           Redis::Objects.redis.client.reconnect
+          @_pid = Process.pid
         end
       end
 
@@ -139,9 +140,7 @@ module KnifeCloudformation
     end
 
     def [](name)
-      internal_lock do
-        @direct_store[name.to_sym]
-      end
+      @direct_store[name.to_sym]
     end
 
     def []=(key, val)
