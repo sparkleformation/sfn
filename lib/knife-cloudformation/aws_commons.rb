@@ -31,7 +31,7 @@ module KnifeCloudformation
       :ec2 => :compute
     }
 
-    attr_reader :credentials, :local
+    attr_reader :credentials
     attr_accessor :disconnect_long_jobs
 
     def initialize(args={})
@@ -44,13 +44,13 @@ module KnifeCloudformation
       @memo.init(:stacks_lock, :lock)
       @memo.init(:stacks, :stamped)
       @memo.init(:lookup_map, :value)
-      @memo[:lookup_map].value = {} unless @memo[:lookup_map].value
-      @local = {
-        :stacks => {},
-        :lookup_map => {},
-        :lookup_set => 0,
-        :lookup_reset => 3
-      }
+      @memo.init(:stack_items, :value)
+      unless(@memo[:stack_items].value)
+        @memo[:stack_items].value = {}
+      end
+      unless(@memo[:lookup_map].value)
+        @memo[:lookup_map].value = {}
+      end
       lookup_map
     end
 
@@ -67,21 +67,15 @@ module KnifeCloudformation
     end
 
     def lookup_map
-      if(Time.now.to_f - local[:lookup_set] > local[:lookup_reset])
-        local[:lookup_set] = Time.now.to_f
-        local[:lookup_map] = cache[:lookup_map].value
-      end
-      local[:lookup_map]
+      cache[:lookup_map].value
     end
 
     def lookup_map_set(hash)
-      local[:lookup_map] = hash
-      local[:lookup_set] = Time.now.to_f
       cache[:lookup_map].value = hash
     end
 
     def clear_cache(*types)
-      @memo.clear!(*types)
+      cache.clear!(*types)
       true
     end
 
@@ -137,15 +131,15 @@ module KnifeCloudformation
         stat.to_s.upcase
       end
       if(args[:cache_time])
-        @memo[:stacks].stamp
+        cache[:stacks].stamp
       else
         if(args[:refresh_every])
           cache.apply_limit(:stacks, args[:refresh_every].to_i)
         end
         trigger_stack_update!(args)
       end
-      if(@memo[:stacks].value)
-        @memo[:stacks].value.find_all do |s|
+      if(cache[:stacks].value)
+        cache[:stacks].value.find_all do |s|
           status.include?(s['StackStatus'])
         end
       else
@@ -154,25 +148,25 @@ module KnifeCloudformation
     end
 
     def trigger_stack_update!(args={})
-      if(@memo[:stacks].update_allowed? || args[:force_refresh])
+      if(cache[:stacks].update_allowed? || args[:force_refresh])
         trigger_population = false
-        @memo.locked_action(:stacks_lock) do
-          if(@memo[:stacks].set?)
-            @memo[:stacks].restamp!
+        cache.locked_action(:stacks_lock) do
+          if(cache[:stacks].set?)
+            cache[:stacks].restamp!
           else
-            @memo[:stacks].value = []
+            cache[:stacks].value = []
           end
           trigger_population = true
         end
         if(trigger_population)
           long_running_job(:stacks) do
             logger.info "Populating full cloudformation list from remote end point (#{Thread.current.inspect})"
-            @memo.locked_action(:stacks_lock) do
+            cache.locked_action(:stacks_lock) do
               stack_result = throttleable do
                 aws(:cloud_formation).describe_stacks.body['Stacks']
               end
               if(stack_result)
-                @memo[:stacks].value = stack_result
+                cache[:stacks].value = stack_result
               end
               lookup_map_set(Hash[stack_result.map{|s| [s['StackName'], s['StackId']]}])
             end
@@ -206,9 +200,9 @@ module KnifeCloudformation
       if(@disconnect_long_jobs)
         logger.debug "Disconnected long running jobs enabled. Starting: #{name}"
         lock_key = "long_jobs_lock_#{name}".to_sym
-        @memo.init(lock_key, :lock)
+        cache.init(lock_key, :lock)
         Thread.new do
-          @memo.locked_action(lock_key) do
+          cache.locked_action(lock_key) do
             begin
               logger.info "Long running job started disconnected (#{name})"
               yield
@@ -239,14 +233,14 @@ module KnifeCloudformation
       result = names.map do |name|
         [name, name.start_with?('arn:') || direct_load ? name : id_from_stack_name(name)]
       end.compact.map do |name, s_id|
-        unless(@local[:stacks][s_id])
+        unless(cache[:stack_items].value[s_id])
           uncached_stacks << {:name => name, :id => s_id}
         end
-        @local[:stacks][s_id]
+        cache[:stacks_items].value[s_id]
       end.compact
       if(names.size == 1 && result.empty?)
         fetched_stack = Stack.new(names.first, self)
-        @local[:stacks][fetched_stack.stack_id] = fetched_stack
+        cache[:stack_items].value[fetched_stack.stack_id] = fetched_stack
       else
         load_stack_cache!(uncached_stacks, direct_load)
         names.size == 1 ? result.first : result.compact
@@ -267,7 +261,7 @@ module KnifeCloudformation
           else
             logger.debug "Requested stack (#{stack_info[:name]}) loaded directly with no seed"
           end
-          @local[:stacks][stack_info[:id]] = Stack.new(stack_info[:name], self, seed)
+          cache[:stack_items].value[stack_info[:id]] = Stack.new(stack_info[:name], self, seed)
         end
       end
     end
