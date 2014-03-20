@@ -388,7 +388,7 @@ module KnifeCloudformation
               common.aws(:ec2).servers.get(inst.id)
             end
           end.flatten
-          @local[:nodes] = value unless in_progress?
+          @local[:nodes] = value unless in_progress? || value.empty?
         end
         value || @local[:nodes]
       end
