@@ -31,7 +31,7 @@ module KnifeCloudformation
       :ec2 => :compute
     }
 
-    attr_reader :credentials
+    attr_reader :credentials, :stack_items
     attr_accessor :disconnect_long_jobs
 
     def initialize(args={})
@@ -43,15 +43,7 @@ module KnifeCloudformation
       @memo = Cache.new(credentials)
       @memo.init(:stacks_lock, :lock)
       @memo.init(:stacks, :stamped)
-      @memo.init(:lookup_map, :value)
-      @memo.init(:stack_items, :value)
-      unless(@memo[:stack_items].value)
-        @memo[:stack_items].value = {}
-      end
-      unless(@memo[:lookup_map].value)
-        @memo[:lookup_map].value = {}
-      end
-      lookup_map
+      @stack_items = {}
     end
 
     def logger
@@ -64,14 +56,6 @@ module KnifeCloudformation
 
     def cache
       @memo
-    end
-
-    def lookup_map
-      cache[:lookup_map].value
-    end
-
-    def lookup_map_set(hash)
-      cache[:lookup_map].value = hash
     end
 
     def clear_cache(*types)
@@ -168,9 +152,11 @@ module KnifeCloudformation
               if(stack_result)
                 cache[:stacks].value = stack_result
               end
-              lookup_map_set(Hash[stack_result.map{|s| [s['StackName'], s['StackId']]}])
             end
             logger.info "Full cloudformation list from remote end point complete (#{Thread.current.inspect})"
+            logger.info "Caching stacks into local process (#{Thread.current.inspect})"
+            stack(cache[:stacks].value.map{|s| s['StackName']})
+            logger.info "Local process stack caching is complete! (#{Thread.current.inspect})"
           end
         end
       end
@@ -217,53 +203,17 @@ module KnifeCloudformation
       end
     end
 
-    def name_from_stack_id(s_id)
-      lookup_map.key(s_id) ||
-        raise(IndexError.new("Failed to locate stack with ID: #{s_id}"))
-    end
-
-    def id_from_stack_name(name)
-      lookup_map[name] ||
-        raise(IndexError.new("Failed to locate stack with name: #{name}"))
-    end
-
     def stack(*names)
       direct_load = names.delete(:ignore_seeds)
-      uncached_stacks = []
+      stks = direct_load ? [] : stacks
       result = names.map do |name|
-        [name, name.start_with?('arn:') || direct_load ? name : id_from_stack_name(name)]
-      end.compact.map do |name, s_id|
-        unless(cache[:stack_items].value[s_id])
-          uncached_stacks << {:name => name, :id => s_id}
+        unless(stack_items[name])
+          seed = stks.detect{|s|s['StackName'] == name}
+          stack_items[name] = Stack.new(name, self, seed)
         end
-        cache[:stacks_items].value[s_id]
+        stack_items[name]
       end.compact
-      if(names.size == 1 && result.empty?)
-        fetched_stack = Stack.new(names.first, self)
-        cache[:stack_items].value[fetched_stack.stack_id] = fetched_stack
-      else
-        load_stack_cache!(uncached_stacks, direct_load)
-        names.size == 1 ? result.first : result.compact
-      end
-    end
-
-    def load_stack_cache!(stack_loads, direct_load = false)
-      long_running_job(:cache_stack_loader) do
-        stks = stacks unless direct_load
-        stack_loads.each do |stack_info|
-          unless(direct_load)
-            seed = stks.detect do |stk|
-              stk['StackId'] == stack_info[:id]
-            end
-          end
-          if(seed)
-            logger.debug "Requested stack (#{stack_info[:name]}) loaded via cached seed"
-          else
-            logger.debug "Requested stack (#{stack_info[:name]}) loaded directly with no seed"
-          end
-          cache[:stack_items].value[stack_info[:id]] = Stack.new(stack_info[:name], self, seed)
-        end
-      end
+      names.size == 1 ? result.first : result
     end
 
     def create_stack(name, definition)

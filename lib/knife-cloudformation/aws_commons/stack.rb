@@ -68,8 +68,8 @@ module KnifeCloudformation
         reset_local
         @memo.init(:raw_stack, :stamped)
         if(raw_stack)
-          if(@memo[:stacks])
-            if(@memo[:stacks].stamp > @memo[:raw_stack].stamp)
+          if(common.cache[:stacks])
+            if(common.cache[:stacks].stamp > @memo[:raw_stack].stamp)
               @memo[:raw_stack].value = raw_stack
             end
           else
@@ -403,10 +403,10 @@ module KnifeCloudformation
             end
           end
         end
-        unless(data.empty?)
+        unless(data && !data.empty?)
           @memo[cache_key].value = data unless in_progress?
         end
-        data || @memo[cache_key].value
+        data || @memo[cache_key].value || []
       end
 
     end

@@ -50,7 +50,6 @@ module KnifeCloudformation
     end
 
     attr_reader :key
-    attr_reader :direct_store
 
     def initialize(key)
       if(key.respond_to?(:sort))
@@ -58,44 +57,48 @@ module KnifeCloudformation
         key = key.map(&:to_s).sort
       end
       @key = Digest::SHA256.hexdigest(key.to_s)
-      @direct_store = {}
       @apply_limit = self.class.default_limits
     end
 
     def init(name, kind, args={})
-      name = name.to_sym
-      unless(@direct_store[name])
-        full_name = [key, name.to_s].join('_')
-        @direct_store[name] = get_storage(self.class.type, kind, full_name, args)
-      end
+      get_storage(self.class.type, kind, name, args)
       true
+    end
+
+    def registry
+      get_storage(self.class.type, :hash, "registry_#{key}")
     end
 
     def clear!(*args)
       internal_lock do
-        args = @direct_store.keys if args.empty?
+        args = registry.keys if args.empty?
         args.each do |key|
-          value = @direct_store[key]
+          value = self[key]
           if(value.respond_to?(:clear))
             value.clear
           elsif(value.respond_to?(:value))
             value.value = nil
           end
+          registry.delete(key)
         end
         yield if block_given?
       end
       true
     end
 
-    def get_storage(store_type, data_type, full_name, args={})
+    def get_storage(store_type, data_type, name, args={})
+      full_name = "#{key}_#{name}"
+      result = nil
       case store_type.to_sym
       when :redis
-        get_redis_storage(data_type, full_name, args)
+        result = get_redis_storage(data_type, full_name.to_s, args)
       when :local
-        get_local_storage(data_type, full_name, args)
+        result = get_local_storage(data_type, full_name.to_s, args)
       else
         raise TypeError.new("Unsupported caching storage type encountered: #{store_type}")
       end
+      registry[name.to_s] = data_type unless full_name == "#{key}_registry_#{key}"
+      result
     end
 
     def get_redis_storage(data_type, full_name, args={})
@@ -140,7 +143,11 @@ module KnifeCloudformation
     end
 
     def [](name)
-      @direct_store[name.to_sym]
+      if(kind = registry[name.to_s])
+        get_storage(self.class.type, kind, name)
+      else
+        nil
+      end
     end
 
     def []=(key, val)
@@ -229,7 +236,7 @@ module KnifeCloudformation
       end
 
       def stamp
-        @base.value[:stamp] if set?
+        set? ? @base.value[:stamp] : 0.0
       end
 
       def restamp!
