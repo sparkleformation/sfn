@@ -31,7 +31,7 @@ module KnifeCloudformation
       :ec2 => :compute
     }
 
-    attr_reader :credentials, :stack_items
+    attr_reader :credentials, :stack_items, :connections
     attr_accessor :disconnect_long_jobs
 
     def initialize(args={})
@@ -64,6 +64,32 @@ module KnifeCloudformation
     end
 
     def build_connection(type)
+      unless(connections[type])
+        begin
+          klass = Fog.constants.map do |const_name|
+            const = Fog.const_get(const_name)
+            if(const.is_a?(Module) && const.name.split('::').last.downcase == type.to_s.tr('_', ''))
+              const
+            end
+          end.compact.first
+          unless(klass)
+            raise ArgumentError.new "Unsupported connection type requested: #{type.inspect}"
+          end
+          connections[type] = klass.new(credentials)
+        end
+      end
+      if(block_given?)
+        throttleable do
+          yield connections[type]
+        end
+      else
+        connections[type]
+      end
+    end
+    alias_method :aws, :build_connection
+    alias_method :remote, :build_connection
+
+    def old_build_connection(type)
       type = type.to_sym
       type = FOG_MAP[type] if FOG_MAP[type]
       unless(@connections[type])
@@ -99,7 +125,6 @@ module KnifeCloudformation
         @connections[type]
       end
     end
-    alias_method :aws, :build_connection
 
     DEFAULT_STACK_STATUS = %w(
       CREATE_IN_PROGRESS CREATE_COMPLETE CREATE_FAILED
@@ -124,7 +149,7 @@ module KnifeCloudformation
       end
       if(cache[:stacks].value)
         cache[:stacks].value.find_all do |s|
-          status.include?(s['StackStatus'])
+          status.include?(s['stack_status'])
         end
       else
         []
@@ -225,8 +250,8 @@ module KnifeCloudformation
     def process(things, args={})
       @event_ids ||= []
       processed = things.reverse.map do |thing|
-        next if @event_ids.include?(thing['EventId'])
-        @event_ids.push(thing['EventId']).compact!
+        next if @event_ids.include?(thing['id'])
+        @event_ids.push(thing['id']).compact!
         if(args[:attributes])
           args[:attributes].map do |key|
             thing[key].to_s

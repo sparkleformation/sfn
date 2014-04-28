@@ -93,11 +93,17 @@ module KnifeCloudformation
       when :redis
         result = get_redis_storage(data_type, full_name.to_s, args)
       when :local
-        result = get_local_storage(data_type, full_name.to_s, args)
+        @_local_cache ||= {}
+        unless(@_local_cache[full_name.to_s])
+          @_local_cache[full_name.to_s] = get_local_storage(data_type, full_name.to_s, args)
+        end
+        result = @_local_cache[full_name.to_s]
       else
         raise TypeError.new("Unsupported caching storage type encountered: #{store_type}")
       end
-      registry[name.to_s] = data_type unless full_name == "#{key}_registry_#{key}"
+      unless(full_name == "#{key}_registry_#{key}")
+        registry[name.to_s] = data_type
+      end
       result
     end
 
