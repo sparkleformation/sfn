@@ -185,7 +185,7 @@ class Chef
         if(Chef::Config[:knife][:cloudformation][:interactive_parameters])
           if(stack['Parameters'])
             Chef::Config[:knife][:cloudformation][:options][:parameters] ||= Mash.new
-            stack['Parameters'].each do |k,v|
+            stack.fetch('Parameters', {}).each do |k,v|
               next if Chef::Config[:knife][:cloudformation][:options][:parameters][k]
               valid = false
               until(valid)

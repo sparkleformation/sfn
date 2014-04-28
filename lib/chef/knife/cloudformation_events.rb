@@ -57,12 +57,13 @@ class Chef
 
       def get_events(name)
         get_things do
-          stack(name).events
+          stack(name).events.map{|e| Mash.new(e ? e.attributes : {})}
         end
       end
 
       def default_attributes
-        %w(Timestamp LogicalResourceId ResourceType ResourceStatus ResourceStatusReason)
+        %w(event_time logical_resource_id resource_status resource_status_reason)
+#        %w(Timestamp LogicalResourceId ResourceType ResourceStatus ResourceStatusReason)
       end
     end
   end

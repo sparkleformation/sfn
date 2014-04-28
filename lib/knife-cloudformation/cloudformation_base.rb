@@ -30,7 +30,7 @@ module KnifeCloudformation
       end
 
       def default_attributes
-        %w(Timestamp StackName StackId)
+        %w(timestamp stack_name id)
       end
 
       def attribute_allowed?(attr)
@@ -52,7 +52,7 @@ module KnifeCloudformation
         end
         columns = allowed_attributes.size
         output += aws.process(things, :flat => true, :attributes => allowed_attributes)
-        output.compact.flatten
+        output.compact!
         if(output.empty?)
           ui.warn 'No information found' unless args.include?(:ignore_empty_output)
         else
@@ -92,7 +92,7 @@ module KnifeCloudformation
         unless(@common)
           @common = KnifeCloudformation::AwsCommons.new(
             :ui => ui,
-            :fog => {
+            :fog => _fog || {
               :aws_access_key_id => _key,
               :aws_secret_access_key => _secret,
               :region => _region
@@ -100,6 +100,11 @@ module KnifeCloudformation
           )
         end
         @common
+      end
+
+      def _fog
+        Chef::Config[:knife][:cloudformation][:fog] ||
+          Chef::Config[:knife][:fog]
       end
 
       def _key

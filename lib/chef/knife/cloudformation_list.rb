@@ -38,13 +38,13 @@ class Chef
 
       def get_list
         get_things do
-          aws.aws(:cloud_formation).list_stacks(list_options).body['StackSummaries'].sort do |x,y|
-            if(y['CreationTime'].to_s.empty?)
+          aws.remote(:orchestration).stacks.map{|s|Mash.new(s.attributes)}.sort do |x,y|
+            if(y['creation_time'].to_s.empty?)
               -1
-            elsif(x['CreationTime'].to_s.empty?)
+            elsif(x['creation_time'].to_s.empty?)
               1
             else
-              Time.parse(y['CreationTime'].to_s) <=> Time.parse(x['CreationTime'].to_s)
+              Time.parse(y['creation_time'].to_s) <=> Time.parse(x['creation_time'].to_s)
             end
           end
         end
@@ -68,7 +68,7 @@ class Chef
       end
 
       def default_attributes
-        %w(StackName CreationTime StackStatus TemplateDescription)
+        %w(stack_name creation_time stack_status description)
       end
 
     end

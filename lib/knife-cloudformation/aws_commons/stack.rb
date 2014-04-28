@@ -10,7 +10,7 @@ module KnifeCloudformation
       include KnifeCloudformation::Utils::JSON
       include KnifeCloudformation::Utils::AnimalStrings
 
-      attr_reader :name, :raw_resources, :common
+      attr_reader :name, :raw_resources, :common, :cache, :remote_stack
 
       class << self
 
@@ -23,21 +23,17 @@ module KnifeCloudformation
         include KnifeCloudformation::Utils::JSON
 
         def create(name, definition, aws_common)
-          aws_common.aws(:cloud_formation).create_stack(name, definition)
-          new(name, aws_common)
+          new_stack = aws_common.remote(:orchestration).stacks.new(
+            definition.merge(:stack_name => name)
+          )
+          new_stack.create
         end
 
         def build_stack_definition(template, options={})
-          stack = Mash.new
-          options.each do |key, value|
-            format_key = key.to_s.split('_').map do |k|
-              "#{k.slice(0,1).upcase}#{k.slice(1,k.length)}"
-            end.join
-            stack[format_key] = value
-          end
+          stack = Mash.new(options)
           enable_capabilities!(stack, template)
           clean_parameters!(template)
-          stack['TemplateBody'] = _to_json(template)
+          stack[:template] = _to_json(template)
           stack
         end
 
@@ -47,12 +43,12 @@ module KnifeCloudformation
           found = Array(template['Resources']).detect do |resource_name, resource|
             resource['Type'].start_with?('AWS::IAM')
           end
-          stack['Capabilities'] = ['CAPABILITY_IAM'] if found
+          stack[:capabilities] = ['CAPABILITY_IAM'] if found
           nil
         end
 
         def clean_parameters!(template)
-          template['Parameters'].each do |name, options|
+          template.fetch('Parameters', {}).each do |name, options|
             options.delete_if do |attribute, value|
               !ALLOWED_PARAMETER_ATTRIBUTES.include?(attribute)
             end
@@ -64,16 +60,16 @@ module KnifeCloudformation
       def initialize(name, common, raw_stack=nil)
         @name = name
         @common = common
-        @memo = Cache.new(common.credentials.merge(:stack => name))
+        @cache = cache = Cache.new(common.credentials.merge(:stack => name))
         reset_local
-        @memo.init(:raw_stack, :stamped)
+        cache.init(:raw_stack, :stamped)
         if(raw_stack)
           if(common.cache[:stacks])
-            if(common.cache[:stacks].stamp > @memo[:raw_stack].stamp)
-              @memo[:raw_stack].value = raw_stack
+            if(common.cache[:stacks].stamp > cache[:raw_stack].stamp)
+              cache[:raw_stack].value = raw_stack
             end
           else
-            @memo[:raw_stack].value = raw_stack
+            cache[:raw_stack].value = raw_stack
           end
         end
         load_stack
@@ -95,40 +91,37 @@ module KnifeCloudformation
       def format_definition(def_hash)
         new_hash = {}
         def_hash.each do |k,v|
-          new_hash[camel(k)] = v
+          new_hash[snake(k)] = v
         end
-        if(new_hash['TemplateBody'].is_a?(Hash))
-          new_hash['TemplateBody'] = _to_json(new_hash['TemplateBody'])
+        if(new_hash['template'].is_a?(Hash))
+          new_hash['template'] = _to_json(new_hash['template'])
         end
         new_hash
       end
 
       def destroy
-        res = common.aws(:cloud_formation).delete_stack(name)
+        remote_stack.destroy
         reload!
-        res
       end
 
       def load_stack(*args)
-        @memo.init(:raw_stack, :stamped)
-        @memo.init(:raw_stack_lock, :lock)
-        @memo.locked_action(:raw_stack_lock) do
-          if(args.include?(:force) || @memo[:raw_stack].update_allowed?)
-            @memo[:raw_stack].value = common.aws(:cloud_formation)
-              .describe_stacks('StackName' => name)
-              .body['Stacks'].first
+        @remote_stack = common.remote(:orchestration).stacks.find_by_name(name)
+        raise LoadError.new("Failed to load stack: #{name}") unless remote_stack
+        cache.init(:raw_stack, :stamped)
+        cache.init(:raw_stack_lock, :lock)
+        cache.locked_action(:raw_stack_lock) do
+          if(args.include?(:force) || cache[:raw_stack].update_allowed?)
+            cache[:raw_stack].value = Mash.new(remote_stack.attributes)
           end
         end
       end
 
       def load_resources
-        @memo.init(:raw_resources, :stamped)
-        @memo.init(:raw_resources_lock, :lock)
-        @memo.locked_action(:raw_resources_lock) do
-          if(@memo[:raw_resources].update_allowed?)
-            @memo[:raw_resources].value = common.aws(:cloud_formation)
-              .describe_stack_resources('StackName' => name)
-              .body['StackResources']
+        cache.init(:raw_resources, :stamped)
+        cache.init(:raw_resources_lock, :lock)
+        cache.locked_action(:raw_resources_lock) do
+          if(cache[:raw_resources].update_allowed?)
+            cache[:raw_resources].value = Mash.new(remote_stack.resources.map(&:attributes))
           end
         end
       end
@@ -144,7 +137,7 @@ module KnifeCloudformation
       end
 
       def reload!
-        @memo.clear! do
+        cache.clear! do
           load_stack(:force)
           load_resources
           @force_refresh = in_progress?
@@ -170,114 +163,110 @@ module KnifeCloudformation
       end
 
       def template
-        @memo.init(:template, :value)
-        unless(@memo[:template].value)
-          @memo[:template].value = _from_json(
+        cache.init(:template, :value)
+        unless(cache[:template].value)
+          cache[:template].value = _from_json(
             common.aws(:cloud_formation)
               .get_template(name).body['TemplateBody']
           )
         end
-        @memo[:template].value
+        cache[:template].value
       end
 
       ## Stack metadata ##
       def parameters(raw=false)
         if(raw)
-          @memo[:raw_stack].value['Parameters']
+          cache[:raw_stack].value['parameters']
         else
-          @memo.init(:parameters, :value)
-          unless(@memo[:parameters].value)
-            @memo[:parameters].value = Hash[*(
-                @memo[:raw_stack].value['Parameters'].map do |ary|
+          cache.init(:parameters, :value)
+          unless(cache[:parameters].value)
+            cache[:parameters].value = Hash[*(
+                cache[:raw_stack].value['Parameters'].map do |ary|
                   [ary['ParameterKey'], ary['ParameterValue']]
                 end.flatten
             )]
           end
-          @memo[:parameters].value
+          cache[:parameters].value
         end
       end
 
       def capabilities
-        @memo[:raw_stack].value['Capabilities']
+        cache[:raw_stack].value['capabilities']
       end
 
       def disable_rollback
-        @memo[:raw_stack].value['DisableRollback']
+        cache[:raw_stack].value['disable_rollback']
       end
 
       def notification_arns
-        @memo[:raw_stack].value['NotificationARNs']
+        cache[:raw_stack].value['NotificationARNs']
       end
 
       def timeout_in_minutes
-        @memo[:raw_stack].value['TimeoutInMinutes']
+        cache[:raw_stack].value['timeout_in_minutes']
       end
       alias_method :timeout, :timeout_in_minutes
 
       def stack_id
-        @memo[:raw_stack].value['StackId']
+        cache[:raw_stack].value['id']
       end
       alias_method :id, :stack_id
 
       def creation_time
-        @memo[:raw_stack].value['CreationTime']
+        cache[:raw_stack].value['creation_time']
       end
       alias_method :created_at, :creation_time
 
       def status(force_refresh=nil)
         load_stack if refresh?(force_refresh)
-        @memo[:raw_stack].value['StackStatus']
+        cache[:raw_stack].value['stack_status']
       end
 
       def resources(force_refresh=nil)
-        load_resources if @memo[:raw_resources].nil? || refresh?(force_refresh)
-        @memo[:raw_resources].value
+        load_resources if cache[:raw_resources].nil? || refresh?(force_refresh)
+        cache[:raw_resources].value
       end
 
       def events(all=false)
-        @memo.init(:events, :stamped)
+        cache.init(:events, :stamped)
         res = []
-        if(@memo[:events].value.nil? || refresh?)
-          @memo.init(:events_lock, :lock)
-          @memo.locked_action(:events_lock) do
-            if(@memo[:events].update_allowed?)
-              res = common.aws(:cloud_formation).describe_stack_events(name).body['StackEvents']
-              current = @memo[:events].value || []
-              current_events = current.map{|e| e['EventId']}
-              res.delete_if{|e| current_events.include?(e['EventId'])}
-              current += res
-              current.uniq!
-              current.sort!{|x,y| x['Timestamp'] <=> y['Timestamp']}
-              @memo[:events].value = current
+        if(cache[:events].value.nil? || refresh?)
+          cache.init(:events_lock, :lock)
+          cache.locked_action(:events_lock) do
+            if(cache[:events].update_allowed?)
+              items = remote_stack.events.sort do |b, a|
+                Time.parse(a.event_time) <=> Time.parse(b.event_time)
+              end
+              cache[:events].value = items
             end
           end
         end
-        all ? @memo[:events].value : res
+        cache[:events].value
       end
 
       def outputs(style=:unformatted)
         case style
         when :formatted
           Hash[*(
-              @memo[:raw_stack].value['Outputs'].map do |item|
+              cache[:raw_stack].value.fetch('Outputs', []).map do |item|
                 [item['OutputKey'].gsub(/(?<![A-Z])([A-Z])/, '_\1').sub(/^_/, '').downcase.to_sym, item['OutputValue']]
               end.flatten
           )]
         when :unformatted
           Hash[*(
-              @memo[:raw_stack].value['Outputs'].map do |item|
+              cache[:raw_stack].value.fetch('Outputs', []).map do |item|
                 [item['OutputKey'], item['OutputValue']]
               end.flatten
           )]
         else
-          @memo[:raw_stack].value['Outputs']
+          cache[:raw_stack].value.fetch('Outputs', [])
         end
       end
 
       def event_start_index(given_events, status)
         Array(given_events).flatten.compact.rindex do |e|
-          e['ResourceType'] == 'AWS::CloudFormation::Stack' &&
-            e['ResourceStatus'] == status.to_s.upcase
+          e['resource_type'] == 'AWS::CloudFormation::Stack' &&
+            e['resource_status'] == status.to_s.upcase
         end.to_i
       end
 
@@ -294,8 +283,8 @@ module KnifeCloudformation
             action = performing
             start = event_start_index(all_events, "#{action}_in_progress".to_sym)
             finished = all_events.find_all do |e|
-              e['ResourceStatus'] == "#{action}_complete".upcase ||
-              e['ResourceStatus'] == "#{action}_failed".upcase
+              e['resource_status'] == "#{action}_complete".upcase ||
+              e['resource_status'] == "#{action}_failed".upcase
             end.size
             calculated = ((finished / total_expected.to_f) * 100).to_i
             calculated < min ? min : calculated
@@ -306,7 +295,7 @@ module KnifeCloudformation
       end
 
       def raw_stack
-        @memo[:raw_stack].value
+        cache[:raw_stack].value
       end
 
       ## State ##
@@ -395,8 +384,8 @@ module KnifeCloudformation
 
       def nodes_data(*args)
         cache_key = ['nd', name, Digest::SHA256.hexdigest(args.map(&:to_s).join)].join('_')
-        @memo.init(cache_key, :value)
-        unless(@memo[cache_key].value)
+        cache.init(cache_key, :value)
+        unless(cache[cache_key].value)
           data = nodes.map do |n|
             [:id, args].flatten.compact.map do |k|
               n.send(k)
@@ -404,9 +393,9 @@ module KnifeCloudformation
           end
         end
         unless(data && !data.empty?)
-          @memo[cache_key].value = data unless in_progress?
+          cache[cache_key].value = data unless in_progress?
         end
-        data || @memo[cache_key].value || []
+        data || cache[cache_key].value || []
       end
 
     end
