@@ -105,6 +105,11 @@ class Chef
                 :description => 'Unset any value used for cloudformation path',
                 :proc => lambda {|*val| Chef::Config[:knife][:cloudformation][:base_directory] = nil}
               )
+              option(:translate,
+                :long => '--translate PROVIDER',
+                :description => 'Translate generated template to given provider',
+                :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:translate] = val}
+              )
 
               %w(rollback polling interactive_parameters).each do |key|
                 if(Chef::Config[:knife][:cloudformation][key].nil?)
@@ -140,6 +145,13 @@ class Chef
           file = SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
         else
           file = _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
+        end
+        if(klass_name = Chef::Config[:knife][:cloudformation][:translate])
+          klass = SparkleFormation::Translation.const_get(camel(klass_name))
+          translator = klass.new(file)
+          translator.translate!
+          file = translator.translated
+          ui.info "#{ui.color('Translation applied:', :bold)} #{ui.color(klass_name, :yellow)}"
         end
         if(config[:print_only])
           ui.warn 'Print only requested'
