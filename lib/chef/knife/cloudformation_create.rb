@@ -246,7 +246,7 @@ class Chef
       def prompt_for_file(dir)
         directory = Dir.new(dir)
         directories = directory.map do |d|
-          if(!d.start_with?('.') && !%w(dynamics components).include?(d) && File.directory?(path = File.join(dir, d)))
+          if(!d.start_with?('.') && !%w(dynamics registry components).include?(d) && File.directory?(path = File.join(dir, d)))
             path
           end
         end.compact.sort
