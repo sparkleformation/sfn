@@ -146,18 +146,6 @@ class Chef
         else
           file = _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
         end
-        if(klass_name = Chef::Config[:knife][:cloudformation][:translate])
-          klass = SparkleFormation::Translation.const_get(camel(klass_name))
-          translator = klass.new(file)
-          translator.translate!
-          file = translator.translated
-          ui.info "#{ui.color('Translation applied:', :bold)} #{ui.color(klass_name, :yellow)}"
-        end
-        if(config[:print_only])
-          ui.warn 'Print only requested'
-          ui.info _format_json(file)
-          exit 1
-        end
         ui.info "#{ui.color('Cloud Formation: ', :bold)} #{ui.color(action_type, :green)}"
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
         if(Chef::Config[:knife][:cloudformation][:path])
@@ -168,6 +156,18 @@ class Chef
         end
         ui.info "  -> #{stack_info}"
         populate_parameters!(file)
+        if(klass_name = Chef::Config[:knife][:cloudformation][:translate])
+          klass = SparkleFormation::Translation.const_get(camel(klass_name))
+          translator = klass.new(file, :parameters => Chef::Config[:knife][:cloudformation][:options][:parameters])
+          translator.translate!
+          file = translator.translated
+          ui.info "#{ui.color('Translation applied:', :bold)} #{ui.color(klass_name, :yellow)}"
+        end
+        if(config[:print_only])
+          ui.warn 'Print only requested'
+          ui.info _format_json(file)
+          exit 1
+        end
         stack_def = KnifeCloudformation::AwsCommons::Stack.build_stack_definition(file, Chef::Config[:knife][:cloudformation][:options])
         aws.create_stack(name, stack_def)
         if(Chef::Config[:knife][:cloudformation][:poll])
