@@ -122,7 +122,6 @@ class Chef
           else
             entry = valid[response.to_i]
             if(entry[:type] == :directory)
-              puts "SET AS DIR"
               path = s3_import_discovery(bucket, entry[:path])
             else
               path = entry[:path]
