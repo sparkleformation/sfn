@@ -64,6 +64,9 @@ module KnifeCloudformation
     end
 
     def build_connection(type)
+      if(type == :cloud_formation)
+        type = :orchestration
+      end
       unless(connections[type])
         begin
           klass = Fog.constants.map do |const_name|
@@ -172,7 +175,13 @@ module KnifeCloudformation
             logger.info "Populating full cloudformation list from remote end point (#{Thread.current.inspect})"
             cache.locked_action(:stacks_lock) do
               stack_result = throttleable do
-                aws(:cloud_formation).describe_stacks.body['Stacks']
+                valid_stack_status = Hash[
+                  DEFAULT_STACK_STATUS.size.times.map do |x|
+                    i = x + 1
+                    ["StackStatusFilter.member.#{i}", DEFAULT_STACK_STATUS[i]]
+                  end
+                ]
+                aws(:cloud_formation).list_stacks(valid_stack_status).body['StackSummaries']
               end
               if(stack_result)
                 cache[:stacks].value = stack_result
@@ -231,12 +240,17 @@ module KnifeCloudformation
     def stack(*names)
       direct_load = names.delete(:ignore_seeds)
       stks = direct_load ? [] : stacks
-      result = names.map do |name|
-        unless(stack_items[name])
-          seed = stks.detect{|s|s['StackName'] == name}
-          stack_items[name] = Stack.new(name, self, seed)
+      result = names.flatten.compact.map do |name|
+        begin
+          unless(stack_items[name])
+            seed = stks.detect{|s|s['StackName'] == name}
+            stack_items[name] = Stack.new(name, self, seed)
+          end
+          stack_items[name]
+        rescue LoadError => e
+          puts "LOAD FAILURE: #{e.class.name}: #{e}"
+          puts "#{e}\n#{e.backtrace.join("\n")}"
         end
-        stack_items[name]
       end.compact
       names.size == 1 ? result.first : result
     end
