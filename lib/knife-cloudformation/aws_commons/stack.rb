@@ -72,9 +72,9 @@ module KnifeCloudformation
             cache[:raw_stack].value = raw_stack
           end
         end
-        load_stack
+#        load_stack
         @force_refresh = false
-        @force_refresh = in_progress?
+#        @force_refresh = in_progress?
       end
 
       ## Actions ##
@@ -218,6 +218,7 @@ module KnifeCloudformation
       alias_method :created_at, :creation_time
 
       def status(force_refresh=nil)
+        return []
         load_stack if refresh?(force_refresh)
         cache[:raw_stack].value['stack_status']
       end
