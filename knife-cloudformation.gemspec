@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'fog', '~> 1.17'
   s.add_dependency 'unf'
   s.add_dependency 'net-sftp'
-  s.add_dependency 'sparkle_formation', '~> 0.1.2'
+  s.add_dependency 'sparkle_formation', '~> 0.2.0'
   s.add_dependency 'redis-objects'
-  s.add_dependency 'attribute_struct', '~> 0.1.8'
+  s.add_dependency 'attribute_struct', '~> 0.2.0'
   s.files = Dir['**/*']
 end
