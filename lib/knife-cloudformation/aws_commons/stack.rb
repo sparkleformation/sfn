@@ -72,9 +72,9 @@ module KnifeCloudformation
             cache[:raw_stack].value = raw_stack
           end
         end
-#        load_stack
+        load_stack
         @force_refresh = false
-#        @force_refresh = in_progress?
+        @force_refresh = in_progress?
       end
 
       ## Actions ##
