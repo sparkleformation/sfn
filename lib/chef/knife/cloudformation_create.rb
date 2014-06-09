@@ -158,7 +158,7 @@ class Chef
         populate_parameters!(file)
         stack_def = KnifeCloudformation::AwsCommons::Stack.build_stack_definition(file, Chef::Config[:knife][:cloudformation][:options])
         aws.create_stack(name, stack_def)
-        if(Chef::Config[:knife][:cloudformation][:polling])
+        if(Chef::Config[:knife][:cloudformation][:poll])
           poll_stack(name)
           if(stack(name).success?)
             ui.info "Stack #{action_type} complete: #{ui.color('SUCCESS', :green)}"
