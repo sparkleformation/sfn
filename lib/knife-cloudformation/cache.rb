@@ -120,20 +120,21 @@ module KnifeCloudformation
     end
 
     def get_local_storage(data_type, full_name, args={})
-      case data_type.to_sym
-      when :array
-        []
-      when :hash
-        {}
-      when :value
-        LocalValue.new
-      when :lock
-        LocalLock.new(full_name, {:expiration => 60, :timeout => 0.1}.merge(args))
-      when :stamped
-        Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name), self)
-      else
-        raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
-      end
+      @storage ||= {}
+      @storage[full_name] ||= case data_type.to_sym
+        when :array
+          []
+        when :hash
+          {}
+        when :value
+          LocalValue.new
+        when :lock
+          LocalLock.new(full_name, {:expiration => 60, :timeout => 0.1}.merge(args))
+        when :stamped
+          Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name), self)
+        else
+          raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
+        end
     end
 
     def internal_lock
