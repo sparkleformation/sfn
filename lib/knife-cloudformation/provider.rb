@@ -67,12 +67,14 @@ module KnifeCloudformation
 
     # @return [Fog::Orchestration::Stacks]
     def stacks
-      connection.service.const_get(:Stacks).
+      _stacks = connection.service.const_get(:Stacks).
         new(:service => connection).
-        load(cached_stacks.values).map do |_stack|
+        load(cached_stacks.values)
+      _stacks.map do |_stack|
         _stack._provider(self)
         _stack
       end
+      _stacks
     end
 
     # @return [Hash] cached stacks
