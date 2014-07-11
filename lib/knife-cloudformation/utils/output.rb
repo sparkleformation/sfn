@@ -42,7 +42,7 @@ module KnifeCloudformation
           attrs = hash.keys
         end
         titles = attrs.map do |key|
-          key.gsub(/([a-z])([A-Z])/, '\1 \2')
+          camel(key).gsub(/([a-z])([A-Z])/, '\1 \2')
         end.compact
         if(args[:format])
           titles.map{|s| @ui.color(s, :bold)}
