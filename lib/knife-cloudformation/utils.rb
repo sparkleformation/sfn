@@ -6,6 +6,7 @@ module KnifeCloudformation
 
     autoload :Output, 'knife-cloudformation/utils/output'
     autoload :StackParameterValidator, 'knife-cloudformation/utils/stack_parameter_validator'
+    autoload :StackParameterScrubber, 'knife-cloudformation/utils/stack_parameter_scrubber'
 
     # Debug helpers
     module Debug
