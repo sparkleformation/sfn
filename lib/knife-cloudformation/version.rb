@@ -1,6 +1,6 @@
-module KnifeCloudformation
-  class Version < Gem::Version
-  end
+require 'knife-cloudformation'
 
-  VERSION = Version.new('0.1.23')
+module KnifeCloudformation
+  # Current library version
+  VERSION = Gem::Version.new('0.1.23')
 end
