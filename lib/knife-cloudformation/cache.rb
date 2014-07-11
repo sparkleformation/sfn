@@ -1,12 +1,18 @@
 require 'digest/sha2'
 require 'redis-objects'
 require 'thread'
+require 'knife-cloudformation'
 
 module KnifeCloudformation
+  # Data caching helper
   class Cache
 
     class << self
 
+      # Configure the caching approach to use
+      #
+      # @param type [Symbol] :redis or :local
+      # @param args [Hash] redis connection arguments if used
       def configure(type, args={})
         type = type.to_sym
         case type
@@ -20,14 +26,24 @@ module KnifeCloudformation
         enable(type)
       end
 
+      # Set enabled caching type
+      #
+      # @param type [Symbol]
+      # @return [Symbol]
       def enable(type)
         @type = type.to_sym
       end
 
+      # @return [Symbol] type of caching enabled
       def type
         @type || :local
       end
 
+      # Set/get time limit on data type
+      #
+      # @param kind [String, Symbol] data type
+      # @param seconds [Integer]
+      # return [Integer] seconds
       def apply_limit(kind, seconds=nil)
         @apply_limit ||= {}
         if(seconds)
@@ -36,10 +52,12 @@ module KnifeCloudformation
         @apply_limit[kind.to_sym].to_i
       end
 
+      # @return [Hash] default limits
       def default_limits
         (@apply_limit || {}).dup
       end
 
+      # Ping the redis connection and reconnect if dead
       def redis_ping!
         if((@_pid && @_pid != Process.pid) || !Redis::Objects.redis.connected?)
           Redis::Objects.redis.client.reconnect
@@ -49,8 +67,12 @@ module KnifeCloudformation
 
     end
 
+    # @return [String] custom key for this cache
     attr_reader :key
 
+    # Create new instance
+    #
+    # @param key [String, Array]
     def initialize(key)
       if(key.respond_to?(:sort))
         key = key.flatten if key.respond_to?(:flatten)
@@ -60,15 +82,26 @@ module KnifeCloudformation
       @apply_limit = self.class.default_limits
     end
 
+    # Initialize a new data type
+    #
+    # @param name [Symbol] name of data
+    # @param kind [Symbol] data type
+    # @param args [Hash] options for data type
     def init(name, kind, args={})
       get_storage(self.class.type, kind, name, args)
       true
     end
 
+    # @return [Hash] data registry
     def registry
       get_storage(self.class.type, :hash, "registry_#{key}")
     end
 
+    # Clear data
+    #
+    # @param args [Symbol] list of names to delete
+    # @return [TrueClass]
+    # @note clears all data if no names provided
     def clear!(*args)
       internal_lock do
         args = registry.keys if args.empty?
@@ -86,6 +119,13 @@ module KnifeCloudformation
       true
     end
 
+    # Fetch item from storage
+    #
+    # @param store_type [Symbol]
+    # @param data_type [Symbol]
+    # @param name [Symbol] name of data
+    # @param args [Hash] options for underlying storage
+    # @return [Object]
     def get_storage(store_type, data_type, name, args={})
       full_name = "#{key}_#{name}"
       result = nil
@@ -107,6 +147,12 @@ module KnifeCloudformation
       result
     end
 
+    # Fetch item from redis storage
+    #
+    # @param data_type [Symbol]
+    # @param full_name [Symbol]
+    # @param args [Hash]
+    # @return [Object]
     def get_redis_storage(data_type, full_name, args={})
       self.class.redis_ping!
       case data_type.to_sym
@@ -125,6 +171,13 @@ module KnifeCloudformation
       end
     end
 
+    # Fetch item from local storage
+    #
+    # @param data_type [Symbol]
+    # @param full_name [Symbol]
+    # @param args [Hash]
+    # @return [Object]
+    # @todo make proper singleton for local storage
     def get_local_storage(data_type, full_name, args={})
       @storage ||= {}
       @storage[full_name] ||= case data_type.to_sym
@@ -143,12 +196,20 @@ module KnifeCloudformation
         end
     end
 
+    # Execute block within internal lock
+    #
+    # @return [Object] result of yield
+    # @note for internal use
     def internal_lock
       get_storage(self.class.type, :lock, :internal_access, :timeout => 20, :expiration => 120).lock do
         yield
       end
     end
 
+    # Fetch data
+    #
+    # @param name [String, Symbol]
+    # @return [Object, NilClass]
     def [](name)
       if(kind = registry[name.to_s])
         get_storage(self.class.type, kind, name)
@@ -157,14 +218,29 @@ module KnifeCloudformation
       end
     end
 
+    # Set data
+    #
+    # @param key [Object]
+    # @param val [Object]
+    # @note this will never work, thus you should never use it
     def []=(key, val)
       raise 'Setting backend data is not allowed'
     end
 
+    # Check if cache time has expired
+    #
+    # @param key [String, Symbol] value key
+    # @param stamp [Time, Integer]
+    # @return [TrueClass, FalseClass]
     def time_check_allow?(key, stamp)
       Time.now.to_i - stamp.to_i > apply_limit(key)
     end
 
+    # Apply time limit for data type
+    #
+    # @param kind [String, Symbol] data type
+    # @param seconds [Integer]
+    # return [Integer]
     def apply_limit(kind, seconds=nil)
       @apply_limit ||= {}
       if(seconds)
@@ -173,6 +249,11 @@ module KnifeCloudformation
       @apply_limit[kind.to_sym].to_i
     end
 
+    # Perform action within lock
+    #
+    # @param lock_name [String, Symbol] name of lock
+    # @param raise_on_locked [TrueClass, FalseClass] raise execption if lock wait times out
+    # @return [Object] result of yield
     def locked_action(lock_name, raise_on_locked=false)
       begin
         self[lock_name].lock do
@@ -183,23 +264,40 @@ module KnifeCloudformation
       end
     end
 
+    # Simple value for memory cache
     class LocalValue
+      # @return [Object] value
       attr_accessor :value
       def initialize(*args)
         @value = nil
       end
     end
 
+    # Simple lock for memory cache
     class LocalLock
 
-      attr_reader :_key, :_timeout, :_lock
+      # @return [Symbol] key name
+      attr_reader :_key
+      # @return [Numeric] timeout
+      attr_reader :_timeout
+      # @return [Mutex] underlying lock
+      attr_reader :_lock
 
+      # Create new instance
+      #
+      # @param name [Symbol] name of lock
+      # @param args [Hash]
+      # @option args [Numeric] :timeout
       def initialize(name, args={})
         @_key = name
         @_timeout = args.fetch(:timeout, -1).to_f
         @_lock = Mutex.new
       end
 
+      # Aquire lock and yield
+      #
+      # @yield block to execute within lock
+      # @return [Object] result of yield
       def lock
         locked = false
         attempt_start = Time.now.to_f
@@ -217,39 +315,58 @@ module KnifeCloudformation
         end
       end
 
+      # Clear the lock
+      #
+      # @note this is a noop
       def clear
         # noop
       end
     end
 
+    # Wrapper to auto stamp values
     class Stamped
 
+      # Create new instance
+      #
+      # @param name [String, Symbol]
+      # @param base [Redis::Value, LocalValue]
+      # @param cache [Cache]
       def initialize(name, base, cache)
         @name = name.to_sym
         @base = base
         @cache = cache
       end
 
+      # @return [Object] value stored
       def value
         @base.value[:value] if set?
       end
 
+      # Store value and update timestamp
+      #
+      # @param v [Object] value
+      # @return [Object]
       def value=(v)
         @base.value = {:stamp => Time.now.to_f, :value => v}
+        v
       end
 
+      # @return [TrueClass, FalseClass] is value set
       def set?
         @base.value.is_a?(Hash)
       end
 
+      # @return [Float] timestamp of last set (or 0.0 if unset)
       def stamp
         set? ? @base.value[:stamp] : 0.0
       end
 
+      # Force a timestamp update
       def restamp!
         self.value = value
       end
 
+      # @return [TrueClass, FalseClass] update is allowed based on stamp and limits
       def update_allowed?
         !set? || @cache.time_check_allow?(@name, @base.value[:stamp])
       end
