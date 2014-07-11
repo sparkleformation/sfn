@@ -2,7 +2,7 @@ require 'knife-cloudformation'
 
 class Chef
   class Knife
-    # Cloudformation list command
+    # Cloudformation destroy command
     class CloudformationDestroy < Knife
 
       include KnifeCloudformation::KnifeBase
