@@ -1,7 +1,8 @@
-require 'knife-cloudformation/cloudformation_base'
+require 'knife-cloudformation'
 
 class Chef
   class Knife
+    # Cloudformation list command
     class CloudformationDestroy < Knife
 
       include KnifeCloudformation::KnifeBase
@@ -16,31 +17,28 @@ class Chef
         :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:poll] = val }
       )
 
+      # Run the stack destruction action
       def run
         stacks = name_args.sort
         plural = 's' if stacks.size > 1
         ui.warn "Destroying Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold)}"
         ui.confirm "Destroy formation#{plural}"
         stacks.each do |stack_name|
-          destroy_formation!(stack_name)
-          ui.info "Destroy request sent for stack: #{ui.color(stack_name, :bold)}"
+          stack = provider.stacks.detect{|s| s.stack_name == stack_name}
+          if(stack)
+            stack.destroy
+          else
+            ui.warn "Failed to locate requested stack: #{ui.color(stack_name, :bold)}"
+          end
         end
         if(config[:polling])
-          begin
-            stacks.each do |stack_name|
-              poll_stack(stack_name)
-            end
-          rescue SystemExit, Fog::AWS::CloudFormation::NotFound, LoadError
-            # ignore this error since this is the end result we want!
+          if(stacks.size == 1)
+            poll_stack(stacks.first)
+          else
+            ui.error "Stack polling is not available when multiple stack deletion is requested!"
           end
-          ui.info "  -> Destroyed Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold, :red)}"
         end
-      end
-
-      def destroy_formation!(stack_name)
-        get_things(stack_name, 'Failed to perform destruction') do
-          stack(stack_name).destroy
-        end
+        ui.info "  -> Destroyed Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold, :red)}"
       end
 
     end
