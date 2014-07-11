@@ -1,17 +1,22 @@
 require 'chef/knife'
-require 'knife-cloudformation/utils'
-require 'knife-cloudformation/aws_commons'
+require 'knife-cloudformation'
 
 module KnifeCloudformation
-
+  # Base to build cloudformation related knife commands
   module KnifeBase
 
+    # Instance methods for cloudformation command classes
     module InstanceMethods
 
-      def aws
-        self.class.con(ui)
+      # @return [KnifeCloudformation::Provider]
+      def provider
+        self.class.provider
       end
 
+      # Write exception information if debug is enabled
+      #
+      # @param e [Exception]
+      # @param args [String] extra strings to output
       def _debug(e, *args)
         if(ENV['DEBUG'])
           ui.fatal "Exception information: #{e.class}: #{e}\n#{e.backtrace.join("\n")}\n"
@@ -21,22 +26,35 @@ module KnifeCloudformation
         end
       end
 
+      # Get stack
+      #
+      # @param name [String] name of stack
+      # @return [Fog::Orchestration::Stack]
       def stack(name)
-        self.class.con(ui).stack(name, :ignore_seeds)
+        provider.stack(name)
       end
 
+      # @return [Array<String>] attributes to display
       def allowed_attributes
         Chef::Config[:knife][:cloudformation][:attributes] || default_attributes
       end
 
+      # @return [Array<String>] default attributes to display
       def default_attributes
         %w(timestamp stack_name id)
       end
 
+      # Check if attribute is allowed for display
+      #
+      # @param attr [String]
+      # @return [TrueClass, FalseClass]
       def attribute_allowed?(attr)
         config[:all_attributes] || allowed_attributes.include?(attr)
       end
 
+      # Poll events on stack
+      #
+      # @param name [String] name of stack
       def poll_stack(name)
         knife_events = Chef::Knife::CloudformationEvents.new
         knife_events.name_args.push(name)
@@ -44,23 +62,14 @@ module KnifeCloudformation
         knife_events.run
       end
 
-      def things_output(stack, things, what, *args)
-        unless(args.include?(:no_title))
-          output = aws.get_titles(things, :format => true, :attributes => allowed_attributes)
-        else
-          output = []
-        end
-        columns = allowed_attributes.size
-        output += aws.process(things, :flat => true, :attributes => allowed_attributes)
-        output.compact!
-        if(output.empty?)
-          ui.warn 'No information found' unless args.include?(:ignore_empty_output)
-        else
-          ui.info "#{what.to_s.capitalize} for stack: #{ui.color(stack, :bold)}" if stack
-          ui.info "#{ui.list(output, :uneven_columns_across, columns)}"
-        end
-      end
 
+      # Wrapper for information retrieval. Provides consistent error
+      # message for failures
+      #
+      # @param stack [String] stack name
+      # @param message [String] failure message
+      # @yield block to wrap error handling
+      # @return [Object] result of yield
       def get_things(stack=nil, message=nil)
         begin
           yield
@@ -88,40 +97,15 @@ module KnifeCloudformation
         Chef::Knife.new.configure_chef
       end
 
-      def con(ui=nil)
-        unless(@common)
-          @common = KnifeCloudformation::AwsCommons.new(
-            :ui => ui,
-            :fog => _fog || {
-              :aws_access_key_id => _key,
-              :aws_secret_access_key => _secret,
-              :region => _region
-            }
-          )
-        end
-        @common
+      # @return [KnifeCloudformation::Provider]
+      def provider
+        Thread.current[:_provider] ||= KnifeCloudformation::Provider.new(
+          :fog => Chef::Config[:knife][:cloudformation][:credentials],
+          :async => false
+        )
       end
 
-      def _fog
-        Chef::Config[:knife][:cloudformation][:fog] ||
-          Chef::Config[:knife][:fog]
-      end
-
-      def _key
-        Chef::Config[:knife][:cloudformation][:credentials][:key] ||
-          Chef::Config[:knife][:aws_access_key_id]
-      end
-
-      def _secret
-        Chef::Config[:knife][:cloudformation][:credentials][:secret] ||
-          Chef::Config[:knife][:aws_secret_access_key]
-      end
-
-      def _region
-        Chef::Config[:knife][:cloudformation][:credentials][:region] ||
-          Chef::Config[:knife][:region]
-      end
-
+      # @return [FalseClass]
       def use_separate_defaults?
         false
       end
@@ -136,6 +120,7 @@ module KnifeCloudformation
           include KnifeCloudformation::KnifeBase::InstanceMethods
           include KnifeCloudformation::Utils::JSON
           include KnifeCloudformation::Utils::AnimalStrings
+          include KnifeCloudformation::Utils::Output
 
           deps do
             require 'fog'
@@ -144,31 +129,17 @@ module KnifeCloudformation
             Chef::Config[:knife][:cloudformation][:options] ||= Mash.new
           end
 
-          option(:key,
-            :short => '-K KEY',
-            :long => '--key KEY',
-            :description => 'AWS access key id',
+          option(:credentials,
+            :short => '-S CREDENTIALS',
+            :long => '--credentials CREDENTIALS',
+            :description => 'Fog API options. Comma delimited or used multiple times. (-S "aws_access_key_id=MYKEY")',
             :proc => lambda {|val|
-              Chef::Config[:knife][:cloudformation][:credentials][:key] = val
+              val.split(',').each do |pair|
+                key, value = pair.split('=')
+                Chef::Config[:knife][:cloudformation][:credentials][key] = value
+              end
             }
           )
-          option(:secret,
-            :short => '-S SECRET',
-            :long => '--secret SECRET',
-            :description => 'AWS secret access key',
-            :proc => lambda {|val|
-              Chef::Config[:knife][:cloudformation][:credentials][:secret] = val
-            }
-          )
-          option(:region,
-            :short => '-r REGION',
-            :long => '--region REGION',
-            :description => 'AWS region',
-            :proc => lambda {|val|
-              Chef::Config[:knife][:cloudformation][:credentials][:region] = val
-            }
-          )
-
 
           # Populate up the hashes so they are available for knife config
           # with issues of nils
@@ -178,8 +149,6 @@ module KnifeCloudformation
               memo[item.to_sym]
             end
           end
-
-          Chef::Config[:knife][:cloudformation] ||= Mash.new
 
         end
       end
