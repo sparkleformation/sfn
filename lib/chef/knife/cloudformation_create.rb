@@ -1,17 +1,24 @@
 require 'sparkle_formation'
 require 'pathname'
-require 'knife-cloudformation/cloudformation_base'
+require 'knife-cloudformation'
 
 class Chef
   class Knife
+    # Cloudformation create command
+    # @note this class is implemented to be subclassed for things like `update`
     class CloudformationCreate < Knife
 
       include KnifeCloudformation::KnifeBase
 
       banner 'knife cloudformation create NAME'
 
+      # Container for CLI options
       module Options
         class << self
+
+          # Add CLI option to class
+          #
+          # @param klass [Class]
           def included(klass)
             klass.class_eval do
 
@@ -123,6 +130,7 @@ class Chef
 
       include Options
 
+      # Run the stack creation command
       def run
         @action_type = self.class.name.split('::').last.sub('Cloudformation', '').upcase
         name = name_args.first
@@ -168,11 +176,18 @@ class Chef
           ui.info _format_json(file)
           exit 1
         end
-        stack_def = KnifeCloudformation::AwsCommons::Stack.build_stack_definition(file, Chef::Config[:knife][:cloudformation][:options])
-        aws.create_stack(name, stack_def)
+
+        stack = provider.stacks.new(
+          Chef::Config[:knife][:cloudformation][:options].dup.merge(
+            :stack_name => name,
+            :template => file
+          )
+        )
+        stack.create
+
         if(Chef::Config[:knife][:cloudformation][:poll])
-          poll_stack(name)
-          if(stack(name).success?)
+          poll_stack(stack)
+          if(stack.success?)
             ui.info "Stack #{action_type} complete: #{ui.color('SUCCESS', :green)}"
             knife_output = Chef::Knife::CloudformationDescribe.new
             knife_output.name_args.push(name)
