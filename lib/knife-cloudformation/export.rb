@@ -1,5 +1,5 @@
-require 'knife-cloudformation/aws_commons'
 require 'chef'
+require 'knife-cloudformation'
 
 module KnifeCloudformation
   class Export
