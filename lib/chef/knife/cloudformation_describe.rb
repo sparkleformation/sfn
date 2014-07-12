@@ -5,7 +5,7 @@ class Chef
     # Cloudformation describe command
     class CloudformationDescribe < Knife
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation describe NAME'
 
@@ -34,7 +34,9 @@ class Chef
       )
 
       # information available
-      AVAILABLE_DISPLAYS = [:resources, :outputs]
+      unless(defined?(AVAILABLE_DISPLAYS))
+        AVAILABLE_DISPLAYS = [:resources, :outputs]
+      end
 
       # Run the stack describe action
       def run

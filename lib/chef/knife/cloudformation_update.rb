@@ -1,4 +1,4 @@
-require 'knife-cloudformation/cloudformation_base'
+require 'knife-cloudformation'
 require File.join(File.dirname(__FILE__), 'cloudformation_create')
 
 class Chef
@@ -6,7 +6,7 @@ class Chef
     class CloudformationUpdate < Knife
       banner 'knife cloudformation update NAME'
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
       include CloudformationCreate::Options
 
       def create_stack(name, stack)

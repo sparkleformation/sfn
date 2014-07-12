@@ -8,7 +8,7 @@ class Chef
     # @note this class is implemented to be subclassed for things like `update`
     class CloudformationCreate < Knife
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation create NAME'
 
@@ -208,6 +208,10 @@ class Chef
         end
       end
 
+      # Prompt for parameter values and store result
+      #
+      # @param stack [Hash] stack template
+      # @return [Hash]
       def populate_parameters!(stack)
         if(Chef::Config[:knife][:cloudformation][:interactive_parameters])
           if(stack['Parameters'])
@@ -231,10 +235,14 @@ class Chef
             end
           end
         end
+        stack
       end
 
       private
 
+      # Set SparkleFormation paths and locate tempate
+      #
+      # @return [TrueClass]
       def set_paths_and_discover_file!
         if(Chef::Config[:knife][:cloudformation][:base_directory])
           SparkleFormation.components_path = File.join(
@@ -250,14 +258,25 @@ class Chef
           )
         else
           unless(Pathname(Chef::Config[:knife][:cloudformation][:file]).absolute?)
-            Chef::Config[:knife][:cloudformation][:file] = File.join(
-              Chef::Config[:knife][:cloudformation][:base_directory] || File.join(Dir.pwd, 'cloudformation'),
-              Chef::Config[:knife][:cloudformation][:file]
-            )
+            base_dir = Chef::Config[:knife][:cloudformation][:base_directory]
+            file = Chef::Config[:knife][:cloudformation][:file]
+            pwd = Dir.pwd
+            Chef::Config[:knife][:cloudformation][:file] = [
+              File.join(base_dir, file),
+              File.join(pwd, file),
+              File.join(pwd, 'cloudformation', file)
+            ].detect do |file_path|
+              File.exists?(file_path)
+            end
           end
         end
+        true
       end
 
+      # Prompt user for file selection
+      #
+      # @param dir [String] path to directory
+      # @return [TrueClass]
       def prompt_for_file(dir)
         directory = Dir.new(dir)
         directories = directory.map do |d|
@@ -317,6 +336,7 @@ class Chef
             end
           end
         end
+        true
       end
 
     end

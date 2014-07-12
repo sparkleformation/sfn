@@ -1,10 +1,10 @@
-require 'knife-cloudformation/cloudformation_base'
+require 'knife-cloudformation'
 
 class Chef
   class Knife
     class CloudformationPromote < Knife
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation promote NEW_STACK_NAME DESTINATION'
 

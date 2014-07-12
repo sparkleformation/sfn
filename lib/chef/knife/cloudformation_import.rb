@@ -1,11 +1,11 @@
 require 'tempfile'
-require 'knife-cloudformation/cloudformation_base'
+require 'knife-cloudformation'
 
 class Chef
   class Knife
     class CloudformationImport < Knife
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation import NEW_STACK_NAME [JSON_EXPORT_FILE]'
 

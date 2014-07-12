@@ -5,7 +5,7 @@ class Chef
     # Cloudformation list command
     class CloudformationList < Knife
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation list NAME'
 

@@ -1,11 +1,11 @@
-require 'knife-cloudformation/cloudformation_base'
-require 'knife-cloudformation/utils'
+require 'knife-cloudformation'
 
 class Chef
   class Knife
+    # Cloudformation inspect command
     class CloudformationInspect < Knife
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
       include KnifeCloudformation::Utils::Ssher
 
       banner 'knife cloudformation inspect NAME'
@@ -42,6 +42,7 @@ class Chef
         }
       )
 
+      # Run the stack inspection action
       def run
         stack_name = name_args.last
         if(config[:instance_failure])

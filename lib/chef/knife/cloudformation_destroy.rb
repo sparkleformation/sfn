@@ -5,7 +5,7 @@ class Chef
     # Cloudformation destroy command
     class CloudformationDestroy < Knife
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation destroy NAME [NAME]'
 

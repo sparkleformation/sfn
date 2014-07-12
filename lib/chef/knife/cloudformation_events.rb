@@ -7,7 +7,7 @@ class Chef
 
       banner 'knife cloudformation events NAME'
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       option(:polling,
         :short => '-p',

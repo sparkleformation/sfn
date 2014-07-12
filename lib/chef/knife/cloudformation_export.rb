@@ -1,11 +1,11 @@
-require 'knife-cloudformation/cloudformation_base'
+require 'knife-cloudformation'
 require 'knife-cloudformation/export'
 
 class Chef
   class Knife
     class CloudformationExport < Knife
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation export NAME'
 

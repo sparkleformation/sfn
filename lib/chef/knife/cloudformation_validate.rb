@@ -1,13 +1,12 @@
-require 'sparkle_formation'
 require 'pathname'
-require 'knife-cloudformation/cloudformation_base'
-require 'chef/knife/cloudformation_create'
+require 'sparkle_formation'
+require 'knife-cloudformation'
 
 class Chef
   class Knife
     class CloudformationValidate < CloudformationCreate
 
-      include KnifeCloudformation::KnifeBase
+      include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation validate'
 
