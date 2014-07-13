@@ -10,21 +10,26 @@ module KnifeCloudformation
 
         # Load the template file
         #
+        # @param args [Symbol] options (:allow_missing)
         # @return [Hash] loaded template
-        def load_template_file
+        def load_template_file(*args)
           unless(Chef::Config[:knife][:cloudformation][:template])
             set_paths_and_discover_file!
             unless(File.exists?(Chef::Config[:knife][:cloudformation][:file].to_s))
-              ui.fatal "Invalid formation file path provided: #{Chef::Config[:knife][:cloudformation][:file]}"
-              exit 1
+              unless(args.include?(:allow_missing))
+                ui.fatal "Invalid formation file path provided: #{Chef::Config[:knife][:cloudformation][:file]}"
+                exit 1
+              end
             end
           end
           if(Chef::Config[:knife][:cloudformation][:template])
             Chef::Config[:knife][:cloudformation][:template]
-          elsif(Chef::Config[:knife][:cloudformation][:processing])
-            SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
-          else
-            _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
+          elsif(Chef::Config[:knife][:cloudformation][:file])
+            if(Chef::Config[:knife][:cloudformation][:processing])
+              SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
+            else
+              _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
+            end
           end
         end
 
@@ -57,21 +62,21 @@ module KnifeCloudformation
             Chef::Config[:knife][:cloudformation][:base_directory], 'dynamics'
           )
         end
-        unless(Chef::Config[:knife][:cloudformation][:file])
+        if(!Chef::Config[:knife][:cloudformation][:file] && Chef::Config[:knife][:cloudformation][:file_path_prompt])
           Chef::Config[:knife][:cloudformation][:file] = prompt_for_file(
             Chef::Config[:knife][:cloudformation][:base_directory] || File.join(Dir.pwd, 'cloudformation')
           )
         else
-          unless(Pathname(Chef::Config[:knife][:cloudformation][:file]).absolute?)
-            base_dir = Chef::Config[:knife][:cloudformation][:base_directory]
-            file = Chef::Config[:knife][:cloudformation][:file]
+          unless(Pathname(Chef::Config[:knife][:cloudformation][:file].to_s).absolute?)
+            base_dir = Chef::Config[:knife][:cloudformation][:base_directory].to_s
+            file = Chef::Config[:knife][:cloudformation][:file].to_s
             pwd = Dir.pwd
             Chef::Config[:knife][:cloudformation][:file] = [
               File.join(base_dir, file),
               File.join(pwd, file),
               File.join(pwd, 'cloudformation', file)
             ].detect do |file_path|
-              File.exists?(file_path)
+              File.file?(file_path)
             end
           end
         end
@@ -167,6 +172,15 @@ module KnifeCloudformation
             :description => 'Path to Cloud Formation to process',
             :proc => lambda {|val|
               Chef::Config[:knife][:cloudformation][:file] = val
+            }
+          )
+          option(:file_path_prompt,
+            :long => '--[no-]file-path-prompt',
+            :description => 'Interactive prompt for template path discovery',
+            :boolean => true,
+            :default => true,
+            :proc => lambda {|val|
+              Chef::Config[:knife][:cloudformation][:file_path_prompt] = val
             }
           )
           option(:base_directory,
