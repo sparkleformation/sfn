@@ -3,29 +3,34 @@ require 'knife-cloudformation'
 
 class Chef
   class Knife
+    # Cloudformation import command
     class CloudformationImport < Knife
 
       include KnifeCloudformation::Knife::Base
 
       banner 'knife cloudformation import NEW_STACK_NAME [JSON_EXPORT_FILE]'
 
-      option(:s3_bucket,
-        :long => '--s3-bucket NAME',
-        :description => 'S3 bucket for export storage',
-        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:s3_export] = v }
-      )
-
-      option(:s3_prefix,
-        :long => '--s3-prefix PREFIX',
-        :description => 'Directory prefix within S3 bucket to store the export',
-        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:s3_prefix] = v }
-      )
-
       option(:path,
         :long => '--export-path PATH',
-        :description => 'Path to write export JSON file',
-        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:export_path] = v }
+        :description => 'Directory path write export JSON file',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:import][:path] = v}
       )
+
+      option(:bucket,
+        :long => '--export-bucket BUCKET_NAME',
+        :description => 'Remote file bucket to write export JSON file',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:import][:bucket] = v}
+      )
+
+      option(:bucket_prefix,
+        :long => '--bucket-key-prefix PREFIX',
+        :description => 'Key prefix for file storage in bucket. Can be callable block if defined within configuration',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:import][:bucket_prefix] = v}
+      )
+
+      unless(Chef::Config[:knife][:cloudformation].has_key?(:import))
+        Chef::Config[:knife][:cloudformation][:import] = Mash.new
+      end
 
       def run
         stack_name, json_file = name_args
