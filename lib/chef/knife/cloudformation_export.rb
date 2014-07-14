@@ -1,35 +1,37 @@
 require 'knife-cloudformation'
-require 'knife-cloudformation/export'
 
 class Chef
   class Knife
+    # Cloudformation export command
     class CloudformationExport < Knife
 
       include KnifeCloudformation::Knife::Base
+      include KnifeCloudformation::Utils::ObjectStorage
 
-      banner 'knife cloudformation export NAME'
+      banner 'knife cloudformation export STACK_NAME'
 
       option(:export_name,
         :long => '--export-file-name NAME',
-        :description => 'File basename to contain the export'
-      )
-
-      option(:s3_bucket,
-        :long => '--s3-bucket NAME',
-        :description => 'S3 bucket for export storage',
-        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:s3_export] = v }
-      )
-
-      option(:s3_prefix,
-        :long => '--s3-prefix PREFIX',
-        :description => 'Directory prefix within S3 bucket to store the export',
-        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:s3_prefix] = v }
+        :description => 'File basename to contain the export. Can be callable block if defined within configuration',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:export][:name] = v}
       )
 
       option(:path,
         :long => '--export-path PATH',
-        :description => 'Path to write export JSON file',
-        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:export_path] = v }
+        :description => 'Directory path write export JSON file',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:export][:path] = v}
+      )
+
+      option(:bucket,
+        :long => '--export-bucket BUCKET_NAME',
+        :description => 'Remote file bucket to write export JSON file',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:export][:bucket] = v}
+      )
+
+      option(:bucket_prefix,
+        :long => '--bucket-key-prefix PREFIX',
+        :description => 'Key prefix for file storage in bucket. Can be callable block if defined within configuration',
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:export][:bucket_prefix] = v}
       )
 
       option(:ignore_parameters,
@@ -37,8 +39,7 @@ class Chef
         :long => '--exclude-parameter NAME',
         :description => 'Exclude parameter from export (can be used multiple times)',
         :proc => lambda{|v|
-          Chef::Config[:knife][:cloudformation][:ignore_parameters] ||= []
-          Chef::Config[:knife][:cloudformation][:ignore_parameters].push(v).uniq!
+          Chef::Config[:knife][:cloudformation][:export][:ignore_parameters].push(v).uniq!
         }
       )
 
@@ -46,7 +47,7 @@ class Chef
         :long => '--chef-environment-parameter NAME',
         :description => 'Parameter used within stack to specify Chef environment',
         :proc => lambda{|v|
-          Chef::Config[:knife][:cloudformation][:chef_environment_parameter] = v
+          Chef::Config[:knife][:cloudformation][:export][:chef_environment_parameter] = v
         }
       )
 
@@ -55,63 +56,98 @@ class Chef
         :boolean => true,
         :default => true,
         :description => 'Freezes first run files',
-        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:chef_popsicle] = v }
+        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:export][:chef_popsicle] = v }
       )
 
+      unless(Chef::Config[:knife][:cloudformation].has_key?(:export))
+        Chef::Config[:knife][:cloudformation][:export] = Mash.new(
+          :credentials => Mash.new,
+          :ignore_parameters => []
+        )
+      end
+
+      # Run export action
       def run
-        ui.info "#{ui.color('Stack Export:', :bold)} #{name_args.first}"
+        stack_name = name_args.first
+        ui.info "#{ui.color('Stack Export:', :bold)} #{stack_name}"
         ui.confirm 'Perform export'
-        ex_opts = {}
-        [:chef_popsicle, :chef_environment_parameter, :ignore_parameters].each do |key|
-          unless(Chef::Config[:knife][:cloudformation][key].nil?)
-            ex_opts[key] = Chef::Config[:knife][:cloudformation][key]
+        stack = provider.stacks.get(stack_name)
+        if(stack)
+          export_options = Mash.new.tap do |opts|
+            [:chef_popsicle, :chef_environment_parameter, :ignore_parameters].each do |key|
+              unless(Chef::Config[:knife][:cloudformation][:export][key].nil?)
+                opts[key] = Chef::Config[:knife][:cloudformation][:export][key]
+              end
+            end
           end
-        end
-        exporter = KnifeCloudformation::Export.new(name_args.first, ex_opts.merge(:aws_commons => aws))
-        result = exporter.export
-        outputs = [write_to_file(result), write_to_s3(result)].compact
-        if(outputs.empty?)
-          ui.info _format_json(result)
-        end
-        ui.info "#{ui.color('Stack export', :bold)} (#{name_args.first}): #{ui.color('complete', :green)}"
-        unless(outputs.empty?)
-          outputs.each do |output|
-            ui.info ui.color("  -> #{output}", :blue)
+          exporter = KnifeCloudformation::Utils::StackExporter.new(stack, export_options)
+          result = exporter.export
+          outputs = [
+            write_to_file(result, stack),
+            write_to_bucket(result, stack)
+          ].compact
+          if(outputs.empty?)
+            ui.warn 'No persistent output location defined. Printing export:'
+            ui.info _format_json(result)
           end
+          ui.info "#{ui.color('Stack export', :bold)} (#{name_args.first}): #{ui.color('complete', :green)}"
+          unless(outputs.empty?)
+            outputs.each do |output|
+              ui.info ui.color("  -> #{output}", :blue)
+            end
+          end
+        else
+          ui.fatal "Failed to discover requested stack: #{ui.color(stack_name, :red, :bold)}"
+          exit -1
         end
       end
 
-      def export_file_name
-        filename = config[:export_name] || "#{name_args.first}-#{Time.now.to_i}"
-        filename << '.json' unless filename.end_with?('.json')
-        filename
+      # Generate file name for stack export JSON contents
+      #
+      # @param stack [Fog::Orchestration::Stack]
+      # @return [String] file name
+      def export_file_name(stack)
+        name = Chef::Config[:knife][:cloudformation][:export][:file]
+        if(name)
+          if(name.respond_to?(:call))
+            name.call(stack)
+          else
+            name.to_s
+          end
+        else
+          "#{stack.stack_name}-#{Time.now.to_i}.json"
+        end
       end
 
-      def write_to_file(payload)
-        if(Chef::Config[:knife][:cloudformation][:export_path])
+      # Write stack export to local file
+      #
+      # @param payload [Hash] stack export payload
+      # @param stack [Fog::Orchestration::Stack]
+      # @return [String, NilClass] path to file
+      def write_to_file(payload, stack)
+        if(Chef::Config[:knife][:cloudformation][:export][:path])
           file_path = File.join(
-            Chef::Config[:knife][:cloudformation][:export_path],
-            export_file_name
+            Chef::Config[:knife][:cloudformation][:export][:path],
+            export_file_name(stack)
           )
-          File.open(file_path, 'w') do |file|
-            file.puts _format_json(payload)
-          end
+          file_store(payload, file_path)
           file_path
         end
       end
 
-      def write_to_s3(payload)
-        if(bucket = Chef::Config[:knife][:cloudformation][:s3_bucket])
-          s3_path = File.join(
-            Chef::Config[:knife][:cloudformation][:s3_prefix],
-            export_file_name
+      # Write stack export to remote bucket
+      #
+      # @param payload [Hash] stack export payload
+      # @param stack [Fog::Orchestration::Stack]
+      # @return [String, NilClass] remote bucket key
+      def write_to_bucket(payload, stack)
+        if(bucket = Chef::Config[:knife][:cloudformation][:export][:bucket])
+          key_path = File.join(*[
+              bucket_prefix(stack),
+              export_file_name(stack)
+            ].compact
           )
-          begin
-            s3_store(bucket, s3_path, payload, aws)
-          rescue Excon::Errors::Error
-            exit 1
-          end
-          "s3://#{File.join(bucket, s3_path)}"
+          bucket_store(bucket, key_path, payload, provider)
         end
       end
 
