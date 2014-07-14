@@ -6,6 +6,9 @@ module KnifeCloudformation
     # Template handling helper methods
     module Template
 
+      # cloudformation directories that should be ignored
+      TEMPLATE_IGNORE_DIRECTORIES = %w(components dynamics registry)
+
       module InstanceMethods
 
         # Load the template file
@@ -63,8 +66,19 @@ module KnifeCloudformation
           )
         end
         if(!Chef::Config[:knife][:cloudformation][:file] && Chef::Config[:knife][:cloudformation][:file_path_prompt])
-          Chef::Config[:knife][:cloudformation][:file] = prompt_for_file(
-            Chef::Config[:knife][:cloudformation][:base_directory] || File.join(Dir.pwd, 'cloudformation')
+          root = Chef::Config[:knife][:cloudformation].fetch(:base_directory,
+            File.join(Dir.pwd, 'cloudformation')
+          ).split('/')
+          bucket = root.pop
+          root = root.join('/')
+          directory = provider.service_for(:storage,
+            :provider => :local,
+            :local_root => root
+          ).directories.get(bucket)
+          Chef::Config[:knife][:cloudformation][:file] = prompt_for_file(directory,
+            :directories_name => 'Collections',
+            :files_name => 'Templates',
+            :ignore_directories => TEMPLATE_IGNORE_DIRECTORIES
           )
         else
           unless(Pathname(Chef::Config[:knife][:cloudformation][:file].to_s).absolute?)
@@ -85,42 +99,48 @@ module KnifeCloudformation
 
       # Prompt user for file selection
       #
-      # @param dir [String] path to directory
+      # @param directory [Fog::Storage::Directory] path to directory
+      # @param opts [Hash] options
+      # @option opts [Array<String>] :ignore_directories directory names
+      # @option opts [String] :directories_name title for directories
+      # @option opts [String] :files_name title for files
       # @return [String] file path
-      def prompt_for_file(dir)
-        directory = Dir.new(dir)
-        directories = directory.map do |d|
-          if(!d.start_with?('.') && !%w(dynamics registry components).include?(d) && File.directory?(path = File.join(dir, d)))
-            path
+      def prompt_for_file(directory, opts={})
+        directories = directory.files.find_all do |file|
+          file.identity.split('/').size == 2
+        end.group_by do |file|
+          file.identity.split('/').first
+        end.keys
+        files = directory.files.find_all do |file|
+          file.identity.split('/').size == 1
+        end
+        if(opts[:ignore_directories])
+          directories.delete_if do |dir|
+            opts[:ignore_directories].include?(dir)
           end
-        end.compact.sort
-        files = directory.map do |f|
-          if(!f.start_with?('.') && File.file?(path = File.join(dir, f)))
-            path
-          end
-        end.compact.sort
+        end
         if(directories.empty? && files.empty?)
           ui.fatal 'No formation paths discoverable!'
         else
-          output = ['Please select the formation to create']
+          output = ['Please select an entry']
           output << '(or directory to list):' unless directories.empty?
           ui.info output.join(' ')
           output.clear
           idx = 1
           valid = {}
           unless(directories.empty?)
-            output << ui.color('Directories:', :bold)
-            directories.each do |path|
-              valid[idx] = {:path => path, :type => :directory}
-              output << [idx, "#{File.basename(path).sub('.rb', '').split(/[-_]/).map(&:capitalize).join(' ')}"]
+            output << ui.color("#{opts.fetch(:directories_name, 'Directories')}:", :bold)
+            directories.each do |dir|
+              valid[idx] = {:path => File.join(directory.identity, dir), :type => :directory}
+              output << [idx, "#{File.basename(dir).sub('.rb', '').split(/[-_]/).map(&:capitalize).join(' ')}"]
               idx += 1
             end
           end
           unless(files.empty?)
-            output << ui.color('Templates:', :bold)
-            files.each do |path|
-              valid[idx] = {:path => path, :type => :file}
-              output << [idx, "#{File.basename(path).sub('.rb', '').split(/[-_]/).map(&:capitalize).join(' ')}"]
+            output << ui.color("#{opts.fetch(:files_name, 'Files')}:", :bold)
+            files.each do |file|
+              valid[idx] = {:path => File.join(directory.identity, file.identity), :type => :file}
+              output << [idx, "#{File.basename(file.identity).sub('.rb', '').split(/[-_]/).map(&:capitalize).join(' ')}"]
               idx += 1
             end
           end
@@ -140,7 +160,7 @@ module KnifeCloudformation
           else
             entry = valid[response.to_i]
             if(entry[:type] == :directory)
-              prompt_for_file(entry[:path])
+              prompt_for_file(directory.collection.get(entry[:path]), opts)
             else
               Chef::Config[:knife][:cloudformation][:file] = entry[:path]
             end
@@ -199,7 +219,10 @@ module KnifeCloudformation
             :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:translate] = val}
           )
 
+          Chef::Config[:knife][:cloudformation][:file_path_prompt] = true
+
         end
+
       end
 
     end
