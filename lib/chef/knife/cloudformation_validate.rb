@@ -4,6 +4,7 @@ require 'knife-cloudformation'
 
 class Chef
   class Knife
+    # Cloudformation validate command
     class CloudformationValidate < Knife
 
       include KnifeCloudformation::Knife::Base
