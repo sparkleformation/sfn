@@ -7,6 +7,8 @@ module KnifeCloudformation
   # Remote provider interface
   class Provider
 
+    include KnifeCloudformation::Utils::AnimalStrings
+
     # Default stack status filters
     DEFAULT_STACK_STATUS = {
       Fog::AWS::CloudFormation::Real => {
@@ -59,6 +61,7 @@ module KnifeCloudformation
       @connection = Fog::Orchestration.new(args[:fog])
       @cache = args.fetch(:cache, Cache.new(:local))
       @async = args.fetch(:async, true)
+      @fog_args = args[:fog].dup
       cache.init(:stacks_lock, :lock)
       cache.init(:stacks, :stamped)
       cache.init(:stack_expansion_lock, :lock)
@@ -112,6 +115,9 @@ module KnifeCloudformation
       true
     end
 
+    # Expand all lazy loaded attributes within stack
+    #
+    # @param stack [Fog::Orchestration::Stack]
     def expand_stack(stack)
       if((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > 20) ||
           !stack.attributes['Cached'])
@@ -125,7 +131,6 @@ module KnifeCloudformation
         save_expanded_stack(stack.id, stack.attributes)
       end
     end
-
 
     # Format status array into option proper option
     #
@@ -170,6 +175,17 @@ module KnifeCloudformation
       else
         false
       end
+    end
+
+    # Build API connection for service type
+    #
+    # @param service [String, Symbol]
+    # @return [Fog::Service]
+    def service_for(service)
+      klass_name = Fog.constants.detect do |symbol|
+        snake(symbol.to_s) == service.to_s
+      end
+      Fog.const_get(klass_name).new(@fog_args)
     end
 
   end
