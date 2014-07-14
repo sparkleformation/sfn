@@ -180,12 +180,17 @@ module KnifeCloudformation
     # Build API connection for service type
     #
     # @param service [String, Symbol]
+    # @param args [Hash] optional fog argument hash
     # @return [Fog::Service]
-    def service_for(service)
-      klass_name = Fog.constants.detect do |symbol|
-        snake(symbol.to_s) == service.to_s
+    def service_for(service, args={})
+      klass_name = Fog.constants.sort.detect do |symbol|
+        snake(symbol) == service.to_sym
       end
-      Fog.const_get(klass_name).new(@fog_args)
+      if(klass_name)
+        Fog.const_get(klass_name).new(@fog_args.merge(args))
+      else
+        raise ArgumentError.new("Invalid service name provided. Unable to locate API handler. (#{service})")
+      end
     end
 
   end
