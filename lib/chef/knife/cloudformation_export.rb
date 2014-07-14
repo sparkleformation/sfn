@@ -126,12 +126,15 @@ class Chef
       # @return [String, NilClass] path to file
       def write_to_file(payload, stack)
         if(Chef::Config[:knife][:cloudformation][:export][:path])
-          file_path = File.join(
+          root, bucket, path = File.join(
             Chef::Config[:knife][:cloudformation][:export][:path],
             export_file_name(stack)
-          )
-          file_store(payload, file_path)
-          file_path
+          ).split('/', 3)
+          directory = provider.service_for(:storage,
+            :provider => :local,
+            :local_root => root
+          ).directories.get(bucket)
+          file_store(payload, path, directory)
         end
       end
 
@@ -147,7 +150,7 @@ class Chef
               export_file_name(stack)
             ].compact
           )
-          bucket_store(bucket, key_path, payload, provider)
+          file_store(payload, key_path, provider.service_for(:storage).directories.get(bucket))
         end
       end
 

@@ -163,32 +163,18 @@ module KnifeCloudformation
       #
       # @param object [Object]
       # @param path [String] path to write object
-      # @return [TrueClass]
-      def file_store(object, path)
+      # @param directory [Fog::Storage::Directory]
+      # @return [String] file path
+      def file_store(object, path, directory)
         content = object.is_a?(String) ? object : Utils._format_json(object)
-        File.open(path, 'w') do |file|
-          file.write(content)
-        end
-        true
-      end
-
-      # Write to bucket
-      #
-      # @param object [Object]
-      # @param bucket [String]
-      # @param path [String]
-      # @param provider [KnifeCloudformation::Provider]
-      # @return [String]
-      def bucket_store(object, bucket, path, provider)
-        content = object.is_a?(String) ? object : Utils._format_json(object)
-        storage = provider.service_for(:storage)
-        directory = storage.directories.get(bucket)
         directory.files.create(
           :identity => path,
           :body => content
         )
-        "object_store://#{bucket}/#{path}"
+        loc = directory.service.service.name.split('::').last.downcase
+        "#{loc}://#{directory.identity}/#{path}"
       end
+
     end
 
     extend ObjectStorage
