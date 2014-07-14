@@ -7,6 +7,7 @@ module KnifeCloudformation
     autoload :Output, 'knife-cloudformation/utils/output'
     autoload :StackParameterValidator, 'knife-cloudformation/utils/stack_parameter_validator'
     autoload :StackParameterScrubber, 'knife-cloudformation/utils/stack_parameter_scrubber'
+    autoload :StackExporter, 'knife-cloudformation/utils/stack_exporter'
 
     # Debug helpers
     module Debug
@@ -164,40 +165,29 @@ module KnifeCloudformation
       # @param path [String] path to write object
       # @return [TrueClass]
       def file_store(object, path)
-        content = object.is_a?(String) ? object : Utils._to_json(object)
+        content = object.is_a?(String) ? object : Utils._format_json(object)
         File.open(path, 'w') do |file|
           file.write(content)
         end
         true
       end
 
-      # Write to s3
+      # Write to bucket
       #
       # @param object [Object]
       # @param bucket [String]
       # @param path [String]
-      # @param aws [Fog::AWS::S3]
-      # @return [TrueClass]
-      # @todo update to use Fog::Files model
-      def s3_store(object, bucket, path, aws)
+      # @param provider [KnifeCloudformation::Provider]
+      # @return [String]
+      def bucket_store(object, bucket, path, provider)
         content = object.is_a?(String) ? object : Utils._format_json(object)
-        begin
-          aws.aws(:storage).get_bucket(bucket)
-        rescue Excon::Errors::NotFound => e
-          begin
-            aws.aws(:storage).put_bucket(bucket)
-            if(defined?(ui))
-              ui.warn "Configured storage bucket was not found. Created (#{bucket})."
-            end
-          rescue Excon::Errors::Error => e
-            if(defined?(ui))
-              ui.error "Failed to create bucket! (#{e})"
-            end
-            raise e
-          end
-        end
-        aws.aws(:storage).put_object(bucket, path, content)
-        true
+        storage = provider.service_for(:storage)
+        directory = storage.directories.get(bucket)
+        directory.files.create(
+          :identity => path,
+          :body => content
+        )
+        "object_store://#{bucket}/#{path}"
       end
     end
 
