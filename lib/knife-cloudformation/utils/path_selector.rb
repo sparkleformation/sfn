@@ -89,7 +89,7 @@ module KnifeCloudformation
             if(entry[:type] == :directory)
               prompt_for_file(directory.collection.get(entry[:path]), opts)
             else
-              entry[:path]
+              "/#{entry[:path]}"
             end
           end
         end
