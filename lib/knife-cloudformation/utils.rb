@@ -13,6 +13,7 @@ module KnifeCloudformation
     autoload :AnimalStrings, 'knife-cloudformation/utils/animal_strings'
     autoload :Ssher, 'knife-cloudformation/utils/ssher'
     autoload :ObjectStorage, 'knife-cloudformation/utils/object_storage'
+    autoload :PathSelector, 'knife-cloudformation/utils/path_selector'
 
     # Provide methods directly from module for previous version compatibility
     extend JSON
