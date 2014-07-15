@@ -1,4 +1,4 @@
-require 'tempfile'
+require 'stringio'
 require 'knife-cloudformation'
 
 class Chef
@@ -7,18 +7,19 @@ class Chef
     class CloudformationImport < Knife
 
       include KnifeCloudformation::Knife::Base
+      include KnifeCloudformation::Utils::ObjectStorage
 
       banner 'knife cloudformation import NEW_STACK_NAME [JSON_EXPORT_FILE]'
 
       option(:path,
-        :long => '--export-path PATH',
-        :description => 'Directory path write export JSON file',
+        :long => '--import-path PATH',
+        :description => 'Directory path JSON export files are located',
         :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:import][:path] = v}
       )
 
       option(:bucket,
         :long => '--export-bucket BUCKET_NAME',
-        :description => 'Remote file bucket to write export JSON file',
+        :description => 'Remote file bucket JSON export files are located',
         :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:import][:bucket] = v}
       )
 
@@ -32,134 +33,100 @@ class Chef
         Chef::Config[:knife][:cloudformation][:import] = Mash.new
       end
 
+      # Run the import action
       def run
         stack_name, json_file = name_args
         ui.info "#{ui.color('Stack Import:', :bold)} #{stack_name}"
         unless(json_file)
           entries = [].tap do |_entries|
-            _entries.push('s3') if Chef::Config[:knife][:cloudformation][:s3_bucket]
-            _entries.push('fs') if Chef::Config[:knife][:cloudformation][:export_path]
+            _entries.push('s3') if Chef::Config[:knife][:cloudformation][:import][:bucket]
+            _entries.push('fs') if Chef::Config[:knife][:cloudformation][:import][:path]
           end
           if(entries.size > 1)
             valid = false
             until(valid)
-              answer = ui.ask_question('Import via file system (fs) or bucket (s3)?', :default => 's3')
-              valid = true if %w(s3 fs).include?(answer)
+              answer = ui.ask_question('Import via file system (fs) or remote bucket (remote)?', :default => 'remote')
+              valid = true if %w(remote fs).include?(answer)
               entries = [answer]
             end
           elsif(entries.size < 1)
-            ui.error 'No path or bucket set. Unable to perform dynamic lookup!'
+            ui.fatal 'No path or bucket set. Unable to perform dynamic lookup!'
             exit 1
           end
           case entries.first
-          when 's3'
-            bucket = Chef::Config[:knife][:cloudformation][:s3_bucket]
-            prefix = Chef::Config[:knife][:cloudformation][:s3_prefix]
-            json_file = s3_import_discovery(bucket, prefix)
-          when 'fs'
-            json_file = fs_import_discovery
+          when 'remote'
+            json_file = remote_discovery(stack)
           else
-            ui.error "Unexpected dynamic discovery type encountered (#{entries.first})"
-            exit 1
+            json_file = local_discovery(stack)
           end
         end
         if(File.exists?(json_file) || json_file.is_a?(IO))
-          stack = _from_json(json_file.is_a?(IO) ? json_file.read : File.read(json_file))
+          content = json_file.is_a?(IO) ? json_file.read : File.read(json_file)
+          export = Mash.new(_from_json(content))
           creator = Chef::Knife::CloudformationCreate.new
           creator.name_args = [stack_name]
-          Chef::Config[:knife][:cloudformation][:template] = stack['template_body']
-          Chef::Config[:knife][:cloudformation][:options] = Mash.new
-          Chef::Config[:knife][:cloudformation][:options][:parameters] = Mash.new
-          stack['parameters'].each do |k,v|
-            Chef::Config[:knife][:cloudformation][:options][:parameters][k] = v
-          end
+          Chef::Config[:knife][:cloudformation][:template] = stack[:stack][:template]
+          Chef::Config[:knife][:cloudformation][:options] = stack[:stack][:options]
           ui.info '  - Starting creation of import'
           creator.run
           ui.info "#{ui.color('Stack Import', :bold)} (#{json_file}): #{ui.color('complete', :green)}"
         else
-          ui.error "Failed to locate JSON export file (#{json_file})"
+          ui.fatal "Failed to locate JSON export file (#{json_file})"
           exit 1
         end
       end
 
-      def s3_import_discovery(bucket, prefix)
-        path = nil
-        until(path)
-          contents = s3_directory_contents(bucket, prefix)
-          directories = contents[:directories]
-          files = contents[:files]
-          output = ['Please select the formation to import']
-          output << '(or directory to list):' unless directories.empty?
-          ui.info output.join(' ')
-          output.clear
-          idx = 1
-          valid = {}
-
-          unless(directories.empty?)
-            output << ui.color('Directories:', :bold)
-            directories.each do |path|
-              valid[idx] = {:path => path, :type => :directory}
-              output << [idx, File.basename(path).sub('.json', '').split(/[-_]/).map(&:capitalize).join(' ')]
-              idx += 1
-            end
-          end
-          unless(files.empty?)
-            output << ui.color('Exports:', :bold)
-            files.each do |path|
-              valid[idx] = {:path => path, :type => :file}
-              output << [idx, File.basename(path).sub('.rb', '')]
-              idx += 1
-            end
-          end
-          max = idx.to_s.length
-          output.map! do |o|
-            if(o.is_a?(Array))
-              "  #{o.first}.#{' ' * (max - o.first.to_s.length)} #{o.last}"
-            else
-              o
-            end
-          end
-          ui.info "#{output.join("\n")}\n"
-          response = ask_question('Enter selection: ').to_i
-          unless(valid[response])
-            ui.fatal 'How about using a real value'
-            exit 1
+      # Generate bucket prefix
+      #
+      # @param stack [Fog::Orchestration::Stack]
+      # @return [String, NilClass]
+      def bucket_prefix(stack)
+        if(prefix = Chef::Config[:knife][:cloudformation][:import][:bucket_prefix])
+          if(prefix.respond_to?(:cal))
+            prefix.call(stack)
           else
-            entry = valid[response.to_i]
-            if(entry[:type] == :directory)
-              path = s3_import_discovery(bucket, entry[:path])
-            else
-              path = entry[:path]
-            end
+            prefix.to_s
           end
-        end
-        if(path.is_a?(String))
-          tmp_file = Tempfile.new(File.basename(path))
-          tmp_file.write(aws.aws(:storage).get_object(bucket, path).body)
-          tmp_file.flush
-          tmp_file.rewind
-          tmp_file
-        else
-          path
         end
       end
 
-      def s3_directory_contents(bucket, prefix)
-        prefix = prefix.dup
-        prefix << '/' unless prefix.end_with?('/')
-        result = aws.aws(:storage).get_bucket(bucket,
-          :prefix => prefix, :delimiter => '/'
-        ).body
-        {}.tap do |content|
-          content[:files] = result['Contents'].map do |content|
-            content['Key']
-          end
-          content[:directories] = result['CommonPrefixes']
+      # Discover remote file
+      #
+      # @param stack [Fog::Orchestration::Stack]
+      # @return [IO] stack export IO
+      def remote_discovery(stack)
+        storage = provider.service_for(:storage)
+        directory = storage.directories.get(
+          Chef::Config[:knife][:cloudformation][:import][:bucket]
+        )
+        file = prompt_for_file(
+          directory,
+          :directories_name => 'Collections',
+          :files_names => 'Exports',
+          :filter_prefix => bucket_prefix(stack)
+        )
+        if(file)
+          remote_file = storage.files.get(file)
+          StringIO.new(remote_file.body)
         end
       end
 
-
-      def fs_import_discovery
+      # Discover remote file
+      #
+      # @param stack [Fog::Orchestration::Stack]
+      # @return [IO] stack export IO
+      def local_discovery(stack)
+        bucket, root = Chef::Config[:knife][:cloudformation][:import][:path].reverse.split('/', 2).map(&:reverse!)
+        storage = provider.service_for(:storage,
+          :provider => :local,
+          :local_root => root
+        )
+        directory = storage.directories.get(bucket)
+        prompt_for_file(
+          directory,
+          :directories_name => 'Collections',
+          :files_names => 'Exports'
+        )
       end
 
     end
