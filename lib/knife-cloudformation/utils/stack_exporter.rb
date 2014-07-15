@@ -15,6 +15,23 @@ module KnifeCloudformation
         :ignored_parameters => ['Environment', 'StackCreator'],
         :chef_environment_parameter => 'Environment'
       )
+      # default structure of export payload
+      DEFAULT_EXPORT_STRUCTURE = {
+        :stack => Mash.new(
+          :template => nil,
+          :options => {
+            :parameters => Mash.new,
+            :capabilities => [],
+            :notification_topics => []
+          }
+        ),
+        :generator => {
+          :timestamp => Time.now.to_i,
+          :name => 'knife-cloudformation',
+          :version => KnifeCloudformation::Version.version,
+          :provider => nil
+        }
+      }
 
       # @return [Fog::Orchestration::Stack]
       attr_reader :stack
@@ -44,12 +61,14 @@ module KnifeCloudformation
       #
       # @return [Hash] exported stack
       def export
-        @stack_export = Mash.new.tap do |stack_export|
-          stack_export[:timestamp] = Time.now.to_i
-          stack_export[:parameters] = stack.parameters || Mash.new
-          stack_export[:template] = stack.load_template
-          stack_export[:capabilities] = stack.capabilities || []
-          stack_export[:notification_topics] = stack.notification_topics || []
+        @stack_export = Mash.new(DEFAULT_EXPORT_STRUCTURE).tap do |stack_export|
+          [:parameters, :template, :capabilities, :notification_topics].each do |key|
+            if(val = stack.send(key))
+              stack_export[:stack][key] = val
+            end
+          end
+          stack_export[:generator][:timestamp] => Time.now.to_i
+          stack_export[:generator][:provider] = snake(provider.service.name.to_s.split('::').last)
           if(chef_popsicle?)
             freeze_runlists(stack_export)
           end
@@ -79,8 +98,8 @@ module KnifeCloudformation
       # @return [Hash]
       def remove_ignored_parameters(export)
         options[:ignored_parameters].each do |param|
-          if(export[:parameters])
-            export[:parameters].delete(param)
+          if(export[:stack][:options][:parameters])
+            export[:stack][:options][:parameters].delete(param)
           end
         end
         export
@@ -91,7 +110,7 @@ module KnifeCloudformation
       # @return [String] environment name
       def chef_environment_name
         if(chef_environment_parameter?)
-          name = stack[:parameters][options[:chef_environment_parameter]]
+          name = stack[:stack][:options][:parameters][options[:chef_environment_parameter]]
         end
         name || DEFAULT_CHEF_ENVIRONMENT
       end
