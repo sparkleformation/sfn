@@ -64,7 +64,11 @@ class Chef
           ui.fatal "Formation name must be specified!"
           exit 1
         end
-        file = load_template_file
+        if(Chef::Config[:knife][:cloudformation][:template])
+          file = Chef::Config[:knife][:cloudformation][:template]
+        else
+          file = load_template_file
+        end
         ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('create', :green)}"
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
         if(Chef::Config[:knife][:cloudformation][:path])
