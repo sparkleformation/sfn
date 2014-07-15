@@ -22,7 +22,7 @@ module KnifeCloudformation
                 until(valid)
                   default = Chef::Config[:knife][:cloudformation][:options][:parameters][k] || v['Default']
                   answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}: ", :default => default)
-                  validation = KnifeCloudformation::AwsCommons::Stack::ParameterValidator.validate(answer, v)
+                  validation = KnifeCloudformation::Utils::StackParameterValidator.validate(answer, v)
                   if(validation == true)
                     Chef::Config[:knife][:cloudformation][:options][:parameters][k] = answer
                     valid = true
