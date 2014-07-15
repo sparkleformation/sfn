@@ -7,6 +7,9 @@ module KnifeCloudformation
     # Stack serialization helper
     class StackExporter
 
+      include KnifeCloudformation::Utils::AnimalStrings
+      include KnifeCloudformation::Utils::JSON
+
       # default chef environment name
       DEFAULT_CHEF_ENVIRONMENT = '_default'
       # default instance options
@@ -28,15 +31,13 @@ module KnifeCloudformation
         :generator => {
           :timestamp => Time.now.to_i,
           :name => 'knife-cloudformation',
-          :version => KnifeCloudformation::Version.version,
+          :version => KnifeCloudformation::VERSION.version,
           :provider => nil
         }
       }
 
       # @return [Fog::Orchestration::Stack]
       attr_reader :stack
-      # @return [KnifeCloudformation::Provider]
-      attr_reader :provider
       # @return [Hash]
       attr_reader :options
       # @return [Hash]
@@ -52,7 +53,6 @@ module KnifeCloudformation
       # @option options [String] :chef_environment_parameter
       def initialize(stack, options={})
         @stack = stack
-        @provider = options.delete(:provider)
         @options = DEFAULT_OPTIONS.merge(options)
         @stack_export = Mash.new
       end
@@ -62,17 +62,23 @@ module KnifeCloudformation
       # @return [Hash] exported stack
       def export
         @stack_export = Mash.new(DEFAULT_EXPORT_STRUCTURE).tap do |stack_export|
-          [:parameters, :template, :capabilities, :notification_topics].each do |key|
+          [:parameters, :capabilities, :notification_topics].each do |key|
             if(val = stack.send(key))
               stack_export[:stack][key] = val
             end
           end
-          stack_export[:generator][:timestamp] => Time.now.to_i
-          stack_export[:generator][:provider] = snake(provider.service.name.to_s.split('::').last)
+          stack_export[:stack][:template] = stack.load_template
+          stack_export[:generator][:timestamp] = Time.now.to_i
+          stack_export[:generator][:provider] = snake(
+            stack.service.service.name.split('::').last
+          )
           if(chef_popsicle?)
             freeze_runlists(stack_export)
           end
           remove_ignored_parameters(stack_export)
+          stack_export[:stack][:template] = _to_json(
+            stack_export[:stack][:template]
+          )
         end
       end
 
