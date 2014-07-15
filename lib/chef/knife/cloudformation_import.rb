@@ -7,14 +7,18 @@ class Chef
     class CloudformationImport < Knife
 
       include KnifeCloudformation::Knife::Base
+      include KnifeCloudformation::Utils::JSON
       include KnifeCloudformation::Utils::ObjectStorage
+      include KnifeCloudformation::Utils::PathSelector
 
       banner 'knife cloudformation import NEW_STACK_NAME [JSON_EXPORT_FILE]'
 
       option(:path,
         :long => '--import-path PATH',
         :description => 'Directory path JSON export files are located',
-        :proc => lambda{|v| Chef::Config[:knife][:cloudformation][:import][:path] = v}
+        :proc => lambda{|v|
+          Chef::Config[:knife][:cloudformation][:import][:path] = File.expand_path(v)
+        }
       )
 
       option(:bucket,
@@ -55,21 +59,27 @@ class Chef
           end
           case entries.first
           when 'remote'
-            json_file = remote_discovery(stack)
+            json_file = remote_discovery
           else
-            json_file = local_discovery(stack)
+            json_file = local_discovery
           end
         end
         if(File.exists?(json_file) || json_file.is_a?(IO))
           content = json_file.is_a?(IO) ? json_file.read : File.read(json_file)
           export = Mash.new(_from_json(content))
-          creator = Chef::Knife::CloudformationCreate.new
-          creator.name_args = [stack_name]
-          Chef::Config[:knife][:cloudformation][:template] = stack[:stack][:template]
-          Chef::Config[:knife][:cloudformation][:options] = stack[:stack][:options]
-          ui.info '  - Starting creation of import'
-          creator.run
-          ui.info "#{ui.color('Stack Import', :bold)} (#{json_file}): #{ui.color('complete', :green)}"
+          begin
+            creator = Chef::Knife::CloudformationCreate.new
+            creator.name_args = [stack_name]
+            Chef::Config[:knife][:cloudformation][:template] = _from_json(export[:stack][:template])
+            Chef::Config[:knife][:cloudformation][:options] = export[:stack][:options]
+            ui.info '  - Starting creation of import'
+            creator.run
+            ui.info "#{ui.color('Stack Import', :bold)} (#{json_file}): #{ui.color('complete', :green)}"
+          rescue => e
+            ui.fatal "Failed to import stack: #{e}"
+            debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+            exit -1
+          end
         else
           ui.fatal "Failed to locate JSON export file (#{json_file})"
           exit 1
@@ -78,12 +88,11 @@ class Chef
 
       # Generate bucket prefix
       #
-      # @param stack [Fog::Orchestration::Stack]
       # @return [String, NilClass]
-      def bucket_prefix(stack)
+      def bucket_prefix
         if(prefix = Chef::Config[:knife][:cloudformation][:import][:bucket_prefix])
           if(prefix.respond_to?(:cal))
-            prefix.call(stack)
+            prefix.call
           else
             prefix.to_s
           end
@@ -92,9 +101,8 @@ class Chef
 
       # Discover remote file
       #
-      # @param stack [Fog::Orchestration::Stack]
       # @return [IO] stack export IO
-      def remote_discovery(stack)
+      def remote_discovery
         storage = provider.service_for(:storage)
         directory = storage.directories.get(
           Chef::Config[:knife][:cloudformation][:import][:bucket]
@@ -103,7 +111,7 @@ class Chef
           directory,
           :directories_name => 'Collections',
           :files_names => 'Exports',
-          :filter_prefix => bucket_prefix(stack)
+          :filter_prefix => bucket_prefix
         )
         if(file)
           remote_file = storage.files.get(file)
@@ -113,13 +121,12 @@ class Chef
 
       # Discover remote file
       #
-      # @param stack [Fog::Orchestration::Stack]
       # @return [IO] stack export IO
-      def local_discovery(stack)
-        bucket, root = Chef::Config[:knife][:cloudformation][:import][:path].reverse.split('/', 2).map(&:reverse!)
+      def local_discovery
+        _, bucket = Chef::Config[:knife][:cloudformation][:import][:path].split('/', 2)
         storage = provider.service_for(:storage,
           :provider => :local,
-          :local_root => root
+          :local_root => '/'
         )
         directory = storage.directories.get(bucket)
         prompt_for_file(
