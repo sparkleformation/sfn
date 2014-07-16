@@ -112,6 +112,19 @@ module KnifeCloudformation
       true
     end
 
+    # Remove stack from the cache
+    #
+    # @param stack_id [String]
+    # @return [TrueClass, FalseClass]
+    def remove_stack(stack_id)
+      current_stacks = cached_stacks
+      cache.locked_action(:stacks_lock) do
+        val = current_stacks.delete(stack_id)
+        cache[:stacks].value = MultiJson.dump(current_stacks)
+        !!val
+      end
+    end
+
     # Expand all lazy loaded attributes within stack
     #
     # @param stack [Fog::Orchestration::Stack]
