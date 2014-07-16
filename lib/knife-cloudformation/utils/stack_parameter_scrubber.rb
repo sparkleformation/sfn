@@ -1,6 +1,6 @@
 require 'knife-cloudformation'
 
-class KnifeCloudformation
+module KnifeCloudformation
   module Utils
     # Helper for scrubbing stack parameters
     class StackParameterScrubber
