@@ -106,10 +106,7 @@ module KnifeCloudformation
     def save_expanded_stack(stack_id, stack_attributes)
       current_stacks = cached_stacks
       cache.locked_action(:stacks_lock) do
-        current_stacks[stack_id] = Chef::Mixin::DeepMerge.merge(
-          current_stacks[stack_id],
-          stack_attributes.merge('Cached' => Time.now.to_i)
-        )
+        current_stacks[stack_id] = stack_attributes.merge('Cached' => Time.now.to_i)
         cache[:stacks].value = MultiJson.dump(current_stacks)
       end
       true
