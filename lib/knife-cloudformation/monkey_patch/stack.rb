@@ -158,7 +158,7 @@ module KnifeCloudformation
       def percent_complete(min = 5)
         if(in_progress?)
           full_expansion!
-          total_resources = template.fetch('Resources', []).size
+          total_resources = load_template.fetch('Resources', []).size
           total_complete = (resources || []).find_all do |resource|
             resource.resource_status.downcase.end_with?('complete')
           end.size
