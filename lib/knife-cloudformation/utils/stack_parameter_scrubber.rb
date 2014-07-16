@@ -16,13 +16,15 @@ module KnifeCloudformation
 
         # Clean the parameters of the template
         #
-        # @param
+        # @param template [Hash]
+        # @return [Hash] template
         def scrub!(template)
           template.fetch('Parameters', {}).each do |name, options|
             options.delete_if do |attribute, value|
               !ALLOWED_PARAMETER_ATTRIBUTES.include?(attribute)
             end
           end
+          template
         end
 
       end
