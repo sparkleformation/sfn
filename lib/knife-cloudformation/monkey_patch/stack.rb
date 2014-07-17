@@ -180,7 +180,13 @@ module KnifeCloudformation
       # @return [self]
       def full_expansion!
         if(_provider)
-          _provider.expand_stack(self)
+          begin
+            _provider.expand_stack(self)
+          rescue => e
+            attributes['Events'] ||= []
+            attributes['Resources'] ||= []
+            attributes['TemplateBody'] ||= ''
+          end
         end
         self
       end
