@@ -9,6 +9,10 @@ module KnifeCloudformation
 
     include KnifeCloudformation::Utils::AnimalStrings
 
+    # Minimum number of seconds to wait before re-expanding in
+    # progress stack
+    STACK_EXPAND_INTERVAL = 45
+
     # Default stack status filters
     DEFAULT_STACK_STATUS = {
       Fog::AWS::CloudFormation::Real => {
@@ -129,7 +133,7 @@ module KnifeCloudformation
     #
     # @param stack [Fog::Orchestration::Stack]
     def expand_stack(stack)
-      if((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > 20) ||
+      if((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > STACK_EXPAND_INTERVAL) ||
           !stack.attributes['Cached'])
         cache.locked_action(:stack_expansion_lock) do
           stack.reload
