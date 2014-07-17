@@ -166,7 +166,12 @@ module KnifeCloudformation
           existing_stacks = MultiJson.load(cache[:stacks].value)
           # Force common types
           stacks = MultiJson.load(MultiJson.dump(stacks))
+          # Remove stacks that have been deleted
+          stale_ids = existing_stacks.map(&:id) - stacks.map(&:id)
           stacks = Chef::Mixin::DeepMerge.merge(existing_stacks, stacks)
+          stale_ids.each do |stale_id|
+            stacks.delete(stale_id)
+          end
         end
         cache[:stacks].value = stacks.to_json
       end
