@@ -1,5 +1,6 @@
 require 'fog'
 require 'chef/mash'
+require 'logger'
 require 'chef/mixin/deep_merge'
 require 'knife-cloudformation'
 
@@ -12,6 +13,9 @@ module KnifeCloudformation
     # Minimum number of seconds to wait before re-expanding in
     # progress stack
     STACK_EXPAND_INTERVAL = 45
+
+    # Default interval for refreshing stack list in cache
+    STACK_LIST_INTERVAL = 120
 
     # Default stack status filters
     DEFAULT_STACK_STATUS = {
@@ -42,6 +46,12 @@ module KnifeCloudformation
     attr_accessor :updater
     # @return [TrueClass, FalseClass] async updates
     attr_reader :async
+    # @return [Logger, NilClass] logger in use
+    attr_reader :logger
+    # @return [Numeric] interval between stack expansions
+    attr_reader :stack_expansion_interval
+    # @return [Numeric] interval between stack list updates
+    attr_reader :stack_list_interval
 
     # Create new instance
     #
@@ -49,6 +59,9 @@ module KnifeCloudformation
     # @option args [Hash] :fog fog connection hash
     # @option args [Cache] :cache
     # @option args [TrueClass, FalseClass] :async fetch stacks async (defaults true)
+    # @option args [Logger] :logger use custom logger
+    # @option args [Numeric] :stack_expansion_interval interval to wait between stack data expands
+    # @option args [Numeric] :stack_list_interval interval to wait between stack list refresh
     def initialize(args={})
       unless(args[:fog][:provider])
         best_guess = args[:fog].keys.group_by do |key|
@@ -62,13 +75,16 @@ module KnifeCloudformation
           raise ArgumentError.new 'Cannot auto determine :provider value for credentials'
         end
       end
+      @logger = args.fetch(:logger, Logger.new(ENV['DEBUG'] ? STDOUT : '/dev/null'))
+      @stack_expansion_interval = args.fetch(:stack_expansion_interval, STACK_EXPAND_INTERVAL)
+      @stack_list_interval = args.fetch(:stack_list_interval, STACK_LIST_INTERVAL)
       @connection = Fog::Orchestration.new(args[:fog])
       @cache = args.fetch(:cache, Cache.new(:local))
       @async = args.fetch(:async, true)
       @fog_args = args[:fog].dup
-      cache.init(:stacks_lock, :lock)
+      cache.init(:stacks_lock, :lock, :timeout => 0.1)
       cache.init(:stacks, :stamped)
-      cache.init(:stack_expansion_lock, :lock)
+      cache.init(:stack_expansion_lock, :lock, :timeout => 0.1)
       async ? update_stack_list! : fetch_stacks
     end
 
@@ -110,6 +126,7 @@ module KnifeCloudformation
     def save_expanded_stack(stack_id, stack_attributes)
       current_stacks = cached_stacks
       cache.locked_action(:stacks_lock) do
+        logger.info "Saving expanded stack attributes in cache (#{stack_id})"
         current_stacks[stack_id] = stack_attributes.merge('Cached' => Time.now.to_i)
         cache[:stacks].value = MultiJson.dump(current_stacks)
       end
@@ -122,8 +139,10 @@ module KnifeCloudformation
     # @return [TrueClass, FalseClass]
     def remove_stack(stack_id)
       current_stacks = cached_stacks
+      logger.info "Attempting to remove stack from internal cache (#{stack_id})"
       cache.locked_action(:stacks_lock) do
         val = current_stacks.delete(stack_id)
+        logger.info "Successfully removed stack from internal cache (#{stack_id})"
         cache[:stacks].value = MultiJson.dump(current_stacks)
         !!val
       end
@@ -133,16 +152,26 @@ module KnifeCloudformation
     #
     # @param stack [Fog::Orchestration::Stack]
     def expand_stack(stack)
-      if((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > STACK_EXPAND_INTERVAL) ||
+      logger.info "Stack expansion requested (#{stack.id})"
+      if((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > stack_expansion_interval) ||
           !stack.attributes['Cached'])
-        cache.locked_action(:stack_expansion_lock) do
-          stack.reload
-          stack.events
-          stack.resources
-          stack.template
-          stack.attributes['Cached'] = Time.now.to_i
+        begin
+          cache.locked_action(:stack_expansion_lock) do
+            expanded = true
+            stack.reload
+            stack.events
+            stack.resources
+            stack.template
+            stack.attributes['Cached'] = Time.now.to_i
+          end
+          if(expanded)
+            save_expanded_stack(stack.id, stack.attributes)
+          end
+        rescue => e
+          logger.error "Stack expansion failed (#{stack.id}) - #{e.class}: #{e}"
         end
-        save_expanded_stack(stack.id, stack.attributes)
+      else
+        logger.info "Stack has been cached within expand interval. Expansion prevented. (#{stack.id})"
       end
     end
 
@@ -161,6 +190,7 @@ module KnifeCloudformation
     # @return [TrueClass]
     def fetch_stacks
       cache.locked_action(:stacks_lock) do
+        logger.info "Lock aquired for stack update. Requesting stacks from upstream. (#{Thread.current})"
         stacks = Hash[
           connection.stacks(:filters => format_status).map do |stack|
             [stack.id, stack.attributes]
@@ -178,17 +208,26 @@ module KnifeCloudformation
           end
         end
         cache[:stacks].value = stacks.to_json
+        logger.info 'Stack list has been updated from upstream and cached locally'
       end
       true
     end
 
-    # Start async stack list update
+    # Start async stack list update. Creates thread that loops every
+    # `self.stack_list_interval` seconds and refreshes stack list in cache
     #
     # @return [TrueClass, FalseClass]
     def update_stack_list!
       if(updater.nil? || !updater.alive?)
         self.updater = Thread.new{
-          fetch_stacks
+          loop do
+            begin
+              fetch_stacks
+              sleep(stack_list_interval)
+            rescue => e
+              logger.error "Failure encountered on stack fetch: #{e.class} - #{e}"
+            end
+          end
         }
         true
       else
