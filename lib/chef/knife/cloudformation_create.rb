@@ -50,12 +50,15 @@ class Chef
         :long => '--print-only',
         :description => 'Print template and exit'
       )
-
-      %w(rollback).each do |key|
-        if(Chef::Config[:knife][:cloudformation][key].nil?)
-          Chef::Config[:knife][:cloudformation][key] = true
-        end
-      end
+      option(:apply_stacks,
+        :long => '--apply-stack NAME_OR_ID',
+        :description => 'Autofill parameters using existing stack outputs. Can be used multiple times',
+        :proc => lambda {|val|
+          Chef::Config[:knife][:cloudformation][:create] ||= Mash.new
+          Chef::Config[:knife][:cloudformation][:create][:apply_stacks] ||= []
+          Chef::Config[:knife][:cloudformation][:create][:apply_stacks].push(val).uniq!
+        }
+      )
 
       # Run the stack creation command
       def run
@@ -78,14 +81,8 @@ class Chef
           end
         end
         ui.info "  -> #{stack_info}"
-        populate_parameters!(file)
-        file = translate_template(file)
 
-        if(config[:print_only])
-          ui.warn 'Print only requested'
-          ui.info _format_json(file)
-          exit 1
-        end
+        file = translate_template(file)
 
         stack = provider.stacks.new(
           Chef::Config[:knife][:cloudformation][:options].dup.merge(
@@ -93,6 +90,16 @@ class Chef
             :template => file
           )
         )
+
+        apply_stacks!(stack)
+
+        if(config[:print_only])
+          ui.warn 'Print only requested'
+          ui.info _format_json(stack.load_template)
+          exit 1
+        end
+
+        populate_parameters!(file)
         stack.create
 
         if(Chef::Config[:knife][:cloudformation][:poll])
@@ -116,6 +123,25 @@ class Chef
           ui.warn 'Stack state polling has been disabled.'
           ui.info "Stack creation initialized for #{ui.color(name, :green)}"
         end
+      end
+
+      # Apply any defined remote stacks
+      #
+      # @param stack [Fog::Orchestration::Stack]
+      # @return [Fog::Orchestration::Stack]
+      def apply_stacks!(stack)
+        remote_stacks = Chef::Config[:knife][:cloudformation].
+          fetch(:create, {}).fetch(:apply_stacks, [])
+        remote_stacks.each do |stack_name|
+          remote_stack = provider.stacks.get(stack_name)
+          if(remote_stack)
+            stack.apply_stack(remote_stack)
+          else
+            ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
+            exit 1
+          end
+        end
+        stack
       end
 
     end

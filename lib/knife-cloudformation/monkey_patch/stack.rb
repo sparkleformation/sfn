@@ -8,6 +8,8 @@ module KnifeCloudformation
     # Expand stack model functionality
     module Stack
 
+      include KnifeCloudformation::Utils::AnimalStrings
+
       # Load the JSON template
       #
       # @return [Hash] loaded template
@@ -189,6 +191,36 @@ module KnifeCloudformation
           end
         end
         self
+      end
+
+      # Apply stack outputs to current stack parameters
+      #
+      # @param remote_stack [Fog::Orchestration::Stack]
+      # @return [self]
+      def apply_stack(remote_stack)
+        loaded_template = load_template
+        stack_parameters = loaded_template.fetch('Parameters',
+          loaded_template.fetch('parameters', {})
+        )
+        valid_parameters = Hash[
+          stack_parameters.keys.map do |key|
+            [snake(key), key]
+          end
+        ]
+        if(persisted?)
+          remote_stack.outputs.each do |output|
+            if(param_key = valid_parameters[snake(output.key)])
+              parameters.merge!(param_key => output.value)
+            end
+          end
+        else
+          remote_stack.outputs.each do |output|
+            if(param_key = valid_parameters[snake(output.key)])
+              stack_parameters[param_key]['Default'] = output.value
+            end
+          end
+          self.template = MultiJson.dump(loaded_template)
+        end
       end
 
     end
