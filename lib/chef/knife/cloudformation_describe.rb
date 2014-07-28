@@ -41,7 +41,7 @@ class Chef
       # Run the stack describe action
       def run
         stack_name = name_args.last
-        stack = provider.stacks.find{|s| s.stack_name = stack_name}
+        stack = provider.stacks.get(stack_name)
         if(stack)
           display = [].tap do |to_display|
             AVAILABLE_DISPLAYS.each do |display_option|
@@ -75,9 +75,10 @@ class Chef
       #
       # @param stack [Fog::Orchestration::Stack]
       def outputs(stack)
-        ui.info "Outputs for stack: #{ui.color(stack.stack_name, :bold)}:"
+        ui.info "Outputs for stack: #{ui.color(stack.stack_name, :bold)}"
         unless(stack.outputs.empty?)
-          stack.outputs.each do |key, value|
+          stack.outputs.each do |output|
+            key, value = output.key, output.value
             key = snake(key).to_s.split('_').map(&:capitalize).join(' ')
             ui.info ['  ', ui.color("#{key}:", :bold), value].join(' ')
           end
