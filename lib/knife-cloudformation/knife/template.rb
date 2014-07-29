@@ -64,8 +64,10 @@ module KnifeCloudformation
             )
           end
           if(!Chef::Config[:knife][:cloudformation][:file] && Chef::Config[:knife][:cloudformation][:file_path_prompt])
-            root = Chef::Config[:knife][:cloudformation].fetch(:base_directory,
-              File.join(Dir.pwd, 'cloudformation')
+            root = File.expand_path(
+              Chef::Config[:knife][:cloudformation].fetch(:base_directory,
+                File.join(Dir.pwd, 'cloudformation')
+              )
             ).split('/')
             bucket = root.pop
             root = root.join('/')
@@ -73,10 +75,12 @@ module KnifeCloudformation
               :provider => :local,
               :local_root => root
             ).directories.get(bucket)
-            Chef::Config[:knife][:cloudformation][:file] = prompt_for_file(directory,
-              :directories_name => 'Collections',
-              :files_name => 'Templates',
-              :ignore_directories => TEMPLATE_IGNORE_DIRECTORIES
+            Chef::Config[:knife][:cloudformation][:file] = File.join(root,
+              prompt_for_file(directory,
+                :directories_name => 'Collections',
+                :files_name => 'Templates',
+                :ignore_directories => TEMPLATE_IGNORE_DIRECTORIES
+              )
             )
           else
             unless(Pathname(Chef::Config[:knife][:cloudformation][:file].to_s).absolute?)
