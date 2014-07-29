@@ -99,7 +99,7 @@ class Chef
           exit 1
         end
 
-        populate_parameters!(file)
+        populate_parameters!(stack.load_template)
         stack.create
 
         if(Chef::Config[:knife][:cloudformation][:poll])
