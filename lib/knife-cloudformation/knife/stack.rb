@@ -8,6 +8,9 @@ module KnifeCloudformation
 
       module InstanceMethods
 
+        # maximum number of attempts to get valid parameter value
+        MAX_PARAMETER_ATTEMPTS = 5
+
         # Prompt for parameter values and store result
         #
         # @param stack [Hash] stack template
@@ -18,8 +21,10 @@ module KnifeCloudformation
               Chef::Config[:knife][:cloudformation][:options][:parameters] ||= Mash.new
               stack.fetch('Parameters', {}).each do |k,v|
                 next if Chef::Config[:knife][:cloudformation][:options][:parameters][k]
+                attempt = 0
                 valid = false
                 until(valid)
+                  attempt += 1
                   default = Chef::Config[:knife][:cloudformation][:options][:parameters][k] || v['Default']
                   answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}: ", :default => default)
                   validation = KnifeCloudformation::Utils::StackParameterValidator.validate(answer, v)
@@ -30,6 +35,10 @@ module KnifeCloudformation
                     validation.each do |validation_error|
                       ui.error validation_error.last
                     end
+                  end
+                  if(attempt > MAX_PARAMETER_ATTEMPTS)
+                    ui.fatal 'Failed to receive allowed parameter!'
+                    exit 1
                   end
                 end
               end
