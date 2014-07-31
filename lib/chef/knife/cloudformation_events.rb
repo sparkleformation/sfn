@@ -1,3 +1,4 @@
+require 'pry'
 require 'knife-cloudformation'
 
 class Chef
@@ -57,8 +58,10 @@ class Chef
               sleep(Chef::Config[:knife][:cloudformation][:poll_delay] || 15)
               stack.events.reload
               events = get_events(stack, last_id)
-              last_id = events.last[:id]
-              things_output(nil, events, 'events', :no_title, :ignore_empty_output)
+              unless(events.empty?)
+                last_id = events.last[:id]
+                things_output(nil, events, 'events', :no_title, :ignore_empty_output)
+              end
             end
             # Extra to see completion
             things_output(nil, get_events(stack, last_id), 'events', :no_title, :ignore_empty_output)
@@ -76,11 +79,12 @@ class Chef
       # @return [Array<Hash>]
       def get_events(stack, last_id=nil)
         get_things do
+          stack_events = stack.events
           if(last_id)
-            start_index = stack.events.index{|event| event.id == last_id}
-            events = stack.events.slice(start_index.to_i, stack.events.length)
+            start_index = stack_events.index{|event| event.id == last_id}
+            events = stack_events.slice(0, start_index.to_i)
           else
-            events = stack.events
+            events = stack_events
           end
           events.map do |event|
             Mash.new(event.attributes)
