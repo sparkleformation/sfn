@@ -156,6 +156,7 @@ module KnifeCloudformation
       if((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > stack_expansion_interval) ||
           !stack.attributes['Cached'])
         begin
+          expanded = false
           cache.locked_action(:stack_expansion_lock) do
             expanded = true
             stack.reload
@@ -201,7 +202,7 @@ module KnifeCloudformation
           # Force common types
           stacks = MultiJson.load(MultiJson.dump(stacks))
           # Remove stacks that have been deleted
-          stale_ids = existing_stacks.map(&:id) - stacks.map(&:id)
+          stale_ids = existing_stacks.keys - stacks.keys
           stacks = Chef::Mixin::DeepMerge.merge(existing_stacks, stacks)
           stale_ids.each do |stale_id|
             stacks.delete(stale_id)
