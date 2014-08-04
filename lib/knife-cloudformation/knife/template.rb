@@ -43,7 +43,17 @@ module KnifeCloudformation
         def translate_template(template)
           if(klass_name = Chef::Config[:knife][:cloudformation][:translate])
             klass = SparkleFormation::Translation.const_get(camel(klass_name))
-            translator = klass.new(template, :parameters => Chef::Config[:knife][:cloudformation][:options][:parameters])
+            args = {
+              :parameters => Chef::Config[:knife][:cloudformation][:options][:parameters]
+            }
+            if(chunk_size = Chef::Config[:knife][:cloudformation][:translate_chunk_size])
+              args.merge!(
+                :options => {
+                  :serialization_chunk_size => chunk_size
+                }
+              )
+            end
+            translator = klass.new(template, args)
             translator.translate!
             template = translator.translated
             ui.info "#{ui.color('Translation applied:', :bold)} #{ui.color(klass_name, :yellow)}"
@@ -151,6 +161,11 @@ module KnifeCloudformation
             :long => '--translate PROVIDER',
             :description => 'Translate generated template to given provider',
             :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:translate] = val}
+          )
+          option(:translate_chunk,
+            :long => '--translate-chunk-size SIZE',
+            :description => 'Chunk length for serialization',
+            :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:translate_chunk_size] = val}
           )
 
           Chef::Config[:knife][:cloudformation][:file_path_prompt] = true
