@@ -56,7 +56,7 @@ class Chef
           stack.update
 
           if(Chef::Config[:knife][:cloudformation][:poll])
-            poll_stack(stack)
+            poll_stack(stack.stack_name)
             if(stack.success?)
               ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
               knife_output = Chef::Knife::CloudformationDescribe.new
