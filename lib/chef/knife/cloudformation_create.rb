@@ -100,6 +100,8 @@ class Chef
         end
 
         populate_parameters!(stack.load_template)
+
+        stack.parameters = Chef::Config[:knife][:cloudformation][:options][:parameters]
         stack.create
 
         if(Chef::Config[:knife][:cloudformation][:poll])
