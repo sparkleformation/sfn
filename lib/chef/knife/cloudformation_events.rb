@@ -1,4 +1,3 @@
-require 'pry'
 require 'knife-cloudformation'
 
 class Chef
