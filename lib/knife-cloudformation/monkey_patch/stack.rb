@@ -199,6 +199,7 @@ module KnifeCloudformation
       # @return [self]
       def apply_stack(remote_stack)
         loaded_template = load_template
+        default_key = loaded_template['heat_template_version'] ? 'default' : 'Default'
         stack_parameters = loaded_template.fetch('Parameters',
           loaded_template.fetch('parameters', {})
         )
@@ -216,7 +217,7 @@ module KnifeCloudformation
         else
           remote_stack.outputs.each do |output|
             if(param_key = valid_parameters[snake(output.key)])
-              stack_parameters[param_key]['Default'] = output.value
+              stack_parameters[param_key][default_key] = output.value
             end
           end
           self.template = MultiJson.dump(loaded_template)
