@@ -82,12 +82,12 @@ class Chef
         end
         ui.info "  -> #{stack_info}"
 
-        file = translate_template(file)
+        scrubbed = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(file)
 
         stack = provider.stacks.new(
           Chef::Config[:knife][:cloudformation][:options].dup.merge(
             :stack_name => name,
-            :template => file
+            :template => scrubbed
           )
         )
 
@@ -95,12 +95,13 @@ class Chef
 
         if(config[:print_only])
           ui.warn 'Print only requested'
-          ui.info _format_json(stack.load_template)
-          exit 1
+          ui.info _format_json(translate_template(stack.load_template))
+          exit 0
         end
 
         populate_parameters!(stack.load_template)
 
+        stack.template = translate_template(stack.load_template)
         stack.parameters = Chef::Config[:knife][:cloudformation][:options][:parameters]
         stack.create
 
