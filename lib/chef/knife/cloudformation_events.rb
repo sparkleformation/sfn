@@ -13,7 +13,7 @@ class Chef
         :short => '-p',
         :long => '--[no-]poll',
         :boolean => true,
-        :default => false,
+        :default => true,
         :description => 'Poll events while stack status is "in progress"',
         :proc => lambda {|v| Chef::Config[:knife][:cloudformation][:poll] = v }
       )
@@ -61,6 +61,7 @@ class Chef
                 last_id = events.last[:id]
                 things_output(nil, events, 'events', :no_title, :ignore_empty_output)
               end
+              stack.reload
             end
             # Extra to see completion
             things_output(nil, get_events(stack, last_id), 'events', :no_title, :ignore_empty_output)
