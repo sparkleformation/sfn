@@ -61,7 +61,7 @@ class Chef
                 last_id = events.last[:id]
                 things_output(nil, events, 'events', :no_title, :ignore_empty_output)
               end
-              stack.reload
+              stack.full_expansion!
             end
             # Extra to see completion
             things_output(nil, get_events(stack, last_id), 'events', :no_title, :ignore_empty_output)

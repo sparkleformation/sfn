@@ -106,18 +106,10 @@ class Chef
         stack.create
 
         if(Chef::Config[:knife][:cloudformation][:poll])
-          tries = 0
-          begin
-            poll_stack(stack.stack_name)
-          rescue SystemExit
-            tries += 1
-            if(tries < 5)
-              sleep(0.2)
-              retry
-            else
-              raise
-            end
-          end
+          provider.fetch_stacks
+          poll_stack(stack.stack_name)
+          stack = provider.stacks.find { |s| s.stack_name == name }
+
           if(stack.success?)
             ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
             knife_output = Chef::Knife::CloudformationDescribe.new
