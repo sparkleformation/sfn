@@ -9,17 +9,6 @@ module KnifeCloudformation
 
       include KnifeCloudformation::Utils::AnimalStrings
 
-      # Load the JSON template
-      #
-      # @return [Hash] loaded template
-      def load_template
-        if(template)
-          MultiJson.load(template)
-        else
-          {}
-        end
-      end
-
       ## Status helpers
 
       # Check for state suffix
@@ -134,11 +123,6 @@ module KnifeCloudformation
       # @return [Symbol] color of state (:danger, :warning, :success)
       def text_state
         red? ? :danger : green? ? :success : :warning
-      end
-
-      # @return [String] #stack_status alias
-      def status
-        stack_status
       end
 
       # @return [Fog::Model::Compute] nodes within this stack
