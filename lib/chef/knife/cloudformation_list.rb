@@ -60,7 +60,11 @@ class Chef
 
       # @return [Array<String>] default attributes to display
       def default_attributes
-        %w(name creation_time status template_description)
+        if(provider.connection.provider == :aws)
+          %w(name creation_time status template_description)
+        else
+          %w(name creation_time status description)
+        end
       end
 
     end
