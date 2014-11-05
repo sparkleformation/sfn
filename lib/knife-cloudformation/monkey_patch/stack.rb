@@ -1,5 +1,4 @@
 require 'base64'
-require 'fog/orchestration/models/stack'
 require 'knife-cloudformation'
 
 module KnifeCloudformation
@@ -159,9 +158,8 @@ module KnifeCloudformation
       # @return [Integer] percent complete (0..100)
       def percent_complete(min = 5)
         if(in_progress?)
-          full_expansion!
           total_resources = load_template.fetch('Resources', []).size
-          total_complete = (resources || []).find_all do |resource|
+          total_complete = resources.all.find_all do |resource|
             resource.resource_status.downcase.end_with?('complete')
           end.size
           result = ((total_complete.to_f / total_resources) * 100).to_i
@@ -171,42 +169,23 @@ module KnifeCloudformation
         end
       end
 
-      # @param provider [KnifeCloudformation::Provider]
-      # @return [KnifeCloudformation::Provider]
-      def _provider(provider=nil)
-        @provider ||= provider
-      end
-
-      # Expand all lazy loaded attributes and save to cache
-      #
-      # @return [self]
-      def full_expansion!
-        if(_provider)
-          begin
-            _provider.expand_stack(self)
-          rescue => e
-            attributes['Events'] ||= []
-            attributes['Resources'] ||= []
-            attributes['TemplateBody'] ||= ''
-          end
-        end
-        self
-      end
-
       # Apply stack outputs to current stack parameters
       #
-      # @param remote_stack [Fog::Orchestration::Stack]
+      # @param remote_stack [Miasma::Orchestration::Stack]
       # @return [self]
+      # @note setting `DisableApply` within parameter hash will
+      #   prevent parameters being overridden
       def apply_stack(remote_stack)
-        loaded_template = load_template
-        default_key = loaded_template['heat_template_version'] ? 'default' : 'Default'
-        stack_parameters = loaded_template.fetch('Parameters',
-          loaded_template.fetch('parameters', {})
+        default_key = 'Default'
+        stack_parameters = template.fetch('Parameters',
+          template.fetch('parameters', {})
         )
         valid_parameters = Hash[
-          stack_parameters.keys.map do |key|
-            [snake(key), key]
-          end
+          stack_parameters.map do |key, val|
+            unless(val['DisableApply'])
+              [snake(key), key]
+            end
+          end.compact
         ]
         if(persisted?)
           remote_stack.outputs.each do |output|
@@ -220,7 +199,6 @@ module KnifeCloudformation
               stack_parameters[param_key][default_key] = output.value
             end
           end
-          self.template = MultiJson.dump(loaded_template)
         end
       end
 
@@ -228,5 +206,5 @@ module KnifeCloudformation
   end
 end
 
-# Infect fog
-Fog::Orchestration::Stack.send(:include, KnifeCloudformation::MonkeyPatch::Stack)
+# Infect miasma
+Miasma::Models::Orchestration::Stack.send(:include, KnifeCloudformation::MonkeyPatch::Stack)
