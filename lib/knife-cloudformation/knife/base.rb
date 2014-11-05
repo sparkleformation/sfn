@@ -63,7 +63,6 @@ module KnifeCloudformation
           knife_events.run
         end
 
-
         # Wrapper for information retrieval. Provides consistent error
         # message for failures
         #
