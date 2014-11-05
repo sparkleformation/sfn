@@ -82,33 +82,34 @@ class Chef
         end
         ui.info "  -> #{stack_info}"
 
-        scrubbed = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(file)
-
-        stack = provider.stacks.new(
+        stack = provider.stacks.build(
           Chef::Config[:knife][:cloudformation][:options].dup.merge(
-            :stack_name => name,
-            :template => scrubbed
+            :name => name,
+            :template => file
           )
         )
 
         apply_stacks!(stack)
+        stack.template = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(
+          stack.template
+        )
 
         if(config[:print_only])
           ui.warn 'Print only requested'
-          ui.info _format_json(translate_template(stack.load_template))
+          ui.info _format_json(translate_template(stack.template))
           exit 0
         end
 
-        populate_parameters!(stack.load_template)
+        populate_parameters!(stack.template)
         stack.parameters = Chef::Config[:knife][:cloudformation][:options][:parameters]
 
-        stack.template = translate_template(stack.load_template)
-        stack.create
+        stack.template = translate_template(stack.template)
+        stack.save
 
         if(Chef::Config[:knife][:cloudformation][:poll])
           provider.fetch_stacks
-          poll_stack(stack.stack_name)
-          stack = provider.stacks.find { |s| s.stack_name == name }
+          poll_stack(stack.name)
+          stack = provider.stacks.get(name)
 
           if(stack.success?)
             ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
