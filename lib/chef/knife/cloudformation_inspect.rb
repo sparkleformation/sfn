@@ -62,7 +62,7 @@ class Chef
       end
 
       def do_instance_failure(stack_name)
-        event = stack(stack_name).events.detect do |e|
+        event = stack(stack_name).events.all.detect do |e|
           e['ResourceType'] == 'AWS::CloudFormation::WaitCondition' &&
             e['ResourceStatus'] == 'CREATE_FAILED' &&
             e['ResourceStatusReason'].include?('uniqueId')
