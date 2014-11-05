@@ -46,7 +46,7 @@ class Chef
       def run
         name = name_args.first
         ui.info "Cloud Formation Events for Stack: #{ui.color(name, :bold)}\n"
-        stack = provider.stacks.find{|s| s.stack_name == name}
+        stack = provider.stacks.get(name)
         last_id = nil
         if(stack)
           events = get_events(stack)
@@ -61,7 +61,7 @@ class Chef
                 last_id = events.last[:id]
                 things_output(nil, events, 'events', :no_title, :ignore_empty_output)
               end
-              stack.full_expansion!
+              stack.reload
             end
             # Extra to see completion
             things_output(nil, get_events(stack, last_id), 'events', :no_title, :ignore_empty_output)
@@ -74,12 +74,12 @@ class Chef
 
       # Fetch events from stack
       #
-      # @param stack [Fog::Orchestration::Stack]
+      # @param stack [Miasma::Models::Orchestration::Stack]
       # @param last_id [String] only return events after this ID
       # @return [Array<Hash>]
       def get_events(stack, last_id=nil)
         get_things do
-          stack_events = stack.events
+          stack_events = stack.events.all
           if(last_id)
             start_index = stack_events.index{|event| event.id == last_id}
             events = stack_events.slice(0, start_index.to_i)
@@ -94,7 +94,7 @@ class Chef
 
       # @return [Array<String>] default attributes for events
       def default_attributes
-        %w(event_time logical_resource_id resource_status resource_status_reason)
+        %w(time resource_logical_id resource_status resource_status_reason)
       end
     end
   end

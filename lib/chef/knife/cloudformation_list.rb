@@ -44,7 +44,7 @@ class Chef
       # @return [Array<Hash>]
       def get_list
         get_things do
-          provider.stacks.map do |stack|
+          provider.stacks.all.map do |stack|
             Mash.new(stack.attributes)
           end.sort do |x, y|
             if(y[:creation_time].to_s.empty?)
@@ -60,7 +60,7 @@ class Chef
 
       # @return [Array<String>] default attributes to display
       def default_attributes
-        %w(stack_name creation_time stack_status description)
+        %w(name creation_time status template_description)
       end
 
     end

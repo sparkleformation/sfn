@@ -63,21 +63,23 @@ class Chef
 
       # Display resources
       #
-      # @param stack [Fog::Orchestration::Stack]
+      # @param stack [Miasma::Models::Orchestration::Stack]
       def resources(stack)
-        stack_resources = stack.resources.map do |resource|
+        stack_resources = stack.resources.all.sort do |x, y|
+          y.updated_time <=> x.updated_time
+        end.map do |resource|
           Mash.new(resource.attributes)
         end
-        things_output(stack.stack_name, stack_resources, :resources)
+        things_output(stack.name, stack_resources, :resources)
       end
 
       # Display outputs
       #
-      # @param stack [Fog::Orchestration::Stack]
+      # @param stack [Miasma::Models::Orchestration::Stack]
       def outputs(stack)
-        ui.info "Outputs for stack: #{ui.color(stack.stack_name, :bold)}"
+        ui.info "Outputs for stack: #{ui.color(stack.name, :bold)}"
         unless(stack.outputs.empty?)
-          stack.outputs.each do |output|
+          stack.outputs.all.each do |output|
             key, value = output.key, output.value
             key = snake(key).to_s.split('_').map(&:capitalize).join(' ')
             ui.info ['  ', ui.color("#{key}:", :bold), value].join(' ')
@@ -89,7 +91,7 @@ class Chef
 
       # @return [Array<String>] default attributes
       def default_attributes
-        %w(updated_time logical_resource_id resource_type resource_status)
+        %w(updated_time logical_id type status status_reason)
       end
 
     end

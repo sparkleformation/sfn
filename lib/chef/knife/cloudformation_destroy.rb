@@ -24,7 +24,7 @@ class Chef
         ui.warn "Destroying Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold)}"
         ui.confirm "Destroy formation#{plural}"
         stacks.each do |stack_name|
-          stack = provider.stacks.detect{|s| s.stack_name == stack_name}
+          stack = provider.stacks.get(stack_name)
           if(stack)
             stack.destroy
           else
