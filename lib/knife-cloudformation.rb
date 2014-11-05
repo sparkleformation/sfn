@@ -1,4 +1,5 @@
 require 'knife-cloudformation/version'
+require 'miasma'
 
 module KnifeCloudformation
 
