@@ -32,7 +32,7 @@ module KnifeCloudformation
         # @param name [String] name of stack
         # @return [Fog::Orchestration::Stack]
         def stack(name)
-          provider.stack(name)
+          provider.stacks.get(name)
         end
 
         # @return [Array<String>] attributes to display
@@ -101,7 +101,7 @@ module KnifeCloudformation
         # @return [KnifeCloudformation::Provider]
         def provider
           Thread.current[:_provider] ||= KnifeCloudformation::Provider.new(
-            :fog => Chef::Config[:knife][:cloudformation][:credentials],
+            :miasma => Chef::Config[:knife][:cloudformation][:credentials],
             :async => false
           )
         end
@@ -133,7 +133,7 @@ module KnifeCloudformation
             option(:credentials,
               :short => '-S CREDENTIALS',
               :long => '--credentials CREDENTIALS',
-              :description => 'Fog API options. Comma delimited or used multiple times. (-S "aws_access_key_id=MYKEY")',
+              :description => 'Miasma API options. Comma delimited or used multiple times. (-S "aws_access_key_id=MYKEY")',
               :proc => lambda {|val|
                 val.split(',').each do |pair|
                   key, value = pair.split('=')
