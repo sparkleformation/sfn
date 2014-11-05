@@ -111,7 +111,7 @@ class Chef
           poll_stack(stack.name)
           stack = provider.stacks.get(name)
 
-          if(stack.success?)
+          if(stack.reload.success?)
             ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
             knife_output = Chef::Knife::CloudformationDescribe.new
             knife_output.name_args.push(name)
