@@ -1,4 +1,3 @@
-require 'fog'
 require 'chef/mash'
 require 'logger'
 require 'chef/mixin/deep_merge'
@@ -17,28 +16,7 @@ module KnifeCloudformation
     # Default interval for refreshing stack list in cache
     STACK_LIST_INTERVAL = 120
 
-    # Default stack status filters
-    DEFAULT_STACK_STATUS = {
-      Fog::AWS::CloudFormation::Real => {
-        :status => %w(
-          CREATE_IN_PROGRESS CREATE_COMPLETE CREATE_FAILED
-          ROLLBACK_IN_PROGRESS ROLLBACK_COMPLETE ROLLBACK_FAILED
-          UPDATE_IN_PROGRESS UPDATE_COMPLETE UPDATE_COMPLETE_CLEANUP_IN_PROGRESS
-          UPDATE_ROLLBACK_IN_PROGRESS UPDATE_ROLLBACK_FAILED
-          UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS UPDATE_ROLLBACK_COMPLETE
-          DELETE_IN_PROGRESS DELETE_FAILED
-        ),
-        :formatter => lambda{|statuses|
-          args = statuses.size.times.map do |i|
-            idx = i + 1
-            ["StackStatusFilter.member.#{idx}", statuses[i]]
-          end
-          Hash[args]
-        }
-      }
-    }
-
-    # @return [Fog::Orchestration]
+    # @return [Miasma::Models::Orchestration]
     attr_reader :connection
     # @return [Cache]
     attr_reader :cache
@@ -56,66 +34,72 @@ module KnifeCloudformation
     # Create new instance
     #
     # @param args [Hash]
-    # @option args [Hash] :fog fog connection hash
+    # @option args [Hash] :miasma miasma connection hash
     # @option args [Cache] :cache
     # @option args [TrueClass, FalseClass] :async fetch stacks async (defaults true)
     # @option args [Logger] :logger use custom logger
     # @option args [Numeric] :stack_expansion_interval interval to wait between stack data expands
     # @option args [Numeric] :stack_list_interval interval to wait between stack list refresh
     def initialize(args={})
-      unless(args[:fog][:provider])
-        best_guess = args[:fog].keys.group_by do |key|
+      unless(args[:miasma][:provider])
+        best_guess = args[:miasma].keys.group_by do |key|
           key.to_s.split('_').first
         end.sort do |x, y|
           y.size <=> x.size
         end.first
         if(best_guess)
-          args[:fog][:provider] = best_guess.first
+          provider = best_guess.first.to_sym
         else
           raise ArgumentError.new 'Cannot auto determine :provider value for credentials'
         end
+      else
+        provider = args[:miasma].delete(:provider).to_sym
       end
-      @logger = args.fetch(:logger, Logger.new(ENV['DEBUG'] ? STDOUT : '/dev/null'))
+      if(provider == :aws)
+        if(args[:miasma][:region])
+          args[:miasma][:aws_region] = args[:miasma].delete(:region)
+        end
+      end
+      if(ENV['DEBUG'].to_s.downcase == 'true')
+        log_to = STDOUT
+      else
+        if(Gem.win_platform?)
+          log_to = 'NUL'
+        else
+          log_to = '/dev/null'
+        end
+      end
+      @logger = args.fetch(:logger, Logger.new(log_to))
       @stack_expansion_interval = args.fetch(:stack_expansion_interval, STACK_EXPAND_INTERVAL)
       @stack_list_interval = args.fetch(:stack_list_interval, STACK_LIST_INTERVAL)
-      @connection = Fog::Orchestration.new(args[:fog])
+      @connection = Miasma.api(
+        :provider => provider,
+        :type => :orchestration,
+        :credentials => args[:miasma]
+      )
       @cache = args.fetch(:cache, Cache.new(:local))
       @async = args.fetch(:async, true)
-      @fog_args = args[:fog].dup
+      @miamsa_args = args[:miasma].dup
       cache.init(:stacks_lock, :lock, :timeout => 0.1)
       cache.init(:stacks, :stamped)
       cache.init(:stack_expansion_lock, :lock, :timeout => 0.1)
       async ? update_stack_list! : fetch_stacks
     end
 
-    # @return [Fog::Orchestration::Stacks]
+    # @return [Miasma::Orchestration::Stacks]
     def stacks
-      _stacks = connection.service.const_get(:Stacks).
-        new(:service => connection).
-        load(cached_stacks.values)
-      _stacks.map do |_stack|
-        _stack._provider(self)
-        _stack
-      end
-      _stacks
+      connection.stacks.from_json(cached_stacks)
     end
 
-    # @return [Hash] cached stacks
+    # @return [String] json representation of cached stacks
     def cached_stacks
       value = cache[:stacks].value
-      value ? MultiJson.load(value) : {}
+      value ? MultiJson.dump(MultiJson.load(value).values) : '[]'
     end
 
-    # @return [Fog::Orchestration::Stack, NilClass]
+    # @return [Miasma::Orchestration::Stack, NilClass]
     def stack(stack_id)
-      attributes = cached_stacks[stack_id]
-      if(attributes)
-        stack = connection.service.const_get(:Stack).new(
-          {:service => connection}.merge(attributes)
-        )
-        stack._provider(self)
-        stack.full_expansion!
-      end
+      stacks.get(stack_id)
     end
 
     # Store stack attribute changes
@@ -124,7 +108,7 @@ module KnifeCloudformation
     # @param stack_attributes [Hash]
     # @return [TrueClass]
     def save_expanded_stack(stack_id, stack_attributes)
-      current_stacks = cached_stacks
+      current_stacks = MultiJson.load(cached_stacks)
       cache.locked_action(:stacks_lock) do
         logger.info "Saving expanded stack attributes in cache (#{stack_id})"
         current_stacks[stack_id] = stack_attributes.merge('Cached' => Time.now.to_i)
@@ -138,7 +122,7 @@ module KnifeCloudformation
     # @param stack_id [String]
     # @return [TrueClass, FalseClass]
     def remove_stack(stack_id)
-      current_stacks = cached_stacks
+      current_stacks = MultiJson.load(cached_stacks)
       logger.info "Attempting to remove stack from internal cache (#{stack_id})"
       cache.locked_action(:stacks_lock) do
         val = current_stacks.delete(stack_id)
@@ -150,7 +134,7 @@ module KnifeCloudformation
 
     # Expand all lazy loaded attributes within stack
     #
-    # @param stack [Fog::Orchestration::Stack]
+    # @param stack [Miasma::Models::Orchestration::Stack]
     def expand_stack(stack)
       logger.info "Stack expansion requested (#{stack.id})"
       if((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > stack_expansion_interval) ||
@@ -160,29 +144,16 @@ module KnifeCloudformation
           cache.locked_action(:stack_expansion_lock) do
             expanded = true
             stack.reload
-            stack.events
-            stack.resources
-            stack.template
-            stack.attributes['Cached'] = Time.now.to_i
+            stack.data['Cached'] = Time.now.to_i
           end
           if(expanded)
-            save_expanded_stack(stack.id, stack.attributes)
+            save_expanded_stack(stack.id, stack.to_json)
           end
         rescue => e
           logger.error "Stack expansion failed (#{stack.id}) - #{e.class}: #{e}"
         end
       else
         logger.info "Stack has been cached within expand interval. Expansion prevented. (#{stack.id})"
-      end
-    end
-
-    # Format status array into option proper option
-    #
-    # @return [NilClass, Object]
-    def format_status(statuses=nil)
-      conf = DEFAULT_STACK_STATUS[connection.class]
-      if(conf)
-        conf[:formatter].call(statuses || conf[:status])
       end
     end
 
@@ -193,7 +164,7 @@ module KnifeCloudformation
       cache.locked_action(:stacks_lock) do
         logger.info "Lock aquired for stack update. Requesting stacks from upstream. (#{Thread.current})"
         stacks = Hash[
-          connection.stacks(:filters => format_status).map do |stack|
+          connection.stacks.reload.map do |stack|
             [stack.id, stack.attributes]
           end
         ]
@@ -239,17 +210,9 @@ module KnifeCloudformation
     # Build API connection for service type
     #
     # @param service [String, Symbol]
-    # @param args [Hash] optional fog argument hash
-    # @return [Fog::Service]
-    def service_for(service, args={})
-      klass_name = Fog.constants.sort.detect do |symbol|
-        snake(symbol) == service.to_sym
-      end
-      if(klass_name)
-        Fog.const_get(klass_name).new(@fog_args.merge(args))
-      else
-        raise ArgumentError.new("Invalid service name provided. Unable to locate API handler. (#{service})")
-      end
+    # @return [Miasma::Model]
+    def service_for(service)
+      connection.api_for(service)
     end
 
   end
