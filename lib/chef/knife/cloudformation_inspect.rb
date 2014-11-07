@@ -22,8 +22,17 @@ class Chef
         stack = provider.stacks.get(stack_name)
         if(config[:attribute])
           attr = config[:attribute].split('.').inject(stack) do |memo, key|
+            args = key.scan(/\(([^)]*)\)/).flatten.first.to_s
+            if(args)
+              args = args.split(',').map{|a| a.to_i.to_s == a ? a.to_i : a}
+              key = key.split('(').first
+            end
             if(memo.public_methods.include?(key.to_sym))
-              memo.send(key)
+              if(args.size == 1 && args.first.to_s.start_with?('&'))
+                memo.send(key, &args.first.slice(2, args.first.size).to_sym)
+              else
+                memo.send(*[key, args].flatten.compact)
+              end
             else
               raise NoMethodError.new "Invalid attribute requested! (#{memo.class}#{key})"
             end
