@@ -33,6 +33,7 @@ class Chef
         end
         if(config[:polling])
           if(stacks.size == 1)
+            provider.fetch_stacks
             poll_stack(stacks.first)
           else
             ui.error "Stack polling is not available when multiple stack deletion is requested!"
