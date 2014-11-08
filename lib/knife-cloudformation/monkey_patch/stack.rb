@@ -125,12 +125,6 @@ module KnifeCloudformation
         red? ? :danger : green? ? :success : :warning
       end
 
-      # @return [Fog::Model::Compute] nodes within this stack
-      # @todo reimplement in non-aws specific manner
-      def nodes
-        []
-      end
-
       # @return [String] URL safe encoded stack id
       def encoded_id
         Base64.urlsafe_encode64(id)
