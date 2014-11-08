@@ -15,7 +15,7 @@ module KnifeCloudformation
       # default instance options
       DEFAULT_OPTIONS = Mash.new(
         :chef_popsicle => true,
-        :ignored_parameters => ['Environment', 'StackCreator'],
+        :ignored_parameters => ['Environment', 'StackCreator', 'Creator'],
         :chef_environment_parameter => 'Environment'
       )
       # default structure of export payload
@@ -36,7 +36,7 @@ module KnifeCloudformation
         }
       }
 
-      # @return [Fog::Orchestration::Stack]
+      # @return [Miasma::Models::Orchestration::Stack]
       attr_reader :stack
       # @return [Hash]
       attr_reader :options
@@ -45,7 +45,7 @@ module KnifeCloudformation
 
       # Create new instance
       #
-      # @param stack [Fog::Orchestration::Stack]
+      # @param stack [Miasma::Models::Orchestration::Stack]
       # @param options [Hash]
       # @option options [KnifeCloudformation::Provider] :provider
       # @option options [TrueClass, FalseClass] :chef_popsicle freeze run list
@@ -67,11 +67,9 @@ module KnifeCloudformation
               stack_export[:stack][key] = val
             end
           end
-          stack_export[:stack][:template] = stack.load_template
+          stack_export[:stack][:template] = stack.template
           stack_export[:generator][:timestamp] = Time.now.to_i
-          stack_export[:generator][:provider] = snake(
-            stack.service.service.name.split('::').last
-          )
+          stack_export[:generator][:provider] = stack.provider.connection.provider
           if(chef_popsicle?)
             freeze_runlists(stack_export)
           end
@@ -113,10 +111,11 @@ module KnifeCloudformation
 
       # Environment name to use when interacting with Chef
       #
+      # @param export [Hash] current export state
       # @return [String] environment name
-      def chef_environment_name
+      def chef_environment_name(export)
         if(chef_environment_parameter?)
-          name = stack[:stack][:options][:parameters][options[:chef_environment_parameter]]
+          name = export[:stack][:options][:parameters][options[:chef_environment_parameter]]
         end
         name || DEFAULT_CHEF_ENVIRONMENT
       end
