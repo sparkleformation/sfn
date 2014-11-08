@@ -13,6 +13,7 @@ module KnifeCloudformation
       # @param directory [Fog::Storage::Directory]
       # @return [String] file path
       def file_store(object, path, directory)
+        raise NotImplementedError.new 'Internal updated required! :('
         content = object.is_a?(String) ? object : Utils._format_json(object)
         directory.files.create(
           :identity => path,
