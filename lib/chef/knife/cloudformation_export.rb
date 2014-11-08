@@ -104,7 +104,7 @@ class Chef
 
       # Generate file name for stack export JSON contents
       #
-      # @param stack [Fog::Orchestration::Stack]
+      # @param stack [Miasma::Models::Orchestration::Stack]
       # @return [String] file name
       def export_file_name(stack)
         name = Chef::Config[:knife][:cloudformation][:export][:file]
@@ -122,9 +122,10 @@ class Chef
       # Write stack export to local file
       #
       # @param payload [Hash] stack export payload
-      # @param stack [Fog::Orchestration::Stack]
+      # @param stack [Misama::Stack::Orchestration::Stack]
       # @return [String, NilClass] path to file
       def write_to_file(payload, stack)
+        raise NotImplementedError
         if(Chef::Config[:knife][:cloudformation][:export][:path])
           full_path = File.join(
             File.expand_path(Chef::Config[:knife][:cloudformation][:export][:path]),
@@ -142,9 +143,10 @@ class Chef
       # Write stack export to remote bucket
       #
       # @param payload [Hash] stack export payload
-      # @param stack [Fog::Orchestration::Stack]
+      # @param stack [Miasma::Models::Orchestration::Stack]
       # @return [String, NilClass] remote bucket key
       def write_to_bucket(payload, stack)
+        raise NotImplementedError
         if(bucket = Chef::Config[:knife][:cloudformation][:export][:bucket])
           key_path = File.join(*[
               bucket_prefix(stack),

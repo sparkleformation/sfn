@@ -10,7 +10,7 @@ module KnifeCloudformation
       #
       # @param object [Object]
       # @param path [String] path to write object
-      # @param directory [Fog::Storage::Directory]
+      # @param directory [Miasma::Models::Storage::Directory]
       # @return [String] file path
       def file_store(object, path, directory)
         raise NotImplementedError.new 'Internal updated required! :('
