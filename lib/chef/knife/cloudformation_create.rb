@@ -134,8 +134,8 @@ class Chef
 
       # Apply any defined remote stacks
       #
-      # @param stack [Fog::Orchestration::Stack]
-      # @return [Fog::Orchestration::Stack]
+      # @param stack [Miasma::Models::Orchestration::Stack]
+      # @return [Miasma::Models::Orchestration::Stack]
       def apply_stacks!(stack)
         remote_stacks = Chef::Config[:knife][:cloudformation].
           fetch(:create, {}).fetch(:apply_stacks, [])
