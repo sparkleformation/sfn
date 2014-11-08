@@ -83,7 +83,9 @@ module KnifeCloudformation
       cache.init(:stacks_lock, :lock, :timeout => 0.1)
       cache.init(:stacks, :stamped)
       cache.init(:stack_expansion_lock, :lock, :timeout => 0.1)
-      async ? update_stack_list! : fetch_stacks
+      if(args.fetch(:fetch, false))
+        async ? update_stack_list! : fetch_stacks
+      end
     end
 
     # @return [Miasma::Orchestration::Stacks]
@@ -93,6 +95,7 @@ module KnifeCloudformation
 
     # @return [String] json representation of cached stacks
     def cached_stacks
+      fetch_stacks unless @initial_fetch_complete
       value = cache[:stacks].value
       value ? MultiJson.dump(MultiJson.load(value).values) : '[]'
     end
@@ -182,7 +185,7 @@ module KnifeCloudformation
         cache[:stacks].value = stacks.to_json
         logger.info 'Stack list has been updated from upstream and cached locally'
       end
-      true
+      @initial_fetch_complete = true
     end
 
     # Start async stack list update. Creates thread that loops every
