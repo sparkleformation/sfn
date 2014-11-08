@@ -101,7 +101,8 @@ module KnifeCloudformation
         def provider
           Thread.current[:_provider] ||= KnifeCloudformation::Provider.new(
             :miasma => Chef::Config[:knife][:cloudformation][:credentials],
-            :async => false
+            :async => false,
+            :fetch => false
           )
         end
 
