@@ -30,7 +30,7 @@ module KnifeCloudformation
         # Get stack
         #
         # @param name [String] name of stack
-        # @return [Fog::Orchestration::Stack]
+        # @return [Miasma::Models::Orchestration::Stack]
         def stack(name)
           provider.stacks.get(name)
         end
@@ -124,7 +124,7 @@ module KnifeCloudformation
             include KnifeCloudformation::Utils::Output
 
             deps do
-              require 'fog'
+              require 'miasma'
               Chef::Config[:knife][:cloudformation] ||= Mash.new
               Chef::Config[:knife][:cloudformation][:credentials] ||= Mash.new
               Chef::Config[:knife][:cloudformation][:options] ||= Mash.new
