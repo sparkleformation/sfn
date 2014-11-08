@@ -17,9 +17,9 @@ class Chef
         ui.info "#{ui.color('Cloud Formation Validation: ', :bold)} #{Chef::Config[:knife][:cloudformation][:file].sub(Dir.pwd, '').sub(%r{^/}, '')}"
         file = translate_template(file)
         begin
-          result = provider.stacks.new(
-            :stack_name => 'validation-stack',
-            :template => _to_json(file)
+          result = provider.stacks.build(
+            :name => 'validation-stack',
+            :template => file
           ).validate
           ui.info ui.color('  -> VALID', :bold, :green)
         rescue => e
