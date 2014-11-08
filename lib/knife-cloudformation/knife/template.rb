@@ -81,16 +81,11 @@ module KnifeCloudformation
             ).split('/')
             bucket = root.pop
             root = root.join('/')
-            directory = provider.service_for(:storage,
-              :provider => :local,
-              :local_root => root
-            ).directories.get(bucket)
-            Chef::Config[:knife][:cloudformation][:file] = File.join(root,
-              prompt_for_file(directory,
-                :directories_name => 'Collections',
-                :files_name => 'Templates',
-                :ignore_directories => TEMPLATE_IGNORE_DIRECTORIES
-              )
+            directory = File.join(root, bucket)
+            Chef::Config[:knife][:cloudformation][:file] = prompt_for_file(directory,
+              :directories_name => 'Collections',
+              :files_name => 'Templates',
+              :ignore_directories => TEMPLATE_IGNORE_DIRECTORIES
             )
           else
             unless(Pathname(Chef::Config[:knife][:cloudformation][:file].to_s).absolute?)
