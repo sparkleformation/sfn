@@ -18,7 +18,7 @@ module KnifeCloudformation
 
       # Prompt user for file selection
       #
-      # @param directory [Fog::Storage::Directory] path to directory
+      # @param directory [String] path to directory
       # @param opts [Hash] options
       # @option opts [Array<String>] :ignore_directories directory names
       # @option opts [String] :directories_name title for directories
@@ -26,24 +26,23 @@ module KnifeCloudformation
       # @option opts [String] :filter_prefix only return results matching filter
       # @return [String] file path
       def prompt_for_file(directory, opts={})
-        if(opts[:filter_prefix])
-          file_list = directory.files.find_all do |file|
-            file.identity.start_with?(opts[:filter_prefix])
-          end
-        else
-          file_list = directory.files
+        file_list = Dir.glob(File.join(directory, '**', '**', '*')).find_all do |file|
+          File.file?(file)
         end
-        directories = file_list.find_all do |file|
-          file.identity.split('/').size == 2
-        end.group_by do |file|
-          file.identity.split('/').first
-        end.keys
-        files = file_list.find_all do |file|
-          file.identity.split('/').size == 1
+        if(opts[:filter_prefix])
+          file_list = file_list.find_all do |file|
+            file.start_with?(options[:filter_prefix])
+          end
+        end
+        directories = file_list.map do |file|
+          File.dirname(file)
+        end.uniq
+        files = file_list.find_all do |path|
+          path.sub(directory, '').split('/').size == 2
         end
         if(opts[:ignore_directories])
           directories.delete_if do |dir|
-            opts[:ignore_directories].include?(dir)
+            opts[:ignore_directories].include?(File.basename(dir))
           end
         end
         if(directories.empty? && files.empty?)
@@ -58,7 +57,7 @@ module KnifeCloudformation
           unless(directories.empty?)
             output << ui.color("#{opts.fetch(:directories_name, 'Directories')}:", :bold)
             directories.each do |dir|
-              valid[idx] = {:path => File.join(directory.identity, dir), :type => :directory}
+              valid[idx] = {:path => dir, :type => :directory}
               output << [idx, humanize_path_basename(dir)]
               idx += 1
             end
@@ -66,8 +65,8 @@ module KnifeCloudformation
           unless(files.empty?)
             output << ui.color("#{opts.fetch(:files_name, 'Files')}:", :bold)
             files.each do |file|
-              valid[idx] = {:path => File.join(directory.identity, file.identity), :type => :file}
-              output << [idx, humanize_path_basename(file.identity)]
+              valid[idx] = {:path => file, :type => :file}
+              output << [idx, humanize_path_basename(file)]
               idx += 1
             end
           end
@@ -87,7 +86,7 @@ module KnifeCloudformation
           else
             entry = valid[response.to_i]
             if(entry[:type] == :directory)
-              prompt_for_file(directory.collection.get(entry[:path]), opts)
+              prompt_for_file(entry[:path], opts)
             else
               "/#{entry[:path]}"
             end
