@@ -20,7 +20,6 @@ class Chef
         :short => '-N',
         :long => '--[no-]nodes',
         :boolean => true,
-        :default => false,
         :description => 'Locate all instances'
       )
 
@@ -183,9 +182,10 @@ class Chef
           stack.resources.all.find_all do |resource|
             resource.within?(:compute, :servers)
           end.map do |srv|
+            srv = srv.instance
             [srv.id, Smash.new(
                 :name => srv.name,
-                :addresses => s.addresses.map(&:address)
+                :addresses => srv.addresses.map(&:address)
             )]
           end
         ]
