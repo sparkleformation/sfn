@@ -79,7 +79,7 @@ class Chef
       def outputs(stack)
         ui.info "Outputs for stack: #{ui.color(stack.name, :bold)}"
         unless(stack.outputs.empty?)
-          stack.outputs.all.each do |output|
+          stack.outputs.each do |output|
             key, value = output.key, output.value
             key = snake(key).to_s.split('_').map(&:capitalize).join(' ')
             ui.info ['  ', ui.color("#{key}:", :bold), value].join(' ')
