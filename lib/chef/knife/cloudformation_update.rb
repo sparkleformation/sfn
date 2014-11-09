@@ -53,10 +53,11 @@ class Chef
 
           stack.template = file
           stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
-          stack.update
+          stack.save
 
           if(Chef::Config[:knife][:cloudformation][:poll])
-            poll_stack(stack.stack_name)
+            poll_stack(stack.name)
+            provider.fetch_stacks
             if(stack.success?)
               ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
               knife_output = Chef::Knife::CloudformationDescribe.new
