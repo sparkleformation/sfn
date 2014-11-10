@@ -80,7 +80,10 @@ class Chef
             stack_info << " #{ui.color('(not pre-processed)', :yellow)}"
           end
         end
-        ui.info "  -> #{stack_info}"
+
+        unless(config[:print_only])
+          ui.info "  -> #{stack_info}"
+        end
 
         stack = provider.stacks.build(
           Chef::Config[:knife][:cloudformation][:options].dup.merge(
@@ -95,7 +98,6 @@ class Chef
         )
 
         if(config[:print_only])
-          ui.warn 'Print only requested'
           ui.info _format_json(translate_template(stack.template))
           exit 0
         end
