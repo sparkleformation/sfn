@@ -17,6 +17,15 @@ class Chef
           Chef::Config[:knife][:cloudformation][:file_path_prompt] = val
         }
       )
+      option(:apply_stacks,
+        :long => '--apply-stack NAME_OR_ID',
+        :description => 'Autofill parameters using existing stack outputs. Can be used multiple times',
+        :proc => lambda {|val|
+          Chef::Config[:knife][:cloudformation][:update] ||= Mash.new
+          Chef::Config[:knife][:cloudformation][:update][:apply_stacks] ||= []
+          Chef::Config[:knife][:cloudformation][:update][:apply_stacks].push(val).uniq!
+        }
+      )
 
       banner 'knife cloudformation update NAME'
 
@@ -37,22 +46,23 @@ class Chef
 
           if(Chef::Config[:knife][:cloudformation][:file])
             stack_info << " #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]}"
-            if(Chef::Config[:knife][:cloudformation][:disable_processing])
-              stack_info << " #{ui.color('(not pre-processed)', :yellow)}"
-            end
           else
             stack_info << " #{ui.color('(no temlate update)', :yellow)}"
-            file = _from_json(stack.template)
           end
           ui.info "  -> #{stack_info}"
 
-          redefault_stack_parameters(file, stack)
+          apply_stacks!(stack)
 
-          populate_parameters!(file)
-          file = translate_template(file)
+          if(file)
+            redefault_stack_parameters(file, stack)
+            populate_parameters!(file)
+            file = translate_template(file)
+            stack.template = file
+            stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
+          else
+            stack_parameters_update!(stack)
+          end
 
-          stack.template = file
-          stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
           stack.save
 
           if(Chef::Config[:knife][:cloudformation][:poll])
@@ -96,6 +106,41 @@ class Chef
           end
         end
         template
+      end
+
+      # Apply any defined remote stacks
+      #
+      # @param stack [Miasma::Models::Orchestration::Stack]
+      # @return [Miasma::Models::Orchestration::Stack]
+      def apply_stacks!(stack)
+        remote_stacks = Chef::Config[:knife][:cloudformation].
+          fetch(:update, {}).fetch(:apply_stacks, [])
+        remote_stacks.each do |stack_name|
+          remote_stack = provider.stacks.get(stack_name)
+          if(remote_stack)
+            remote_stack.parameters.each do |key, value|
+              next if Chef::Config[:knife][:cloudformation][:stacks][:ignore_parameters].include?(key)
+              if(stack.parameters.has_key?(key))
+                stack.parameters[key] = value
+              end
+            end
+          else
+            ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
+            exit 1
+          end
+        end
+        stack
+      end
+
+      # Update parameters within existing stack
+      #
+      # @param stack [Miasma::Models::Orchestration::Stack]
+      # @return [Miasma::Models::Orchestration::Stack]
+      def stack_parameters_update!(stack)
+        stack.parameters.each do |key, value|
+          answer = ui.ask_question("#{key.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}: ", :default => value)
+          stack.parameters[key] = answer
+        end
       end
 
     end

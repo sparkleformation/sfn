@@ -86,13 +86,6 @@ module KnifeCloudformation
             :description => 'Do not prompt for input on dynamic parameters',
             :proc => lambda{|val| Chef::Config[:knife][:cloudformation][:interactive_parameters] = val }
           )
-
-          %w(poll interactive_parameters).each do |key|
-            if(Chef::Config[:knife][:cloudformation][key].nil?)
-              Chef::Config[:knife][:cloudformation][key] = true
-            end
-          end
-
         end
       end
 

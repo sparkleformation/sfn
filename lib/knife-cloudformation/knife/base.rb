@@ -128,6 +128,12 @@ module KnifeCloudformation
               Chef::Config[:knife][:cloudformation] ||= Mash.new
               Chef::Config[:knife][:cloudformation][:credentials] ||= Mash.new
               Chef::Config[:knife][:cloudformation][:options] ||= Mash.new
+              Chef::Config[:knife][:cloudformation][:ignore_parameters] = []
+              %w(poll interactive_parameters).each do |key|
+                if(Chef::Config[:knife][:cloudformation][key].nil?)
+                  Chef::Config[:knife][:cloudformation][key] = true
+                end
+              end
             end
 
             option(:credentials,
@@ -140,6 +146,12 @@ module KnifeCloudformation
                   Chef::Config[:knife][:cloudformation][:credentials][key] = value
                 end
               }
+            )
+
+            option(:ignore_parameter,
+              :long => '--ignore-parameter PARAMETER_NAME',
+              :description => 'Parameter to ignore during modifications (can be used multiple times)',
+              :proc => lambda{|val| Chef::Config[:knife][:cloudformation][:ignore_parameters].push(val).uniq! }
             )
 
             # Populate up the hashes so they are available for knife config
