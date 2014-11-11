@@ -91,12 +91,6 @@ module KnifeCloudformation
 
       module ClassMethods
 
-        # Configure chef here so we can have config settings be a lower
-        # precedence than options provided via user on CLI
-        def load_deps
-          Chef::Knife.new.configure_chef
-        end
-
         # @return [KnifeCloudformation::Provider]
         def provider
           Thread.current[:_provider] ||= KnifeCloudformation::Provider.new(
@@ -124,6 +118,7 @@ module KnifeCloudformation
             include KnifeCloudformation::Utils::Output
 
             deps do
+              Chef::Knife.new.configure_chef
               require 'miasma'
               Chef::Config[:knife][:cloudformation] ||= Mash.new
               Chef::Config[:knife][:cloudformation][:credentials] ||= Mash.new
@@ -164,6 +159,7 @@ module KnifeCloudformation
             end
 
           end
+
         end
       end
     end
