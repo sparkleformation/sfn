@@ -85,7 +85,7 @@ class Chef
             end
           else
             ui.warn 'Stack state polling has been disabled.'
-            ui.info "Stack creation initialized for #{ui.color(name, :green)}"
+            ui.info "Stack update initialized for #{ui.color(name, :green)}"
           end
         else
           ui.fatal "Failed to locate requested stack: #{ui.color(name, :red, :bold)}"
