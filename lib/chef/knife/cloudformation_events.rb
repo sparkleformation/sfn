@@ -53,7 +53,9 @@ class Chef
           things_output(name, events, 'events')
           last_id = events.last[:id]
           if(Chef::Config[:knife][:cloudformation][:poll])
-            while(stack.in_progress?)
+            cycle_events = true
+            while(cycle_events)
+              cycle_events = stack.in_progress?
               sleep(Chef::Config[:knife][:cloudformation][:poll_delay] || 15)
               stack.events.reload
               events = get_events(stack, last_id)
