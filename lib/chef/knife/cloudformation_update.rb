@@ -70,6 +70,7 @@ class Chef
             provider.fetch_stacks
             if(stack.success?)
               ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
+              provider.fetch_stacks
               knife_output = Chef::Knife::CloudformationDescribe.new
               knife_output.name_args.push(name)
               knife_output.config[:outputs] = true
