@@ -167,7 +167,7 @@ module KnifeCloudformation
       cache.locked_action(:stacks_lock) do
         logger.info "Lock aquired for stack update. Requesting stacks from upstream. (#{Thread.current})"
         stacks = Hash[
-          connection.stacks.reload.map do |stack|
+          connection.stacks.reload.all.map do |stack|
             [stack.id, stack.attributes]
           end
         ]
