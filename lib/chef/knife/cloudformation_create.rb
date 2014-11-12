@@ -93,9 +93,7 @@ class Chef
         )
 
         apply_stacks!(stack)
-        stack.template = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(
-          stack.template
-        )
+        stack.template = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(stack.template)
 
         if(config[:print_only])
           ui.info _format_json(translate_template(stack.template))
@@ -106,7 +104,13 @@ class Chef
         stack.parameters = Chef::Config[:knife][:cloudformation][:options][:parameters]
 
         stack.template = translate_template(stack.template)
-        stack.save
+
+        begin
+          stack.save
+        rescue Miasma::Error::ApiError::RequestError => e
+          ui.fatal e.response.body.to_s
+          exit 1
+        end
 
         if(Chef::Config[:knife][:cloudformation][:poll])
           provider.fetch_stacks
