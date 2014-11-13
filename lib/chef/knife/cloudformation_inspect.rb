@@ -87,7 +87,7 @@ class Chef
             end
           end
         end.compact
-        if(instance.empty?)
+        if(instances.empty?)
           ui.error 'Failed to locate any failed instances'
         else
           log_path = Chef::Config[:knife][:cloudformation].fetch(
