@@ -14,10 +14,13 @@ module KnifeCloudformation
       # @param ssh_opts [Hash]
       # @return [String, NilClass]
       def remote_file_contents(address, user, path, ssh_opts={})
+        if(path.to_s.strip.empty?)
+          raise ArgumentError.new 'No file path provided!'
+        end
         require 'net/ssh'
         content = ''
         ssh_session = Net::SSH.start(address, user, ssh_opts)
-        content = ssh.exec!("sudo cat #{path}")
+        content = ssh_session.exec!("sudo cat #{path}")
         content.empty? ? nil : content
       end
 
