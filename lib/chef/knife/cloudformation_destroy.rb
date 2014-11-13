@@ -18,7 +18,7 @@ class Chef
       )
 
       # Run the stack destruction action
-      def run
+      def _run
         stacks = name_args.sort
         plural = 's' if stacks.size > 1
         ui.warn "Destroying Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold)}"

@@ -67,7 +67,7 @@ class Chef
       end
 
       # Run export action
-      def run
+      def _run
         stack_name = name_args.first
         ui.info "#{ui.color('Stack Export:', :bold)} #{stack_name}"
         ui.confirm 'Perform export'

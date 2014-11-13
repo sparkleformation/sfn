@@ -12,7 +12,7 @@ class Chef
 
       banner 'knife cloudformation validate'
 
-      def run
+      def _run
         file = load_template_file
         ui.info "#{ui.color('Cloud Formation Validation: ', :bold)} #{Chef::Config[:knife][:cloudformation][:file].sub(Dir.pwd, '').sub(%r{^/}, '')}"
         file = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(file)

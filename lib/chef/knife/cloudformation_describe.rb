@@ -39,7 +39,7 @@ class Chef
       end
 
       # Run the stack describe action
-      def run
+      def _run
         stack_name = name_args.last
         stack = provider.stacks.get(stack_name)
         if(stack)

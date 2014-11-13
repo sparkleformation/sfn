@@ -61,7 +61,7 @@ class Chef
       )
 
       # Run the stack creation command
-      def run
+      def _run
         name = name_args.first
         unless(name)
           ui.fatal "Formation name must be specified!"
@@ -108,7 +108,7 @@ class Chef
         begin
           stack.save
         rescue Miasma::Error::ApiError::RequestError => e
-          ui.fatal e.response.body.to_s
+          ui.fatal "Unexpected API error: #{e}: #{e.response.inspect} #{e.response.body.to_s}"
           exit 1
         end
 

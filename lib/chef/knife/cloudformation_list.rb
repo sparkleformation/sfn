@@ -35,7 +35,7 @@ class Chef
       )
 
       # Run the list command
-      def run
+      def _run
         things_output(nil, get_list, nil)
       end
 

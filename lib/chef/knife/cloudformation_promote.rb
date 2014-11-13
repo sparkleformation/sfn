@@ -30,7 +30,7 @@ class Chef
       )
 
 
-      def run
+      def _run
         stack_name, destination = name_args
 
       end

@@ -87,6 +87,17 @@ module KnifeCloudformation
           true
         end
 
+        # Wrapper to allow consistent exception handling
+        def run
+          begin
+            _run
+          rescue => e
+            ui.fatal "Unexpected Error: #{e}"
+            _debug(e)
+            exit 1
+          end
+        end
+
       end
 
       module ClassMethods

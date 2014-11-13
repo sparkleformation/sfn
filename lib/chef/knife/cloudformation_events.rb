@@ -43,7 +43,7 @@ class Chef
       )
 
       # Run the events list action
-      def run
+      def _run
         name = name_args.first
         ui.info "Cloud Formation Events for Stack: #{ui.color(name, :bold)}\n"
         stack = provider.stacks.get(name)

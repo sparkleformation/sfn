@@ -30,7 +30,7 @@ class Chef
       banner 'knife cloudformation update NAME'
 
       # Run the stack creation command
-      def run
+      def _run
         name = name_args.first
         unless(name)
           ui.fatal "Formation name must be specified!"

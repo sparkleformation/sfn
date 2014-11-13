@@ -51,7 +51,7 @@ class Chef
       )
 
       # Run the stack inspection action
-      def run
+      def _run
         stack_name = name_args.last
         stack = provider.stacks.get(stack_name)
         ui.info "Stack inspection #{ui.color(stack_name, :bold)}:"

@@ -38,7 +38,7 @@ class Chef
       end
 
       # Run the import action
-      def run
+      def _run
         stack_name, json_file = name_args
         ui.info "#{ui.color('Stack Import:', :bold)} #{stack_name}"
         unless(json_file)
