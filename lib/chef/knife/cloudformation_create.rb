@@ -104,13 +104,7 @@ class Chef
         stack.parameters = Chef::Config[:knife][:cloudformation][:options][:parameters]
 
         stack.template = translate_template(stack.template)
-
-        begin
-          stack.save
-        rescue Miasma::Error::ApiError::RequestError => e
-          ui.fatal "Unexpected API error: #{e}: #{e.response.inspect} #{e.response.body.to_s}"
-          exit 1
-        end
+        stack.save
 
         if(Chef::Config[:knife][:cloudformation][:poll])
           provider.fetch_stacks
