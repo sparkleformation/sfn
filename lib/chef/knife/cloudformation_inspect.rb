@@ -81,8 +81,8 @@ class Chef
             resource.instance
           # If a waitcondition, check for instance ID
           elsif(resource.type.to_s.downcase.end_with?('waitcondition'))
-            if(resources.status_reason.to_s.include?('uniqueId'))
-              srv_id = resources.status_reason.split(' ').last.strip
+            if(resource.status_reason.to_s.include?('uniqueId'))
+              srv_id = resource.status_reason.split(' ').last.strip
               provider.connection.api_for(:compute).servers.get(srv_id)
             end
           end
@@ -90,10 +90,11 @@ class Chef
         if(instances.empty?)
           ui.error 'Failed to locate any failed instances'
         else
-          log_path = Chef::Config[:knife][:cloudformation].fetch(
-            :failure_log_path, '/var/log/chef/client.log'
-          )
-          opts = ssh_key ? {:key => ssh_key} : {}
+          log_path = Chef::Config[:knife][:cloudformation][:failure_log_path]
+          if(log_path.to_s.empty?)
+            log_path = '/var/log/chef/client.log'
+          end
+          opts = ssh_key ? {:keys => [ssh_key]} : {}
           instances.each do |instance|
             ui.info "  -> Log inspect for #{instance.id}:"
             address = instance.addresses_public.map do |address|
@@ -104,12 +105,13 @@ class Chef
             if(address)
               ssh_attempt_users.each do |user|
                 begin
-                  ui.info remote_file_contents(address, user, log_path, opts)
+                  ui.info remote_file_contents(address.first, user, log_path, opts)
                   break
                 rescue Net::SSH::AuthenticationFailed
                   ui.warn "Authentication failed for user #{user} on instance #{address}"
                 rescue => e
                   ui.error "Failed to retrieve log: #{e}"
+                  _debug e
                   break
                 end
               end
