@@ -1,3 +1,6 @@
+## v0.2.2
+* Fix redis-objects loading in cache helper
+
 ## v0.2.0
 * This release should be considered "breaking"
 * Underlying cloud API has been changed from fog to miasma
