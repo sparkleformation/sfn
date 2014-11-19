@@ -11,9 +11,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.add_dependency 'chef'
   s.add_dependency 'miasma'
-  s.add_dependency 'unf'
-  s.add_dependency 'net-sftp'
+  s.add_dependency 'net-ssh'
   s.add_dependency 'sparkle_formation', '~> 0.2.0'
-  s.add_dependency 'redis-objects'
-  s.files = Dir['**/*']
+  s.files = Dir['lib/**/*'] + %w(knife-cloudformation.gemspec README.md CHANGELOG.md)
 end

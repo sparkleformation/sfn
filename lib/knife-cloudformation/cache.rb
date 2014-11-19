@@ -1,7 +1,13 @@
 require 'digest/sha2'
-require 'redis-objects'
 require 'thread'
 require 'knife-cloudformation'
+
+begin
+  require 'redis-objects'
+rescue LoadError
+  $stderr.puts 'The `redis-objects` gem is required for Cache support!'
+  raise
+end
 
 module KnifeCloudformation
   # Data caching helper
