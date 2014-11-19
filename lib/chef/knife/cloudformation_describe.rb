@@ -66,7 +66,7 @@ class Chef
       # @param stack [Miasma::Models::Orchestration::Stack]
       def resources(stack)
         stack_resources = stack.resources.all.sort do |x, y|
-          y.updated_time <=> x.updated_time
+          y.updated <=> x.updated
         end.map do |resource|
           Mash.new(resource.attributes)
         end
@@ -91,7 +91,7 @@ class Chef
 
       # @return [Array<String>] default attributes
       def default_attributes
-        %w(updated_time logical_id type status status_reason)
+        %w(updated logical_id type status status_reason)
       end
 
     end
