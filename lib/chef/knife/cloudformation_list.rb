@@ -47,12 +47,12 @@ class Chef
           provider.stacks.all.map do |stack|
             Mash.new(stack.attributes)
           end.sort do |x, y|
-            if(y[:creation_time].to_s.empty?)
+            if(y[:created].to_s.empty?)
               -1
-            elsif(x[:creation_time].to_s.empty?)
+            elsif(x[:created].to_s.empty?)
               1
             else
-              Time.parse(y['creation_time'].to_s) <=> Time.parse(x['creation_time'].to_s)
+              Time.parse(y['created'].to_s) <=> Time.parse(x['created'].to_s)
             end
           end
         end
@@ -61,9 +61,9 @@ class Chef
       # @return [Array<String>] default attributes to display
       def default_attributes
         if(provider.connection.provider == :aws)
-          %w(name creation_time status template_description)
+          %w(name created status template_description)
         else
-          %w(name creation_time status description)
+          %w(name created status description)
         end
       end
 
