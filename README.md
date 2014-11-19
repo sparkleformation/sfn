@@ -53,5 +53,5 @@ knife[:cloudformation][:credentials] = {
 
 # Info
 
-* Repository: https://github.com/heavywater/knife-cloudformation
+* Repository: https://github.com/hw-labs/knife-cloudformation
 * IRC: Freenode @ #heavywater
