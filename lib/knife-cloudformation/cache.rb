@@ -2,13 +2,6 @@ require 'digest/sha2'
 require 'thread'
 require 'knife-cloudformation'
 
-begin
-  require 'redis-objects'
-rescue LoadError
-  $stderr.puts 'The `redis-objects` gem is required for Cache support!'
-  raise
-end
-
 module KnifeCloudformation
   # Data caching helper
   class Cache
@@ -23,6 +16,12 @@ module KnifeCloudformation
         type = type.to_sym
         case type
         when :redis
+          begin
+            require 'redis-objects'
+          rescue LoadError
+            $stderr.puts 'The `redis-objects` gem is required for Cache support!'
+            raise
+          end
           @_pid = Process.pid
           Redis::Objects.redis = Redis.new(args)
         when :local
