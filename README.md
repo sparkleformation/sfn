@@ -16,7 +16,7 @@ orchestration APIs as well:
 The easiest way to configure the plugin is via the
 `knife.rb` file. Credentials are the only configuration
 requirement, and the `Hash` provided is proxied to
-Fog:
+Miasma:
 
 ```ruby
 # .chef/knife.rb
@@ -24,7 +24,7 @@ Fog:
 knife[:cloudformation][:credentials] = {
   :aws_access_key_id => ENV['AWS_ACCESS_KEY_ID'],
   :aws_secret_access_key => ENV['AWS_SECRET_ACCESS_KEY'],
-  :region => 'us-east-1'
+  :aws_region => ENV['AWS_REGION']
 }
 ```
 
@@ -36,7 +36,7 @@ If are using Rackspace:
 knife[:cloudformation][:credentials] = {
   :rackspace_username => ENV['RACKSPACE_USERNAME'],
   :rackspace_api_key => ENV['RACKSPACE_API_KEY'],
-  :rackspace_region => 'ord'
+  :rackspace_region => ENV['RACKSPACE_REGION']
 }
 ```
 
@@ -47,8 +47,6 @@ knife[:cloudformation][:credentials] = {
 * `knife cloudformation update`
 * `knife cloudformation destroy`
 * `knife cloudformation events`
-* `knife cloudformation export`
-* `knife cloudformation import`
 * `knife cloudformation describe`
 * `knife cloudformation inspect`
 * `knife cloudformation validate`

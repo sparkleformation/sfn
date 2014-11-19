@@ -1,3 +1,9 @@
+## v0.2.0
+* This release should be considered "breaking"
+* Underlying cloud API has been changed from fog to miasma
+* The `inspect` command has been fully reworked to support `--attribute`
+* Lots and lots of other changes. See commit log.
+
 ## v0.1.22
 * Prevent full stack list loading in knife commands
 * Default logger to INFO level and allow DEBUG level via `ENV['DEBUG']`
