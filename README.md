@@ -40,6 +40,19 @@ knife[:cloudformation][:credentials] = {
 }
 ```
 
+If are using OpenStack:
+
+```ruby
+# .chef/knife.rb
+
+knife[:cloudformation][:credentials] = {
+  :open_stack_username => ENV['OPENSTACK_USERNAME'],
+  :open_stack_password => ENV['OPENSTACK_PASSWORD'],
+  :open_stack_identity_url => ENV['OPENSTACK_IDENTITY_URL'],
+  :open_stack_tenant_name => ENV['OPENSTACK_TENANT']
+}
+```
+
 ## Commands
 
 * `knife cloudformation list`
