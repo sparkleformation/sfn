@@ -1,3 +1,6 @@
+## v0.2.6
+* Update to parameter re-defaults to use correct hash instance
+
 ## v0.2.4
 * Fix apply stack parameter processing
 
