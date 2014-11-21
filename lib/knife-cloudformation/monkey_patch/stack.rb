@@ -166,11 +166,13 @@ module KnifeCloudformation
           end.compact
         ]
         if(defined?(Chef::Config) && Chef::Config[:knife][:cloudformation][:ignore_parameters])
-          valid_parameters = valid_parameters.map do |snake_param, camel_param|
-            unless(Chef::Config[:knife][:cloudformation][:ignore_parameters].include?(camel_param))
-              [snake_param, camel_param]
-            end
-          end.compact
+          valid_parameters = Hash[
+            valid_parameters.map do |snake_param, camel_param|
+              unless(Chef::Config[:knife][:cloudformation][:ignore_parameters].include?(camel_param))
+                [snake_param, camel_param]
+              end
+            end.compact
+          ]
         end
         if(persisted?)
           remote_stack.outputs.each do |output|
