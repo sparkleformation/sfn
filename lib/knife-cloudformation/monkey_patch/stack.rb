@@ -155,9 +155,7 @@ module KnifeCloudformation
       #   prevent parameters being overridden
       def apply_stack(remote_stack)
         default_key = 'Default'
-        stack_parameters = template.fetch('Parameters',
-          template.fetch('parameters', {})
-        )
+        stack_parameters = template['Parameters']
         valid_parameters = Hash[
           stack_parameters.map do |key, val|
             unless(val['DisableApply'])
