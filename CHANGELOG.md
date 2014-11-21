@@ -1,3 +1,6 @@
+## v0.2.4
+* Fix apply stack parameter processing
+
 ## v0.2.2
 * Fix redis-objects loading in cache helper
 
