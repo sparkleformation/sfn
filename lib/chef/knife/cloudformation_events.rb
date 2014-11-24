@@ -51,7 +51,7 @@ class Chef
         if(stack)
           events = get_events(stack)
           things_output(name, events, 'events')
-          last_id = events.last[:id]
+          last_id = events.last ? events.last[:id] : nil
           if(Chef::Config[:knife][:cloudformation][:poll])
             cycle_events = true
             while(cycle_events)
