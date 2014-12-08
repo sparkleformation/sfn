@@ -20,7 +20,10 @@ module KnifeCloudformation
         # @param args [String] extra strings to output
         def _debug(e, *args)
           if(ENV['DEBUG'])
-            ui.fatal "Exception information: #{e.class}: #{e}\n#{e.backtrace.join("\n")}\n"
+            ui.fatal "Exception information: #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}\n"
+            if(e.is_a?(Miasma::Error::ApiError))
+              ui.fatal "Response body: #{e.response.body.to_s.inspect}"
+            end
             args.each do |string|
               ui.fatal string
             end
@@ -92,7 +95,7 @@ module KnifeCloudformation
           begin
             _run
           rescue => e
-            ui.fatal "Unexpected Error: #{e}"
+            ui.fatal "Unexpected Error: #{e.message}"
             _debug(e)
             exit 1
           end
