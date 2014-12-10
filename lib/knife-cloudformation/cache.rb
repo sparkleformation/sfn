@@ -264,8 +264,12 @@ module KnifeCloudformation
         self[lock_name].lock do
           yield
         end
-      rescue Redis::Lock::LockTimeout
-        raise if raise_on_locked
+      rescue => e
+        if(e.class.to_s == 'Redis::Lock::LockTimeout')
+          raise if raise_on_locked
+        else
+          raise
+        end
       end
     end
 
