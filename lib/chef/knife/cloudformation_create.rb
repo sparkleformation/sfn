@@ -85,7 +85,7 @@ class Chef
           ui.info "  -> #{stack_info}"
         end
 
-        stack = provider.stacks.build(
+        stack = provider.connection.stacks.build(
           Chef::Config[:knife][:cloudformation][:options].dup.merge(
             :name => name,
             :template => file
@@ -107,13 +107,11 @@ class Chef
         stack.save
 
         if(Chef::Config[:knife][:cloudformation][:poll])
-          provider.fetch_stacks
           poll_stack(stack.name)
-          stack = provider.stacks.get(name)
+          stack = provider.connection.stacks.get(name)
 
           if(stack.reload.success?)
             ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
-            provider.fetch_stacks
             knife_output = Chef::Knife::CloudformationDescribe.new
             knife_output.name_args.push(name)
             knife_output.config[:outputs] = true
@@ -141,7 +139,7 @@ class Chef
         remote_stacks = Chef::Config[:knife][:cloudformation].
           fetch(:create, {}).fetch(:apply_stacks, [])
         remote_stacks.each do |stack_name|
-          remote_stack = provider.stacks.get(stack_name)
+          remote_stack = provider.connection.stacks.get(stack_name)
           if(remote_stack)
             stack.apply_stack(remote_stack)
           else

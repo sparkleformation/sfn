@@ -37,7 +37,7 @@ class Chef
           exit 1
         end
 
-        stack = provider.stacks.get(name)
+        stack = provider.connection.stacks.get(name)
 
         if(stack)
           ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('update', :green)}"
@@ -67,10 +67,8 @@ class Chef
 
           if(Chef::Config[:knife][:cloudformation][:poll])
             poll_stack(stack.name)
-            provider.fetch_stacks
             if(stack.success?)
               ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
-              provider.fetch_stacks
               knife_output = Chef::Knife::CloudformationDescribe.new
               knife_output.name_args.push(name)
               knife_output.config[:outputs] = true
@@ -117,7 +115,7 @@ class Chef
         remote_stacks = Chef::Config[:knife][:cloudformation].
           fetch(:update, {}).fetch(:apply_stacks, [])
         remote_stacks.each do |stack_name|
-          remote_stack = provider.stacks.get(stack_name)
+          remote_stack = provider.connection.stacks.get(stack_name)
           if(remote_stack)
             remote_stack.parameters.each do |key, value|
               next if Chef::Config[:knife][:cloudformation][:stacks][:ignore_parameters].include?(key)

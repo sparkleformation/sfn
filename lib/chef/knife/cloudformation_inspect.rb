@@ -53,7 +53,7 @@ class Chef
       # Run the stack inspection action
       def _run
         stack_name = name_args.last
-        stack = provider.stacks.get(stack_name)
+        stack = provider.connection.stacks.get(stack_name)
         ui.info "Stack inspection #{ui.color(stack_name, :bold)}:"
         outputs = [:attribute, :nodes, :instance_failure].map do |key|
           if(config.has_key?(key))

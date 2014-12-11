@@ -46,7 +46,7 @@ class Chef
       def _run
         name = name_args.first
         ui.info "Cloud Formation Events for Stack: #{ui.color(name, :bold)}\n"
-        stack = provider.stacks.get(name)
+        stack = provider.connection.stacks.get(name)
         last_id = nil
         if(stack)
           events = get_events(stack)

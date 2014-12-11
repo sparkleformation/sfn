@@ -24,7 +24,7 @@ class Chef
         ui.warn "Destroying Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold)}"
         ui.confirm "Destroy formation#{plural}"
         stacks.each do |stack_name|
-          stack = provider.stacks.get(stack_name)
+          stack = provider.connection.stacks.get(stack_name)
           if(stack)
             stack.destroy
           else
@@ -33,7 +33,6 @@ class Chef
         end
         if(config[:polling])
           if(stacks.size == 1)
-            provider.fetch_stacks
             poll_stack(stacks.first)
           else
             ui.error "Stack polling is not available when multiple stack deletion is requested!"

@@ -41,7 +41,7 @@ class Chef
       # Run the stack describe action
       def _run
         stack_name = name_args.last
-        stack = provider.stacks.get(stack_name)
+        stack = provider.connection.stacks.get(stack_name)
         if(stack)
           display = [].tap do |to_display|
             AVAILABLE_DISPLAYS.each do |display_option|

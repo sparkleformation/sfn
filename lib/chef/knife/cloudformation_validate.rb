@@ -18,7 +18,7 @@ class Chef
         file = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(file)
         file = translate_template(file)
         begin
-          result = provider.stacks.build(
+          result = provider.connection.stacks.build(
             :name => 'validation-stack',
             :template => file
           ).validate
