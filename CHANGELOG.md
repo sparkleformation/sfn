@@ -1,3 +1,8 @@
+## v0.2.8
+* Update stack lookup implementation to make faster from CLI
+* Prevent constant error on exception when Redis is not in use
+* Provide better error messages on request failures
+
 ## v0.2.6
 * Update to parameter re-defaults to use correct hash instance
 
