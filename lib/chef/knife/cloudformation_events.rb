@@ -56,12 +56,22 @@ class Chef
             cycle_events = true
             while(cycle_events)
               cycle_events = stack.in_progress?
-              sleep(Chef::Config[:knife][:cloudformation][:poll_delay] || 15)
+              sleep(Chef::Config[:knife][:cloudformation][:poll_delay] || 10)
               stack.events.reload
               events = get_events(stack, last_id)
               unless(events.empty?)
                 last_id = events.last[:id]
                 things_output(nil, events, 'events', :no_title, :ignore_empty_output)
+              end
+              nest_stacks = stack.resources.all.find_all do |resource|
+                resource.state.to_s.end_with?('in_progress') &&
+                  resource.type == 'AWS::CloudFormation::Stack'
+              end
+              if(nest_stacks)
+                nest_stacks.each do |nest_stack|
+                  poll_stack(nest_stack.id)
+                  ui.info "Complete event listing for nested stack (#{nest_stack.name})"
+                end
               end
               stack.reload
             end
