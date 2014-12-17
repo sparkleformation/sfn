@@ -138,7 +138,7 @@ module KnifeCloudformation
               Chef::Config[:knife][:cloudformation][:credentials] ||= Mash.new
               Chef::Config[:knife][:cloudformation][:options] ||= Mash.new
               Chef::Config[:knife][:cloudformation][:ignore_parameters] = []
-              %w(poll interactive_parameters).each do |key|
+              %w(poll interactive_parameters apply_nesting).each do |key|
                 if(Chef::Config[:knife][:cloudformation][key].nil?)
                   Chef::Config[:knife][:cloudformation][key] = true
                 end
