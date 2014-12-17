@@ -29,7 +29,30 @@ module KnifeCloudformation
             Chef::Config[:knife][:cloudformation][:template]
           elsif(Chef::Config[:knife][:cloudformation][:file])
             if(Chef::Config[:knife][:cloudformation][:processing])
-              SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file])
+              sf = SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file], :sparkle)
+              if(sf.nested? && Chef::Config[:knife][:cloudformation][:apply_nesting])
+                sf.apply_nesting do |stack_name, stack_definition|
+                  bucket = provider.connection.api_for(:storage).buckets.get(
+                    Chef::Config[:knife][:cloudformation][:nesting_bucket]
+                  )
+                  unless(bucket)
+                    raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
+                  end
+                  file = bucket.files.build
+                  file.name = "#{name_args.first}_#{stack_name}.json"
+                  file.content_type = 'text/json'
+                  file.body = MultiJson.dump(KnifeCloudformation::Utils::StackParameterScrubber.scrub!(stack_definition))
+                  file.save
+                  # TODO: what if we need extra params?
+                  url = URI.parse(file.url)
+                  "#{url.scheme}://#{url.host}#{url.path}"
+                end
+              else
+                if(sf.nested? && !sf.isolated_nests?)
+                  raise TypeError.new('Template does not contain isolated stack nesting! Cannot process in existing state.')
+                end
+                sf.dump
+              end
             else
               _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
             end
@@ -161,6 +184,18 @@ module KnifeCloudformation
             :long => '--translate-chunk-size SIZE',
             :description => 'Chunk length for serialization',
             :proc => lambda {|val| Chef::Config[:knife][:cloudformation][:translate_chunk_size] = val}
+          )
+          option(:apply_nesting,
+            :long => '--[no-]apply-nesting',
+            :description => 'Apply stack nesting',
+            :default => false,
+            :boolean => true,
+            :proc => lambda{|val| Chef::Config[:knife][:cloudformation][:apply_nesting] = val}
+          )
+          option(:nesting_bucket,
+            :long => '--nesting-bucket',
+            :description => 'Bucket to use for storing nested stack templates',
+            :proc => lambda{|val| Chef::Config[:knife][:cloudformation][:nesting_bucket] = val}
           )
 
           Chef::Config[:knife][:cloudformation][:file_path_prompt] = true
