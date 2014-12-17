@@ -100,6 +100,10 @@ class Chef
           exit 0
         end
 
+        # TODO: if nested stacks and not extracted (based on config
+        # option, break resources out and iterate each stack and use
+        # apply-stack as we iterate the list
+
         populate_parameters!(stack.template)
         stack.parameters = Chef::Config[:knife][:cloudformation][:options][:parameters]
 
