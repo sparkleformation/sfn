@@ -69,8 +69,12 @@ class Chef
               end
               if(nest_stacks)
                 nest_stacks.each do |nest_stack|
-                  poll_stack(nest_stack.id)
-                  ui.info "Complete event listing for nested stack (#{nest_stack.name})"
+                  begin
+                    poll_stack(nest_stack.id)
+                    ui.info "Complete event listing for nested stack (#{nest_stack.name})"
+                  rescue => e
+                    ui.warn "Error encountered on event listing for nested stack - #{e} (#{nest_stack.name})"
+                  end
                 end
               end
               stack.reload
