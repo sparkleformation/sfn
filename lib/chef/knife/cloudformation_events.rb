@@ -84,7 +84,7 @@ class Chef
           end
         else
           ui.fatal "Failed to locate requested stack: #{ui.color(name, :bold, :red)}"
-          exit -1
+          raise "Failed to locate stack: #{name}!"
         end
       end
 
