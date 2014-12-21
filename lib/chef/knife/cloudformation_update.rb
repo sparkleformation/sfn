@@ -41,10 +41,10 @@ class Chef
 
         if(stack)
           ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('update', :green)}"
-          file = load_template_file(:allow_missing)
           stack_info = "#{ui.color('Name:', :bold)} #{name}"
 
           if(Chef::Config[:knife][:cloudformation][:file])
+            file = load_template_file
             stack_info << " #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]}"
           else
             stack_info << " #{ui.color('(no temlate update)', :yellow)}"
@@ -54,10 +54,8 @@ class Chef
           apply_stacks!(stack)
 
           if(file)
-            redefault_stack_parameters(file, stack)
-            populate_parameters!(file)
-            file = translate_template(file)
-            stack.template = file
+            stack_parameters_update!(stack)
+            stack.template = translate_template(file)
             stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
           else
             stack_parameters_update!(stack)
