@@ -1,3 +1,6 @@
+## v0.2.10
+* Add initial nested stack support
+
 ## v0.2.8
 * Update stack lookup implementation to make faster from CLI
 * Prevent constant error on exception when Redis is not in use
