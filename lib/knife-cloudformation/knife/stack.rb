@@ -15,21 +15,27 @@ module KnifeCloudformation
         #
         # @param stack [Hash] stack template
         # @return [Hash]
-        def populate_parameters!(stack)
+        def populate_parameters!(stack, current_params={})
           if(Chef::Config[:knife][:cloudformation][:interactive_parameters])
-            if(stack['Parameters'] || stack['parameters'])
+            if(stack['Parameters'])
               Chef::Config[:knife][:cloudformation][:options][:parameters] ||= Mash.new
-              stack.fetch('Parameters', stack.fetch('parameters', {})).each do |k,v|
+              stack.fetch('Parameters', {}).each do |k,v|
                 next if Chef::Config[:knife][:cloudformation][:options][:parameters][k]
                 attempt = 0
                 valid = false
                 until(valid)
                   attempt += 1
-                  default = Chef::Config[:knife][:cloudformation][:options][:parameters][k] || v['Default'] || v['default']
+                  default = Chef::Config[:knife][:cloudformation][:options][:parameters].fetch(
+                    k, current_params.fetch(
+                      k, v['Default']
+                    )
+                  )
                   answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}: ", :default => default)
                   validation = KnifeCloudformation::Utils::StackParameterValidator.validate(answer, v)
                   if(validation == true)
-                    Chef::Config[:knife][:cloudformation][:options][:parameters][k] = answer
+                    unless(answer == default)
+                      Chef::Config[:knife][:cloudformation][:options][:parameters][k] = answer
+                    end
                     valid = true
                   else
                     validation.each do |validation_error|

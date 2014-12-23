@@ -54,11 +54,12 @@ class Chef
           apply_stacks!(stack)
 
           if(file)
-            stack_parameters_update!(stack, file)
+            populate_parameters!(file, stack.parameters)
             stack.template = translate_template(file)
             stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
           else
-            stack_parameters_update!(stack, stack.template)
+            populate_parameters!(stack.template, stack.parameters)
+            stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
           end
 
           stack.save
@@ -125,28 +126,6 @@ class Chef
             ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
             exit 1
           end
-        end
-        stack
-      end
-
-      # Update parameters within existing stack
-      #
-      # @param stack [Miasma::Models::Orchestration::Stack]
-      # @param template [Smash]
-      # @return [Miasma::Models::Orchestration::Stack]
-      def stack_parameters_update!(stack, template)
-        template_params = template.fetch('Parameters', {})
-        template_params.each do |key, value|
-          if(stack.parameters[key])
-            default_value = stack.parameters[key]
-          else
-            default_value = value['Default']
-          end
-          answer = ui.ask_question("#{key.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}: ", :default => default_value)
-          stack.parameters[key] = answer
-        end
-        stack.parameters.delete_if do |k,v|
-          template_params[k].nil?
         end
         stack
       end
