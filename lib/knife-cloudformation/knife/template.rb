@@ -35,17 +35,21 @@ module KnifeCloudformation
                   bucket = provider.connection.api_for(:storage).buckets.get(
                     Chef::Config[:knife][:cloudformation][:nesting_bucket]
                   )
-                  unless(bucket)
-                    raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
+                  if(options[:print_only])
+                    "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
+                  else
+                    unless(bucket)
+                      raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
+                    end
+                    file = bucket.files.build
+                    file.name = "#{name_args.first}_#{stack_name}.json"
+                    file.content_type = 'text/json'
+                    file.body = MultiJson.dump(KnifeCloudformation::Utils::StackParameterScrubber.scrub!(stack_definition))
+                    file.save
+                    # TODO: what if we need extra params?
+                    url = URI.parse(file.url)
+                    "#{url.scheme}://#{url.host}#{url.path}"
                   end
-                  file = bucket.files.build
-                  file.name = "#{name_args.first}_#{stack_name}.json"
-                  file.content_type = 'text/json'
-                  file.body = MultiJson.dump(KnifeCloudformation::Utils::StackParameterScrubber.scrub!(stack_definition))
-                  file.save
-                  # TODO: what if we need extra params?
-                  url = URI.parse(file.url)
-                  "#{url.scheme}://#{url.host}#{url.path}"
                 end
               else
                 if(sf.nested? && !sf.isolated_nests?)
