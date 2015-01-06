@@ -47,27 +47,7 @@ class Chef
 
         if(nested_stacks)
 
-          # @todo move this init into setup
-          Chef::Config[:knife][:cloudformation][:update] ||= Mash.new
-          Chef::Config[:knife][:cloudformation][:update][:apply_stacks] ||= []
-
-          orig_params = Chef::Config[:knife][:cloudformation][:options][:parameters]
-
-          file['Resources'].each do |stack_resource_name, stack_resource|
-
-            nested_stack_name = "#{name}-#{stack_resource_name}"
-            nested_stack_template = stack_resource['Properties']['Stack']
-            Chef::Config[:knife][:cloudformation][:options][:parameters] = orig_params
-
-            nested_stack_runner = Chef::Knife::CloudformationUpdate.new
-            nested_stack_runner.name_args.push(nested_stack_name)
-            Chef::Config[:knife][:cloudformation][:template] = nested_stack_template
-            nested_stack_runner.run
-            Chef::Config[:knife][:cloudformation][:update][:apply_stacks].push(nested_stack_name).uniq!
-            Chef::Config[:knife][:cloudformation][:template] = nil
-            provider.connection.stacks.reload
-
-          end
+          unpack_nesting(name, file, :update)
 
         else
           stack = provider.connection.stacks.get(name)

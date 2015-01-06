@@ -11,6 +11,41 @@ module KnifeCloudformation
         # maximum number of attempts to get valid parameter value
         MAX_PARAMETER_ATTEMPTS = 5
 
+        # Unpack nested stack and run action on each stack, applying
+        # the previous stacks automatically
+        #
+        # @param name [String] container stack name
+        # @param file [Hash] stack template
+        # @param action [String] create or update
+        # @return [TrueClass]
+        def unpack_nesting(name, file, action)
+
+          # @todo move this init into setup
+          Chef::Config[:knife][:cloudformation][action.to_sym] ||= Mash.new
+          Chef::Config[:knife][:cloudformation][action.to_sym][:apply_stacks] ||= []
+
+          orig_params = Chef::Config[:knife][:cloudformation][:options][:parameters]
+
+          file['Resources'].each do |stack_resource_name, stack_resource|
+
+            nested_stack_name = "#{name}-#{stack_resource_name}"
+            nested_stack_template = stack_resource['Properties']['Stack']
+            Chef::Config[:knife][:cloudformation][:options][:parameters] = orig_params
+
+            klass = Chef::Knife.const_get("Cloudformation#{action.to_s.capitalize}")
+            nested_stack_runner = klass.new
+            nested_stack_runner.name_args.push(nested_stack_name)
+            Chef::Config[:knife][:cloudformation][:template] = nested_stack_template
+            nested_stack_runner.run
+            Chef::Config[:knife][:cloudformation][action.to_sym][:apply_stacks].push(nested_stack_name).uniq!
+            Chef::Config[:knife][:cloudformation][:template] = nil
+            provider.connection.stacks.reload
+
+          end
+
+          true
+        end
+
         # Prompt for parameter values and store result
         #
         # @param stack [Hash] stack template
