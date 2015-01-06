@@ -37,57 +37,102 @@ class Chef
           exit 1
         end
 
-        stack = provider.connection.stacks.get(name)
+        stack_info = "#{ui.color('Name:', :bold)} #{name}"
 
-        if(stack)
-          ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('update', :green)}"
-          stack_info = "#{ui.color('Name:', :bold)} #{name}"
+        if(Chef::Config[:knife][:cloudformation][:file])
+          file = load_template_file
+          stack_info << " #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]}"
+          nested_stacks = file.delete('sfn_nested_stack')
+        end
 
-          if(Chef::Config[:knife][:cloudformation][:file])
-            file = load_template_file
-            stack_info << " #{ui.color('Path:', :bold)} #{Chef::Config[:knife][:cloudformation][:file]}"
-          else
-            stack_info << " #{ui.color('(no temlate update)', :yellow)}"
+        if(nested_stacks)
+
+          # @todo move this init into setup
+          Chef::Config[:knife][:cloudformation][:update] ||= Mash.new
+          Chef::Config[:knife][:cloudformation][:update][:apply_stacks] ||= []
+
+          orig_params = Chef::Config[:knife][:cloudformation][:options][:parameters]
+
+          file['Resources'].each do |stack_resource_name, stack_resource|
+
+            nested_stack_name = "#{name}-#{stack_resource_name}"
+            nested_stack_template = stack_resource['Properties']['Stack']
+            Chef::Config[:knife][:cloudformation][:options][:parameters] = orig_params
+
+            nested_stack_runner = Chef::Knife::CloudformationUpdate.new
+            nested_stack_runner.name_args.push(nested_stack_name)
+            Chef::Config[:knife][:cloudformation][:template] = nested_stack_template
+            nested_stack_runner.run
+            Chef::Config[:knife][:cloudformation][:update][:apply_stacks].push(nested_stack_name).uniq!
+            Chef::Config[:knife][:cloudformation][:template] = nil
+            provider.connection.stacks.reload
+
           end
-          ui.info "  -> #{stack_info}"
 
-          apply_stacks!(stack)
+        else
+          stack = provider.connection.stacks.get(name)
 
-          if(file)
-            populate_parameters!(file, stack.parameters)
-            stack.template = translate_template(file)
-            stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
-          else
-            populate_parameters!(stack.template, stack.parameters)
-            stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
-          end
+          if(stack)
+            ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('update', :green)}"
 
-          stack.save
+            unless(file)
+              if(Chef::Config[:knife][:cloudformation][:template])
+                file = Chef::Config[:knife][:cloudformation][:template]
+                stack_info << " #{ui.color('(template provided)', :green)}"
+              else
+                stack_info << " #{ui.color('(no template update)', :yellow)}"
+              end
+            end
+            ui.info "  -> #{stack_info}"
 
-          if(Chef::Config[:knife][:cloudformation][:poll])
-            poll_stack(stack.name)
-            if(stack.success?)
-              ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
-              knife_output = Chef::Knife::CloudformationDescribe.new
-              knife_output.name_args.push(name)
-              knife_output.config[:outputs] = true
-              knife_output.run
+            apply_stacks!(stack)
+
+            if(file)
+              populate_parameters!(file, stack.parameters)
+              stack.template = translate_template(file)
+              stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
+              stack.template = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(stack.template)
             else
-              ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-              ui.info ""
-              knife_inspect = Chef::Knife::CloudformationInspect.new
-              knife_inspect.name_args.push(name)
-              knife_inspect.config[:instance_failure] = true
-              knife_inspect.run
-              exit 1
+              populate_parameters!(stack.template, stack.parameters)
+              stack.parameters = Chef::Config[:knife][:cloudformation][:parameters]
+            end
+
+            begin
+              stack.save
+            rescue Miasma::Error::ApiError::RequestError => e
+              if(e.message.downcase.include?('no updates')) # :'(
+                ui.warn "No updates detected for stack (#{stack.name})"
+              else
+                raise
+              end
+            end
+
+            if(Chef::Config[:knife][:cloudformation][:poll])
+              poll_stack(stack.name)
+              if(stack.success?)
+                ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
+                knife_output = Chef::Knife::CloudformationDescribe.new
+                knife_output.name_args.push(name)
+                knife_output.config[:outputs] = true
+                knife_output.run
+              else
+                ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
+                ui.info ""
+                knife_inspect = Chef::Knife::CloudformationInspect.new
+                knife_inspect.name_args.push(name)
+                knife_inspect.config[:instance_failure] = true
+                knife_inspect.run
+                exit 1
+              end
+            else
+              ui.warn 'Stack state polling has been disabled.'
+              ui.info "Stack update initialized for #{ui.color(name, :green)}"
             end
           else
-            ui.warn 'Stack state polling has been disabled.'
-            ui.info "Stack update initialized for #{ui.color(name, :green)}"
+            ui.fatal "Failed to locate requested stack: #{ui.color(name, :red, :bold)}"
+            exit -1
           end
-        else
-          ui.fatal "Failed to locate requested stack: #{ui.color(name, :red, :bold)}"
-          exit -1
+
         end
       end
 
@@ -117,7 +162,7 @@ class Chef
           remote_stack = provider.connection.stacks.get(stack_name)
           if(remote_stack)
             remote_stack.parameters.each do |key, value|
-              next if Chef::Config[:knife][:cloudformation][:stacks][:ignore_parameters].include?(key)
+              next if Chef::Config[:knife][:cloudformation].fetch(:stacks, {}).fetch(:ignore_parameters, []).include?(key)
               if(stack.parameters.has_key?(key))
                 stack.parameters[key] = value
               end
