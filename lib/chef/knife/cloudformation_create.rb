@@ -71,6 +71,7 @@ class Chef
           file = Chef::Config[:knife][:cloudformation][:template]
         else
           file = load_template_file
+          nested_stacks = file.delete('sfn_nested_stack')
         end
         ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('create', :green)}"
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
@@ -85,30 +86,59 @@ class Chef
           ui.info "  -> #{stack_info}"
         end
 
-        stack = provider.connection.stacks.build(
-          Chef::Config[:knife][:cloudformation][:options].dup.merge(
-            :name => name,
-            :template => file
+        if(nested_stacks)
+
+          if(config[:print_only])
+            ui.info _format_json(translate_template(stack.template))
+            exit 0
+          end
+
+          # @todo move this init into setup
+          Chef::Config[:knife][:cloudformation][:create] ||= Mash.new
+          Chef::Config[:knife][:cloudformation][:create][:apply_stacks] ||= []
+
+          orig_params = Chef::Config[:knife][:cloudformation][:options][:parameters]
+
+          file['Resources'].each do |stack_resource_name, stack_resource|
+
+            nested_stack_name = "#{name}-#{stack_resource_name}"
+            nested_stack_template = stack_resource['Properties']['Stack']
+            Chef::Config[:knife][:cloudformation][:options][:parameters] = orig_params
+
+            nested_stack_runner = Chef::Knife::CloudformationCreate.new
+            nested_stack_runner.name_args.push(nested_stack_name)
+            Chef::Config[:knife][:cloudformation][:template] = nested_stack_template
+            nested_stack_runner.run
+            Chef::Config[:knife][:cloudformation][:create][:apply_stacks].push(nested_stack_name).uniq!
+            Chef::Config[:knife][:cloudformation][:template] = nil
+            provider.connection.stacks.reload
+
+          end
+
+        else
+
+          stack = provider.connection.stacks.build(
+            Chef::Config[:knife][:cloudformation][:options].dup.merge(
+              :name => name,
+              :template => file
+            )
           )
-        )
 
-        apply_stacks!(stack)
-        stack.template = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(stack.template)
+          apply_stacks!(stack)
+          stack.template = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(stack.template)
 
-        if(config[:print_only])
-          ui.info _format_json(translate_template(stack.template))
-          exit 0
+          if(config[:print_only])
+            ui.info _format_json(translate_template(stack.template))
+            exit 0
+          end
+
+          populate_parameters!(stack.template)
+          stack.parameters = Chef::Config[:knife][:cloudformation][:options][:parameters]
+
+          stack.template = translate_template(stack.template)
+          stack.save
+
         end
-
-        # TODO: if nested stacks and not extracted (based on config
-        # option, break resources out and iterate each stack and use
-        # apply-stack as we iterate the list
-
-        populate_parameters!(stack.template)
-        stack.parameters = Chef::Config[:knife][:cloudformation][:options][:parameters]
-
-        stack.template = translate_template(stack.template)
-        stack.save
 
         if(Chef::Config[:knife][:cloudformation][:poll])
           poll_stack(stack.name)
