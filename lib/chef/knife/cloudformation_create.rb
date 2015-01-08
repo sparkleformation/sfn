@@ -89,7 +89,7 @@ class Chef
         if(nested_stacks)
 
           if(config[:print_only])
-            ui.info _format_json(translate_template(stack.template))
+            ui.info _format_json(translate_template(file))
             exit 0
           end
 
