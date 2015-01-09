@@ -51,12 +51,11 @@ module KnifeCloudformation
                     "#{url.scheme}://#{url.host}#{url.path}"
                   end
                 end
-              else
-                if(sf.nested? && !sf.isolated_nests?)
-                  raise TypeError.new('Template does not contain isolated stack nesting! Cannot process in existing state.')
-                end
-                sf.dump.merge('sfn_nested_stack' => true)
               end
+              if(sf.nested? && !sf.isolated_nests?)
+                raise TypeError.new('Template does not contain isolated stack nesting! Cannot process in existing state.')
+              end
+              sf.dump.merge('sfn_nested_stack' => !!sf.nested?)
             else
               _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
             end
