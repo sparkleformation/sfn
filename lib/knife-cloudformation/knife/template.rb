@@ -30,6 +30,9 @@ module KnifeCloudformation
           elsif(Chef::Config[:knife][:cloudformation][:file])
             if(Chef::Config[:knife][:cloudformation][:processing])
               sf = SparkleFormation.compile(Chef::Config[:knife][:cloudformation][:file], :sparkle)
+              if(sf.nested? && !sf.isolated_nests?)
+                raise TypeError.new('Template does not contain isolated stack nesting! Cannot process in existing state.')
+              end
               if(sf.nested? && Chef::Config[:knife][:cloudformation][:apply_nesting])
                 sf.apply_nesting do |stack_name, stack_definition|
                   bucket = provider.connection.api_for(:storage).buckets.get(
@@ -50,12 +53,10 @@ module KnifeCloudformation
                     url = URI.parse(file.url)
                     "#{url.scheme}://#{url.host}#{url.path}"
                   end
-                end
+                end.merge('sfn_nested_stack' => !!sf.nested?)
+              else
+                sf.dump
               end
-              if(sf.nested? && !sf.isolated_nests?)
-                raise TypeError.new('Template does not contain isolated stack nesting! Cannot process in existing state.')
-              end
-              sf.dump.merge('sfn_nested_stack' => !!sf.nested?)
             else
               _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
             end
