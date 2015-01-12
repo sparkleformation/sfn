@@ -1,3 +1,10 @@
+## v0.2.12
+* Use template to provide logical parameter ordering on stack update
+* Only set parameters when not the default template value
+* Do not save nested stacks to remote bucket when in print-only mode
+* Add initial support for un-nested stack create and update
+* Fix nested stack flagging usage
+
 ## v0.2.10
 * Add initial nested stack support
 
