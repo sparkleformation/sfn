@@ -71,7 +71,7 @@ class Chef
           file = Chef::Config[:knife][:cloudformation][:template]
         else
           file = load_template_file
-          nested_stacks = file.delete('sfn_nested_stack')
+          nested_stacks_unpack = file.delete('sfn_nested_stack')
         end
         ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('create', :green)}"
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
@@ -86,12 +86,7 @@ class Chef
           ui.info "  -> #{stack_info}"
         end
 
-        if(nested_stacks)
-
-          if(config[:print_only])
-            ui.info _format_json(translate_template(file))
-            exit 0
-          end
+        if(nested_stacks_unpack)
 
           unpack_nesting(name, file, :create)
 
@@ -109,7 +104,7 @@ class Chef
 
           if(config[:print_only])
             ui.info _format_json(translate_template(stack.template))
-            exit 0
+            return
           end
 
           populate_parameters!(stack.template)
@@ -120,28 +115,30 @@ class Chef
 
         end
 
-        if(Chef::Config[:knife][:cloudformation][:poll])
-          poll_stack(stack.name)
-          stack = provider.connection.stacks.get(name)
+        if(stack)
+          if(Chef::Config[:knife][:cloudformation][:poll])
+            poll_stack(stack.name)
+            stack = provider.connection.stacks.get(name)
 
-          if(stack.reload.success?)
-            ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
-            knife_output = Chef::Knife::CloudformationDescribe.new
-            knife_output.name_args.push(name)
-            knife_output.config[:outputs] = true
-            knife_output.run
+            if(stack.reload.success?)
+              ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
+              knife_output = Chef::Knife::CloudformationDescribe.new
+              knife_output.name_args.push(name)
+              knife_output.config[:outputs] = true
+              knife_output.run
+            else
+              ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
+              ui.info ""
+              knife_inspect = Chef::Knife::CloudformationInspect.new
+              knife_inspect.name_args.push(name)
+              knife_inspect.config[:instance_failure] = true
+              knife_inspect.run
+              exit 1
+            end
           else
-            ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-            ui.info ""
-            knife_inspect = Chef::Knife::CloudformationInspect.new
-            knife_inspect.name_args.push(name)
-            knife_inspect.config[:instance_failure] = true
-            knife_inspect.run
-            exit 1
+            ui.warn 'Stack state polling has been disabled.'
+            ui.info "Stack creation initialized for #{ui.color(name, :green)}"
           end
-        else
-          ui.warn 'Stack state polling has been disabled.'
-          ui.info "Stack creation initialized for #{ui.color(name, :green)}"
         end
       end
 
