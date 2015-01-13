@@ -60,6 +60,7 @@ module KnifeCloudformation
         #
         # @param name [String] name of stack
         def poll_stack(name)
+          provider.connection.stacks.reload
           knife_events = Chef::Knife::CloudformationEvents.new
           knife_events.name_args.push(name)
           Chef::Config[:knife][:cloudformation][:poll] = true
