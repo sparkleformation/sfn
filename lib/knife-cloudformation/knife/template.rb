@@ -53,9 +53,9 @@ module KnifeCloudformation
                     url = URI.parse(file.url)
                     "#{url.scheme}://#{url.host}#{url.path}"
                   end
-                end.merge('sfn_nested_stack' => !!sf.nested?)
+                end
               else
-                sf.dump
+                sf.dump.merge('sfn_nested_stack' => !!sf.nested?)
               end
             else
               _from_json(File.read(Chef::Config[:knife][:cloudformation][:file]))
