@@ -34,10 +34,13 @@ module KnifeCloudformation
 
             klass = Chef::Knife.const_get("Cloudformation#{action.to_s.capitalize}")
             nested_stack_runner = klass.new
+            nested_stack_runner.config[:print_only] = config[:print_only]
             nested_stack_runner.name_args.push(nested_stack_name)
             Chef::Config[:knife][:cloudformation][:template] = nested_stack_template
             nested_stack_runner.run
-            Chef::Config[:knife][:cloudformation][action.to_sym][:apply_stacks].push(nested_stack_name).uniq!
+            unless(config[:print_only])
+              Chef::Config[:knife][:cloudformation][action.to_sym][:apply_stacks].push(nested_stack_name).uniq!
+            end
             Chef::Config[:knife][:cloudformation][:template] = nil
             provider.connection.stacks.reload
 
