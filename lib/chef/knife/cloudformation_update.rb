@@ -122,6 +122,7 @@ class Chef
       # @param template [Hash] stack template
       # @param stack [Fog::Orchestration::Stack]
       # @return [Hash]
+      # @todo to be scrubbed
       def redefault_stack_parameters(template, stack)
         stack.parameters.each do |key, value|
           if(template['Parameters'][key])
@@ -129,30 +130,6 @@ class Chef
           end
         end
         template
-      end
-
-      # Apply any defined remote stacks
-      #
-      # @param stack [Miasma::Models::Orchestration::Stack]
-      # @return [Miasma::Models::Orchestration::Stack]
-      def apply_stacks!(stack)
-        remote_stacks = Chef::Config[:knife][:cloudformation].
-          fetch(:update, {}).fetch(:apply_stacks, [])
-        remote_stacks.each do |stack_name|
-          remote_stack = provider.connection.stacks.get(stack_name)
-          if(remote_stack)
-            remote_stack.parameters.each do |key, value|
-              next if Chef::Config[:knife][:cloudformation].fetch(:stacks, {}).fetch(:ignore_parameters, []).include?(key)
-              if(stack.parameters.has_key?(key))
-                stack.parameters[key] = value
-              end
-            end
-          else
-            ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
-            exit 1
-          end
-        end
-        stack
       end
 
     end
