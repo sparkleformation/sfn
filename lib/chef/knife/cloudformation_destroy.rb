@@ -21,6 +21,19 @@ class Chef
       def _run
         stacks = name_args.sort
         plural = 's' if stacks.size > 1
+        globs = stacks.find_all do |s|
+          s !~ /^[a-zA-Z0-9-]+$/
+        end
+        unless(globs.empty?)
+          glob_stacks = provider.connection.stacks.all.find_all do |remote_stack|
+            globs.detect do |glob|
+              File.fnmatch(glob, remote_stack.name)
+            end
+          end
+          stacks += glob_stacks.map(&:name)
+          stacks -= globs
+          stacks.sort!
+        end
         ui.warn "Destroying Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold)}"
         ui.confirm "Destroy formation#{plural}"
         stacks.each do |stack_name|
