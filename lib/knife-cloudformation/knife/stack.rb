@@ -8,6 +8,8 @@ module KnifeCloudformation
 
       module InstanceMethods
 
+        # un-packed stack name joiner/identifier
+        UNPACK_NAME_JOINER = '-sfn-'
         # maximum number of attempts to get valid parameter value
         MAX_PARAMETER_ATTEMPTS = 5
 
@@ -28,7 +30,7 @@ module KnifeCloudformation
 
           file['Resources'].each do |stack_resource_name, stack_resource|
 
-            nested_stack_name = "#{name}-#{stack_resource_name}"
+            nested_stack_name = "#{name}#{UNPACK_NAME_JOINER}#{stack_resource_name}"
             nested_stack_template = stack_resource['Properties']['Stack']
             Chef::Config[:knife][:cloudformation][:options][:parameters] = orig_params
 
