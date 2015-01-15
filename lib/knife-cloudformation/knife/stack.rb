@@ -13,6 +13,44 @@ module KnifeCloudformation
         # maximum number of attempts to get valid parameter value
         MAX_PARAMETER_ATTEMPTS = 5
 
+        # Apply any defined remote stacks
+        #
+        # @param stack [Miasma::Models::Orchestration::Stack]
+        # @return [Miasma::Models::Orchestration::Stack]
+        def apply_stacks!(stack)
+          action = self.class.name.downcase.end_with?('create') ? :create : :update
+          remote_stacks = Chef::Config[:knife][:cloudformation].
+            fetch(action, {}).fetch(:apply_stacks, [])
+          remote_stacks.each do |stack_name|
+            remote_stack = provider.connection.stacks.get(stack_name)
+            if(remote_stack)
+              stack.apply_stack(remote_stack)
+            else
+              if(stack_name.include?(UNPACK_NAME_JOINER))
+                apply_unpacked_stack!(stack_name, stack)
+              else
+                ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
+                exit 1
+              end
+            end
+          end
+          stack
+        end
+
+        # Apply all stacks from an unpacked stack
+        #
+        # @param stack_name [String] name of parent stack
+        # @param stack [Miasma::Models::Orchestration::Stack]
+        # @return [Miasma::Models::Orchestration::Stack]
+        def apply_unpacked_stack!(stack_name, stack)
+          provider.connection.stacks.all.find_all do |remote_stack|
+            remote_stack.name.start_with?("#{stack_name}#{UNPACK_NAME_JOINER}")
+          end.sort_by(&:name).each do |remote_stack|
+            stack.apply_stack(remote_stack)
+          end
+          stack
+        end
+
         # Unpack nested stack and run action on each stack, applying
         # the previous stacks automatically
         #
@@ -27,10 +65,11 @@ module KnifeCloudformation
           Chef::Config[:knife][:cloudformation][action.to_sym][:apply_stacks] ||= []
 
           orig_params = Chef::Config[:knife][:cloudformation][:options][:parameters]
+          stack_count = 0
 
           file['Resources'].each do |stack_resource_name, stack_resource|
 
-            nested_stack_name = "#{name}#{UNPACK_NAME_JOINER}#{stack_resource_name}"
+            nested_stack_name = "#{name}#{UNPACK_NAME_JOINER}#{stack_count}-#{stack_resource_name}"
             nested_stack_template = stack_resource['Properties']['Stack']
             Chef::Config[:knife][:cloudformation][:options][:parameters] = orig_params
 
