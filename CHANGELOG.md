@@ -1,3 +1,10 @@
+## v0.2.14
+* Pass command configuration through when unpacking
+* Force stack list reload prior to polling to prevent lookup errors
+* Add glob support on name arguments provided for `destroy`
+* Add unpacked stack support to `--apply-stack` flag
+* Retry events polling when started from different command
+
 ## v0.2.12
 * Use template to provide logical parameter ordering on stack update
 * Only set parameters when not the default template value
