@@ -69,7 +69,7 @@ module KnifeCloudformation
 
           file['Resources'].each do |stack_resource_name, stack_resource|
 
-            nested_stack_name = "#{name}#{UNPACK_NAME_JOINER}#{stack_count}-#{stack_resource_name}"
+            nested_stack_name = "#{name}#{UNPACK_NAME_JOINER}#{Kernel.sprintf('%0.3d', stack_count)}-#{stack_resource_name}"
             nested_stack_template = stack_resource['Properties']['Stack']
             Chef::Config[:knife][:cloudformation][:options] = orig_options.dup
 
@@ -84,6 +84,7 @@ module KnifeCloudformation
             end
             Chef::Config[:knife][:cloudformation][:template] = nil
             provider.connection.stacks.reload
+            stack_count += 1
 
           end
 
