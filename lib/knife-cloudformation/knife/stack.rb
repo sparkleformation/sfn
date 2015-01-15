@@ -64,18 +64,18 @@ module KnifeCloudformation
           Chef::Config[:knife][:cloudformation][action.to_sym] ||= Mash.new
           Chef::Config[:knife][:cloudformation][action.to_sym][:apply_stacks] ||= []
 
-          orig_params = Chef::Config[:knife][:cloudformation][:options][:parameters]
+          orig_options = Chef::Config[:knife][:cloudformation][:options].dup
           stack_count = 0
 
           file['Resources'].each do |stack_resource_name, stack_resource|
 
             nested_stack_name = "#{name}#{UNPACK_NAME_JOINER}#{stack_count}-#{stack_resource_name}"
             nested_stack_template = stack_resource['Properties']['Stack']
-            Chef::Config[:knife][:cloudformation][:options][:parameters] = orig_params
+            Chef::Config[:knife][:cloudformation][:options] = orig_options.dup
 
             klass = Chef::Knife.const_get("Cloudformation#{action.to_s.capitalize}")
             nested_stack_runner = klass.new
-            nested_stack_runner.config[:print_only] = config[:print_only]
+            nested_stack_runner.config = config.dup
             nested_stack_runner.name_args.push(nested_stack_name)
             Chef::Config[:knife][:cloudformation][:template] = nested_stack_template
             nested_stack_runner.run
