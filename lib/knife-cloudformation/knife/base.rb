@@ -60,11 +60,23 @@ module KnifeCloudformation
         #
         # @param name [String] name of stack
         def poll_stack(name)
-          provider.connection.stacks.reload
-          knife_events = Chef::Knife::CloudformationEvents.new
-          knife_events.name_args.push(name)
-          Chef::Config[:knife][:cloudformation][:poll] = true
-          knife_events.run
+          retry_attempts = 0
+          begin
+            provider.connection.stacks.reload
+            knife_events = Chef::Knife::CloudformationEvents.new
+            knife_events.name_args.push(name)
+            Chef::Config[:knife][:cloudformation][:poll] = true
+            knife_events.run
+          rescue => e
+            if(retry_attempts < Chef::Config[:knife][:cloudformation].fetch(:max_poll_retries, 5))
+              retry_attempts += 1
+              warn "Unexpected error encountered (#{e.class}: #{e}) Retrying [retry count: #{retry_attempts}]"
+              sleep(1)
+              retry
+            else
+              raise
+            end
+          end
         end
 
         # Wrapper for information retrieval. Provides consistent error
