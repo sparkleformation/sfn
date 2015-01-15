@@ -26,12 +26,7 @@ module KnifeCloudformation
             if(remote_stack)
               stack.apply_stack(remote_stack)
             else
-              if(stack_name.include?(UNPACK_NAME_JOINER))
-                apply_unpacked_stack!(stack_name, stack)
-              else
-                ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
-                exit 1
-              end
+              apply_unpacked_stack!(stack_name, stack)
             end
           end
           stack
@@ -43,12 +38,17 @@ module KnifeCloudformation
         # @param stack [Miasma::Models::Orchestration::Stack]
         # @return [Miasma::Models::Orchestration::Stack]
         def apply_unpacked_stack!(stack_name, stack)
-          provider.connection.stacks.all.find_all do |remote_stack|
+          result = provider.connection.stacks.all.find_all do |remote_stack|
             remote_stack.name.start_with?("#{stack_name}#{UNPACK_NAME_JOINER}")
-          end.sort_by(&:name).each do |remote_stack|
+          end.sort_by(&:name).map do |remote_stack|
             stack.apply_stack(remote_stack)
           end
-          stack
+          unless(result.empty?)
+            stack
+          else
+            ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
+            exit 1
+          end
         end
 
         # Unpack nested stack and run action on each stack, applying
