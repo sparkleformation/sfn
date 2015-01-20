@@ -1,3 +1,7 @@
+## v0.2.16
+* Fix broken validation command (#12 thanks @JonathanSerafini)
+* Pad stack name indexes when unpacked
+
 ## v0.2.14
 * Pass command configuration through when unpacking
 * Force stack list reload prior to polling to prevent lookup errors
