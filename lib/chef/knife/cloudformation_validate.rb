@@ -14,6 +14,7 @@ class Chef
 
       def _run
         file = load_template_file
+        file.delete('sfn_nested_stack')
         ui.info "#{ui.color('Cloud Formation Validation: ', :bold)} #{Chef::Config[:knife][:cloudformation][:file].sub(Dir.pwd, '').sub(%r{^/}, '')}"
         file = KnifeCloudformation::Utils::StackParameterScrubber.scrub!(file)
         file = translate_template(file)
