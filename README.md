@@ -100,7 +100,7 @@ Creates a new stack with the provided name (`NAME`).
 * `--capability CAPABILITY` enable capability within API
 * `--notifications ARN` add notification ARN
 * `--print-only` print stack template JSON and exit
-* `--apply-stacks NAME` apply existing stack outputs
+* `--apply-stack NAME` apply existing stack outputs
 * `--[no-]processing` enable template processing
 * `--file PATH` path to stack template file
 * `--translate PROVIDER` translate template to provider
@@ -109,7 +109,7 @@ Creates a new stack with the provided name (`NAME`).
 
 #### Apply Stacks
 
-The `--apply-stacks` option allows providing the name of an existing
+The `--apply-stack` option allows providing the name of an existing
 stack when creating or updating. Applying stacks is simply fetching
 the outputs from the applied stacks and automatically defaulting the
 set parameter of the new or updated stack. Outputs are matched
@@ -149,10 +149,10 @@ StackB:
 ...
 ```
 
-When creating StackB, if we use the `--apply-stacks` option:
+When creating StackB, if we use the `--apply-stack` option:
 
 ```
-$ knife cloudformation create StackB --apply-stacks StackA
+$ knife cloudformation create StackB --apply-stack StackA
 ```
 
 when prompted for the stack parameters, we will find the parameter
@@ -184,7 +184,7 @@ Update an existing stack.
 #### Supported options
 
 * `--print-only` print stack template JSON and exit
-* `--apply-stacks NAME` apply existing stack outputs
+* `--apply-stack NAME` apply existing stack outputs
 * `--[no-]processing` enable template processing
 * `--file PATH` path to stack template file
 * `--translate PROVIDER` translate template to provider
