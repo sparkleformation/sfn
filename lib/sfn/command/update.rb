@@ -90,22 +90,6 @@ module Sfn
         end
       end
 
-      # Update default values for parameters in template with
-      # currently used parameters on the existing stack
-      #
-      # @param template [Hash] stack template
-      # @param stack [Fog::Orchestration::Stack]
-      # @return [Hash]
-      # @todo to be scrubbed
-      def redefault_stack_parameters(template, stack)
-        stack.parameters.each do |key, value|
-          if(template['Parameters'][key])
-            template['Parameters'][key]['Default'] = value
-          end
-        end
-        template
-      end
-
     end
   end
 end
