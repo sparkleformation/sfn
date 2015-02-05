@@ -82,24 +82,6 @@ module Sfn
         end
       end
 
-      # Apply any defined remote stacks
-      #
-      # @param stack [Miasma::Models::Orchestration::Stack]
-      # @return [Miasma::Models::Orchestration::Stack]
-      def apply_stacks!(stack)
-        remote_stacks = config.fetch(:apply_stacks, [])
-        remote_stacks.each do |stack_name|
-          remote_stack = provider.connection.stacks.get(stack_name)
-          if(remote_stack)
-            stack.apply_stack(remote_stack)
-          else
-            ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
-            exit 1
-          end
-        end
-        stack
-      end
-
     end
   end
 end
