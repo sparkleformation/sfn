@@ -8,8 +8,46 @@ module Sfn
 
       module InstanceMethods
 
+        # unpacked stack name joiner/identifier
+        UNPACK_NAME_JOINER = '-sfn-'
         # maximum number of attempts to get valid parameter value
         MAX_PARAMETER_ATTEMPTS = 5
+
+        # Apply any defined remote stacks
+        #
+        # @param stack [Miasma::Models::Orchestration::Stack]
+        # @return [Miasma::Models::Orchestration::Stack]
+        def apply_stacks!(stack)
+          remote_stacks = config.fetch(:apply_stacks, [])
+          remote_stacks.each do |stack_name|
+            remote_stack = provider.connection.stacks.get(stack_name)
+            if(remote_stack)
+              stack.apply_stack(remote_stack)
+            else
+              apply_unpacked_stack!(stack_name, stack)
+            end
+          end
+          stack
+        end
+
+        # Apply all stacks from an unpacked stack
+        #
+        # @param stack_name [String] name of parent stack
+        # @param stack [Miasma::Models::Orchestration::Stack]
+        # @return [Miasma::Models::Orchestration::Stack]
+        def apply_unpacked_stack!(stack_name, stack)
+          result = provider.connection.stacks.all.find_all do |remote_stack|
+            remote_stack.name.start_with?("#{stack_name}#{UNPACK_NAME_JOINER}")
+          end.sort_by(&:name).map do |remote_stack|
+            stack.apply_stack(remote_stack)
+          end
+          unless(result.empty?)
+            stack
+          else
+            ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
+            raise "Failed to locate stack: #{stack_name}"
+          end
+        end
 
         # Unpack nested stack and run action on each stack, applying
         # the previous stacks automatically
@@ -19,11 +57,11 @@ module Sfn
         # @param action [String] create or update
         # @return [TrueClass]
         def unpack_nesting(name, file, action)
-
           config.apply_stacks ||= []
+          stack_count = 0
           file['Resources'].each do |stack_resource_name, stack_resource|
 
-            nested_stack_name = "#{name}-#{stack_resource_name}"
+            nested_stack_name = "#{name}#{UNPACK_NAME_JOINER}#{Kernel.sprintf('%0.3d', stack_count)}-#{stack_resource_name}"
             nested_stack_template = stack_resource['Properties']['Stack']
 
             namespace.const_get(action.to_s.capitalize).new(
@@ -31,7 +69,8 @@ module Sfn
                 :print_only => config[:print_only],
                 :template => nested_stack_template,
                 :parameters => config.fetch(:parameters, Smash.new).to_smash,
-                :apply_stacks => config[:apply_stacks]
+                :apply_stacks => config[:apply_stacks],
+                :options => config[:options]
               ),
               [nested_stack_name]
             ).execute!
@@ -40,7 +79,7 @@ module Sfn
             end
             config[:template] = nil
             provider.connection.stacks.reload
-
+            stack_count += 1
           end
 
           true
