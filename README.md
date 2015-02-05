@@ -15,7 +15,7 @@ APIs.
 The easiest way to configure the plugin is via the
 `knife.rb` file. Credentials are the only configuration
 requirement, and the `Hash` provided is proxied to
-Miasma:
+[Miasma][miasma]:
 
 ### AWS
 
@@ -237,9 +237,8 @@ Display resources and outputs of give stack.
 
 The stack inspection command simply provides a proxy to the
 underlying resource modeling objects provided via the
-(miasma)[https://github.com/miasma-rb/miasma] library. It
-also provides extra helpers for running common inspection
-commands.
+[miasma][miasma] library. It also provides extra helpers for
+running common inspection commands.
 
 ### Supported options
 
@@ -264,7 +263,7 @@ is set to: `/var/log/chef/client.log`
 #### `--attribute ATTR`
 
 The attribute option is what provides the proxy to the underlying
-miasma resource modeling. The value of `ATTR` is what should be
+[miasma][miasma] resource modeling. The value of `ATTR` is what should be
 called on the `Miasma::Models::Orchestration::Stack` instance.
 For example, to display the JSON template of a stack:
 
@@ -290,7 +289,7 @@ $ knife cloudformation inspect STACK -a "resources.all.at(2)"
 Note that the resources are an array, and we are using a zero
 based index. Now, this simply provides us with the information
 we already have seen. One of the handy features within the
-miasma library is the ability to expand supported resources.
+[miasma][miasma] library is the ability to expand supported resources.
 So, we can expand this resource:
 
 ```
@@ -317,3 +316,5 @@ style things.
 
 * Repository: https://github.com/hw-labs/knife-cloudformation
 * IRC: Freenode @ #heavywater
+
+[miasma]: http://miasma-rb.github.io/miasma/
