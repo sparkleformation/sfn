@@ -15,7 +15,7 @@ module Sfn
         :description => 'Apply nested stacks. When disabled, stacks built in serial order.'
       )
       attribute(
-        :apply_stacks, String,
+        :apply_stack, String,
         :multiple => true,
         :description => 'Apply outputs from stack to input parameters'
       )

@@ -1,4 +1,3 @@
-# -*- coding: undecided -*-
 require 'sfn'
 
 module Sfn
@@ -16,7 +15,7 @@ module Sfn
       )
       attribute(
         :file_path_prompt, [TrueClass, FalseClass],
-        :default => true
+        :default => true,
         :description => 'Enable interactive prompt for template path discovery'
       )
       attribute(
@@ -37,7 +36,7 @@ module Sfn
       )
       attribute(
         :apply_nesting, [TrueClass, FalseClass],
-        :default => true
+        :default => true,
         :description => 'Apply stack nesting'
       )
       attribute(

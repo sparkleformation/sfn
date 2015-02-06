@@ -1,7 +1,7 @@
 require 'sfn'
 
 module Sfn
-  module Config
+  class Config
     # Destroy command configuration
     class Destroy < Bogo::Config
     end

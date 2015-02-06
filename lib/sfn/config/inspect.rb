@@ -1,7 +1,7 @@
 require 'sfn'
 
 module Sfn
-  module Config
+  class Config
     # Inspect command configuration
     class Inspect < Bogo::Config
 

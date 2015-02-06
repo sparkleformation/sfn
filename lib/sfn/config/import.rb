@@ -1,7 +1,7 @@
 require 'sfn'
 
 module Sfn
-  module Config
+  class Config
 
     # Import command configuration
     class Import < Bogo::Config
