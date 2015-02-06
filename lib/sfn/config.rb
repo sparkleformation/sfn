@@ -1,4 +1,5 @@
 require 'sfn'
+require 'bogo-config'
 
 module Sfn
 
@@ -8,6 +9,7 @@ module Sfn
     autoload :Create, 'sfn/config/create'
     autoload :Describe, 'sfn/config/describe'
     autoload :Destroy, 'sfn/config/destroy'
+    autoload :Describe, 'sfn/config/describe'
     autoload :Events, 'sfn/config/events'
     autoload :Export, 'sfn/config/export'
     autoload :Import, 'sfn/config/import'
@@ -56,9 +58,10 @@ module Sfn
     attribute :export, Export, :coerce => proc{|v| Export.new(v)}
     attribute :import, Import, :coerce => proc{|v| Import.new(v)}
     attribute :inspect, Inspect, :coerce => proc{|v| Inpsect.new(v)}
+    attribute :describe, Describe, :coerce => proc{|v| Describe.new(v)}
     attribute :list, List, :coerce => proc{|v| List.new(v)}
-    attribute :promote, PromoteConfig, :coerce => proc{|v| Promote.new(v)}
-    attribute :validate, ValidateConfig, :coerce => proc{|v| Validate.new(v)}
+    attribute :promote, Promote, :coerce => proc{|v| Promote.new(v)}
+    attribute :validate, Validate, :coerce => proc{|v| Validate.new(v)}
 
   end
 end
