@@ -1,5 +1,6 @@
 require 'sfn/version'
 require 'miasma'
+require 'bogo'
 
 module Sfn
 
