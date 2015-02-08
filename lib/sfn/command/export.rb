@@ -6,7 +6,7 @@ module Sfn
     class Export < Command
 
       include Sfn::CommandModule::Base
-      include Snf::Utils::ObjectStorage
+      include Sfn::Utils::ObjectStorage
 
       # Run export action
       def execute!

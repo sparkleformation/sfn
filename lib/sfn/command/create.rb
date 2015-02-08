@@ -3,7 +3,7 @@ require 'pathname'
 require 'sfn'
 
 module Sfn
-  module Command
+  class Command
     # Cloudformation create command
     class Create < Command
 

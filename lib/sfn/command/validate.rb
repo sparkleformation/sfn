@@ -2,13 +2,13 @@ require 'pathname'
 require 'sparkle_formation'
 require 'sfn'
 
-class Sfn
+module Sfn
   class Command
     # Validate command
     class Validate < Command
 
       include Sfn::CommandModule::Base
-      incldue Sfn::CommandModule::Template
+      include Sfn::CommandModule::Template
 
       def execute!
         file = load_template_file
