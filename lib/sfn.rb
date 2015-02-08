@@ -12,5 +12,6 @@ module Sfn
   autoload :MonkeyPatch, 'sfn/monkey_patch'
   autoload :Knife, 'sfn/knife'
   autoload :Command, 'sfn/command'
+  autoload :CommandModule, 'sfn/command_module'
 
 end
