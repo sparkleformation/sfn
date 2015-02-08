@@ -21,16 +21,27 @@ unless(defined?(Chef::Knife::CloudformationCreate))
         @name
       end
 
+      def self.sfn_class
+        @sfn_class
+      end
+
       def name
         self.class.name
       end
 
       def run
-        puts "WE SHOULD DO STUFF!"
+        base = Chef::Config[:knife].hash_dup.to_smash
+        cmd_config = base.fetch(:knife, :cloudformation, {}).to_smash
+        cmd_config.deep_merge!(options)
+        self.class.sfn_class.new(cmd_config, name_args).execute!
       end
 
     end
     knife_klass.instance_variable_set(:@name, "Chef::Knife::#{command_class}")
+    knife_klass.instance_variable_set(
+      :@sfn_class,
+      Bogo::Utility.constantize(klass.name.sub('Config', 'Command'))
+    )
     knife_klass.banner "knife cloudformation #{Bogo::Utility.snake(klass_name)}"
 
     Sfn::Config.attributes.merge(klass.attributes).sort_by(&:first).each do |name, info|
