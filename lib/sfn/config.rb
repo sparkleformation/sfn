@@ -50,6 +50,10 @@ module Sfn
       :yes, [TrueClass, FalseClass],
       :description => 'Automatically accept any requests for confirmation'
     )
+    attribute(
+      :config, String,
+      :description => 'Configuration file path'
+    )
 
     attribute :create, Create, :coerce => proc{|v| Create.new(v)}
     attribute :update, Update, :coerce => proc{|v| Update.new(v)}
