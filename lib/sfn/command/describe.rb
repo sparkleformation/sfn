@@ -27,7 +27,6 @@ module Sfn
           display = AVAILABLE_DISPLAYS.dup if display.empty?
           display.each do |display_method|
             self.send(display_method, stack)
-            ui.info ''
           end
         else
           ui.fatal "Failed to find requested stack: #{ui.color(stack_name, :bold, :red)}"
@@ -44,7 +43,22 @@ module Sfn
         end.map do |resource|
           Smash.new(resource.attributes)
         end
-        things_output(stack.name, stack_resources, :resources)
+        ui.table(self) do
+          table(:border => false) do
+            row(:header => true) do
+              allowed_attributes.each do |attr|
+                column as_title(attr), :width => stack_resources.map{|r| r[attr].to_s.length}.push(as_title(attr).length).max + 2
+              end
+            end
+            stack_resources.each do |resource|
+              row do
+                allowed_attributes.each do |attr|
+                  column resource[attr]
+                end
+              end
+            end
+          end
+        end.display
       end
 
       # Display outputs
