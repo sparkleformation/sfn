@@ -7,7 +7,7 @@ module Sfn
     class StackParameterValidator
       class << self
 
-        include Bogo::AnimalString
+        include Bogo::AnimalStrings
 
         # Validate a parameters
         #
