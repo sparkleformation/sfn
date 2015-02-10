@@ -23,8 +23,8 @@ module Sfn
           stacks -= globs
           stacks.sort!
         end
-        ui.warn "Destroying Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold)}"
-        ui.confirm "Destroy formation#{plural}"
+        ui.warn "Destroying Stack#{plural}: #{ui.color(stacks.join(', '), :bold)}"
+        ui.confirm "Destroy listed stack#{plural}?"
         stacks.each do |stack_name|
           stack = provider.connection.stacks.get(stack_name)
           if(stack)
