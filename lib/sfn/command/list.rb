@@ -9,24 +9,38 @@ module Sfn
 
       # Run the list command
       def execute!
-        things_output(nil, get_list, nil)
+        ui.table(self) do
+          table(:border => false) do
+            stacks = get_stacks
+            row(:header => true) do
+              allowed_attributes.each do |attr|
+                column attr.split('_').map(&:capitalize).join(' '), :width => stacks.map{|s| s[attr].to_s.length}.max + 2
+              end
+            end
+            get_stacks.each do |stack|
+              row do
+                allowed_attributes.each do |attr|
+                  column stack[attr]
+                end
+              end
+            end
+          end
+        end.display
       end
 
       # Get the list of stacks to display
       #
       # @return [Array<Hash>]
-      def get_list
-        get_things do
-          provider.stacks.all.map do |stack|
-            Smash.new(stack.attributes)
-          end.sort do |x, y|
-            if(y[:created].to_s.empty?)
-              -1
-            elsif(x[:created].to_s.empty?)
-              1
-            else
-              Time.parse(y['created'].to_s) <=> Time.parse(x['created'].to_s)
-            end
+      def get_stacks
+        provider.stacks.all.map do |stack|
+          Smash.new(stack.attributes)
+        end.sort do |x, y|
+          if(y[:created].to_s.empty?)
+            -1
+          elsif(x[:created].to_s.empty?)
+            1
+          else
+            Time.parse(x[:created].to_s) <=> Time.parse(y[:created].to_s)
           end
         end
       end
