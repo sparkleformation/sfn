@@ -39,7 +39,7 @@ Bogo::Cli::Setup.define do
       end
 
       run do |opts, args|
-        klass.new({klass_name => opts}, args)
+        Bogo::Utility.constantize(klass.to_s.sub('Config', 'Command')).new(opts, args).execute!
       end
     end
 
