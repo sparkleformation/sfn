@@ -10,42 +10,47 @@ module Sfn
       # Run the events list action
       def execute!
         name = name_args.first
-        ui.info "Cloud Formation Events for Stack: #{ui.color(name, :bold)}\n"
+        ui.info "Events for Stack: #{ui.color(name, :bold)}\n"
+        @stacks = []
         stack = provider.connection.stacks.get(name)
-        last_id = nil
+        @stacks << stack
+        discover_stacks(stack)
         if(stack)
-          events = get_events(stack)
-          things_output(name, events, 'events')
-          last_id = events.last ? events.last[:id] : nil
-          if(config[:poll])
-            cycle_events = true
-            while(cycle_events)
-              cycle_events = stack.in_progress?
-              sleep(config[:poll_delay])
-              stack.events.reload
-              events = get_events(stack, last_id)
-              unless(events.empty?)
-                last_id = events.last[:id]
-                things_output(nil, events, 'events', :no_title, :ignore_empty_output)
+          table = ui.table(self) do
+            table(:border => false) do
+              events = get_events(stack)
+              row(:header => true) do
+                allowed_attributes.each do |attr|
+                  column attr.split('_').map(&:capitalize).join(' '), :width => ((val = events.map{|e| e[attr].to_s.length}.max + 2) > 70 ? 70 : val)
+                end
               end
-              nest_stacks = stack.resources.all.find_all do |resource|
-                resource.state.to_s.end_with?('in_progress') &&
-                  resource.type == 'AWS::CloudFormation::Stack'
-              end
-              if(nest_stacks)
-                nest_stacks.each do |nest_stack|
-                  begin
-                    poll_stack(nest_stack.id)
-                    ui.info "Complete event listing for nested stack (#{nest_stack.name})"
-                  rescue => e
-                    ui.warn "Error encountered on event listing for nested stack - #{e} (#{nest_stack.name})"
+              events.each do |event|
+                row do
+                  allowed_attributes.each do |attr|
+                    column event[attr]
                   end
                 end
               end
-              stack.reload
             end
-            # Extra to see completion
-            things_output(nil, get_events(stack, last_id), 'events', :no_title, :ignore_empty_output)
+          end.display
+          if(config[:poll])
+            while(stack.in_progress?)
+              to_wait = config.fetch(:poll_wait_time, 10).to_f
+              while(to_wait > 0)
+                sleep(0.1)
+                to_wait -= 0.1
+              end
+              stack.reload
+              table.update do
+                get_events.each do |event|
+                  row do
+                    allowed_attributes.each do |attr|
+                      column event[attr]
+                    end
+                  end
+                end
+              end.display
+            end
           end
         else
           ui.fatal "Failed to locate requested stack: #{ui.color(name, :bold, :red)}"
@@ -58,24 +63,43 @@ module Sfn
       # @param stack [Miasma::Models::Orchestration::Stack]
       # @param last_id [String] only return events after this ID
       # @return [Array<Hash>]
-      def get_events(stack, last_id=nil)
-        get_things do
-          stack_events = stack.events.all
-          if(last_id)
-            start_index = stack_events.index{|event| event.id == last_id}
-            events = stack_events.slice(0, start_index.to_i)
-          else
-            events = stack_events
+      def get_events(*args)
+        stack_events = @stacks.map do |stack|
+          stack.events.all.map do |e|
+            e.attributes.merge(:stack_name => stack.name).to_smash
           end
-          events.map do |event|
-            Smash.new(event.attributes)
+        end.flatten.compact
+        if(@stack_events)
+          stack_events = stack_events - @stack_events
+        end
+        @stack_events = stack_events
+        stack_events.sort do |x,y|
+          Time.parse(x[:time].to_s) <=> Time.parse(y[:time].to_s)
+        end
+      end
+
+      def discover_stacks(stack)
+        stack.resources.all.each do |resource|
+          if(resource.type == 'AWS::CloudFormation::Stack')
+            nested_stack = provider.connection.stacks.get(resource.id)
+            @stacks.push(nested_stack).uniq!
+            discover_stacks(nested_stack)
           end
         end
       end
 
       # @return [Array<String>] default attributes for events
       def default_attributes
-        %w(time resource_logical_id resource_status resource_status_reason)
+        %w(stack_name time resource_logical_id resource_status resource_status_reason)
+      end
+
+      # @return [Array<String>] allowed attributes for events
+      def allowed_attributes
+        result = super
+        unless(@stacks.size > 1)
+          result.delete('stack_name')
+        end
+        result
       end
     end
   end
