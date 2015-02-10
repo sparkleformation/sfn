@@ -38,7 +38,11 @@ unless(defined?(Chef::Knife::CloudformationCreate))
       end
 
       def run
-        base = Chef::Config[:knife].hash_dup.to_smash
+        knife = Chef::Config[:knife]
+        if(knife.respond_to?(:hash_dup))
+          knife = knife.hash_dup
+        end
+        base = knife.to_smash
         cmd_config = base.fetch(:cloudformation, {}).to_smash
         reconfig = config.find_all do |k,v|
           !v.nil?
