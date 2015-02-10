@@ -15,9 +15,8 @@ module Sfn
         :description => 'Locate all instances and display addresses'
       )
       attribute(
-        :instance_failure, [TrueClass, FalseClass],
+        :instance_failure, String,
         :description => 'Display log file error from failed not if possible',
-        :default => true
       )
       attribute(
         :failure_log_path, String,

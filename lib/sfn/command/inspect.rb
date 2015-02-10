@@ -21,7 +21,7 @@ module Sfn
         end.compact
         if(outputs.empty?)
           ui.info '  Stack dump:'
-          ui.info MultiJson.dump(
+          ui.puts MultiJson.dump(
             MultiJson.load(
               stack.reload.to_json
             ),
@@ -107,7 +107,7 @@ module Sfn
           end
         end
         ui.info "  Attribute Lookup -> #{config[:attribute]}:"
-        ui.info MultiJson.dump(
+        ui.puts MultiJson.dump(
           MultiJson.load(
             MultiJson.dump(attr)
           ),
@@ -147,11 +147,11 @@ module Sfn
         ]
         unless(asg_nodes.empty?)
           ui.info '  AutoScale Group Instances:'
-          ui.info MultiJson.dump(asg_nodes, :pretty => true)
+          ui.puts MultiJson.dump(asg_nodes, :pretty => true)
         end
         unless(compute_nodes.empty?)
           ui.info '  Compute Instances:'
-          ui.info MultiJson.dump(compute_nodes, :pretty => true)
+          ui.puts MultiJson.dump(compute_nodes, :pretty => true)
         end
       end
 
