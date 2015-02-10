@@ -138,6 +138,7 @@ module Sfn
             include Sfn::Utils::Output
             include Bogo::AnimalStrings
             include Bogo::Memoization
+            include Bogo::Constants
 
           end
 
