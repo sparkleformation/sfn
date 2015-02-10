@@ -13,7 +13,7 @@ module Sfn
       def execute!
         file = load_template_file
         file.delete('sfn_nested_stack')
-        ui.info "#{ui.color('Cloud Formation Validation: ', :bold)} #{config[:file].sub(Dir.pwd, '').sub(%r{^/}, '')}"
+        ui.info "#{ui.color("Template Validation (#{provider.connection.provider}): ", :bold)} #{config[:file].sub(Dir.pwd, '').sub(%r{^/}, '')}"
         file = Sfn::Utils::StackParameterScrubber.scrub!(file)
         file = translate_template(file)
         begin
