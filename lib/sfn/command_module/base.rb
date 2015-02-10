@@ -106,16 +106,17 @@ module Sfn
         #
         # @return [Array<String>]
         def name_args
-          args
+          arguments
         end
 
         # Fetches value from local configuration (#opts) and falls
         # back to global configuration (#options)
         #
-        # @param key [String, Symbol] configuration key
         # @return [Object]
-        def config(key)
-          opts.fetch(key, options[key])
+        def config
+          memoize(:config) do
+            options.deep_merge(opts)
+          end
         end
 
       end
@@ -128,6 +129,7 @@ module Sfn
             include Sfn::Utils::JSON
             include Sfn::Utils::Output
             include Bogo::AnimalStrings
+            include Bogo::Memoization
 
           end
 
