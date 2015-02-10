@@ -68,11 +68,11 @@ module Sfn
 
             if(stack.reload.success?)
               ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
-              namespace.const_val(:Describe).new({:outputs => true}, [name]).execute!
+              namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
             else
               ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
               ui.info ""
-              namespace.const_val(:Inspect).new({:instance_failure => true}, [name]).execute!
+              namespace.const_get(:Inspect).new({:instance_failure => true}, [name]).execute!
               raise
             end
           else
