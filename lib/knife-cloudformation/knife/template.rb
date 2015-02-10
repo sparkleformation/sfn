@@ -38,7 +38,7 @@ module KnifeCloudformation
                   bucket = provider.connection.api_for(:storage).buckets.get(
                     Chef::Config[:knife][:cloudformation][:nesting_bucket]
                   )
-                  if(options[:print_only])
+                  if(config[:print_only])
                     "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
                   else
                     unless(bucket)
