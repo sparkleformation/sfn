@@ -18,7 +18,7 @@ module Sfn
         if(stack)
           table = ui.table(self) do
             table(:border => false) do
-              events = get_events(stack)
+              events = get_events
               row(:header => true) do
                 allowed_attributes.each do |attr|
                   column attr.split('_').map(&:capitalize).join(' '), :width => ((val = events.map{|e| e[attr].to_s.length}.max + 2) > 70 ? 70 : val)
