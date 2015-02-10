@@ -38,6 +38,14 @@ module Sfn
           end
         end
 
+        # Format snake cased key to title
+        #
+        # @param string [String, Symbol]
+        # @return [String
+        def as_title(string)
+          string.to_s.split('_').map(&:capitalize).join(' ')
+        end
+
         # Get stack
         #
         # @param name [String] name of stack
