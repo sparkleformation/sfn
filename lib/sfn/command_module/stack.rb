@@ -106,7 +106,7 @@ module Sfn
                       k, v['Default']
                     )
                   )
-                  answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}: ", :default => default)
+                  answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}", :default => default)
                   validation = Sfn::Utils::StackParameterValidator.validate(answer, v)
                   if(validation == true)
                     unless(answer == default)
