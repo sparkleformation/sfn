@@ -7,12 +7,15 @@ module Sfn
 
       include Sfn::CommandModule::Base
 
+      # @return [Miasma::Models::Orchestration::Stack]
+      attr_reader :stack
+
       # Run the events list action
       def execute!
         name = name_args.first
         ui.info "Events for Stack: #{ui.color(name, :bold)}\n"
         @stacks = []
-        stack = provider.connection.stacks.get(name)
+        @stack = provider.connection.stacks.get(name)
         @stacks << stack
         discover_stacks(stack)
         if(stack)
@@ -21,7 +24,7 @@ module Sfn
               events = get_events
               row(:header => true) do
                 allowed_attributes.each do |attr|
-                  column attr.split('_').map(&:capitalize).join(' '), :width => ((val = events.map{|e| e[attr].to_s.length}.max + 2) > 70 ? 70 : val)
+                  column attr.split('_').map(&:capitalize).join(' '), :width => ((val = events.map{|e| e[attr].to_s.length}.push(attr.length).max + 2) > 70 ? 70 : val)
                 end
               end
               events.each do |event|
@@ -41,15 +44,7 @@ module Sfn
                 to_wait -= 0.1
               end
               stack.reload
-              table.update do
-                get_events.each do |event|
-                  row do
-                    allowed_attributes.each do |attr|
-                      column event[attr]
-                    end
-                  end
-                end
-              end.display
+              table.display
             end
           end
         else
@@ -64,22 +59,19 @@ module Sfn
       # @param last_id [String] only return events after this ID
       # @return [Array<Hash>]
       def get_events(*args)
+        discover_stacks(stack)
         stack_events = @stacks.map do |stack|
           stack.events.all.map do |e|
             e.attributes.merge(:stack_name => stack.name).to_smash
           end
         end.flatten.compact
-        if(@stack_events)
-          stack_events = stack_events - @stack_events
-        end
-        @stack_events = stack_events
         stack_events.sort do |x,y|
           Time.parse(x[:time].to_s) <=> Time.parse(y[:time].to_s)
         end
       end
 
       def discover_stacks(stack)
-        stack.resources.all.each do |resource|
+        stack.resources.reload.all.each do |resource|
           if(resource.type == 'AWS::CloudFormation::Stack')
             nested_stack = provider.connection.stacks.get(resource.id)
             @stacks.push(nested_stack).uniq!
