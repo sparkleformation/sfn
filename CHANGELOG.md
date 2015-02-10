@@ -1,3 +1,6 @@
+## v0.2.18
+* Fix nested stack URL generation
+
 ## v0.2.16
 * Fix broken validation command (#12 thanks @JonathanSerafini)
 * Pad stack name indexes when unpacked
