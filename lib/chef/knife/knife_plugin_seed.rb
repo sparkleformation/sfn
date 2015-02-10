@@ -1,4 +1,12 @@
 unless(defined?(Chef::Knife::CloudformationCreate))
+
+  require 'bogo'
+  Chef::Config[:knife][:cloudformation] = {
+    :options => {},
+    :create => {},
+    :update => {}
+  }
+
   require 'sfn'
 
   BOOLEAN_VALUES = [TrueClass, FalseClass]
@@ -31,8 +39,12 @@ unless(defined?(Chef::Knife::CloudformationCreate))
 
       def run
         base = Chef::Config[:knife].hash_dup.to_smash
-        cmd_config = base.fetch(:knife, :cloudformation, {}).to_smash
-        cmd_config.deep_merge!(options)
+        cmd_config = base.fetch(:cloudformation, {}).to_smash
+        reconfig = config.find_all do |k,v|
+          !v.nil?
+        end
+        config = Smash[reconfig]
+        cmd_config = cmd_config.deep_merge(config)
         self.class.sfn_class.new(cmd_config, name_args).execute!
       end
 
