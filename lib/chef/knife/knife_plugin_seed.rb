@@ -1,13 +1,14 @@
 unless(defined?(Chef::Knife::CloudformationCreate))
 
+  require 'sfn'
   require 'bogo'
+
   Chef::Config[:knife][:cloudformation] = {
     :options => {},
     :create => {},
     :update => {}
   }
-
-  require 'sfn'
+  Chef::Config[:knife][:sparkleformation] = Chef::Config[:knife][:cloudformation]
 
   BOOLEAN_VALUES = [TrueClass, FalseClass]
   VALID_PREFIX = ['cloudformation', 'sparkleformation']
