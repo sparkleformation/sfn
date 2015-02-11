@@ -92,16 +92,16 @@ module Sfn
         def populate_parameters!(stack, current_params={})
           if(config[:interactive_parameters])
             if(stack['Parameters'])
-              unless(config.get(:options, :parameters))
-                config.set(:options, :parameters, Smash.new)
+              unless(config.get(:parameters))
+                config.set(:parameters, Smash.new)
               end
               stack.fetch('Parameters', {}).each do |k,v|
-                next if config[:options][:parameters][k]
+                next if config[:parameters][k]
                 attempt = 0
                 valid = false
                 until(valid)
                   attempt += 1
-                  default = config[:options][:parameters].fetch(
+                  default = config[:parameters].fetch(
                     k, current_params.fetch(
                       k, v['Default']
                     )
@@ -109,8 +109,8 @@ module Sfn
                   answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}", :default => default)
                   validation = Sfn::Utils::StackParameterValidator.validate(answer, v)
                   if(validation == true)
-                    unless(answer == default)
-                      config[:options][:parameters][k] = answer
+                    unless(answer == v['Default'])
+                      config[:parameters][k] = answer
                     end
                     valid = true
                   else
