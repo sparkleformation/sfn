@@ -22,9 +22,26 @@ module Sfn
           remote_stacks.each do |stack_name|
             remote_stack = provider.connection.stacks.get(stack_name)
             if(remote_stack)
+              apply_nested_stacks!(remote_stack, stack)
               stack.apply_stack(remote_stack)
             else
               apply_unpacked_stack!(stack_name, stack)
+            end
+          end
+          stack
+        end
+
+        # Detect nested stacks and apply
+        #
+        # @param remote_stack [Miasma::Models::Orchestration::Stack] stack to inspect for nested stacks
+        # @param stack [Miasma::Models::Orchestration::Stack] current stack
+        # @return [Miasma::Models::Orchestration::Stack]
+        def apply_nested_stacks(remote_stack, stack)
+          remote_stack.resources.all.each do |resource|
+            if(resource.type == 'AWS::CloudFormation::Stack')
+              nested_stack = resource.expand
+              apply_nested_stacks!(nested_stack, stack)
+              stack.apply_stack(nested_stack)
             end
           end
           stack
