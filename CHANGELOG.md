@@ -1,3 +1,6 @@
+## v0.2.20
+* Add automatic support for outputs in nested stacks to `--apply-stack`
+
 ## v0.2.18
 * Fix nested stack URL generation
 
