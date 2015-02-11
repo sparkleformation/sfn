@@ -71,11 +71,11 @@ module Sfn
               poll_stack(stack.name)
               if(stack.success?)
                 ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
-                namespace.const_val(:Describe).new({:outputs => true}, [name]).execute!
+                namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
               else
                 ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
                 ui.info ""
-                namespace.const_val(:Inspect).new({:instance_failure => true}, [name]).execute!
+                namespace.const_get(:Inspect).new({:instance_failure => true}, [name]).execute!
                 raise
               end
             else
