@@ -1,3 +1,14 @@
+## v0.3.0
+* Conversion from `knife-cloudformation` to `sfn`
+* Add knife subcommand alias `sparkleformation`
+* Remove implementation dependency on Chef tooling
+
+## v0.2.20
+* Add automatic support for outputs in nested stacks to `--apply-stack`
+
+## v0.2.18
+* Fix nested stack URL generation
+
 ## v0.2.16
 * Fix broken validation command (#12 thanks @JonathanSerafini)
 * Pad stack name indexes when unpacked
