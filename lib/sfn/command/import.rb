@@ -13,6 +13,7 @@ module Sfn
 
       # Run the import action
       def execute!
+        raise NotImplementedError.new 'Implementation updates required'
         stack_name, json_file = name_args
         ui.info "#{ui.color('Stack Import:', :bold)} #{stack_name}"
         unless(json_file)

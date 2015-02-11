@@ -8,7 +8,7 @@ module Sfn
       include Sfn::CommandModule::Base
 
       def execute!
-        raise NotImplementedError
+        raise NotImplementedError.new 'Implementation updates required'
         stack_name, destination = name_args
       end
 

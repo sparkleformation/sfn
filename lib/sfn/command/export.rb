@@ -10,6 +10,7 @@ module Sfn
 
       # Run export action
       def execute!
+        raise NotImplementedError.new 'Implementation updates required'
         stack_name = name_args.first
         ui.info "#{ui.color('Stack Export:', :bold)} #{stack_name}"
         ui.confirm 'Perform export'
