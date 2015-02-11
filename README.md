@@ -1,8 +1,7 @@
-# Knife CloudFormation
+# SparkleFormation CLI
 
-This is a plugin for the `knife` command provided by
-Chef to interact with AWS (and other) orchestration
-APIs.
+SparkleFormation command line interface for interacting
+with orchestration APIs.
 
 ## API Compatibility
 
@@ -12,63 +11,72 @@ APIs.
 
 ## Configuration
 
-The easiest way to configure the plugin is via the
-`knife.rb` file. Credentials are the only configuration
-requirement, and the `Hash` provided is proxied to
-[Miasma][miasma]:
+Configuration is defined within a `.sfn` file. The
+`sfn` command will start from the current working
+directory and work up to the root of the file system
+to discover this file.
 
-### AWS
+### Configuration formats
 
-```ruby
-# .chef/knife.rb
+The configuration file can be provided in a variety of
+formats:
 
-knife[:cloudformation][:credentials] = {
-  :provider => :aws,
-  :aws_access_key_id => ENV['AWS_ACCESS_KEY_ID'],
-  :aws_secret_access_key => ENV['AWS_SECRET_ACCESS_KEY'],
-  :aws_region => ENV['AWS_REGION']
+#### JSON
+
+```json
+{
+  "credentials": {
+    AWS_CREDENTIALS
+  },
+  "options": {
+    "disable_rollback": true
+  }
 }
 ```
 
-### Rackspace
+### YAML
 
-```ruby
-# .chef/knife.rb
-
-knife[:cloudformation][:credentials] = {
-  :provider => :rackspace,
-  :rackspace_username => ENV['RACKSPACE_USERNAME'],
-  :rackspace_api_key => ENV['RACKSPACE_API_KEY'],
-  :rackspace_region => ENV['RACKSPACE_REGION']
-}
+```yaml
 ```
 
-### OpenStack
+### XML
+
+```xml
+<configuration>
+  <credentials>
+    AWS_CREDENTIALS
+  </credentials>
+  <options>
+    <disable_rollback>
+      true
+    </disable_rollback>
+  </options>
+</configuration>
+```
+
+### Ruby
 
 ```ruby
-# .chef/knife.rb
-
-knife[:cloudformation][:credentials] = {
-  :provider => :open_stack,
-  :open_stack_username => ENV['OPENSTACK_USERNAME'],
-  :open_stack_password => ENV['OPENSTACK_PASSWORD'],
-  :open_stack_identity_url => ENV['OPENSTACK_IDENTITY_URL'],
-  :open_stack_tenant_name => ENV['OPENSTACK_TENANT']
-}
+Configuration.new do
+  credentials do
+    AWS_CREDENTIALS
+  end
+  options.disable_rollback true
+end
 ```
 
 ## Commands
 
-* `knife cloudformation list`
-* `knife cloudformation create`
-* `knife cloudformation update`
-* `knife cloudformation destroy`
-* `knife cloudformation events`
-* `knife cloudformation describe`
-* `knife cloudformation inspect`
-* `knife cloudformation validate`
+* `sfn list`
+* `sfn create`
+* `sfn update`
+* `sfn destroy`
+* `sfn events`
+* `sfn describe`
+* `sfn inspect`
+* `sfn validate`
 
-### `knife cloudformation list`
+### `sfn list`
 
 Provides listing of current stacks and state of each stack.
 
@@ -77,7 +85,7 @@ Provides listing of current stacks and state of each stack.
 * `--attribute ATTR` stack attribute to display
 * `--status STATUS` match stacks with given status
 
-### `knife cloudformation validate`
+### `sfn validate`
 
 Validates template with API
 
@@ -89,7 +97,7 @@ Validates template with API
 * `--[no-]apply-nesting` apply template nesting logic
 * `--nesting-bucket BUCKET` asset store bucket to place nested stack templates
 
-### `knife cloudformation create NAME`
+### `sfn create NAME`
 
 Creates a new stack with the provided name (`NAME`).
 
@@ -152,7 +160,7 @@ StackB:
 When creating StackB, if we use the `--apply-stack` option:
 
 ```
-$ knife cloudformation create StackB --apply-stack StackA
+$ sfn create StackB --apply-stack StackA
 ```
 
 when prompted for the stack parameters, we will find the parameter
@@ -171,13 +179,12 @@ _NOTE: (SparkleFormation Usage Documentation)[]._
 This plugin supports the advanced stack nesting feature provided by
 the SparkleFormation library.
 
-
 #### Translations
 
 Translations are currently an `alpha` feature and only a subset of
 resources are supported.
 
-### `knife cloudformation update STACK`
+### `sfn update STACK`
 
 Update an existing stack.
 
@@ -191,7 +198,7 @@ Update an existing stack.
 * `--[no-]apply-nesting` apply template nesting logic
 * `--nesting-bucket BUCKET` asset store bucket to place nested stack templates
 
-### `knife cloudformation destroy STACK`
+### `sfn destroy STACK`
 
 Destroy an existing stack.
 
@@ -208,12 +215,12 @@ stacks:
 running the following command:
 
 ```
-$ knife cloudformation destroy Test*
+$ sfn destroy Test*
 ```
 
 will destroy the `TestStack1` and `TestStack2`
 
-### `knife cloudformation events STACK`
+### `sfn events STACK`
 
 Display the event listing of given stack. If the state of the
 stack is "in progress", the polling option will result in
@@ -224,7 +231,7 @@ completed state.
 
 * `--[no-]poll` poll for new events until completed state reached
 
-### `knife cloudformation describe STACK`
+### `sfn describe STACK`
 
 Display resources and outputs of give stack.
 
@@ -233,7 +240,7 @@ Display resources and outputs of give stack.
 * `--resources` display resources
 * `--outputs` display outputs
 
-### `knife cloudformation inspect STACK`
+### `sfn inspect STACK`
 
 The stack inspection command simply provides a proxy to the
 underlying resource modeling objects provided via the
@@ -268,13 +275,13 @@ called on the `Miasma::Models::Orchestration::Stack` instance.
 For example, to display the JSON template of a stack:
 
 ```
-$ knife cloudformation inspect STACK -a template
+$ sfn inspect STACK -a template
 ```
 
 To display the resource collection of the stack:
 
 ```
-$ knife cloudformation inspect STACK -a resources
+$ sfn inspect STACK -a resources
 ```
 
 This will provide a list of resources. Now, to make this more
@@ -283,7 +290,7 @@ that the 3rd resource in the collection is an auto scaling
 group resource. We can isolate that resource for display:
 
 ```
-$ knife cloudformation inspect STACK -a "resources.all.at(2)"
+$ sfn inspect STACK -a "resources.all.at(2)"
 ```
 
 Note that the resources are an array, and we are using a zero
@@ -293,7 +300,7 @@ we already have seen. One of the handy features within the
 So, we can expand this resource:
 
 ```
-$ knife cloudformation inspect STACK -a "resources.all.at(2).expand"
+$ sfn inspect STACK -a "resources.all.at(2).expand"
 ```
 
 This will expand the resource instance and return the actual
@@ -305,16 +312,85 @@ contains a `servers` attribute. The output lists the IDs of the
 instances, but we can expand those as well:
 
 ```
-$ knife cloudformation inspect STACK -a "resources.all.at(2).expand.servers.map(&:expand)"
+$ sfn inspect STACK -a "resources.all.at(2).expand.servers.map(&:expand)"
 ```
 
 The attribute string will be minimally processed when proxying calls
 to the underlying models, which is why we are able to do ruby-ish
 style things.
 
+## Chef Knife Integration
+
+This library will also provide `cloudformation` subcommands
+to knife.
+
+### Configuration
+
+The easiest way to configure the plugin is via the
+`knife.rb` file. Credentials are the only configuration
+requirement, and the `Hash` provided is proxied to
+[Miasma][miasma]. All configuration options provided
+via the `sfn` command are allowed within the
+`knife[:cloudformation]` namespace:
+
+#### AWS
+
+```ruby
+# .chef/knife.rb
+
+knife[:cloudformation][:credentials] = {
+  :provider => :aws,
+  :aws_access_key_id => ENV['AWS_ACCESS_KEY_ID'],
+  :aws_secret_access_key => ENV['AWS_SECRET_ACCESS_KEY'],
+  :aws_region => ENV['AWS_REGION']
+}
+```
+
+#### Rackspace
+
+```ruby
+# .chef/knife.rb
+
+knife[:cloudformation][:credentials] = {
+  :provider => :rackspace,
+  :rackspace_username => ENV['RACKSPACE_USERNAME'],
+  :rackspace_api_key => ENV['RACKSPACE_API_KEY'],
+  :rackspace_region => ENV['RACKSPACE_REGION']
+}
+```
+
+#### OpenStack
+
+```ruby
+# .chef/knife.rb
+
+knife[:cloudformation][:credentials] = {
+  :provider => :open_stack,
+  :open_stack_username => ENV['OPENSTACK_USERNAME'],
+  :open_stack_password => ENV['OPENSTACK_PASSWORD'],
+  :open_stack_identity_url => ENV['OPENSTACK_IDENTITY_URL'],
+  :open_stack_tenant_name => ENV['OPENSTACK_TENANT']
+}
+```
+
+### Usage
+
+All commands available via the `sfn` command are available as
+knife subcommands under `cloudformation` and `sparkleformation`
+
+```
+$ knife cloudformation --help
+```
+
+or
+
+```
+$ knife sparkleformation --help
+```
+
 # Info
 
-* Repository: https://github.com/hw-labs/knife-cloudformation
-* IRC: Freenode @ #heavywater
+* Repository: https://github.com/sparkleformation/sfn
+* IRC: Freenode @ #sparkleformation
 
 [miasma]: http://miasma-rb.github.io/miasma/
