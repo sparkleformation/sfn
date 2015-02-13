@@ -47,7 +47,7 @@ module Sfn
                     file = bucket.files.build
                     file.name = "#{name_args.first}_#{stack_name}.json"
                     file.content_type = 'text/json'
-                    file.body = MultiJson.dump(KnifeCloudformation::Utils::StackParameterScrubber.scrub!(stack_definition))
+                    file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
                     file.save
                     # TODO: what if we need extra params?
                     url = URI.parse(file.url)
