@@ -21,7 +21,7 @@ module Sfn
             unless(File.exists?(config[:file].to_s))
               unless(args.include?(:allow_missing))
                 ui.fatal "Invalid formation file path provided: #{config[:file]}"
-                exit 1
+                raise IOError.new "Failed to locate file: #{config[:file]}"
               end
             end
           end
@@ -93,12 +93,7 @@ module Sfn
         # @return [TrueClass]
         def set_paths_and_discover_file!
           if(config[:base_directory])
-            SparkleFormation.components_path = File.join(
-              config[:base_directory], 'components'
-            )
-            SparkleFormation.dynamics_path = File.join(
-              config[:base_directory], 'dynamics'
-            )
+            SparkleFormation.sparkle_path = config[:base_directory]
           end
           if(!config[:file] && config[:file_path_prompt])
             root = File.expand_path(
