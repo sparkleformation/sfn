@@ -1,3 +1,11 @@
+begin
+  kcfn = Gem::Specification.find_by_name('knife-cloudformation')
+  $stderr.puts "[WARN]: Deprecated gem detected: #{kcfn.name} [V: #{kcfn.version}]"
+  $stderr.puts '[WARN]: Uninstall gem to prevent any conflicts (`gem uninstall knife-cloudformation -a`)'
+rescue Gem::LoadError => e
+  # ignore
+end
+
 unless(defined?(Chef::Knife::CloudformationCreate))
 
   require 'sfn'
@@ -51,7 +59,7 @@ unless(defined?(Chef::Knife::CloudformationCreate))
           end
           base = knife.to_smash
           keys = VALID_PREFIX.dup
-          cmd_config = keys.unshift(keys.delete(snake(self.class.name.split('::').last).split('_').first)).map do |k|
+          cmd_config = keys.unshift(keys.delete(snake(self.class.name.split('::').last).to_s.split('_').first)).map do |k|
             base[k]
           end.compact.first || {}
           cmd_config = cmd_config.to_smash
