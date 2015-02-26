@@ -6,6 +6,9 @@ module Sfn
   # Top level configuration
   class Config < Bogo::Config
 
+    # Only values allowed designating bool type
+    BOOLEAN_VALUES = [TrueClass, FalseClass]
+
     autoload :Create, 'sfn/config/create'
     autoload :Describe, 'sfn/config/describe'
     autoload :Destroy, 'sfn/config/destroy'
@@ -66,6 +69,38 @@ module Sfn
     attribute :list, List, :coerce => proc{|v| List.new(v)}
     attribute :promote, Promote, :coerce => proc{|v| Promote.new(v)}
     attribute :validate, Validate, :coerce => proc{|v| Validate.new(v)}
+
+    # Provide all options for config class (includes global configs)
+    #
+    # @param klass [Class]
+    # @return [Smash]
+    def self.options_for(klass)
+      shorts = ['h'] # always reserve `-h` for help
+      _options_for(self, shorts).merge(
+        _options_for(klass, shorts)
+      )
+    end
+
+    # Provide options for config class
+    #
+    # @param klass [Class]
+    # @param shorts [Array<String>]
+    # @return [Smash]
+    def self._options_for(klass, shorts)
+      Smash[
+        klass.attributes.sort_by(&:first).map do |name, info|
+          next unless info[:description]
+          short = name.chars.zip(name.chars.map(&:upcase)).flatten.detect do |c|
+            !shorts.include?(c)
+          end
+          shorts << short
+          info[:short] = short
+          info[:long] = name.tr('_', '-')
+          info[:boolean] = [info[:type]].compact.flatten.all?{|t| BOOLEAN_VALUES.include?(t)}
+          [name, info]
+        end.compact
+      ]
+    end
 
   end
 end
