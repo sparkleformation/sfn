@@ -10,7 +10,6 @@ unless(defined?(Chef::Knife::CloudformationCreate))
   }
   Chef::Config[:knife][:sparkleformation] = Chef::Config[:knife][:cloudformation]
 
-  BOOLEAN_VALUES = [TrueClass, FalseClass]
   VALID_PREFIX = ['cloudformation', 'sparkleformation']
 
 
@@ -25,7 +24,6 @@ unless(defined?(Chef::Knife::CloudformationCreate))
 
       klass_name = klass.name.split('::').last
       command_class = "#{prefix.capitalize}#{klass_name}"
-      shorts = []
 
       knife_klass = Class.new(Chef::Knife)
       knife_klass.class_eval do
@@ -45,6 +43,7 @@ unless(defined?(Chef::Knife::CloudformationCreate))
           self.class.name
         end
 
+        # Properly load in configurations and execute command
         def run
           knife = Chef::Config[:knife]
           if(knife.respond_to?(:hash_dup))
@@ -72,25 +71,23 @@ unless(defined?(Chef::Knife::CloudformationCreate))
       )
       knife_klass.banner "knife #{prefix} #{Bogo::Utility.snake(klass_name)}"
 
-      Sfn::Config.attributes.merge(klass.attributes).sort_by(&:first).each do |name, info|
-        next unless info[:description]
-        short = name.chars.zip(name.chars.map(&:upcase)).flatten.detect do |c|
-          !shorts.include?(c)
-        end
-        shorts << short
-        bool = [info[:type]].compact.flatten.all?{|x| BOOLEAN_VALUES.include?(x) }
-        if(bool)
-          short = "-#{short}"
-          long = "--[no-]#{name.tr('_', '-')}"
+      Sfn::Config.options_for(klass).each do |name, info|
+        if(info[:boolean])
+          short = "-#{info[:short]}"
+          long = "--[no-]#{info[:long]}"
         else
-          short = "-#{short} VALUE"
-          long = "--#{name.tr('_', '-')} VALUE"
+          val = 'VALUE'
+          if(info[:multiple])
+            val << '[,VALUE]'
+          end
+          short = "-#{info[:short]} #{val}"
+          long = "--#{info[:long]} #{val}"
         end
         knife_klass.option(
           name.to_sym, {
             :short => short,
             :long => long,
-            :boolean => bool,
+            :boolean => info[:boolean],
             :default => info[:default],
             :description => info[:description]
           }

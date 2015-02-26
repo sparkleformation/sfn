@@ -5,8 +5,6 @@ require 'sfn'
 
 Bogo::Cli::Setup.define do
 
-  BOOLEAN_VALUES = [TrueClass, FalseClass]
-
   on :v, :version, 'Print version ' do
     puts "sfn - SparkleFormation CLI - [Version: #{Sfn::VERSION}]"
     exit
@@ -21,21 +19,18 @@ Bogo::Cli::Setup.define do
 
     klass_name = klass.name.split('::').last.downcase
 
-    shorts = []
-
     command klass_name do
       if(klass.const_defined?(:DESCRIPTION))
         description klass.const_get(:DESCRIPTION)
       end
-      Sfn::Config.attributes.merge(klass.attributes).sort_by(&:first).each do |name, info|
-        next unless info[:description]
-        short = name.chars.zip(name.chars.map(&:upcase)).flatten.detect do |c|
-          !shorts.include?(c)
+
+      Sfn::Config.options_for(klass).each do |name, info|
+        on_name = info[:boolean] ? info[:long] : "#{info[:long]}="
+        opts = Smash.new.tap do |o|
+          o[:default] = info[:default] if info[:default]
+          o[:as] = Array if info[:multiple]
         end
-        shorts << short
-        bool = [info[:type]].compact.flatten.all?{|x| BOOLEAN_VALUES.include?(x) }
-        on_name = bool ? name.to_s : "#{name}="
-        on short, on_name.tr('_', '-'), info[:description], :default => info[:default]
+        on info[:short], on_name, info[:description], :default => info[:default]
       end
 
       run do |opts, args|
