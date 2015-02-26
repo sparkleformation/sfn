@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = 'SparkleFormation CLI'
   s.license = 'Apache-2.0'
   s.require_path = 'lib'
-  s.add_dependency 'bogo-cli'
+  s.add_dependency 'bogo-cli', '~> 0.1.6'
   s.add_dependency 'miasma'
   s.add_dependency 'net-ssh'
   s.add_dependency 'sparkle_formation', '>= 0.2.8'
