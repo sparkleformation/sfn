@@ -58,6 +58,13 @@ unless(defined?(Chef::Knife::CloudformationCreate))
           reconfig = config.find_all do |k,v|
             !v.nil?
           end
+          # Split up options provided multiple arguments
+          reconfig.map! do |k,v|
+            if(v.is_a?(String) && v.include?(','))
+              v = v.split(',').map(&:strip)
+            end
+            [k,v]
+          end
           config = Smash[reconfig]
           cmd_config = cmd_config.deep_merge(config)
           self.class.sfn_class.new(cmd_config, name_args).execute!
