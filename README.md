@@ -37,6 +37,11 @@ formats:
 ### YAML
 
 ```yaml
+---
+:credentials:
+  :fubar: true
+:options:
+  :disable_rollback: true
 ```
 
 ### XML
