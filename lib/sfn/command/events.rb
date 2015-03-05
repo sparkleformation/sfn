@@ -70,12 +70,17 @@ module Sfn
         end
       end
 
+      # Discover stacks defined within the resources of given stack
+      #
+      # @param stack [Miasma::Models::Orchestration::Stack]
       def discover_stacks(stack)
         stack.resources.reload.all.each do |resource|
           if(resource.type == 'AWS::CloudFormation::Stack')
             nested_stack = provider.connection.stacks.get(resource.id)
-            @stacks.push(nested_stack).uniq!
-            discover_stacks(nested_stack)
+            if(nested_stack)
+              @stacks.push(nested_stack).uniq!
+              discover_stacks(nested_stack)
+            end
           end
         end
       end
