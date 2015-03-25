@@ -117,13 +117,9 @@ module Sfn
           arguments
         end
 
-        # Fetches value from local configuration (#opts) and falls
-        # back to global configuration (#options)
-        #
-        # @return [Object]
         def config
           memoize(:config) do
-            options.deep_merge(opts)
+            super
           end
         end
 

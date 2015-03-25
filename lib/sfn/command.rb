@@ -17,12 +17,19 @@ module Sfn
     autoload :Validate, 'sfn/command/validate'
 
     # Override to provide config file searching
-    def initialize(opts, args)
-      unless(opts[:config])
-        opts = opts.to_hash.to_smash(:snake)
-        discover_config(opts)
+    def initialize(cli_opts, args)
+      unless(cli_opts[:config])
+        cli_opts = cli_opts.to_hash.to_smash(:snake)
+        discover_config(cli_opts)
       end
-      super
+      super(cli_opts, args)
+    end
+
+    # @return [Smash]
+    def config
+      memoize(:config) do
+        super
+      end
     end
 
     protected
