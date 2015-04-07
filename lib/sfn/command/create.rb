@@ -38,6 +38,15 @@ module Sfn
           unpack_nesting(name, file, :create)
         else
 
+          if(config[:print_only] && !config[:apply_stacks])
+            ui.info _format_json(
+              translate_template(
+                Sfn::Utils::StackParameterScrubber.scrub!(file)
+              )
+            )
+            return
+          end
+
           stack = provider.connection.stacks.build(
             config[:options].dup.merge(
               :name => name,
