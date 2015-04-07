@@ -1,3 +1,8 @@
+## v0.3.2
+* Validate stack name prior to discovery on apply
+* Update configuration usage to allow runtime modification
+* Allow `create` command to print-only without requiring API credentials
+
 ## v0.3.0
 * Conversion from `knife-cloudformation` to `sfn`
 * Add knife subcommand alias `sparkleformation`
