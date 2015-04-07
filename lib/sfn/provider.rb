@@ -40,8 +40,8 @@ module Sfn
     # @option args [Numeric] :stack_list_interval interval to wait between stack list refresh
     def initialize(args={})
       args = args.to_smash
-      unless(args[:miasma][:provider])
-        best_guess = args[:miasma].keys.group_by do |key|
+      unless(args.get(:miasma, :provider))
+        best_guess = args.fetch(:miasma, {}).keys.group_by do |key|
           key.to_s.split('_').first
         end.sort do |x, y|
           y.size <=> x.size
