@@ -14,7 +14,7 @@ module Sfn
             stacks = get_stacks
             row(:header => true) do
               allowed_attributes.each do |attr|
-                column attr.split('_').map(&:capitalize).join(' '), :width => stacks.map{|s| s[attr].to_s.length}.max + 2
+                column attr.split('_').map(&:capitalize).join(' '), :width => (stacks.map{|s| s[attr].to_s.length}.max || 20) + 2
               end
             end
             get_stacks.each do |stack|
