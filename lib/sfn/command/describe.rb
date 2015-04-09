@@ -9,7 +9,7 @@ module Sfn
 
       # information available
       unless(defined?(AVAILABLE_DISPLAYS))
-        AVAILABLE_DISPLAYS = [:resources, :outputs]
+        AVAILABLE_DISPLAYS = [:resources, :outputs, :tags]
       end
 
       # Run the stack describe action
@@ -74,6 +74,20 @@ module Sfn
           end
         else
           ui.info "  #{ui.color('No outputs found')}"
+        end
+      end
+
+      # Display tags
+      #
+      # @param stack [Miasma::Models::Orchestration::Stack]
+      def tags(stack)
+        ui.info "Tags for stack: #{ui.color(stack.name, :bold)}"
+        unless(stack.tags.empty?)
+          stack.tags.each do |key, value|
+            ui.info ['  ', ui.color("#{key}:", :bold), value].join(' ')
+          end
+        else
+          ui.info "  #{ui.color('No tags found')}"
         end
       end
 

@@ -14,6 +14,11 @@ module Sfn
         :description => 'Display stack outputs'
       )
 
+      attribute(
+        :tags, [TrueClass, FalseClass],
+        :description => 'Display stack tags'
+      )
+
     end
   end
 end
