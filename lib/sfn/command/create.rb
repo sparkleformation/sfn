@@ -75,7 +75,7 @@ module Sfn
             poll_stack(stack.name)
             stack = provider.connection.stacks.get(name)
 
-            if(stack.reload.success?)
+            if(stack.reload.state == :create_complete)
               ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
               namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
             else
