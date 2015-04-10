@@ -74,7 +74,7 @@ module Sfn
         # @param action [String] create or update
         # @return [TrueClass]
         def unpack_nesting(name, file, action)
-          config.apply_stacks ||= []
+          config[:apply_stacks] ||= []
           stack_count = 0
           file['Resources'].each do |stack_resource_name, stack_resource|
 
