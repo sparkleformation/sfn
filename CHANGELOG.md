@@ -1,3 +1,11 @@
+## v0.3.4
+* Default column widths when no output is available
+* Display stack tags on `describe` command
+* Fix apply stack reference to access via hash
+* Validate stack is in `:create_complete` state when checking successful creation
+* Fix path prompting (#5 thanks @JonathanSerafini)
+* Update minimum CLI lib dependency to provide correct configuration merging (#4)
+
 ## v0.3.2
 * Validate stack name prior to discovery on apply
 * Update configuration usage to allow runtime modification
