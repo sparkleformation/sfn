@@ -79,7 +79,7 @@ module Sfn
             end
           end
           ui.info "#{output.join("\n")}\n"
-          response = ask_question('Enter selection: ').to_i
+          response = ui.ask_question('Enter selection: ').to_i
           unless(valid[response])
             ui.fatal 'How about using a real value'
             exit 1
