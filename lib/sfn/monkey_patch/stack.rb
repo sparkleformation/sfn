@@ -163,11 +163,6 @@ module Sfn
             end
           end.compact
         ]
-        unless(ignore_params)
-          if(defined?(Chef::Config))
-            ignore_params = Chef::Config[:knife].to_smash.get(:cloudformation, :ignore_parameters)
-          end
-        end
         if(ignore_params)
           valid_parameters = Hash[
             valid_parameters.map do |snake_param, camel_param|
