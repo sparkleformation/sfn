@@ -11,7 +11,8 @@ module Sfn
       )
       attribute(
         :file, String,
-        :description => 'Path to template file'
+        :description => 'Path to template file',
+        :default => nil
       )
       attribute(
         :file_path_prompt, [TrueClass, FalseClass],
