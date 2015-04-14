@@ -1,3 +1,9 @@
+## v0.3.6
+* Set options correctly on `sfn` executable (#7)
+* Update cli library dependency to provide better error messages (#6)
+* Update cloud library dependencies to support new options (:on_failure and :tags)
+* Cloud library update also adds support for aws credentials file
+
 ## v0.3.4
 * Default column widths when no output is available
 * Display stack tags on `describe` command
