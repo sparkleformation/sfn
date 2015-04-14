@@ -26,8 +26,8 @@ Bogo::Cli::Setup.define do
 
       Sfn::Config.options_for(klass).each do |name, info|
         on_name = info[:boolean] ? info[:long] : "#{info[:long]}="
-        opts = Smash.new.tap do |o|
-          o[:default] = info[:default] if info[:default]
+        opts = Hash.new.tap do |o|
+          o[:default] = info[:default] if info.has_key?(:default)
           o[:as] = Array if info[:multiple]
         end
         on info[:short], on_name, info[:description], opts
