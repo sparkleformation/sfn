@@ -30,7 +30,7 @@ Bogo::Cli::Setup.define do
           o[:default] = info[:default] if info[:default]
           o[:as] = Array if info[:multiple]
         end
-        on info[:short], on_name, info[:description], :default => info[:default]
+        on info[:short], on_name, info[:description], opts
       end
 
       run do |opts, args|
