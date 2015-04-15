@@ -69,7 +69,7 @@ module Sfn
 
             if(config[:poll])
               poll_stack(stack.name)
-              if(stack.success?)
+              if(stack.reload.state == :update_complete)
                 ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
                 namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
               else
