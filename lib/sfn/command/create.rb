@@ -24,7 +24,11 @@ module Sfn
           file = load_template_file
           nested_stacks_unpack = file.delete('sfn_nested_stack')
         end
-        ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('create', :green)}"
+
+        unless(config[:print_only])
+          ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('create', :green)}"
+        end
+
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
         if(config[:path])
           stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
@@ -39,7 +43,7 @@ module Sfn
         else
 
           if(config[:print_only] && !config[:apply_stacks])
-            ui.info _format_json(
+            ui.puts _format_json(
               translate_template(
                 Sfn::Utils::StackParameterScrubber.scrub!(file)
               )
@@ -58,7 +62,7 @@ module Sfn
           stack.template = Sfn::Utils::StackParameterScrubber.scrub!(stack.template)
 
           if(config[:print_only])
-            ui.info _format_json(translate_template(stack.template))
+            ui.puts _format_json(translate_template(stack.template))
             return
           end
 
