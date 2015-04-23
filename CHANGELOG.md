@@ -1,3 +1,8 @@
+## v0.3.8
+* Fix result output from `update` command (#9)
+* Fix `inspect` command to properly support multiple attribute flags
+* Only output JSON when using `--print-only` flag with `create` command (#10)
+
 ## v0.3.6
 * Set options correctly on `sfn` executable (#7)
 * Update cli library dependency to provide better error messages (#6)
