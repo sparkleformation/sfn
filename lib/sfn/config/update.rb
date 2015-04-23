@@ -14,6 +14,11 @@ module Sfn
         :multiple => true,
         :description => 'Apply outputs from stack to input parameters'
       )
+      attribute(
+        :parameter, String,
+        :multiple => true,
+        :description => 'Pass template parameters directly (ParamName:ParamValue)'
+      )
 
     end
   end
