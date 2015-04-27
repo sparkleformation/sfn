@@ -109,15 +109,19 @@ module Sfn
         def populate_parameters!(stack, current_params={})
           if(config[:interactive_parameters])
             if(stack['Parameters'])
-              unless(config.get(:parameters))
-                config.set(:parameters, Smash.new)
-              end
-              if(config.get(:parameters).is_a?(Array))
-                config[:parameters] = Smash[
-                  config.get(:parameters).map do |item|
+              if(config.get(:parameter).is_a?(Array))
+                config[:parameter] = Smash[
+                  config.get(:parameter).map do |item|
                     item.split(':')
                   end
                 ]
+              end
+              if(config.get(:parameters))
+                config.set(:parameters,
+                  config.get(:parameters).merge(config[:parameter])
+                )
+              else
+                config.set(:parameters, config.fetch(:parameter, Smash.new))
               end
               stack.fetch('Parameters', {}).each do |k,v|
                 next if config[:parameters][k]
