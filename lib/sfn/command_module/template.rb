@@ -33,28 +33,19 @@ module Sfn
             if(config[:processing])
               sf = SparkleFormation.compile(config[:file], :sparkle)
               if(sf.nested? && !sf.isolated_nests?)
-                raise TypeError.new('Template does not contain isolated stack nesting! Cannot process in existing state.')
+                raise TypeError.new('Template does not contain isolated stack nesting! Sfn does not support mixed mixed resources within root stack!')
               end
               if(sf.nested? && config[:apply_nesting])
-                sf.apply_nesting do |stack_name, stack_definition|
-                  bucket = provider.connection.api_for(:storage).buckets.get(
-                    config[:nesting_bucket]
-                  )
-                  if(config[:print_only])
-                    "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
-                  else
-                    unless(bucket)
-                      raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
-                    end
-                    file = bucket.files.build
-                    file.name = "#{name_args.first}_#{stack_name}.json"
-                    file.content_type = 'text/json'
-                    file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
-                    file.save
-                    # TODO: what if we need extra params?
-                    url = URI.parse(file.url)
-                    "#{url.scheme}://#{url.host}#{url.path}"
-                  end
+                if(config[:apply_nesting] == true)
+                  config[:apply_nesting] = :deep
+                end
+                case config[:apply_nesting].to_sym
+                when :shallow
+                  process_nested_stack_shallow(sf)
+                when :deep
+                  process_nested_stack_deep(sf)
+                else
+                  raise ArgumentError.new "Unknown nesting style requested: #{config[:apply_nesting].inspect}!"
                 end
               else
                 sf.dump.merge('sfn_nested_stack' => !!sf.nested?)
@@ -62,7 +53,47 @@ module Sfn
             else
               _from_json(File.read(config[:file]))
             end
+          else
+            raise ArgumentError.new 'Failed to locate template for processing!'
           end
+        end
+
+        # Processes template using the original shallow workflow
+        #
+        # @param sf [SparkleFormation] stack
+        # @return [Hash] dumped stack
+        def process_nested_stack_shallow(sf)
+          sf.apply_nesting(:shallow) do |stack_name, stack_definition|
+            bucket = provider.connection.api_for(:storage).buckets.get(
+              config[:nesting_bucket]
+            )
+            if(config[:print_only])
+              "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
+            else
+              unless(bucket)
+                raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
+              end
+              file = bucket.files.build
+              file.name = "#{name_args.first}_#{stack_name}.json"
+              file.content_type = 'text/json'
+              file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
+              file.save
+              url = URI.parse(file.url)
+              "#{url.scheme}://#{url.host}#{url.path}"
+            end
+          end
+        end
+
+        # Processes template using the deep workflow
+        #
+        # @param sf [SparkleFormation] tack
+        # @return [Hash] dumped stack
+        def process_nested_stack_deep(sf)
+
+        end
+
+        def stack_processors(stack)
+          config.fetch(:
         end
 
         # Apply template translation
