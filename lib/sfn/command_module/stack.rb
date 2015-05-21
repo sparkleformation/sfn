@@ -112,7 +112,7 @@ module Sfn
               if(config.get(:parameter).is_a?(Array))
                 config[:parameter] = Smash[
                   config.get(:parameter).map do |item|
-                    item.split(':')
+                    item.split(':', 2)
                   end
                 ]
               end
