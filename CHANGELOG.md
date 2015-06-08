@@ -1,3 +1,14 @@
+## v0.4.0
+* Fix parameters passed on CLI (#11)
+* Fix credential overrides from the CLI (#14)
+* Properly process CLI options through custom config classes
+* Include AWS STS support via miasma-aws version bump
+
+***NOTE***: Some CLI **short** flags have changed in this release. This is due to
+	some updates on flag generation to help keep things more
+	consistent now and into the future. Please refer to the help
+	output for a given command to view short flags.
+
 ## v0.3.8
 * Fix result output from `update` command (#9)
 * Fix `inspect` command to properly support multiple attribute flags
