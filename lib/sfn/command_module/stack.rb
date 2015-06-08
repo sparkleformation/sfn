@@ -107,49 +107,49 @@ module Sfn
         # @param stack [Hash] stack template
         # @return [Hash]
         def populate_parameters!(stack, current_params={})
-          if(config[:interactive_parameters])
-            if(stack['Parameters'])
-              if(config.get(:parameter).is_a?(Array))
-                config[:parameter] = Smash[
-                  config.get(:parameter).map do |item|
-                    item.split(':')
-                  end
-                ]
-              end
-              if(config.get(:parameters))
-                config.set(:parameters,
-                  config.get(:parameters).merge(config[:parameter])
-                )
-              else
-                config.set(:parameters, config.fetch(:parameter, Smash.new))
-              end
-              stack.fetch('Parameters', {}).each do |k,v|
-                next if config[:parameters][k]
-                attempt = 0
-                valid = false
-                until(valid)
-                  attempt += 1
-                  default = config[:parameters].fetch(
-                    k, current_params.fetch(
-                      k, v['Default']
-                    )
+          if(stack['Parameters'])
+            if(config.get(:parameter).is_a?(Array))
+              config[:parameter] = Smash[
+                *config.get(:parameter).map(&:to_a)
+              ]
+            end
+            if(config.get(:parameters))
+              config.set(:parameters,
+                config.get(:parameters).merge(config[:parameter])
+              )
+            else
+              config.set(:parameters, config.fetch(:parameter, Smash.new))
+            end
+            stack.fetch('Parameters', {}).each do |k,v|
+              next if config[:parameters][k]
+              attempt = 0
+              valid = false
+              until(valid)
+                attempt += 1
+                default = config[:parameters].fetch(
+                  k, current_params.fetch(
+                    k, v['Default']
                   )
+                )
+                if(config[:interactive_parameters])
                   answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}", :default => default)
-                  validation = Sfn::Utils::StackParameterValidator.validate(answer, v)
-                  if(validation == true)
-                    unless(answer == v['Default'])
-                      config[:parameters][k] = answer
-                    end
-                    valid = true
-                  else
-                    validation.each do |validation_error|
-                      ui.error validation_error.last
-                    end
+                else
+                  answer = default
+                end
+                validation = Sfn::Utils::StackParameterValidator.validate(answer, v)
+                if(validation == true)
+                  unless(answer == v['Default'])
+                    config[:parameters][k] = answer
                   end
-                  if(attempt > MAX_PARAMETER_ATTEMPTS)
-                    ui.fatal 'Failed to receive allowed parameter!'
-                    exit 1
+                  valid = true
+                else
+                  validation.each do |validation_error|
+                    ui.error validation_error.last
                   end
+                end
+                if(attempt > MAX_PARAMETER_ATTEMPTS)
+                  ui.fatal 'Failed to receive allowed parameter!'
+                  exit 1
                 end
               end
             end
