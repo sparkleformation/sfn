@@ -48,5 +48,15 @@ module Sfn
       opts
     end
 
+    # @return [Class] attempt to return customized configuration class
+    def config_class
+      klass_name = self.class.name.split('::').last
+      if(Sfn::Config.const_defined?(klass_name))
+        Sfn::Config.const_get(klass_name)
+      else
+        super
+      end
+    end
+
   end
 end
