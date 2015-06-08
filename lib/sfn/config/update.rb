@@ -15,9 +15,12 @@ module Sfn
         :description => 'Apply outputs from stack to input parameters'
       )
       attribute(
-        :parameter, String,
+        :parameter, Smash,
         :multiple => true,
-        :description => 'Pass template parameters directly (ParamName:ParamValue)'
+        :description => 'Pass template parameters directly (ParamName:ParamValue)',
+        :coerce => lambda{|v|
+          v.is_a?(String) ? Smash[*v.split(/[=:]/, 2)] : v
+        }
       )
 
     end
