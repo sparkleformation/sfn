@@ -21,7 +21,6 @@ module Sfn
       )
       attribute(
         :options, Smash,
-        :multiple => true,
         :description => 'Extra options to apply to the API call'
       )
       attribute(

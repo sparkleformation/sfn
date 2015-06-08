@@ -33,7 +33,8 @@ module Sfn
       )
       attribute(
         :translate_chunk, Integer,
-        :description => 'Chunk length for serialization'
+        :description => 'Chunk length for serialization',
+        :coerce => lambda{|v| v.to_i}
       )
       attribute(
         :apply_nesting, [TrueClass, FalseClass],

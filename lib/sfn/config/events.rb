@@ -13,7 +13,8 @@ module Sfn
       attribute(
         :poll_delay, Integer,
         :default => 20,
-        :description => 'Seconds to pause between each event poll'
+        :description => 'Seconds to pause between each event poll',
+        :coerce => lambda{|v| v.to_i}
       )
       attribute(
         :all_attributes, [TrueClass, FalseClass],
