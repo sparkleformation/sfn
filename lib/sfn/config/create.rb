@@ -20,7 +20,7 @@ module Sfn
         :description => 'Capabilities to allow the stack'
       )
       attribute(
-        :options, Hash,
+        :options, Smash,
         :multiple => true,
         :description => 'Extra options to apply to the API call'
       )
