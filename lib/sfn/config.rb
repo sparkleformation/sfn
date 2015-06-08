@@ -26,7 +26,6 @@ module Sfn
       :credentials, Smash,
       :coerce => proc{|v|
         v = Smash[v.split(',').map{|x| v.split('=')}] if v.is_a?(String)
-        v.to_smash
       },
       :description => 'Provider credentials'
     )
