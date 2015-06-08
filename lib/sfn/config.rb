@@ -23,9 +23,21 @@ module Sfn
     autoload :Validate, 'sfn/config/validate'
 
     attribute(
+      :config, String,
+      :description => 'Configuration file path'
+    )
+
+    attribute(
       :credentials, Smash,
       :coerce => proc{|v|
-        v = Smash[v.split(',').map{|x| v.split('=')}] if v.is_a?(String)
+        case v
+        when String
+          Smash[v.split(',').map{|x| v.split(/[=:]/)}]
+        when Hash
+          v.to_smash
+        else
+          v
+        end
       },
       :description => 'Provider credentials'
     )
@@ -52,10 +64,6 @@ module Sfn
       :yes, [TrueClass, FalseClass],
       :description => 'Automatically accept any requests for confirmation'
     )
-    attribute(
-      :config, String,
-      :description => 'Configuration file path'
-    )
 
     attribute :create, Create, :coerce => proc{|v| Create.new(v)}
     attribute :update, Update, :coerce => proc{|v| Update.new(v)}
@@ -75,9 +83,7 @@ module Sfn
     # @return [Smash]
     def self.options_for(klass)
       shorts = ['h'] # always reserve `-h` for help
-      _options_for(self, shorts).merge(
-        _options_for(klass, shorts)
-      )
+      _options_for(klass, shorts)
     end
 
     # Provide options for config class
@@ -87,7 +93,11 @@ module Sfn
     # @return [Smash]
     def self._options_for(klass, shorts)
       Smash[
-        klass.attributes.sort_by(&:first).map do |name, info|
+        ([klass] + klass.ancestors).map do |a|
+          if(a.ancestors.include?(Bogo::Config) && !a.attributes.empty?)
+            a.attributes
+          end
+        end.compact.reverse.inject(Smash.new){|m, n| m.deep_merge(n)}.map do |name, info|
           next unless info[:description]
           short = name.chars.zip(name.chars.map(&:upcase)).flatten.detect do |c|
             !shorts.include?(c)
