@@ -1,3 +1,6 @@
+## v0.4.2
+* Fix config types defined
+
 ## v0.4.0
 * Fix parameters passed on CLI (#11)
 * Fix credential overrides from the CLI (#14)
