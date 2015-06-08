@@ -3,7 +3,7 @@ require 'sfn'
 module Sfn
   class Config
     # List command configuration
-    class List < Bogo::Config
+    class List < Sfn::Config
 
       attribute(
         :attribute, String,

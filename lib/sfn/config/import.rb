@@ -4,7 +4,7 @@ module Sfn
   class Config
 
     # Import command configuration
-    class Import < Bogo::Config
+    class Import < Config
 
       attribute(
         :path, String,

@@ -3,7 +3,7 @@ require 'sfn'
 module Sfn
   class Config
     # Events command configuration
-    class Events < Bogo::Config
+    class Events < Config
 
       attribute(
         :attribute, String,

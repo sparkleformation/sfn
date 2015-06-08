@@ -3,7 +3,7 @@ require 'sfn'
 module Sfn
   class Config
     # Promote command configuration
-    class Promote < Bogo::Config
+    class Promote < Config
 
       attribute(
         :accounts, String,

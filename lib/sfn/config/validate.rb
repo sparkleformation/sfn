@@ -3,7 +3,7 @@ require 'sfn'
 module Sfn
   class Config
     # Validate command configuration
-    class Validate < Bogo::Config
+    class Validate < Config
 
       attribute(
         :processing, [TrueClass, FalseClass],

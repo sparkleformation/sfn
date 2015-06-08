@@ -4,7 +4,7 @@ module Sfn
   class Config
 
     # Export command configuration
-    class Export < Bogo::Config
+    class Export < Config
 
       attribute(
         :name, String,

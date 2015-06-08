@@ -2,7 +2,7 @@ require 'sfn'
 
 module Sfn
   class Config
-    class Describe < Bogo::Config
+    class Describe < Config
 
       attribute(
         :resources, [TrueClass, FalseClass],
