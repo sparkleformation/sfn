@@ -1,3 +1,6 @@
+## v0.4.4
+* Add a few more config fixes to properly validate
+
 ## v0.4.2
 * Fix config types defined
 
