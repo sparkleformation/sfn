@@ -1,3 +1,6 @@
+## v0.4.6
+* Fix parameter generation from CLI
+
 ## v0.4.4
 * Add a few more config fixes to properly validate
 
