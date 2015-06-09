@@ -50,11 +50,11 @@ module Sfn
             if(file)
               populate_parameters!(file, stack.parameters)
               stack.template = translate_template(file)
-              stack.parameters = stack.parameters.to_smash.merge(config[:parameters])
+              stack.parameters = config[:parameters]
               stack.template = Sfn::Utils::StackParameterScrubber.scrub!(stack.template)
             else
               populate_parameters!(stack.template, stack.parameters)
-              stack.parameters = stack.parameters.to_smash.merge(config[:parameters])
+              stack.parameters = config[:parameters]
             end
 
             begin
