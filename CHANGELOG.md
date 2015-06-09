@@ -1,3 +1,6 @@
+## v0.4.8
+* Disable delimiter on `:multiple` options (must specify multiple flags)
+
 ## v0.4.6
 * Fix parameter generation from CLI
 
