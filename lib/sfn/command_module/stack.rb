@@ -138,9 +138,7 @@ module Sfn
                 end
                 validation = Sfn::Utils::StackParameterValidator.validate(answer, v)
                 if(validation == true)
-                  unless(answer == v['Default'])
-                    config[:parameters][k] = answer
-                  end
+                  config[:parameters][k] = answer
                   valid = true
                 else
                   validation.each do |validation_error|
