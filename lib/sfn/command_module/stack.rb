@@ -110,7 +110,7 @@ module Sfn
           if(stack['Parameters'])
             if(config.get(:parameter).is_a?(Array))
               config[:parameter] = Smash[
-                *config.get(:parameter).map(&:to_a)
+                *config.get(:parameter).map(&:to_a).flatten
               ]
             end
             if(config.get(:parameters))
