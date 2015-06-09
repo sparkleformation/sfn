@@ -28,7 +28,10 @@ Bogo::Cli::Setup.define do
         on_name = info[:boolean] ? info[:long] : "#{info[:long]}="
         opts = Hash.new.tap do |o|
           o[:default] = info[:default] if info.has_key?(:default)
-          o[:as] = Array if info[:multiple]
+          if(info[:multiple])
+            o[:as] = Array
+            o[:delimiter] = nil
+          end
         end
         on info[:short], on_name, info[:description], opts
       end
