@@ -32,7 +32,7 @@ module Sfn
       :coerce => proc{|v|
         case v
         when String
-          Smash[v.split(',').map{|x| v.split(/[=:]/)}]
+          Smash[v.split(',').map{|x| v.split(/[=:]/, 2)}]
         when Hash
           v.to_smash
         else
