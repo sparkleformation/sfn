@@ -1,5 +1,7 @@
 ## v0.4.8
 * Disable delimiter on `:multiple` options (must specify multiple flags)
+* Update types allowed by inspect for instance failure option
+* Parameter hash is now always fully set based on template parameters
 
 ## v0.4.6
 * Fix parameter generation from CLI
