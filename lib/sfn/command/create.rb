@@ -52,7 +52,7 @@ module Sfn
           end
 
           stack = provider.connection.stacks.build(
-            config[:options].dup.merge(
+            config.fetch(:options, Smash.new).dup.merge(
               :name => name,
               :template => file
             )
