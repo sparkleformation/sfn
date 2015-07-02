@@ -115,7 +115,7 @@ module Sfn
             end
             if(config.get(:parameters))
               config.set(:parameters,
-                config.get(:parameters).merge(config[:parameter])
+                config.get(:parameters).merge(config.fetch(:parameter, Smash.new))
               )
             else
               config.set(:parameters, config.fetch(:parameter, Smash.new))
