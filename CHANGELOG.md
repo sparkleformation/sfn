@@ -1,3 +1,7 @@
+## v0.4.10
+* Fix error when no options are provided within config (#18)
+* Fix error when parameters originate from config only (#20)
+
 ## v0.4.8
 * Disable delimiter on `:multiple` options (must specify multiple flags)
 * Update types allowed by inspect for instance failure option
