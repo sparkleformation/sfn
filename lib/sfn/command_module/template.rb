@@ -94,7 +94,7 @@ module Sfn
               config[:nesting_bucket]
             )
             params = Hash[
-              stack_definition['Parameters'].map do |k,v|
+              stack_definition.fetch('Parameters', {}).map do |k,v|
                 next if stack_resource['Properties'].fetch('Parameters', {}).keys.include?(k)
                 [k,v]
               end.compact
