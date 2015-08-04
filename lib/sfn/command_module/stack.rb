@@ -152,7 +152,7 @@ module Sfn
               end
             end
           end
-          stack
+          config[:parameters]
         end
 
       end
