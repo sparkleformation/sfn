@@ -63,7 +63,8 @@ module Sfn
         # @param sf [SparkleFormation] stack
         # @return [Hash] dumped stack
         def process_nested_stack_shallow(sf)
-          sf.apply_nesting(:shallow) do |stack_name, stack_definition|
+          sf.apply_nesting(:shallow) do |stack_name, stack, resource|
+            stack_definition = stack.compile.dump!
             bucket = provider.connection.api_for(:storage).buckets.get(
               config[:nesting_bucket]
             )
@@ -89,7 +90,9 @@ module Sfn
         # @param sf [SparkleFormation] stack
         # @return [Hash] dumped stack
         def process_nested_stack_deep(sf)
-          sf.apply_nesting(:deep) do |stack_name, stack_definition, stack_resource|
+          sf.apply_nesting(:deep) do |stack_name, stack, resource|
+            stack_definition = stack.compile.dump!
+            stack_resource = resource._dump
             bucket = provider.connection.api_for(:storage).buckets.get(
               config[:nesting_bucket]
             )
