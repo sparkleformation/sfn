@@ -9,6 +9,10 @@ module Sfn
 
       include Bogo::AnimalStrings
 
+      def load_template
+        template
+      end
+
       ## Status helpers
 
       # Check for state suffix

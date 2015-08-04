@@ -101,7 +101,7 @@ module Sfn
 
     # @return [Miasma::Orchestration::Stack, NilClass]
     def stack(stack_id)
-      stacks.get(stack_id)
+      connection.stacks.get(stack_id)
     end
 
     # Store stack attribute changes
