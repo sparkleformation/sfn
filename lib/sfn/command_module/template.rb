@@ -40,10 +40,10 @@ module Sfn
                   config[:apply_nesting] = :deep
                 end
                 case config[:apply_nesting].to_sym
-                when :shallow
-                  process_nested_stack_shallow(sf)
                 when :deep
                   process_nested_stack_deep(sf)
+                when :shallow
+                  process_nested_stack_shallow(sf)
                 else
                   raise ArgumentError.new "Unknown nesting style requested: #{config[:apply_nesting].inspect}!"
                 end
@@ -84,16 +84,46 @@ module Sfn
           end
         end
 
-        # Processes template using the deep workflow
+        # Processes template using new deep workflow
         #
-        # @param sf [SparkleFormation] tack
+        # @param sf [SparkleFormation] stack
         # @return [Hash] dumped stack
         def process_nested_stack_deep(sf)
-
+          sf.apply_nesting(:deep) do |stack_name, stack_definition, stack_resource|
+            bucket = provider.connection.api_for(:storage).buckets.get(
+              config[:nesting_bucket]
+            )
+            params = Hash[
+              stack_definition['Parameters'].map do |k,v|
+                next if stack_resource['Properties'].fetch('Parameters', {}).keys.include?(k)
+                [k,v]
+              end.compact
+            ]
+            result = Smash.new('Parameters' => populate_parameters!('Parameters' => params).merge(stack_resource['Properties'].fetch('Parameters', {})))
+            if(config[:print_only])
+              result.merge(
+                'TemplateURL' => "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
+              )
+            else
+              unless(bucket)
+                raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
+              end
+              file = bucket.files.build
+              file.name = "#{name_args.first}_#{stack_name}.json"
+              file.content_type = 'text/json'
+              file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
+              file.save
+              url = URI.parse(file.url)
+              result.merge(
+                'TemplateURL' => "#{url.scheme}://#{url.host}#{url.path}"
+              )
+            end
+          end
         end
 
+        # pre and post processors?
         def stack_processors(stack)
-          config.fetch(:
+          config.fetch
         end
 
         # Apply template translation
