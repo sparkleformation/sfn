@@ -14,7 +14,7 @@ module Sfn
     # @param [Bogo::Ui]
     # @param [Smash] configuration hash
     # @param [Array<String>] arguments from the CLI
-    # @param [Miasma::Models::Orchestration] API connection
+    # @param [Provider] API connection
     #
     # @return [self]
     def initialize(ui, config, arguments, api)
