@@ -4,6 +4,8 @@ module Sfn
   # Interface for injecting custom functionality
   class Callback
 
+    autoload :StackPolicy, 'sfn/callback/stack_policy'
+
     # @return [Bogo::Ui]
     attr_reader :ui
     # @return [Smash]
