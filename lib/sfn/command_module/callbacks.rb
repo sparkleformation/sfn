@@ -45,17 +45,17 @@ module Sfn
       # @param type [Symbol, String] name of callback type
       # @return [Array<Method>]
       def callbacks_for(type)
-        config.fetch(:callbacks, type, []).map do |c_name|
+        [config.fetch(:callbacks, type, [])].flatten.compact.map do |c_name|
           instance = memoize(c_name) do
             begin
-              klass = Sfn::Callback.const_get(Bogo::Utility.camel(type.to_s))
+              klass = Sfn::Callback.const_get(Bogo::Utility.camel(c_name.to_s))
               klass.new(ui, config, arguments, provider)
             rescue NameError
               raise "Unknown #{type} callback requested: #{c_name} (not found)"
             end
           end
           if(instance.respond_to?(type))
-            instance.method(type)
+            [c_name, instance.method(type)]
           end
         end.compact
       end
