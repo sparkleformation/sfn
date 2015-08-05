@@ -58,7 +58,9 @@ module Sfn
             end
 
             begin
-              stack.save
+              api_action!(:api_stack => stack) do
+                stack.save
+              end
             rescue Miasma::Error::ApiError::RequestError => e
               if(e.message.downcase.include?('no updates')) # :'(
                 ui.warn "No updates detected for stack (#{stack.name})"

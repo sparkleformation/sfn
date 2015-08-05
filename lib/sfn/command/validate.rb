@@ -16,10 +16,13 @@ module Sfn
         file = Sfn::Utils::StackParameterScrubber.scrub!(file)
         file = translate_template(file)
         begin
-          result = provider.connection.stacks.build(
+          stack = provider.connection.stacks.build(
             :name => 'validation-stack',
             :template => file
-          ).validate
+          )
+          result = api_action!(:api_stack => stack) do
+            stack.validate
+          end
           ui.info ui.color('  -> VALID', :bold, :green)
         rescue => e
           ui.info ui.color('  -> INVALID', :bold, :red)

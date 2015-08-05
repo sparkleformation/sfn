@@ -29,7 +29,9 @@ module Sfn
           stack = provider.connection.stacks.get(stack_name)
           if(stack)
             nested_stack_cleanup!(stack)
-            stack.destroy
+            api_action!(:api_stack => stack) do
+              stack.destroy
+            end
             ui.info "Destroy request complete for stack: #{ui.color(stack_name, :red)}"
           else
             ui.warn "Failed to locate requested stack: #{ui.color(stack_name, :bold)}"
