@@ -35,6 +35,7 @@ module Sfn
               if(sf.nested? && !sf.isolated_nests?)
                 raise TypeError.new('Template does not contain isolated stack nesting! Sfn does not support mixed mixed resources within root stack!')
               end
+              run_callbacks_for(:stack, :stack_name => arguments.first, :stack_sparkle => sf)
               if(sf.nested? && config[:apply_nesting])
                 if(config[:apply_nesting] == true)
                   config[:apply_nesting] = :deep
@@ -51,7 +52,9 @@ module Sfn
                 sf.dump.merge('sfn_nested_stack' => !!sf.nested?)
               end
             else
-              _from_json(File.read(config[:file]))
+              template = _from_json(File.read(config[:file]))
+              run_callbacks_for(:stack, :stack_name => arguments.first, :stack_hash => template)
+              template
             end
           else
             raise ArgumentError.new 'Failed to locate template for processing!'
@@ -64,6 +67,8 @@ module Sfn
         # @return [Hash] dumped stack
         def process_nested_stack_shallow(sf)
           sf.apply_nesting(:shallow) do |stack_name, stack_definition, resource|
+            run_callbacks_for(:stack, :stack_name => stack_name, :stack_hash => stack)
+            run_callbacks_for(:stack, stack_name, stack_definition)
             bucket = provider.connection.api_for(:storage).buckets.get(
               config[:nesting_bucket]
             )
@@ -91,6 +96,7 @@ module Sfn
         # @return [Hash] dumped stack
         def process_nested_stack_deep(sf)
           sf.apply_nesting(:deep) do |stack_name, stack, resource|
+            run_callbacks_for(:stack, :stack_name => stack_name, :stack_sparkle => stack)
             stack_definition = stack.compile.dump!
             stack_resource = resource._dump
             bucket = provider.connection.api_for(:storage).buckets.get(
@@ -126,11 +132,6 @@ module Sfn
               resource.properties.set!(k, v)
             end
           end
-        end
-
-        # pre and post processors?
-        def stack_processors(stack)
-          config.fetch
         end
 
         # Apply template translation

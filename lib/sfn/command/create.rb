@@ -9,6 +9,7 @@ module Sfn
       include Sfn::CommandModule::Base
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
+      include Sfn::CommandModule::Callbacks
 
       # Run the stack creation command
       def execute!
@@ -69,7 +70,10 @@ module Sfn
           stack.parameters = config[:parameters]
 
           stack.template = translate_template(stack.template)
-          stack.save
+
+          api_action!(:api_stack => stack) do
+            stack.save
+          end
 
         end
 
