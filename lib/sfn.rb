@@ -4,6 +4,7 @@ require 'bogo'
 
 module Sfn
 
+  autoload :Callback, 'sfn/callback'
   autoload :Provider, 'sfn/provider'
   autoload :Cache, 'sfn/cache'
   autoload :Config, 'sfn/config'
