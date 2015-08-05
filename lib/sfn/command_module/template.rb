@@ -63,14 +63,14 @@ module Sfn
         # @param sf [SparkleFormation] stack
         # @return [Hash] dumped stack
         def process_nested_stack_shallow(sf)
-          sf.apply_nesting(:shallow) do |stack_name, stack, resource|
-            stack_definition = stack.compile.dump!
+          sf.apply_nesting(:shallow) do |stack_name, stack_definition, resource|
             bucket = provider.connection.api_for(:storage).buckets.get(
               config[:nesting_bucket]
             )
             if(config[:print_only])
-              "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
+              resource['Properties']['TemplateURL'] = "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
             else
+              resource['Properties'].delete('Stack')
               unless(bucket)
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
               end
@@ -80,7 +80,7 @@ module Sfn
               file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
               file.save
               url = URI.parse(file.url)
-              "#{url.scheme}://#{url.host}#{url.path}"
+              resource['Properties']['TemplateURL'] = "#{url.scheme}://#{url.host}#{url.path}"
             end
           end
         end
@@ -104,10 +104,11 @@ module Sfn
             ]
             result = Smash.new('Parameters' => populate_parameters!('Parameters' => params).merge(stack_resource['Properties'].fetch('Parameters', {})))
             if(config[:print_only])
-              result.merge(
+              result.merge!(
                 'TemplateURL' => "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
               )
             else
+              resource.properties.delete!(:stack)
               unless(bucket)
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
               end
@@ -117,9 +118,12 @@ module Sfn
               file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
               file.save
               url = URI.parse(file.url)
-              result.merge(
+              result.merge!(
                 'TemplateURL' => "#{url.scheme}://#{url.host}#{url.path}"
               )
+            end
+            result.each do |k,v|
+              resource.properties.set!(k, v)
             end
           end
         end
