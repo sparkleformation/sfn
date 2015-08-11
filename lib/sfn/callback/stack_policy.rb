@@ -4,6 +4,14 @@ module Sfn
   class Callback
     class StackPolicy < Callback
 
+      # Policy to apply prior to stack deletion
+      DEFENSELESS_POLICY = {
+        'Effect' => 'Allow',
+        'Action' => 'Update:*',
+        'Resource' => '*',
+        'Principal' => '*'
+      }
+
       # @return [Smash] cached policies
       attr_reader :policies
 
@@ -22,7 +30,7 @@ module Sfn
         ui.info 'Submitting stack policy documents'
         stack = args[:api_stack]
         ([stack] + stack.nested_stacks).compact.each do |p_stack|
-          ui.run_action "Applying stack policy to #{ui.color(p_stack.name, :yellow)}" do
+          run_action "Applying stack policy to #{ui.color(p_stack.name, :yellow)}" do
             save_stack_policy(p_stack)
           end
         end
@@ -33,12 +41,16 @@ module Sfn
 
       # Update all policies to allow resource destruction
       def before_destroy(args)
+        ui.warn 'All policies will be disabled for stack destruction!'
+        ui.confirm 'Continue with stack destruction'
+        stack = args[:api_stack]
+        ([stack] + stack.nested_stacks).compact.each do |p_stack|
+          @policies[p_stack.name] = DEFENSELESS_POLICY
+          run_action "Disabling stack policy for #{ui.color(p_stack.name, :yellow)}" do
+            save_stack_policy(p_stack)
+          end
+        end
         ui.warn "Policy modification for deletion not currently enabled!"
-      end
-
-      # Remove all policies
-      def after_destroy(args)
-        ui.warn "Policy removal not currently enabled!"
       end
 
       # Generate stack policy for stack and cache for the after hook
@@ -63,7 +75,12 @@ module Sfn
           :method => :post,
           :form => Smash.new(
             'Action' => 'SetStackPolicy',
-            'StackPolicyBody' => @policies[p_stack.name]
+            'StackName' => p_stack.id,
+            'StackPolicyBody' => @policies.fetch(p_stack.id,
+              @policies.fetch(p_stack.attributes[:logical_id],
+                @policies[p_stack.name]
+              )
+            )
           )
         )
       end
