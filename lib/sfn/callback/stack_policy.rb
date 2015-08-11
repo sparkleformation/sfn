@@ -19,8 +19,14 @@ module Sfn
       #
       # @param args [Hash]
       def submit_policy(args)
-        ui.warn "Policy submission not currently enabled!"
-        ui.info "Currently cached policies for upload: #{@policies.inspect}"
+        ui.info 'Submitting stack policy documents'
+        stack = args[:api_stack]
+        ([stack] + stack.nested_stacks).compact.each do |p_stack|
+          ui.run_action "Applying stack policy to #{ui.color(p_stack.name, :yellow)}" do
+            save_stack_policy(p_stack)
+          end
+        end
+        ui.info 'Stack policy documents successfully submitted!'
       end
       alias_method :after_create, :submit_policy
       alias_method :after_update, :submit_policy
@@ -45,6 +51,21 @@ module Sfn
             info[:sparkle_stack].generate_policy
           )
         end
+      end
+
+      # Save the cached policy for the given stack
+      #
+      # @param p_stack [Miasma::Models::Orchestration::Stack]
+      # @return [NilClass]
+      def save_stack_policy(p_stack)
+        result = p_stack.api.request(
+          :path => '/',
+          :method => :post,
+          :form => Smash.new(
+            'Action' => 'SetStackPolicy',
+            'StackPolicyBody' => @policies[p_stack.name]
+          )
+        )
       end
 
     end
