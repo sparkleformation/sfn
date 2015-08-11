@@ -26,5 +26,23 @@ module Sfn
       @api = api
     end
 
+    # Wrap action within status text
+    #
+    # @param msg [String] action text
+    # @yieldblock action to perform
+    # @return [Object] result of yield
+    def run_action(msg)
+      ui.info("#{msg}... ", :nonewline)
+      begin
+        result = yield
+        ui.puts ui.color('complete!', :green, :bold)
+        result
+      rescue => e
+        ui.puts ui.color('error!', :red, :bold)
+        ui.error "Reason - #{e}"
+        raise
+      end
+    end
+
   end
 end
