@@ -195,6 +195,7 @@ module Sfn
         resources.map do |resource|
           if(resource.type == self.api.const_get(:RESOURCE_MAPPING).key(self.class))
             n_stack = resource.expand
+            n_stack.attributes[:logical_id] = resource.name
             [n_stack] + n_stack.nested_stacks
           end
         end.flatten.compact
