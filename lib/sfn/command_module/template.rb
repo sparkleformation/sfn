@@ -109,7 +109,11 @@ module Sfn
                 [k,v]
               end.compact
             ]
-            result = Smash.new('Parameters' => populate_parameters!('Parameters' => params).merge(stack_resource['Properties'].fetch('Parameters', {})))
+            result = Smash.new(
+              'Parameters' => populate_parameters!(stack,
+                stack_resource['Properties'].fetch('Parameters', {})
+              )
+            )
             if(config[:print_only])
               result.merge!(
                 'TemplateURL' => "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
