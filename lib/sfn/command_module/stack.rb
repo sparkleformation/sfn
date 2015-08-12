@@ -126,14 +126,22 @@ module Sfn
               config.set(:parameters, config.fetch(:parameter, Smash.new))
             end
             stack_parameters.each do |k,v|
-              k = (parameter_prefix + [k]).join('__')
-              next if config[:parameters][k]
+              ns_k = (parameter_prefix + [k]).join('__')
+              next if config[:parameters][ns_k]
+              if(current_params[k].is_a?(Hash))
+                # NOTE: direct set dumps the stack (nfi). Smash will
+                # auto dup it, and works, so yay i guess.
+                config[:parameters][ns_k] = Smash.new(current_params[k])
+                valid = true
+              else
+                valid = false
+              end
               attempt = 0
               valid = false
               until(valid)
                 attempt += 1
                 default = config[:parameters].fetch(
-                  k, current_params.fetch(
+                  ns_k, current_params.fetch(
                     k, v['Default']
                   )
                 )
@@ -144,7 +152,7 @@ module Sfn
                 end
                 validation = Sfn::Utils::StackParameterValidator.validate(answer, v)
                 if(validation == true)
-                  config[:parameters][k] = answer
+                  config[:parameters][ns_k] = answer
                   valid = true
                 else
                   validation.each do |validation_error|
@@ -164,7 +172,7 @@ module Sfn
               unless(strip_key.include?('__'))
                 [strip_key, v]
               end
-            end
+            end.compact
           ]
         end
 
