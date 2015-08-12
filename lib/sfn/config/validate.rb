@@ -37,8 +37,8 @@ module Sfn
         :coerce => lambda{|v| v.to_i}
       )
       attribute(
-        :apply_nesting, [TrueClass, FalseClass],
-        :default => true,
+        :apply_nesting, [String, Symbol],
+        :default => 'deep',
         :description => 'Apply stack nesting'
       )
       attribute(
