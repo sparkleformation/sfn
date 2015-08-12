@@ -103,17 +103,14 @@ module Sfn
             bucket = provider.connection.api_for(:storage).buckets.get(
               config[:nesting_bucket]
             )
-            params = Hash[
-              stack_definition.fetch('Parameters', {}).map do |k,v|
-                next if stack_resource['Properties'].fetch('Parameters', {}).keys.include?(k)
-                [k,v]
-              end.compact
-            ]
+            c_defaults = ui.auto_default
+            ui.auto_default = true if config[:print_only]
             result = Smash.new(
               'Parameters' => populate_parameters!(stack,
                 stack_resource['Properties'].fetch('Parameters', {})
               )
             )
+            ui.auto_default = c_defaults
             if(config[:print_only])
               result.merge!(
                 'TemplateURL' => "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
