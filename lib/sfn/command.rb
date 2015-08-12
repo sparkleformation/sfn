@@ -18,8 +18,7 @@ module Sfn
 
     # Override to provide config file searching
     def initialize(cli_opts, args)
-      unless(cli_opts[:config])
-        cli_opts = cli_opts.to_hash.to_smash(:snake)
+      unless(cli_opts['config'])
         discover_config(cli_opts)
       end
       super(cli_opts, args)
@@ -37,14 +36,14 @@ module Sfn
     # Start with current working directory and traverse to root
     # looking for a `.sfn` configuration file
     #
-    # @param opts [Smash]
-    # @return [Smash]
+    # @param opts [Slop]
+    # @return [Slop]
     def discover_config(opts)
       cwd = Dir.pwd.split(File::SEPARATOR)
       until(cwd.empty? || File.exists?(cwd.push('.sfn').join(File::SEPARATOR)))
         cwd.pop(2)
       end
-      opts[:config] = cwd.join(File::SEPARATOR) unless cwd.empty?
+      opts.fetch_option('config').value = cwd.join(File::SEPARATOR) unless cwd.empty?
       opts
     end
 
