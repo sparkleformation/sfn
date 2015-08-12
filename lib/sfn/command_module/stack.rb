@@ -104,10 +104,15 @@ module Sfn
 
         # Prompt for parameter values and store result
         #
-        # @param stack [Hash] stack template
+        # @param sparkle [SparkleFormation]
         # @return [Hash]
-        def populate_parameters!(stack, current_params={})
-          if(stack['Parameters'])
+        def populate_parameters!(sparkle, current_params={})
+          parameter_prefix = sparkle.root? ? [] : (sparkle.root_path - [sparkle.root]).map do |s|
+            Bogo::Utility.camel(s.name)
+          end
+          stack_parameters = sparkle.compile.parameters
+          unless(stack_parameters.nil?)
+            stack_parameters = stack_parameters._dump
             if(config.get(:parameter).is_a?(Array))
               config[:parameter] = Smash[
                 *config.get(:parameter).map(&:to_a).flatten
@@ -120,7 +125,8 @@ module Sfn
             else
               config.set(:parameters, config.fetch(:parameter, Smash.new))
             end
-            stack.fetch('Parameters', {}).each do |k,v|
+            stack_parameters.each do |k,v|
+              k = (parameter_prefix + [k]).join('__')
               next if config[:parameters][k]
               attempt = 0
               valid = false
@@ -152,7 +158,14 @@ module Sfn
               end
             end
           end
-          config[:parameters]
+          Smash[
+            config.fetch(:parameters, {}).map do |k,v|
+              strip_key = k.sub(/#{parameter_prefix.join('__')}_{2}?/, '')
+              unless(strip_key.include?('__'))
+                [strip_key, v]
+              end
+            end
+          ]
         end
 
       end
