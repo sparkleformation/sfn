@@ -66,16 +66,16 @@ module Sfn
         # @param sf [SparkleFormation] stack
         # @return [Hash] dumped stack
         def process_nested_stack_shallow(sf)
-          sf.apply_nesting(:shallow) do |stack_name, stack_definition, resource|
-            run_callbacks_for(:stack, :stack_name => stack_name, :hash_stack => stack)
-            run_callbacks_for(:stack, stack_name, stack_definition)
+          sf.apply_nesting(:shallow) do |stack_name, stack, resource|
+            run_callbacks_for(:stack, :stack_name => stack_name, :sparkle_stack => stack)
+            stack_definition = stack.compile.dump!
             bucket = provider.connection.api_for(:storage).buckets.get(
               config[:nesting_bucket]
             )
             if(config[:print_only])
-              resource['Properties']['TemplateURL'] = "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
+              template_url = "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
             else
-              resource['Properties'].delete('Stack')
+              resource.properties.delete!(:stack)
               unless(bucket)
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
               end
@@ -85,8 +85,9 @@ module Sfn
               file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
               file.save
               url = URI.parse(file.url)
-              resource['Properties']['TemplateURL'] = "#{url.scheme}://#{url.host}#{url.path}"
+              template_url = "#{url.scheme}://#{url.host}#{url.path}"
             end
+            resource.properties.set!('TemplateURL', template_url)
           end
         end
 
