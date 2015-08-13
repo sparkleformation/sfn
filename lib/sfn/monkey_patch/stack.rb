@@ -201,6 +201,31 @@ module Sfn
         end.flatten.compact
       end
 
+      # Return stack policy if available
+      #
+      # @return [Smash, NilClass]
+      def policy
+        if(self.api.provider == :aws) # cause this is the only one
+          begin
+            result = self.api.request(
+              :path => '/',
+              :form => Smash.new(
+                'Action' => 'GetStackPolicy',
+                'StackName' => self.id
+              )
+            )
+            serialized_policy = result.get(:body, 'GetStackPolicyResult', 'StackPolicyBody')
+            MultiJson.load(serialized_policy).to_smash
+          rescue Miasma::Error::ApiError::RequestError => e
+            if(e.response.code == 404)
+              nil
+            else
+              raise
+            end
+          end
+        end
+      end
+
     end
   end
 end
