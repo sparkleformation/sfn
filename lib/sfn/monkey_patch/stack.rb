@@ -189,16 +189,27 @@ module Sfn
 
       # Return all stacks contained within this stack
       #
+      # @param recurse [TrueClass, FalseClass] recurse to fetch _all_ stacks
       # @return [Array<Miasma::Models::Orchestration::Stack>]
-      # @note this will recurse stacks
-      def nested_stacks
+      def nested_stacks(recurse=true)
         resources.map do |resource|
           if(resource.type == self.api.const_get(:RESOURCE_MAPPING).key(self.class))
             n_stack = resource.expand
             n_stack.attributes[:logical_id] = resource.name
-            [n_stack] + n_stack.nested_stacks
+            if(recurse)
+              [n_stack] + n_stack.nested_stacks(recurse)
+            else
+              n_stack
+            end
           end
         end.flatten.compact
+      end
+
+      # @return [TrueClass, FalseClass] stack contains nested stacks
+      def nested?
+        !!resources.detect do |resource|
+          resource.type == self.api.const_get(:RESOURCE_MAPPING).key(self.class)
+        end
       end
 
       # Return stack policy if available
@@ -223,6 +234,25 @@ module Sfn
               raise
             end
           end
+        end
+      end
+
+      # Detect the nesting style in use by the stack
+      #
+      # @return [Symbol, NilClass] style of nesting (:shallow, :deep)
+      #   or `nil` if no nesting detected
+      # @note in shallow nesting style, stack resources will not
+      #   contain any direct values for parameters (which is what we
+      #   are testing for)
+      def nesting_style
+        if(nested?)
+          self.template['Resources'].find_all do |t_resource|
+            t_resource['Type'] == self.api.const_get(:RESOURCE_MAPPING).key(self.class)
+          end.detect do |t_resource|
+            t_resource['Properties'].fetch('Parameters', {}).values.detect do |t_value|
+              !t_value.is_a?(Hash)
+            end
+          end ? :deep : :shallow
         end
       end
 
