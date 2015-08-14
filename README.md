@@ -34,7 +34,7 @@ formats:
 }
 ```
 
-### YAML
+#### YAML
 
 ```yaml
 ---
@@ -44,7 +44,7 @@ formats:
   :disable_rollback: true
 ```
 
-### XML
+#### XML
 
 ```xml
 <configuration>
@@ -59,16 +59,62 @@ formats:
 </configuration>
 ```
 
-### Ruby
+#### Ruby
 
 ```ruby
 Configuration.new do
   credentials do
     AWS_CREDENTIALS
   end
-  options.disable_rollback true
+  options.on_failure 'nothing'
 end
 ```
+
+### Configuration Options
+
+* `processing` - Enable SparkleFormation processing
+  * Valid: Boolean
+  * Default: `true`
+
+* `apply_nesting` - Style of nested stack processing
+  * Valid: `"shallow"`, `"deep"`
+  * Default: `"deep"`
+
+* `options` - API options for target orchestration API (see miasma)
+  * Valid: `Hash`
+  * Default: none
+
+* `ssh_attempt_users` - List of users to attempt SSH connection on node failure
+  * Valid: `Array<String>`
+  * Default: none
+
+* `identity_file` - Custom SSH identity file to use for connection on node failure
+  * Valid: `String`
+  * Default: none
+
+* `nesting_bucket` - Name of bucket to store nested stack templates
+  * Valid: `String`
+  * Default: none
+
+* `credentials` - API credentials for target orchestration API (see miasma)
+  * Valid: `Hash`
+  * Default: none
+
+* `callbacks` - Callbacks to execute around API calls
+  * Valid: `Hash`
+  * Default: none
+    * `before` - Callbacks to execute before _any_ API call
+      * Valid: `Array<String>`
+      * Default: none
+    * `after` - Callbacks to execute after _any_ API call
+      * Valid: `Array<String>`
+      * Default: none
+    * `before_COMMAND` - Callbacks to execute before specific `COMMAND` API call
+      * Valid: `Array<String>`
+      * Default: none
+    * `after_COMMAND` - Callbacks to execute after specific `COMMAND` API call
+      * Valid: `Array<String>`
+      * Default: none
 
 ## Commands
 
