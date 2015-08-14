@@ -127,44 +127,19 @@ end
 * `sfn inspect`
 * `sfn validate`
 
+_NOTE: All commands respond to `--help` and will provide a full list of valid options._
+
 ### `sfn list`
 
 Provides listing of current stacks and state of each stack.
-
-#### Supported options
-
-* `--attribute ATTR` stack attribute to display
-* `--status STATUS` match stacks with given status
 
 ### `sfn validate`
 
 Validates template with API
 
-#### Supported options
-
-* `--[no-]processing` enable template processing
-* `--file PATH` path to stack template file
-* `--translate PROVIDER` translate template to provider
-* `--[no-]apply-nesting` apply template nesting logic
-* `--nesting-bucket BUCKET` asset store bucket to place nested stack templates
-
 ### `sfn create NAME`
 
 Creates a new stack with the provided name (`NAME`).
-
-#### Supported options
-
-* `--timeout MINUTES` stack creation timeout limit
-* `--[no-]rollback` disable rollback on failure
-* `--capability CAPABILITY` enable capability within API
-* `--notifications ARN` add notification ARN
-* `--print-only` print stack template JSON and exit
-* `--apply-stack NAME` apply existing stack outputs
-* `--[no-]processing` enable template processing
-* `--file PATH` path to stack template file
-* `--translate PROVIDER` translate template to provider
-* `--[no-]apply-nesting` apply template nesting logic
-* `--nesting-bucket BUCKET` asset store bucket to place nested stack templates
 
 #### Apply Stacks
 
@@ -239,16 +214,6 @@ resources are supported.
 
 Update an existing stack.
 
-#### Supported options
-
-* `--print-only` print stack template JSON and exit
-* `--apply-stack NAME` apply existing stack outputs
-* `--[no-]processing` enable template processing
-* `--file PATH` path to stack template file
-* `--translate PROVIDER` translate template to provider
-* `--[no-]apply-nesting` apply template nesting logic
-* `--nesting-bucket BUCKET` asset store bucket to place nested stack templates
-
 ### `sfn destroy STACK`
 
 Destroy an existing stack.
@@ -278,18 +243,10 @@ stack is "in progress", the polling option will result in
 polling and displaying new events until the stack reaches a
 completed state.
 
-#### Supported options
-
-* `--[no-]poll` poll for new events until completed state reached
-
 ### `sfn describe STACK`
 
 Display resources and outputs of give stack.
 
-#### Supported options
-
-* `--resources` display resources
-* `--outputs` display outputs
 
 ### `sfn inspect STACK`
 
@@ -298,7 +255,7 @@ underlying resource modeling objects provided via the
 [miasma][miasma] library. It also provides extra helpers for
 running common inspection commands.
 
-### Supported options
+### Interesting `inspect` options
 
 * `--nodes` list node addresses within stack
 * `--instance-failure [LOG_FILE]` print log file from failed instance
