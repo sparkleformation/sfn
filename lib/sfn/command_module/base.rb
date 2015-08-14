@@ -117,9 +117,18 @@ module Sfn
           arguments
         end
 
+        # Override config method to memoize the result allowing for
+        # modifications to the configuration during runtime
+        #
+        # @return [Smash]
+        # @note callback requires are also loaded here
         def config
           memoize(:config) do
-            super
+            result = super
+            result.fetch(:callbacks, :require, []).each do |c_loader|
+              require c_loader
+            end
+            result
           end
         end
 

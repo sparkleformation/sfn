@@ -115,6 +115,9 @@ end
     * `after_COMMAND` - Callbacks to execute after specific `COMMAND` API call
       * Valid: `Array<String>`
       * Default: none
+    * `require` - List of custom libraries to load
+      * Valid: `Array<String>`
+      * Default: none
 
 ## Commands
 
