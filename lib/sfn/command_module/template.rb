@@ -18,6 +18,7 @@ module Sfn
         # @param args [Symbol] options (:allow_missing)
         # @return [Hash] loaded template
         def load_template_file(*args)
+          c_stack = (args.detect{|i| i.is_a?(Hash)} || {})[:stack]
           unless(config[:template])
             set_paths_and_discover_file!
             unless(File.exists?(config[:file].to_s))
@@ -42,9 +43,9 @@ module Sfn
                 end
                 case config[:apply_nesting].to_sym
                 when :deep
-                  process_nested_stack_deep(sf)
+                  process_nested_stack_deep(sf, c_stack)
                 when :shallow
-                  process_nested_stack_shallow(sf)
+                  process_nested_stack_shallow(sf, c_stack)
                 else
                   raise ArgumentError.new "Unknown nesting style requested: #{config[:apply_nesting].inspect}!"
                 end
@@ -63,9 +64,10 @@ module Sfn
 
         # Processes template using the original shallow workflow
         #
-        # @param sf [SparkleFormation] stack
+        # @param sf [SparkleFormation] stack formation
+        # @param c_stack [Miasma::Models::Orchestration::Stack] existing stack
         # @return [Hash] dumped stack
-        def process_nested_stack_shallow(sf)
+        def process_nested_stack_shallow(sf, c_stack=nil)
           sf.apply_nesting(:shallow) do |stack_name, stack, resource|
             run_callbacks_for(:stack, :stack_name => stack_name, :sparkle_stack => stack)
             stack_definition = stack.compile.dump!
@@ -94,8 +96,9 @@ module Sfn
         # Processes template using new deep workflow
         #
         # @param sf [SparkleFormation] stack
+        # @param c_stack [Miasma::Models::Orchestration::Stack] existing stack
         # @return [Hash] dumped stack
-        def process_nested_stack_deep(sf)
+        def process_nested_stack_deep(sf, c_stack=nil)
           sf.apply_nesting(:deep) do |stack_name, stack, resource|
             run_callbacks_for(:stack, :stack_name => stack_name, :sparkle_stack => stack)
             stack_definition = stack.compile.dump!
@@ -107,7 +110,8 @@ module Sfn
             ui.auto_default = true if config[:print_only]
             result = Smash.new(
               'Parameters' => populate_parameters!(stack,
-                stack_resource['Properties'].fetch('Parameters', {})
+                :stack => c_stack.nested_stacks.detect{|s| s.attributes[:logical_id] == stack_name},
+                :current_parameters => stack_resource['Properties'].fetch('Parameters', {})
               )
             )
             ui.auto_default = c_defaults
