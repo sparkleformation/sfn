@@ -196,6 +196,7 @@ module Sfn
           if(resource.type == self.api.const_get(:RESOURCE_MAPPING).key(self.class))
             n_stack = resource.expand
             n_stack.attributes[:logical_id] = resource.name
+            n_stack.attributes[:parent_stack] = self
             if(recurse)
               [n_stack] + n_stack.nested_stacks(recurse)
             else
