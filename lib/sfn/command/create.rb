@@ -67,7 +67,7 @@ module Sfn
           end
 
           populate_parameters!(stack.template)
-          stack.parameters = config[:parameters]
+          stack.parameters = config_root_parameters
 
           stack.template = translate_template(stack.template)
 
