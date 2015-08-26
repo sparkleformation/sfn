@@ -1,3 +1,6 @@
+## v0.4.12
+* Fix transient uninitialized constant error for update command
+
 ## v0.4.10
 * Fix error when no options are provided within config (#18)
 * Fix error when parameters originate from config only (#20)
