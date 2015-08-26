@@ -1,6 +1,8 @@
 require 'sfn'
 require 'sparkle_formation'
 
+require 'pathname'
+
 module Sfn
   module CommandModule
     # Template handling helper methods

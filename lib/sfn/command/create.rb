@@ -1,5 +1,4 @@
 require 'sparkle_formation'
-require 'pathname'
 require 'sfn'
 
 module Sfn

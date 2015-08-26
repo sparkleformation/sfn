@@ -1,4 +1,3 @@
-require 'pathname'
 require 'sparkle_formation'
 require 'sfn'
 
