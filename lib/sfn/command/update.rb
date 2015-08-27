@@ -18,14 +18,10 @@ module Sfn
         end
 
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
-        stack = nil
-
-        unless(nested_stacks)
+        begin
           stack = provider.connection.stacks.get(name)
-          unless(stack)
-            ui.fatal "Failed to locate requested stack: #{ui.color(name, :red, :bold)}"
-            raise "Failed to locate stack: #{name}"
-          end
+        rescue Miasma::Error::ApiError::RequestError
+          stack = nil
         end
 
         if(config[:file])
@@ -37,6 +33,11 @@ module Sfn
         if(nested_stacks)
           unpack_nesting(name, file, :update)
         else
+          unless(stack)
+            ui.fatal "Failed to locate requested stack: #{ui.color(name, :red, :bold)}"
+            raise "Failed to locate stack: #{name}"
+          end
+
           ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('update', :green)}"
 
           unless(file)
@@ -53,7 +54,7 @@ module Sfn
 
           if(file)
             if(config[:print_only])
-              ui.puts _format_json(tranlate_template(file))
+              ui.puts _format_json(translate_template(file))
               return
             end
             populate_parameters!(file, :current_parameters => stack.parameters)
