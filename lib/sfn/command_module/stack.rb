@@ -136,16 +136,16 @@ module Sfn
               valid = false
               # When parameter is a hash type, it is being set via
               # intrinsic function and we don't modify
-              if(current_params[k].is_a?(Hash))
+              if(current_parameters[k].is_a?(Hash))
                 if(current_stack)
-                  enable_set = validate_stack_parameter(current_stack, k, ns_k, current_params[k])
+                  enable_set = validate_stack_parameter(current_stack, k, ns_k, current_parameters[k])
                 else
                   enable_set = true
                 end
                 if(enable_set)
                   # NOTE: direct set dumps the stack (nfi). Smash will
                   # auto dup it, and works, so yay i guess.
-                  config[:parameters][ns_k] = Smash.new(current_params[k])
+                  config[:parameters][ns_k] = Smash.new(current_parameters[k])
                   valid = true
                 end
               end
@@ -153,7 +153,7 @@ module Sfn
               until(valid)
                 attempt += 1
                 default = config[:parameters].fetch(
-                  ns_k, current_params.fetch(
+                  ns_k, current_parameters.fetch(
                     k, v['Default']
                   )
                 )
