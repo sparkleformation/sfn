@@ -26,7 +26,7 @@ formats:
 ```json
 {
   "credentials": {
-    AWS_CREDENTIALS
+    MIASMA_CREDENTIALS
   },
   "options": {
     "disable_rollback": true
@@ -49,7 +49,7 @@ formats:
 ```xml
 <configuration>
   <credentials>
-    AWS_CREDENTIALS
+    MIASMA_CREDENTIALS
   </credentials>
   <options>
     <disable_rollback>
@@ -96,7 +96,7 @@ end
   * Valid: `String`
   * Default: none
 
-* `credentials` - API credentials for target orchestration API (see miasma)
+* `credentials` - API credentials for target orchestration API (see [miasma](https://github.com/miasma-rb/miasma))
   * Valid: `Hash`
   * Default: none
 
