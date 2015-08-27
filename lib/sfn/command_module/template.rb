@@ -110,7 +110,7 @@ module Sfn
             ui.auto_default = true if config[:print_only]
             result = Smash.new(
               'Parameters' => populate_parameters!(stack,
-                :stack => c_stack.nested_stacks.detect{|s| s.attributes[:logical_id] == stack_name},
+                :stack => c_stack ? c_stack.nested_stacks.detect{|s| s.attributes[:logical_id] == stack_name} : nil,
                 :current_parameters => stack_resource['Properties'].fetch('Parameters', {})
               )
             )
