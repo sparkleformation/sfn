@@ -52,6 +52,10 @@ module Sfn
           apply_stacks!(stack)
 
           if(file)
+            if(config[:print_only])
+              ui.puts _format_json(tranlate_template(file))
+              return
+            end
             populate_parameters!(file, :current_parameters => stack.parameters)
             stack.template = translate_template(file)
             stack.parameters = config_root_parameters
