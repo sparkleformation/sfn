@@ -9,7 +9,6 @@ module Sfn
       include Sfn::CommandModule::Base
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
-      include Sfn::CommandModule::Callbacks
 
       def execute!
         file = load_template_file

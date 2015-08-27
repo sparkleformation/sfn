@@ -9,7 +9,6 @@ module Sfn
       include Sfn::CommandModule::Base
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
-      include Sfn::CommandModule::Callbacks
 
       # Run the stack creation command
       def execute!
