@@ -192,8 +192,8 @@ module Sfn
       # @param recurse [TrueClass, FalseClass] recurse to fetch _all_ stacks
       # @return [Array<Miasma::Models::Orchestration::Stack>]
       def nested_stacks(recurse=true)
-        resources.map do |resource|
-          if(resource.type == self.api.const_get(:RESOURCE_MAPPING).key(self.class))
+        resources.all.map do |resource|
+          if(resource.type == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class))
             n_stack = resource.expand
             n_stack.attributes[:logical_id] = resource.name
             n_stack.attributes[:parent_stack] = self
@@ -209,7 +209,7 @@ module Sfn
       # @return [TrueClass, FalseClass] stack contains nested stacks
       def nested?
         !!resources.detect do |resource|
-          resource.type == self.api.const_get(:RESOURCE_MAPPING).key(self.class)
+          resource.type == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
         end
       end
 
@@ -248,7 +248,7 @@ module Sfn
       def nesting_style
         if(nested?)
           self.template['Resources'].find_all do |t_resource|
-            t_resource['Type'] == self.api.const_get(:RESOURCE_MAPPING).key(self.class)
+            t_resource['Type'] == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
           end.detect do |t_resource|
             t_resource['Properties'].fetch('Parameters', {}).values.detect do |t_value|
               !t_value.is_a?(Hash)
