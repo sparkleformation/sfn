@@ -64,7 +64,7 @@ formats:
 ```ruby
 Configuration.new do
   credentials do
-    AWS_CREDENTIALS
+    MIASMA_CREDENTIALS
   end
   options.on_failure 'nothing'
 end
