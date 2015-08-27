@@ -45,6 +45,10 @@ module Sfn
         :nesting_bucket, String,
         :description => 'Bucket to use for storing nested stack templates'
       )
+      attribute(
+        :print_only, [TrueClass, FalseClass],
+        :description => 'Print the resulting stack template'
+      )
 
     end
   end
