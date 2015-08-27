@@ -139,6 +139,7 @@ module Sfn
           klass.instance_eval do
 
             include Sfn::CommandModule::Base::InstanceMethods
+            include Sfn::CommandModule::Callbacks
             include Sfn::Utils::JSON
             include Sfn::Utils::Output
             include Bogo::AnimalStrings
