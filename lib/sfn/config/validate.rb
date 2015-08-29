@@ -37,13 +37,17 @@ module Sfn
         :coerce => lambda{|v| v.to_i}
       )
       attribute(
-        :apply_nesting, [TrueClass, FalseClass],
-        :default => true,
+        :apply_nesting, [String, Symbol],
+        :default => 'deep',
         :description => 'Apply stack nesting'
       )
       attribute(
         :nesting_bucket, String,
         :description => 'Bucket to use for storing nested stack templates'
+      )
+      attribute(
+        :print_only, [TrueClass, FalseClass],
+        :description => 'Print the resulting stack template'
       )
 
     end

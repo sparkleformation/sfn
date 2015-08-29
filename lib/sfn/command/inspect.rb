@@ -13,12 +13,14 @@ module Sfn
         stack_name = name_args.last
         stack = provider.connection.stacks.get(stack_name)
         ui.info "Stack inspection #{ui.color(stack_name, :bold)}:"
-        outputs = [:attribute, :nodes, :instance_failure].map do |key|
-          if(config.has_key?(key))
-            send("display_#{key}", stack)
-            key
-          end
-        end.compact
+        outputs = api_action!(:api_stack => stack) do
+          [:attribute, :nodes, :instance_failure].map do |key|
+            if(config.has_key?(key))
+              send("display_#{key}", stack)
+              key
+            end
+          end.compact
+        end
         if(outputs.empty?)
           ui.info '  Stack dump:'
           ui.puts MultiJson.dump(

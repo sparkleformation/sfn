@@ -26,7 +26,7 @@ formats:
 ```json
 {
   "credentials": {
-    AWS_CREDENTIALS
+    MIASMA_CREDENTIALS
   },
   "options": {
     "disable_rollback": true
@@ -34,7 +34,7 @@ formats:
 }
 ```
 
-### YAML
+#### YAML
 
 ```yaml
 ---
@@ -44,12 +44,12 @@ formats:
   :disable_rollback: true
 ```
 
-### XML
+#### XML
 
 ```xml
 <configuration>
   <credentials>
-    AWS_CREDENTIALS
+    MIASMA_CREDENTIALS
   </credentials>
   <options>
     <disable_rollback>
@@ -59,16 +59,65 @@ formats:
 </configuration>
 ```
 
-### Ruby
+#### Ruby
 
 ```ruby
 Configuration.new do
   credentials do
-    AWS_CREDENTIALS
+    MIASMA_CREDENTIALS
   end
-  options.disable_rollback true
+  options.on_failure 'nothing'
 end
 ```
+
+### Configuration Options
+
+* `processing` - Enable SparkleFormation processing
+  * Valid: Boolean
+  * Default: `true`
+
+* `apply_nesting` - Style of nested stack processing
+  * Valid: `"shallow"`, `"deep"`
+  * Default: `"deep"`
+
+* `options` - API options for target orchestration API (see miasma)
+  * Valid: `Hash`
+  * Default: none
+
+* `ssh_attempt_users` - List of users to attempt SSH connection on node failure
+  * Valid: `Array<String>`
+  * Default: none
+
+* `identity_file` - Custom SSH identity file to use for connection on node failure
+  * Valid: `String`
+  * Default: none
+
+* `nesting_bucket` - Name of bucket to store nested stack templates
+  * Valid: `String`
+  * Default: none
+
+* `credentials` - API credentials for target orchestration API (see [miasma](https://github.com/miasma-rb/miasma))
+  * Valid: `Hash`
+  * Default: none
+
+* `callbacks` - Callbacks to execute around API calls
+  * Valid: `Hash`
+  * Default: none
+    * `before` - Callbacks to execute before _any_ API call
+      * Valid: `Array<String>`
+      * Default: none
+    * `after` - Callbacks to execute after _any_ API call
+      * Valid: `Array<String>`
+      * Default: none
+    * `before_COMMAND` - Callbacks to execute before specific `COMMAND` API call
+      * Valid: `Array<String>`
+      * Default: none
+    * `after_COMMAND` - Callbacks to execute after specific `COMMAND` API call
+      * Valid: `Array<String>`
+      * Default: none
+    * `require` - List of custom libraries to load
+      * Valid: `Array<String>`
+      * Default: none
 
 ## Commands
 
@@ -81,44 +130,19 @@ end
 * `sfn inspect`
 * `sfn validate`
 
+_NOTE: All commands respond to `--help` and will provide a full list of valid options._
+
 ### `sfn list`
 
 Provides listing of current stacks and state of each stack.
-
-#### Supported options
-
-* `--attribute ATTR` stack attribute to display
-* `--status STATUS` match stacks with given status
 
 ### `sfn validate`
 
 Validates template with API
 
-#### Supported options
-
-* `--[no-]processing` enable template processing
-* `--file PATH` path to stack template file
-* `--translate PROVIDER` translate template to provider
-* `--[no-]apply-nesting` apply template nesting logic
-* `--nesting-bucket BUCKET` asset store bucket to place nested stack templates
-
 ### `sfn create NAME`
 
 Creates a new stack with the provided name (`NAME`).
-
-#### Supported options
-
-* `--timeout MINUTES` stack creation timeout limit
-* `--[no-]rollback` disable rollback on failure
-* `--capability CAPABILITY` enable capability within API
-* `--notifications ARN` add notification ARN
-* `--print-only` print stack template JSON and exit
-* `--apply-stack NAME` apply existing stack outputs
-* `--[no-]processing` enable template processing
-* `--file PATH` path to stack template file
-* `--translate PROVIDER` translate template to provider
-* `--[no-]apply-nesting` apply template nesting logic
-* `--nesting-bucket BUCKET` asset store bucket to place nested stack templates
 
 #### Apply Stacks
 
@@ -193,16 +217,6 @@ resources are supported.
 
 Update an existing stack.
 
-#### Supported options
-
-* `--print-only` print stack template JSON and exit
-* `--apply-stack NAME` apply existing stack outputs
-* `--[no-]processing` enable template processing
-* `--file PATH` path to stack template file
-* `--translate PROVIDER` translate template to provider
-* `--[no-]apply-nesting` apply template nesting logic
-* `--nesting-bucket BUCKET` asset store bucket to place nested stack templates
-
 ### `sfn destroy STACK`
 
 Destroy an existing stack.
@@ -232,18 +246,10 @@ stack is "in progress", the polling option will result in
 polling and displaying new events until the stack reaches a
 completed state.
 
-#### Supported options
-
-* `--[no-]poll` poll for new events until completed state reached
-
 ### `sfn describe STACK`
 
 Display resources and outputs of give stack.
 
-#### Supported options
-
-* `--resources` display resources
-* `--outputs` display outputs
 
 ### `sfn inspect STACK`
 
@@ -252,7 +258,7 @@ underlying resource modeling objects provided via the
 [miasma][miasma] library. It also provides extra helpers for
 running common inspection commands.
 
-### Supported options
+### Interesting `inspect` options
 
 * `--nodes` list node addresses within stack
 * `--instance-failure [LOG_FILE]` print log file from failed instance

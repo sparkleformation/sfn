@@ -29,7 +29,9 @@ module Sfn
           stack = provider.connection.stacks.get(stack_name)
           if(stack)
             nested_stack_cleanup!(stack)
-            stack.destroy
+            api_action!(:api_stack => stack) do
+              stack.destroy
+            end
             ui.info "Destroy request complete for stack: #{ui.color(stack_name, :red)}"
           else
             ui.warn "Failed to locate requested stack: #{ui.color(stack_name, :bold)}"
@@ -47,8 +49,11 @@ module Sfn
 
       # Cleanup persisted templates if nested stack resources are included
       def nested_stack_cleanup!(stack)
+        stack.nested_stacks.each do |n_stack|
+          nested_stack_cleanup!(n_stack)
+        end
         nest_stacks = stack.template.fetch('Resources', {}).values.find_all do |resource|
-          resource['Type'] == 'AWS::CloudFormation::Stack'
+          resource['Type'] == stack.api.class.const_get(:RESOURCE_MAPPING).key(stack.class).to_s
         end.each do |resource|
           url = resource['Properties']['TemplateURL']
           if(url)

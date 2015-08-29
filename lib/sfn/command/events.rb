@@ -19,32 +19,34 @@ module Sfn
         @stacks << stack
         discover_stacks(stack)
         if(stack)
-          table = ui.table(self) do
-            table(:border => false) do
-              events = get_events
-              row(:header => true) do
-                allowed_attributes.each do |attr|
-                  column attr.split('_').map(&:capitalize).join(' '), :width => ((val = events.map{|e| e[attr].to_s.length}.push(attr.length).max + 2) > 70 ? 70 : val)
-                end
-              end
-              events.each do |event|
-                row do
+          api_action!(:api_stack => stack) do
+            table = ui.table(self) do
+              table(:border => false) do
+                events = get_events
+                row(:header => true) do
                   allowed_attributes.each do |attr|
-                    column event[attr]
+                    column attr.split('_').map(&:capitalize).join(' '), :width => ((val = events.map{|e| e[attr].to_s.length}.push(attr.length).max + 2) > 70 ? 70 : val)
+                  end
+                end
+                events.each do |event|
+                  row do
+                    allowed_attributes.each do |attr|
+                      column event[attr]
+                    end
                   end
                 end
               end
-            end
-          end.display
-          if(config[:poll])
-            while(stack.in_progress?)
-              to_wait = config.fetch(:poll_wait_time, 10).to_f
-              while(to_wait > 0)
-                sleep(0.1)
-                to_wait -= 0.1
+            end.display
+            if(config[:poll])
+              while(stack.in_progress?)
+                to_wait = config.fetch(:poll_wait_time, 10).to_f
+                while(to_wait > 0)
+                  sleep(0.1)
+                  to_wait -= 0.1
+                end
+                stack.reload
+                table.display
               end
-              stack.reload
-              table.display
             end
           end
         else

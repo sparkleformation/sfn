@@ -104,10 +104,20 @@ module Sfn
 
         # Prompt for parameter values and store result
         #
-        # @param stack [Hash] stack template
+        # @param sparkle [SparkleFormation]
+        # @param opts [Hash]
+        # @option opts [Hash] :current_parameters current stack parameter values
+        # @option opts [Miasma::Models::Orchestration::Stack] :stack existing stack
         # @return [Hash]
-        def populate_parameters!(stack, current_params={})
-          if(stack['Parameters'])
+        def populate_parameters!(sparkle, opts={})
+          current_parameters = opts.fetch(:current_parameters, {})
+          current_stack = opts[:stack]
+          parameter_prefix = sparkle.root? ? [] : (sparkle.root_path - [sparkle.root]).map do |s|
+            Bogo::Utility.camel(s.name)
+          end
+          stack_parameters = sparkle.compile.parameters
+          unless(stack_parameters.nil?)
+            stack_parameters = stack_parameters._dump
             if(config.get(:parameter).is_a?(Array))
               config[:parameter] = Smash[
                 *config.get(:parameter).map(&:to_a).flatten
@@ -120,14 +130,30 @@ module Sfn
             else
               config.set(:parameters, config.fetch(:parameter, Smash.new))
             end
-            stack.fetch('Parameters', {}).each do |k,v|
-              next if config[:parameters][k]
-              attempt = 0
+            stack_parameters.each do |k,v|
+              ns_k = (parameter_prefix + [k]).join('__')
+              next if config[:parameters][ns_k]
               valid = false
+              # When parameter is a hash type, it is being set via
+              # intrinsic function and we don't modify
+              if(current_parameters[k].is_a?(Hash))
+                if(current_stack)
+                  enable_set = validate_stack_parameter(current_stack, k, ns_k, current_parameters[k])
+                else
+                  enable_set = true
+                end
+                if(enable_set)
+                  # NOTE: direct set dumps the stack (nfi). Smash will
+                  # auto dup it, and works, so yay i guess.
+                  config[:parameters][ns_k] = Smash.new(current_parameters[k])
+                  valid = true
+                end
+              end
+              attempt = 0
               until(valid)
                 attempt += 1
                 default = config[:parameters].fetch(
-                  k, current_params.fetch(
+                  ns_k, current_parameters.fetch(
                     k, v['Default']
                   )
                 )
@@ -138,7 +164,7 @@ module Sfn
                 end
                 validation = Sfn::Utils::StackParameterValidator.validate(answer, v)
                 if(validation == true)
-                  config[:parameters][k] = answer
+                  config[:parameters][ns_k] = answer
                   valid = true
                 else
                   validation.each do |validation_error|
@@ -152,7 +178,63 @@ module Sfn
               end
             end
           end
-          stack
+          Smash[
+            config.fetch(:parameters, {}).map do |k,v|
+              strip_key = k.sub(/#{parameter_prefix.join('__')}_{2}?/, '')
+              unless(strip_key.include?('__'))
+                [strip_key, v]
+              end
+            end.compact
+          ]
+        end
+
+        # @return [Hash] parameters for root stack create/update
+        def config_root_parameters
+          Hash[
+            config.fetch(:parameters, {}).find_all do |k,v|
+              !k.include?('__')
+            end
+          ]
+        end
+
+        # Validate stack parameter is properly set via stack resource
+        # from parent stack. If not properly set, prompt user for
+        # expected behavior. This accounts for states encountered when
+        # a nested stack's parameters are adjusted directly but the
+        # resource sets value via intrinsic function.
+        #
+        # @param c_stack [Miasma::Models::Orchestration::Stack] current stack
+        # @param p_key [String] stack parameter key
+        # @param p_ns_key [String] namespaced stack parameter key
+        # @param c_value [Hash] currently set value (via intrinsic function)
+        # @return [TrueClass, FalseClass] value is validated
+        def validate_stack_parameter(c_stack, p_key, p_ns_key, c_value)
+          stack_value = c_stack.parameters[p_key]
+          p_stack = c_stack[:parent_stack]
+          case c_value.keys.first
+          when 'Ref'
+            current_value = p_stack.parameters[c_value.values.first]
+          when 'Fn::Att'
+            resource_name, output_name = c_value.values.first.split('.', 2)
+            ref_stack = p_stack.nested_stacks.detect{|i| i.attributes[:logical_id] == resource_name}
+            if(ref_stack)
+              output = ref_stack.outputs.detect do |o|
+                o.key == output_name
+              end
+              if(output)
+                current_value = output.value
+              end
+            end
+          end
+          if(current_value && current_value != stack_value)
+            ui.warn 'Nested stack has been altered directly! This update may cause unexpected modifications!'
+            ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. Current value: #{stack_value}. Expected value: #{current_value} (via: #{c_value.inspect})"
+            answer = ui.ask_question("Use current value or expected value for #{p_key}?", :valid => ['current', 'expected'])
+            answer == 'expected'
+          else
+            ui.warn "Unable to check #{p_key} for direct value modification. (Cannot auto-check expected value #{c_value.inspect})"
+            true
+          end
         end
 
       end

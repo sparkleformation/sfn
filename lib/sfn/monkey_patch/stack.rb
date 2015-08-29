@@ -187,6 +187,76 @@ module Sfn
         end
       end
 
+      # Return all stacks contained within this stack
+      #
+      # @param recurse [TrueClass, FalseClass] recurse to fetch _all_ stacks
+      # @return [Array<Miasma::Models::Orchestration::Stack>]
+      def nested_stacks(recurse=true)
+        resources.all.map do |resource|
+          if(resource.type == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class))
+            n_stack = resource.expand
+            n_stack.attributes[:logical_id] = resource.name
+            n_stack.attributes[:parent_stack] = self
+            if(recurse)
+              [n_stack] + n_stack.nested_stacks(recurse)
+            else
+              n_stack
+            end
+          end
+        end.flatten.compact
+      end
+
+      # @return [TrueClass, FalseClass] stack contains nested stacks
+      def nested?
+        !!resources.detect do |resource|
+          resource.type == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
+        end
+      end
+
+      # Return stack policy if available
+      #
+      # @return [Smash, NilClass]
+      def policy
+        if(self.api.provider == :aws) # cause this is the only one
+          begin
+            result = self.api.request(
+              :path => '/',
+              :form => Smash.new(
+                'Action' => 'GetStackPolicy',
+                'StackName' => self.id
+              )
+            )
+            serialized_policy = result.get(:body, 'GetStackPolicyResult', 'StackPolicyBody')
+            MultiJson.load(serialized_policy).to_smash
+          rescue Miasma::Error::ApiError::RequestError => e
+            if(e.response.code == 404)
+              nil
+            else
+              raise
+            end
+          end
+        end
+      end
+
+      # Detect the nesting style in use by the stack
+      #
+      # @return [Symbol, NilClass] style of nesting (:shallow, :deep)
+      #   or `nil` if no nesting detected
+      # @note in shallow nesting style, stack resources will not
+      #   contain any direct values for parameters (which is what we
+      #   are testing for)
+      def nesting_style
+        if(nested?)
+          self.template['Resources'].find_all do |t_resource|
+            t_resource['Type'] == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
+          end.detect do |t_resource|
+            t_resource['Properties'].fetch('Parameters', {}).values.detect do |t_value|
+              !t_value.is_a?(Hash)
+            end
+          end ? :deep : :shallow
+        end
+      end
+
     end
   end
 end

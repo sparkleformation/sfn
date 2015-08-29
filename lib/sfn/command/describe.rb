@@ -15,7 +15,9 @@ module Sfn
       # Run the stack describe action
       def execute!
         stack_name = name_args.last
-        stack = provider.connection.stacks.get(stack_name)
+        stack = api_action! do
+          provider.connection.stacks.get(stack_name)
+        end
         if(stack)
           display = [].tap do |to_display|
             AVAILABLE_DISPLAYS.each do |display_option|
