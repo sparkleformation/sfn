@@ -49,6 +49,12 @@ module Sfn
         :print_only, [TrueClass, FalseClass],
         :description => 'Print the resulting stack template'
       )
+      attribute(
+        :sparkle_pack, String,
+        :multiple => true,
+        :description => 'Load SparklePack gem',
+        :coerce => lambda{|s| require s; s}
+      )
 
     end
   end
