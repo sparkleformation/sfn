@@ -33,6 +33,11 @@ module Sfn
           elsif(config[:file])
             if(config[:processing])
               sf = SparkleFormation.compile(config[:file], :sparkle)
+              config.fetch(:sparkle_pack, []).each do |sparkle_name|
+                sf.sparkle.add_sparkle(
+                  SparkleFormation::Sparkle.new(:name => sparkle_name)
+                )
+              end
               if(sf.nested? && !sf.isolated_nests?)
                 raise TypeError.new('Template does not contain isolated stack nesting! Sfn does not support mixed mixed resources within root stack!')
               end
