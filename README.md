@@ -1,3 +1,5 @@
+![SparkleFormation CLI](img/sfn.jpg)
+
 # SparkleFormation CLI
 
 SparkleFormation command line interface for interacting
@@ -113,6 +115,9 @@ end
       * Valid: `Array<String>`
       * Default: none
     * `after_COMMAND` - Callbacks to execute after specific `COMMAND` API call
+      * Valid: `Array<String>`
+      * Default: none
+    * `template` - Callbacks to execute on template
       * Valid: `Array<String>`
       * Default: none
     * `require` - List of custom libraries to load
