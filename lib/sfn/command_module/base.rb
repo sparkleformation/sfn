@@ -11,11 +11,16 @@ module Sfn
         # @return [KnifeCloudformation::Provider]
         def provider
           memoize(:provider, :direct) do
-            Sfn::Provider.new(
+            result = Sfn::Provider.new(
               :miasma => config[:credentials],
               :async => false,
               :fetch => false
             )
+            result.connection.data[:retry_ui] = ui
+            result.connection.data[:retry_type] = config.fetch(:retry, :type, :exponential)
+            result.connection.data[:retry_interval] = config.fetch(:retry, :interval, 5)
+            result.connection.data[:retry_max] = config.fetch(:retry, :max_attempts, 20)
+            result
           end
         end
 

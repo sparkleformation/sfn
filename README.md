@@ -119,6 +119,20 @@ end
       * Valid: `Array<String>`
       * Default: none
 
+* `retry` - Configuration of API request retries
+  * Valid: `Hash`
+  * Default: none
+    * `type` - Type of retry
+      * Valid: `"flat"`, `"linear"`, `"exponential"`
+      * Default: `"exponential"`
+    * `interval` - Base wait interval for retry
+      * Valid: `Numeric`
+      * Default: 5
+    * `max_attempts` - Maximum number of attempts allowed
+      * Valid: `Numeric`
+      * Default: 20
+      * _NOTE_: Set to `nil` for infinite retry
+
 ## Commands
 
 * `sfn list`
