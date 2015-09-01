@@ -1,4 +1,5 @@
 require 'sfn'
+require 'pathname'
 
 module Sfn
   module Utils
@@ -87,6 +88,8 @@ module Sfn
             entry = valid[response.to_i]
             if(entry[:type] == :directory)
               prompt_for_file(entry[:path], opts)
+            elsif Pathname(entry[:path]).absolute?
+              entry[:path]
             else
               "/#{entry[:path]}"
             end
