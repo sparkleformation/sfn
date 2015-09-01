@@ -13,6 +13,32 @@ module Sfn
 
       module InstanceMethods
 
+        # @return [Array<SparkleFormation::SparklePack>]
+        def sparkle_packs
+          memoize(:sparkle_packs) do
+            config.fetch(:sparkle_pack, []).map do |sparkle_name|
+              SparkleFormation::Sparkle.new(:name => sparkle_name)
+            end
+          end
+        end
+
+        # @return [SparkleFormation::SparkleCollection]
+        def sparkle_collection
+          memoize(:sparkle_collection) do
+            collection = SparkleFormation::SparkleCollection.new
+            begin
+              root_pack = SparkleFormation::SparklePack.new(:root => config[:base_directory])
+              collection.set_root(root_pack)
+            rescue Errno::ENOENT
+              ui.warn 'No local SparkleFormation files detected'
+            end
+            sparkle_packs.each do |pack|
+              collection.add_sparkle(pack)
+            end
+            collection
+          end
+        end
+
         # Load the template file
         #
         # @param args [Symbol] options (:allow_missing)
@@ -21,7 +47,7 @@ module Sfn
           c_stack = (args.detect{|i| i.is_a?(Hash)} || {})[:stack]
           unless(config[:template])
             set_paths_and_discover_file!
-            unless(File.exists?(config[:file].to_s))
+            unless(config[:file])
               unless(args.include?(:allow_missing))
                 ui.fatal "Invalid formation file path provided: #{config[:file]}"
                 raise IOError.new "Failed to locate file: #{config[:file]}"
@@ -33,10 +59,8 @@ module Sfn
           elsif(config[:file])
             if(config[:processing])
               sf = SparkleFormation.compile(config[:file], :sparkle)
-              config.fetch(:sparkle_pack, []).each do |sparkle_name|
-                sf.sparkle.add_sparkle(
-                  SparkleFormation::Sparkle.new(:name => sparkle_name)
-                )
+              sparkle_packs.each do |pack|
+                sf.sparkle.add_sparkle(pack)
               end
               if(sf.nested? && !sf.isolated_nests?)
                 raise TypeError.new('Template does not contain isolated stack nesting! Sfn does not support mixed mixed resources within root stack!')
@@ -174,38 +198,86 @@ module Sfn
         #
         # @return [TrueClass]
         def set_paths_and_discover_file!
-          if(config[:base_directory])
-            SparkleFormation.sparkle_path = config[:base_directory]
-          end
           if(!config[:file] && config[:file_path_prompt])
-            root = File.expand_path(
-              config.fetch(:base_directory,
-                File.join(Dir.pwd, 'cloudformation')
-              )
-            ).split('/')
-            bucket = root.pop
-            root = root.join('/')
-            directory = File.join(root, bucket)
-            config[:file] = prompt_for_file(directory,
-              :directories_name => 'Collections',
-              :files_name => 'Templates',
-              :ignore_directories => TEMPLATE_IGNORE_DIRECTORIES
-            )
+            config[:file] = prompt_for_template
           else
-            unless(Pathname(config[:file].to_s).absolute?)
-              base_dir = config[:base_directory].to_s
-              file = config[:file].to_s
-              pwd = Dir.pwd
-              config[:file] = [
-                File.join(base_dir, file),
-                File.join(pwd, file),
-                File.join(pwd, 'cloudformation', file)
-              ].detect do |file_path|
-                File.file?(file_path)
-              end
-            end
+            config[:file] = sparkle_collection.get(:template, config[:file])[:path]
           end
           true
+        end
+
+        # Prompt user for template selection
+        #
+        # @param prefix [String] prefix filter for names
+        # @return [String] path to template
+        def prompt_for_template(prefix=nil)
+          if(prefix)
+            collection_name = prefix.split('__').map do |c_name|
+              c_name.split('_').map(&:capitalize).join(' ')
+            end.join(' / ')
+            ui.info "Viewing collection: #{ui.color(collection_name, :bold)}"
+            template_names = sparkle_collection.templates.keys.find_all do |t_name|
+              t_name.to_s.start_with?(prefix.to_s)
+            end
+          else
+            template_names = sparkle_collection.templates.keys
+          end
+          collections = template_names.map do |t_name|
+            t_name = t_name.to_s.sub(/^#{Regexp.escape(prefix.to_s)}/, '')
+            if(t_name.include?('__'))
+              c_name = t_name.split('__').first
+              [[prefix, c_name].compact.join('') + '__', c_name]
+            end
+          end.compact.uniq(&:first)
+          templates = template_names.map do |t_name|
+            t_name = t_name.to_s.sub(/^#{Regexp.escape(prefix.to_s)}/, '')
+            unless(t_name.include?('__'))
+              [[prefix, t_name].compact.join(''), t_name]
+            end
+          end.compact
+          if(collections.empty? && templates.empty?)
+            ui.error 'Failed to locate any templates!'
+            return nil
+          end
+          ui.info "Please select an entry#{ '(or collection to list)' unless collections.empty?}:"
+          output = []
+          idx = 1
+          valid = {}
+          unless(collections.empty?)
+            output << ui.color('Collections:', :bold)
+            collections.each do |full_name, part_name|
+              valid[idx] = {:name => full_name, :type => :collection}
+              output << [idx, part_name.split('_').map(&:capitalize).join(' ')]
+              idx += 1
+            end
+          end
+          unless(templates.empty?)
+            output << ui.color('Templates:', :bold)
+            templates.each do |full_name, part_name|
+              valid[idx] = {:name => full_name, :type => :template}
+              output << [idx, part_name.split('_').map(&:capitalize).join(' ')]
+              idx += 1
+            end
+          end
+          max = idx.to_s.length
+          output.map! do |line|
+            if(line.is_a?(Array))
+              "  #{line.first}.#{' ' * (max - line.first.to_s.length)} #{line.last}"
+            else
+              line
+            end
+          end
+          ui.puts "#{output.join("\n")}\n"
+          response = nil
+          until(valid[response])
+            response = ui.ask_question('Enter selection').to_i
+          end
+          entry = valid[response]
+          if(entry[:type] == :collection)
+            prompt_for_template(entry[:name])
+          else
+            sparkle_collection.get(:template, entry[:name])[:path]
+          end
         end
 
       end
