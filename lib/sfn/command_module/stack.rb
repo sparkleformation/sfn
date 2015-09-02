@@ -119,6 +119,7 @@ module Sfn
             stack_parameters = sparkle.compile.parameters
             stack_parameters = stack_parameters.nil? ? Smash.new : stack_parameters._dump
           else
+            parameter_prefix = []
             stack_parameters = sparkle.fetch('Parameters', Smash.new)
           end
           unless(stack_parameters.empty?)
@@ -135,7 +136,7 @@ module Sfn
               config.set(:parameters, config.fetch(:parameter, Smash.new))
             end
             stack_parameters.each do |k,v|
-              ns_k = (parameter_prefix + [k]).join('__')
+              ns_k = (parameter_prefix + [k]).compact.join('__')
               next if config[:parameters][ns_k]
               valid = false
               # When parameter is a hash type, it is being set via
@@ -151,6 +152,13 @@ module Sfn
                   # auto dup it, and works, so yay i guess.
                   config[:parameters][ns_k] = Smash.new(current_parameters[k])
                   valid = true
+                end
+              else
+                if(current_stack && current_stack.data[:parent_stack])
+                  use_expected = validate_stack_parameter(current_stack, k, ns_k, current_parameters[k])
+                  unless(use_expected)
+                    current_parameters[k] = current_stack.parameters[k]
+                  end
                 end
               end
               attempt = 0
@@ -214,26 +222,30 @@ module Sfn
         # @return [TrueClass, FalseClass] value is validated
         def validate_stack_parameter(c_stack, p_key, p_ns_key, c_value)
           stack_value = c_stack.parameters[p_key]
-          p_stack = c_stack[:parent_stack]
-          case c_value.keys.first
-          when 'Ref'
-            current_value = p_stack.parameters[c_value.values.first]
-          when 'Fn::Att'
-            resource_name, output_name = c_value.values.first.split('.', 2)
-            ref_stack = p_stack.nested_stacks.detect{|i| i.attributes[:logical_id] == resource_name}
-            if(ref_stack)
-              output = ref_stack.outputs.detect do |o|
-                o.key == output_name
-              end
-              if(output)
-                current_value = output.value
+          p_stack = c_stack.data[:parent_stack]
+          if(c_value.is_a?(Hash))
+            case c_value.keys.first
+            when 'Ref'
+              current_value = p_stack.parameters[c_value.values.first]
+            when 'Fn::Att'
+              resource_name, output_name = c_value.values.first.split('.', 2)
+              ref_stack = p_stack.nested_stacks.detect{|i| i.data[:logical_id] == resource_name}
+              if(ref_stack)
+                output = ref_stack.outputs.detect do |o|
+                  o.key == output_name
+                end
+                if(output)
+                  current_value = output.value
+                end
               end
             end
+          else
+            current_value = c_value
           end
           if(current_value && current_value != stack_value)
             ui.warn 'Nested stack has been altered directly! This update may cause unexpected modifications!'
             ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. Current value: #{stack_value}. Expected value: #{current_value} (via: #{c_value.inspect})"
-            answer = ui.ask_question("Use current value or expected value for #{p_key}?", :valid => ['current', 'expected'])
+            answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ['current', 'expected'])
             answer == 'expected'
           else
             ui.warn "Unable to check #{p_key} for direct value modification. (Cannot auto-check expected value #{c_value.inspect})"
