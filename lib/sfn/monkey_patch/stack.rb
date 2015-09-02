@@ -196,8 +196,8 @@ module Sfn
           if(self.api.class.const_get(:RESOURCE_MAPPING).fetch(resource.type, {})[:api] == :orchestration)
             n_stack = resource.expand
             if(n_stack)
-              n_stack.attributes[:logical_id] = resource.name
-              n_stack.attributes[:parent_stack] = self
+              n_stack.data[:logical_id] = resource.name
+              n_stack.data[:parent_stack] = self
               if(recurse)
                 [n_stack] + n_stack.nested_stacks(recurse)
               else
