@@ -43,7 +43,11 @@ module Sfn
       until(cwd.empty? || File.exists?(cwd.push('.sfn').join(File::SEPARATOR)))
         cwd.pop(2)
       end
-      opts.fetch_option('config').value = cwd.join(File::SEPARATOR) unless cwd.empty?
+      if(opts.respond_to?(:fetch_option))
+        opts.fetch_option('config').value = cwd.join(File::SEPARATOR) unless cwd.empty?
+      else
+        opts['config'] = cwd.join(File::SEPARATOR) unless cwd.empty?
+      end
       opts
     end
 
