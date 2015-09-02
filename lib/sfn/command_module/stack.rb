@@ -104,7 +104,7 @@ module Sfn
 
         # Prompt for parameter values and store result
         #
-        # @param sparkle [SparkleFormation]
+        # @param sparkle [SparkleFormation, Hash]
         # @param opts [Hash]
         # @option opts [Hash] :current_parameters current stack parameter values
         # @option opts [Miasma::Models::Orchestration::Stack] :stack existing stack
@@ -112,12 +112,16 @@ module Sfn
         def populate_parameters!(sparkle, opts={})
           current_parameters = opts.fetch(:current_parameters, {})
           current_stack = opts[:stack]
-          parameter_prefix = sparkle.root? ? [] : (sparkle.root_path - [sparkle.root]).map do |s|
-            Bogo::Utility.camel(s.name)
+          if(sparkle.is_a?(SparkleFormation))
+            parameter_prefix = sparkle.root? ? [] : (sparkle.root_path - [sparkle.root]).map do |s|
+              Bogo::Utility.camel(s.name)
+            end
+            stack_parameters = sparkle.compile.parameters
+            stack_parameters = stack_parameters.nil? ? Smash.new : stack_parameters._dump
+          else
+            stack_parameters = sparkle.fetch('Parameters', Smash.new)
           end
-          stack_parameters = sparkle.compile.parameters
-          unless(stack_parameters.nil?)
-            stack_parameters = stack_parameters._dump
+          unless(stack_parameters.empty?)
             if(config.get(:parameter).is_a?(Array))
               config[:parameter] = Smash[
                 *config.get(:parameter).map(&:to_a).flatten
@@ -180,7 +184,7 @@ module Sfn
           end
           Smash[
             config.fetch(:parameters, {}).map do |k,v|
-              strip_key = k.sub(/#{parameter_prefix.join('__')}_{2}?/, '')
+              strip_key = parameter_prefix ? k.sub(/#{parameter_prefix.join('__')}_{2}?/, '') : k
               unless(strip_key.include?('__'))
                 [strip_key, v]
               end
