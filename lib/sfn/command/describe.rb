@@ -15,20 +15,24 @@ module Sfn
       # Run the stack describe action
       def execute!
         stack_name = name_args.last
-        stack = api_action! do
+        root_stack = api_action! do
           provider.connection.stacks.get(stack_name)
         end
-        if(stack)
-          display = [].tap do |to_display|
-            AVAILABLE_DISPLAYS.each do |display_option|
-              if(config[display_option])
-                to_display << display_option
+        if(root_stack)
+          ([root_stack] + root_stack.nested_stacks).compact.each do |stack|
+            ui.info "Stack description of #{ui.color(stack.name, :bold)}:"
+            display = [].tap do |to_display|
+              AVAILABLE_DISPLAYS.each do |display_option|
+                if(config[display_option])
+                  to_display << display_option
+                end
               end
             end
-          end
-          display = AVAILABLE_DISPLAYS.dup if display.empty?
-          display.each do |display_method|
-            self.send(display_method, stack)
+            display = AVAILABLE_DISPLAYS.dup if display.empty?
+            display.each do |display_method|
+              self.send(display_method, stack)
+            end
+            ui.puts
           end
         else
           ui.fatal "Failed to find requested stack: #{ui.color(stack_name, :bold, :red)}"
