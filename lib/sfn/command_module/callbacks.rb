@@ -15,11 +15,9 @@ module Sfn
       # @return [Object] result of yield block
       def api_action!(*args)
         type = self.class.name.split('::').last
-        run_callbacks_for(:before, *args)
-        run_callbacks_for("before_#{type}", *args)
+        run_callbacks_for(["before_#{type}", :before, :default], *args)
         result = yield if block_given?
-        run_callbacks_for("after_#{type}", *args)
-        run_callbacks_for(:after, *args)
+        run_callbacks_for(["after_#{type}", :after, :default], *args)
         result
       end
 
@@ -28,7 +26,9 @@ module Sfn
       # @param type [Symbol, String] name of callback type
       # @return [NilClass]
       def run_callbacks_for(type, *args)
-        callbacks_for(type).each do |callback_name, callback|
+        clbks = [type].flatten.compact.map do |c_type|
+          callbacks_for(c_type)
+        end.flatten.compact.uniq.each do |callback_name, callback|
           ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('starting', :yellow)}"
           if(args.empty?)
             callback.call
