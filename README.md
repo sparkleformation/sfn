@@ -124,6 +124,9 @@ end
     * `template` - Callbacks to execute on template
       * Valid: `Array<String>`
       * Default: none
+    * `default` - Callbacks to always execute
+      * Valid: `Array<String>`
+      * Default: none
     * `require` - List of custom libraries to load
       * Valid: `Array<String>`
       * Default: none
