@@ -132,9 +132,6 @@ module Sfn
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
             stack_definition = stack.compile.dump!
             stack_resource = resource._dump
-            bucket = provider.connection.api_for(:storage).buckets.get(
-              config[:nesting_bucket]
-            )
             unless(config[:print_only])
               result = Smash.new(
                 'Parameters' => populate_parameters!(stack,
@@ -142,12 +139,10 @@ module Sfn
                   :current_parameters => c_stack ? c_stack.template.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new) : stack_resource['Properties'].fetch('Parameters', {})
                 )
               )
-            else
-              result = Smash.new(
-                'TemplateURL' => "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
-              )
-            else
               resource.properties.delete!(:stack)
+              bucket = provider.connection.api_for(:storage).buckets.get(
+                config[:nesting_bucket]
+              )
               unless(bucket)
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
               end
@@ -159,6 +154,10 @@ module Sfn
               url = URI.parse(file.url)
               result.merge!(
                 'TemplateURL' => "#{url.scheme}://#{url.host}#{url.path}"
+              )
+            else
+              result = Smash.new(
+                'TemplateURL' => "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
               )
             end
             result.each do |k,v|
