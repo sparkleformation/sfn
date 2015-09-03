@@ -27,7 +27,8 @@ module Sfn
       # @return [NilClass]
       def run_callbacks_for(type, *args)
         clbks = [type].flatten.compact.map do |c_type|
-          callbacks_for(c_type)
+          res_type = c_type.to_sym == :default ? [type].flatten.compact : [c_type]
+          callbacks_for(c_type, res_type)
         end.flatten.compact.uniq.each do |callback_name, callback|
           ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('starting', :yellow)}"
           if(args.empty?)
@@ -43,8 +44,10 @@ module Sfn
       # Fetch valid callbacks for given type
       #
       # @param type [Symbol, String] name of callback type
+      # @param responder [Array<String, Symbol>] matching response methods
       # @return [Array<Method>]
-      def callbacks_for(type)
+      def callbacks_for(type, responder=[])
+        responder = [type].compact.flatten if resopnder.empty?
         [config.fetch(:callbacks, type, [])].flatten.compact.map do |c_name|
           instance = memoize(c_name) do
             begin
@@ -54,10 +57,12 @@ module Sfn
               raise "Unknown #{type} callback requested: #{c_name} (not found)"
             end
           end
-          if(instance.respond_to?(type))
-            [c_name, instance.method(type)]
-          end
-        end.compact
+          responder.map do |m_name|
+            if(instance.respond_to?(m_name))
+              [c_name, instance.method(m_name)]
+            end
+          end.compact
+        end.compact.flatten(1)
       end
 
     end
