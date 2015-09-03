@@ -72,27 +72,25 @@ module Sfn
 
           api_action!(:api_stack => stack) do
             stack.save
-          end
+            if(config[:poll])
+              poll_stack(stack.name)
+              stack = provider.connection.stacks.get(name)
 
-        end
-
-        if(stack)
-          if(config[:poll])
-            poll_stack(stack.name)
-            stack = provider.connection.stacks.get(name)
-
-            if(stack.reload.state == :create_complete)
-              ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
-              namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
+              if(stack.reload.state == :create_complete)
+                ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
+                namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
+              else
+                ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
+                raise
+              end
             else
-              ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-              raise
+              ui.warn 'Stack state polling has been disabled.'
+              ui.info "Stack creation initialized for #{ui.color(name, :green)}"
             end
-          else
-            ui.warn 'Stack state polling has been disabled.'
-            ui.info "Stack creation initialized for #{ui.color(name, :green)}"
           end
+
         end
+
       end
 
     end

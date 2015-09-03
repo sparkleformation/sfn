@@ -69,6 +69,19 @@ module Sfn
           begin
             api_action!(:api_stack => stack) do
               stack.save
+              if(config[:poll])
+                poll_stack(stack.name)
+                if(stack.reload.state == :update_complete)
+                  ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
+                  namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
+                else
+                  ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
+                  raise
+                end
+              else
+                ui.warn 'Stack state polling has been disabled.'
+                ui.info "Stack update initialized for #{ui.color(name, :green)}"
+              end
             end
           rescue Miasma::Error::ApiError::RequestError => e
             if(e.message.downcase.include?('no updates'))
@@ -76,20 +89,6 @@ module Sfn
             else
               raise
             end
-          end
-
-          if(config[:poll])
-            poll_stack(stack.name)
-            if(stack.reload.state == :update_complete)
-              ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
-              namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
-            else
-              ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-              raise
-            end
-          else
-            ui.warn 'Stack state polling has been disabled.'
-            ui.info "Stack update initialized for #{ui.color(name, :green)}"
           end
 
         end
