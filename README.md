@@ -5,6 +5,10 @@
 SparkleFormation command line interface for interacting
 with orchestration APIs.
 
+## Extra Documentation
+
+* [User Documentation](https://sparkleformation.github.io/sfn/UserDocs)
+
 ## API Compatibility
 
 * AWS
