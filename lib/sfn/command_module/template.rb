@@ -198,10 +198,20 @@ module Sfn
         #
         # @return [TrueClass]
         def set_paths_and_discover_file!
-          if(!config[:file] && config[:file_path_prompt])
-            config[:file] = prompt_for_template
+          if(config[:processing])
+            if(!config[:file] && config[:file_path_prompt])
+              config[:file] = prompt_for_template
+            else
+              config[:file] = sparkle_collection.get(:template, config[:file])[:path]
+            end
           else
-            config[:file] = sparkle_collection.get(:template, config[:file])[:path]
+            if(config[:file])
+              unless(File.exists?(config[:file]))
+                raise Errno::ENOENT.new("No such file - #{config[:file]}")
+              end
+            else
+              raise "Template processing is disabled. Path to serialized template via `--file` required!"
+            end
           end
           true
         end
