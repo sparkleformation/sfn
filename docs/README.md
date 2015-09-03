@@ -1,0 +1,34 @@
+# Overview
+
+The SparkleFormation CLI (`sfn`) is a Ruby based command line interface
+for interacting with remote orchestration API. It is an application
+implementation of the SparkleFormation library and provides access to
+all the underlying features provided by the SparkleFormation library.
+
+## Table of Contents
+
+- [Feature Summary](#feature-summary)
+- [Configuration](configuration.md)
+  - [sfn based](configuration.md#sfn-based)
+  - [knife based](configuration.md#knife-based)
+- [Usage](usage.md)
+  - [Commands](usage.md#commands)
+- [Callbacks](callbacks.md)
+  - [Enabling Callbacks](callbacks.md#enabling-callbacks)
+  - [Builtin Callbacks](callbacks.md#builtin-callbacks)
+  - [Custom Callbacks](callbacks.md#custom-callbacks)
+
+## Feature Summary
+
+Notable features available via the SparkleFormation CLI:
+
+- SparkleFormation template processing
+- Template processing helpers
+- Custom callback support
+- Remote orchestration API support
+  - AWS CloudFormation
+  - Eucalyptus
+  - Rackspace Orchestration
+  - OpenStack Heat
+- Chef `knife` plugin support
+- Deep resource inspection
