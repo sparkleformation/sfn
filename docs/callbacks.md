@@ -72,9 +72,7 @@ To enable the callback:
 ```ruby
 Configuration.new do
   callbacks do
-    template ['stack_policy']
-    after_create ['stack_policy']
-    after_update ['stack_policy']
+    default ['stack_policy']
   end
 end
 ```
