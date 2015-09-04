@@ -1,0 +1,548 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!file.README.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div id='filecontents'><p><img src="img/sfn.jpg" alt="SparkleFormation CLI"></p>
+
+<h1>SparkleFormation CLI</h1>
+
+<p>SparkleFormation command line interface for interacting
+with orchestration APIs.</p>
+
+<h2>Extra Documentation</h2>
+
+<ul>
+<li><a href="https://sparkleformation.github.io/sfn/UserDocs">User Documentation</a></li>
+</ul>
+
+<h2>API Compatibility</h2>
+
+<ul>
+<li>AWS</li>
+<li>Rackspace</li>
+<li>OpenStack</li>
+</ul>
+
+<h2>Configuration</h2>
+
+<p>Configuration is defined within a <code>.sfn</code> file. The
+<code>sfn</code> command will start from the current working
+directory and work up to the root of the file system
+to discover this file.</p>
+
+<h3>Configuration formats</h3>
+
+<p>The configuration file can be provided in a variety of
+formats:</p>
+
+<h4>JSON</h4>
+
+<pre class="code json"><code class="json">{
+  &quot;credentials&quot;: {
+    MIASMA_CREDENTIALS
+  },
+  &quot;options&quot;: {
+    &quot;disable_rollback&quot;: true
+  }
+}
+</code></pre>
+
+<h4>YAML</h4>
+
+<pre class="code yaml"><code class="yaml">---
+:credentials:
+  :fubar: true
+:options:
+  :disable_rollback: true
+</code></pre>
+
+<h4>XML</h4>
+
+<pre class="code xml"><code class="xml">&lt;configuration&gt;
+  &lt;credentials&gt;
+    MIASMA_CREDENTIALS
+  &lt;/credentials&gt;
+  &lt;options&gt;
+    &lt;disable_rollback&gt;
+      true
+    &lt;/disable_rollback&gt;
+  &lt;/options&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<h4>Ruby</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>Configuration</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_credentials'>credentials</span> <span class='kw'>do</span>
+    <span class='const'>MIASMA_CREDENTIALS</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_on_failure'>on_failure</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>nothing</span><span class='tstring_end'>&#39;</span></span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><p><code>processing</code> - Enable SparkleFormation processing</p>
+
+<ul>
+<li>Valid: Boolean</li>
+<li>Default: <code>true</code></li>
+</ul></li>
+<li><p><code>apply_nesting</code> - Style of nested stack processing</p>
+
+<ul>
+<li>Valid: <code>&quot;shallow&quot;</code>, <code>&quot;deep&quot;</code></li>
+<li>Default: <code>&quot;deep&quot;</code></li>
+</ul></li>
+<li><p><code>options</code> - API options for target orchestration API (see miasma)</p>
+
+<ul>
+<li>Valid: <code>Hash</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><p><code>ssh_attempt_users</code> - List of users to attempt SSH connection on node failure</p>
+
+<ul>
+<li>Valid: <code>Array&lt;String&gt;</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><p><code>identity_file</code> - Custom SSH identity file to use for connection on node failure</p>
+
+<ul>
+<li>Valid: <code>String</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><p><code>nesting_bucket</code> - Name of bucket to store nested stack templates</p>
+
+<ul>
+<li>Valid: <code>String</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><p><code>credentials</code> - API credentials for target orchestration API (see <a href="https://github.com/miasma-rb/miasma">miasma</a>)</p>
+
+<ul>
+<li>Valid: <code>Hash</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><p><code>callbacks</code> - Callbacks to execute around API calls</p>
+
+<ul>
+<li>Valid: <code>Hash</code></li>
+<li>Default: none</li>
+<li><code>before</code> - Callbacks to execute before <em>any</em> API call
+
+<ul>
+<li>Valid: <code>Array&lt;String&gt;</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><code>after</code> - Callbacks to execute after <em>any</em> API call
+
+<ul>
+<li>Valid: <code>Array&lt;String&gt;</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><code>before_COMMAND</code> - Callbacks to execute before specific <code>COMMAND</code> API call
+
+<ul>
+<li>Valid: <code>Array&lt;String&gt;</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><code>after_COMMAND</code> - Callbacks to execute after specific <code>COMMAND</code> API call
+
+<ul>
+<li>Valid: <code>Array&lt;String&gt;</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><code>template</code> - Callbacks to execute on template
+
+<ul>
+<li>Valid: <code>Array&lt;String&gt;</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><code>default</code> - Callbacks to always execute
+
+<ul>
+<li>Valid: <code>Array&lt;String&gt;</code></li>
+<li>Default: none</li>
+</ul></li>
+<li><code>require</code> - List of custom libraries to load
+
+<ul>
+<li>Valid: <code>Array&lt;String&gt;</code></li>
+<li>Default: none</li>
+</ul></li>
+</ul></li>
+<li><p><code>retry</code> - Configuration of API request retries</p>
+
+<ul>
+<li>Valid: <code>Hash</code></li>
+<li>Default: none</li>
+<li><code>type</code> - Type of retry
+
+<ul>
+<li>Valid: <code>&quot;flat&quot;</code>, <code>&quot;linear&quot;</code>, <code>&quot;exponential&quot;</code></li>
+<li>Default: <code>&quot;exponential&quot;</code></li>
+</ul></li>
+<li><code>interval</code> - Base wait interval for retry
+
+<ul>
+<li>Valid: <code>Numeric</code></li>
+<li>Default: 5</li>
+</ul></li>
+<li><code>max_attempts</code> - Maximum number of attempts allowed
+
+<ul>
+<li>Valid: <code>Numeric</code></li>
+<li>Default: 20</li>
+<li><em>NOTE</em>: Set to <code>nil</code> for infinite retry</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h2>Commands</h2>
+
+<ul>
+<li><code>sfn list</code></li>
+<li><code>sfn create</code></li>
+<li><code>sfn update</code></li>
+<li><code>sfn destroy</code></li>
+<li><code>sfn events</code></li>
+<li><code>sfn describe</code></li>
+<li><code>sfn inspect</code></li>
+<li><code>sfn validate</code></li>
+</ul>
+
+<p><em>NOTE: All commands respond to <code>--help</code> and will provide a full list of valid options.</em></p>
+
+<h3><code>sfn list</code></h3>
+
+<p>Provides listing of current stacks and state of each stack.</p>
+
+<h3><code>sfn validate</code></h3>
+
+<p>Validates template with API</p>
+
+<h3><code>sfn create NAME</code></h3>
+
+<p>Creates a new stack with the provided name (<code>NAME</code>).</p>
+
+<h4>Apply Stacks</h4>
+
+<p>The <code>--apply-stack</code> option allows providing the name of an existing
+stack when creating or updating. Applying stacks is simply fetching
+the outputs from the applied stacks and automatically defaulting the
+set parameter of the new or updated stack. Outputs are matched
+by name to the parameters of the target stack. This allows an easy
+way to use values from existing stacks when building new stacks.</p>
+
+<p>Example:</p>
+
+<p>StackA:</p>
+
+<pre class="code json"><code class="json">...
+  &quot;Outputs&quot;: {
+    &quot;LoadBalancerAddress&quot;: {
+      &quot;Description&quot;: &quot;Address of Load Balancer&quot;,
+      &quot;Value&quot;: {
+        &quot;Fn::GetAtt&quot;: [
+          &quot;LoadBalancerResource&quot;,
+          &quot;DNSName&quot;
+        ]
+      }
+    }
+  }
+...
+</code></pre>
+
+<p>StackB:</p>
+
+<pre class="code json"><code class="json">...
+  &quot;Parameters&quot;: {
+    &quot;LoadBalancerAddress&quot;: {
+      &quot;Type&quot;: &quot;String&quot;,
+      &quot;Default&quot;: &quot;unset&quot;
+    }
+  }
+...
+</code></pre>
+
+<p>When creating StackB, if we use the <code>--apply-stack</code> option:</p>
+
+<pre class="code ruby"><code class="ruby">$ sfn create StackB --apply-stack StackA
+</code></pre>
+
+<p>when prompted for the stack parameters, we will find the parameter
+value for <code>LoadBalancerAddress</code> to be filled in with the output
+provided from StackA.</p>
+
+<h4>Processing</h4>
+
+<p>The default behavior of this plugin assumes templates will be
+in JSON format. The <code>--processing</code> flag will allow providing Ruby
+files to dynamically generate templates using the SparkleFormation
+library.</p>
+
+<p><em>NOTE: (SparkleFormation Usage Documentation)[].</em></p>
+
+<p>This plugin supports the advanced stack nesting feature provided by
+the SparkleFormation library.</p>
+
+<h4>Translations</h4>
+
+<p>Translations are currently an <code>alpha</code> feature and only a subset of
+resources are supported.</p>
+
+<h3><code>sfn update STACK</code></h3>
+
+<p>Update an existing stack.</p>
+
+<h3><code>sfn destroy STACK</code></h3>
+
+<p>Destroy an existing stack.</p>
+
+<h4>Name globs</h4>
+
+<p>The destroy command supports globbing for performing multiple
+destructions based on glob match. For example, given existing
+stacks:</p>
+
+<ul>
+<li>TestStack1</li>
+<li>TestStack2</li>
+<li>Production</li>
+</ul>
+
+<p>running the following command:</p>
+
+<pre class="code ruby"><code class="ruby">$ sfn destroy Test*
+</code></pre>
+
+<p>will destroy the <code>TestStack1</code> and <code>TestStack2</code></p>
+
+<h3><code>sfn events STACK</code></h3>
+
+<p>Display the event listing of given stack. If the state of the
+stack is &quot;in progress&quot;, the polling option will result in
+polling and displaying new events until the stack reaches a
+completed state.</p>
+
+<h3><code>sfn describe STACK</code></h3>
+
+<p>Display resources and outputs of give stack.</p>
+
+<h3><code>sfn inspect STACK</code></h3>
+
+<p>The stack inspection command simply provides a proxy to the
+underlying resource modeling objects provided via the
+<a href="http://miasma-rb.github.io/miasma/">miasma</a> library. It also provides extra helpers for
+running common inspection commands.</p>
+
+<h3>Interesting <code>inspect</code> options</h3>
+
+<ul>
+<li><code>--nodes</code> list node addresses within stack</li>
+<li><code>--instance-failure [LOG_FILE]</code> print log file from failed instance</li>
+<li><code>--attribute ATTR</code> print stack attribute</li>
+</ul>
+
+<h4><code>--nodes</code></h4>
+
+<p>This option will return a list of compute instance IDs and
+their addresses. The result will be a complete list including
+direct compute resources within the stack as well as compute
+resources that are part of auto scaling group resouces.</p>
+
+<h4><code>--instance-failure [LOG_FILE]</code></h4>
+
+<p>If the stack create or update failed due to a compute instance,
+this option will attempt to locate the instance, connect to
+it and download the defined log file. The default log file
+is set to: <code>/var/log/chef/client.log</code></p>
+
+<h4><code>--attribute ATTR</code></h4>
+
+<p>The attribute option is what provides the proxy to the underlying
+<a href="http://miasma-rb.github.io/miasma/">miasma</a> resource modeling. The value of <code>ATTR</code> is what should be
+called on the <code>Miasma::Models::Orchestration::Stack</code> instance.
+For example, to display the JSON template of a stack:</p>
+
+<pre class="code ruby"><code class="ruby">$ sfn inspect STACK -a template
+</code></pre>
+
+<p>To display the resource collection of the stack:</p>
+
+<pre class="code ruby"><code class="ruby">$ sfn inspect STACK -a resources
+</code></pre>
+
+<p>This will provide a list of resources. Now, to make this more
+useful, we can start inspect specific resources. Lets assume
+that the 3rd resource in the collection is an auto scaling
+group resource. We can isolate that resource for display:</p>
+
+<pre class="code ruby"><code class="ruby">$ sfn inspect STACK -a &quot;resources.all.at(2)&quot;
+</code></pre>
+
+<p>Note that the resources are an array, and we are using a zero
+based index. Now, this simply provides us with the information
+we already have seen. One of the handy features within the
+<a href="http://miasma-rb.github.io/miasma/">miasma</a> library is the ability to expand supported resources.
+So, we can expand this resource:</p>
+
+<pre class="code ruby"><code class="ruby">$ sfn inspect STACK -a &quot;resources.all.at(2).expand&quot;
+</code></pre>
+
+<p>This will expand the resource instance and return the actual
+auto scaling group resource. The result will provide more detailed
+information about the scaling group. But, perhaps we are looking
+for the instances in this scaling group. The model instance we
+now have (<code>Miasma::Orchestration::Models::AutoScale::Group</code>)
+contains a <code>servers</code> attribute. The output lists the IDs of the
+instances, but we can expand those as well:</p>
+
+<pre class="code ruby"><code class="ruby">$ sfn inspect STACK -a &quot;resources.all.at(2).expand.servers.map(&amp;:expand)&quot;
+</code></pre>
+
+<p>The attribute string will be minimally processed when proxying calls
+to the underlying models, which is why we are able to do ruby-ish
+style things.</p>
+
+<h2>Chef Knife Integration</h2>
+
+<p>This library will also provide <code>cloudformation</code> subcommands
+to knife.</p>
+
+<h3>Configuration</h3>
+
+<p>The easiest way to configure the plugin is via the
+<code>knife.rb</code> file. Credentials are the only configuration
+requirement, and the <code>Hash</code> provided is proxied to
+<a href="http://miasma-rb.github.io/miasma/">Miasma</a>. All configuration options provided
+via the <code>sfn</code> command are allowed within the
+<code>knife[:cloudformation]</code> namespace:</p>
+
+<h4>AWS</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># .chef/knife.rb
+</span>
+<span class='id identifier rubyid_knife'>knife</span><span class='lbracket'>[</span><span class='symbol'>:cloudformation</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:credentials</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+  <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='symbol'>:aws</span><span class='comma'>,</span>
+  <span class='symbol'>:aws_access_key_id</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AWS_ACCESS_KEY_ID</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='symbol'>:aws_secret_access_key</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AWS_SECRET_ACCESS_KEY</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='symbol'>:aws_region</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AWS_REGION</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='rbrace'>}</span>
+</code></pre>
+
+<h4>Rackspace</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># .chef/knife.rb
+</span>
+<span class='id identifier rubyid_knife'>knife</span><span class='lbracket'>[</span><span class='symbol'>:cloudformation</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:credentials</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+  <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='symbol'>:rackspace</span><span class='comma'>,</span>
+  <span class='symbol'>:rackspace_username</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>RACKSPACE_USERNAME</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='symbol'>:rackspace_api_key</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>RACKSPACE_API_KEY</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='symbol'>:rackspace_region</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>RACKSPACE_REGION</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='rbrace'>}</span>
+</code></pre>
+
+<h4>OpenStack</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># .chef/knife.rb
+</span>
+<span class='id identifier rubyid_knife'>knife</span><span class='lbracket'>[</span><span class='symbol'>:cloudformation</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:credentials</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+  <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='symbol'>:open_stack</span><span class='comma'>,</span>
+  <span class='symbol'>:open_stack_username</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OPENSTACK_USERNAME</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='symbol'>:open_stack_password</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OPENSTACK_PASSWORD</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='symbol'>:open_stack_identity_url</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OPENSTACK_IDENTITY_URL</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='symbol'>:open_stack_tenant_name</span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OPENSTACK_TENANT</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='rbrace'>}</span>
+</code></pre>
+
+<h3>Usage</h3>
+
+<p>All commands available via the <code>sfn</code> command are available as
+knife subcommands under <code>cloudformation</code> and <code>sparkleformation</code></p>
+
+<pre class="code ruby"><code class="ruby">$ knife cloudformation --help
+</code></pre>
+
+<p>or</p>
+
+<pre class="code ruby"><code class="ruby">$ knife sparkleformation --help
+</code></pre>
+
+<h1>Info</h1>
+
+<ul>
+<li>Repository: <a href="https://github.com/sparkleformation/sfn">https://github.com/sparkleformation/sfn</a></li>
+<li>IRC: Freenode @ #sparkleformation</li>
+</ul>
+</div></div>
+
+    <div id="footer">
+  Generated on Fri Sep  4 09:40:54 2015 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.1.2).
+</div>
+
+  </body>
+</html>
