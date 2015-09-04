@@ -17,4 +17,16 @@ Gem::Specification.new do |s|
   s.add_dependency 'sparkle_formation', '~> 1.0'
   s.executables << 'sfn'
   s.files = Dir['{lib,bin}/**/*'] + %w(sfn.gemspec README.md CHANGELOG.md LICENSE)
+  s.post_install_message = <<-EOF
+
+This is an install of the sfn gem from the 1.0 release tree. If you
+are upgrading from a pre-1.0 version, please review the CHANGELOG and
+test your environment _before_ continuing on!
+
+* https://github.com/sparkleformation/sfn/blob/master/CHANGELOG.md
+
+Happy stacking!
+
+EOF
+
 end

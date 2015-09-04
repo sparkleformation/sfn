@@ -1,3 +1,23 @@
+## v1.0.0
+
+_NOTE: This release contains breaking changes! Please review the
+	changes in this release and test your configuration and
+	templates. Changes that may introduce breakage have been
+	labeled below._
+
+* [BREAKING] Update sparkle_formation constraint to 1.0 versions
+* [BREAKING] Default to "deep" style nesting (previous default: "shallow")
+* [BREAKING] Template loading via SparklePacks in place of direct file loading
+* Provide support for shallow and deep stack nesting styles
+* Add support for customized callbacks
+* Fix `--print-only` behavior on `update` command, add to `validate` command
+* On validation of template with nesting, validate all nested templates _and_ root template
+* Display details of all nested stacks on `describe` command
+* Disable automatic stack inspection on failed `create` / `update` command
+* Add support for SparklePacks
+* Add support for AWS stack policies via optional callback
+* And lots of internal refactors!
+
 ## v0.4.12
 * Fix transient uninitialized constant error for update command
 
