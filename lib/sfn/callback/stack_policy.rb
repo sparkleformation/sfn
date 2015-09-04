@@ -6,10 +6,12 @@ module Sfn
 
       # Policy to apply prior to stack deletion
       DEFENSELESS_POLICY = {
-        'Effect' => 'Allow',
-        'Action' => 'Update:*',
-        'Resource' => '*',
-        'Principal' => '*'
+        'Statement' => [{
+            'Effect' => 'Allow',
+            'Action' => 'Update:*',
+            'Resource' => '*',
+            'Principal' => '*'
+          }]
       }
 
       # @return [Smash] cached policies
@@ -76,9 +78,11 @@ module Sfn
           :form => Smash.new(
             'Action' => 'SetStackPolicy',
             'StackName' => p_stack.id,
-            'StackPolicyBody' => @policies.fetch(p_stack.id,
-              @policies.fetch(p_stack.attributes[:logical_id],
-                @policies[p_stack.name]
+            'StackPolicyBody' => MultiJson.dump(
+              @policies.fetch(p_stack.id,
+                @policies.fetch(p_stack.data[:logical_id],
+                  @policies[p_stack.name]
+                )
               )
             )
           )
