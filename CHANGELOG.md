@@ -1,3 +1,6 @@
+## v0.4.14
+* Add constraint on sparkle_formation library to stay below 1.0 release
+
 ## v0.4.12
 * Fix transient uninitialized constant error for update command
 
