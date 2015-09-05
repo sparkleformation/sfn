@@ -193,8 +193,20 @@ module Sfn
       # @return [Array<Miasma::Models::Orchestration::Stack>]
       def nested_stacks(recurse=true)
         resources.all.map do |resource|
-          if(self.api.class.const_get(:RESOURCE_MAPPING).fetch(resource.type, {})[:api] == :orchestration)
-            n_stack = resource.expand
+          if(api.data.fetch(:stack_types, []).include?(resource.type))
+            # Custom remote load support
+            if(resource.type == 'Custom::JackalStack')
+              location, stack_id = resource.id.split('-', 2)
+              if(l_conf = api.data[:locations][location])
+                n_stack = Miasma.api(
+                  :type => :orchestration,
+                  :provider => l_conf[:provider],
+                  :credentials => l_conf
+                ).stacks.get(stack_id)
+              end
+            else
+              n_stack = resource.expand
+            end
             if(n_stack)
               n_stack.data[:logical_id] = resource.name
               n_stack.data[:parent_stack] = self
@@ -211,7 +223,7 @@ module Sfn
       # @return [TrueClass, FalseClass] stack contains nested stacks
       def nested?
         !!resources.detect do |resource|
-          self.api.class.const_get(:RESOURCE_MAPPING).fetch(resource.type, {})[:api] == :orchestration
+          api.data.fetch(:stack_types, []).include?(resource.type)
         end
       end
 

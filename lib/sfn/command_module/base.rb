@@ -8,6 +8,11 @@ module Sfn
       # Instance methods for cloudformation command classes
       module InstanceMethods
 
+        # @return [Array<String>]
+        def custom_stack_types
+          [config.fetch(:stack_types, [])].flatten.compact
+        end
+
         # @return [KnifeCloudformation::Provider]
         def provider
           memoize(:provider, :direct) do
@@ -16,7 +21,15 @@ module Sfn
               :async => false,
               :fetch => false
             )
+            result.connection.data[:stack_types] = (
+              [
+                result.connection.class.const_get(:RESOURCE_MAPPING).detect do |klass, info|
+                  info[:api] == :orchestration
+                end.first
+              ] + custom_stack_types
+            ).compact.uniq
             result.connection.data[:retry_ui] = ui
+            result.connection.data[:locations] = config.fetch(:locations, {})
             result.connection.data[:retry_type] = config.fetch(:retry, :type, :exponential)
             result.connection.data[:retry_interval] = config.fetch(:retry, :interval, 5)
             result.connection.data[:retry_max] = config.fetch(:retry, :max_attempts, 20)

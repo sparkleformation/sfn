@@ -145,6 +145,14 @@ end
       * Default: 20
       * _NOTE_: Set to `nil` for infinite retry
 
+* `stack_types` - Valid stack resource types
+  * Valid: `Array<String>`
+  * Default: `[DEFAULT_PROVIDER_TYPE]`
+
+* `locations` - API credentials for named locations
+  * Valid: `Hash`
+  * Default: none
+
 ## Commands
 
 * `sfn list`
