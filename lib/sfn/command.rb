@@ -12,6 +12,7 @@ module Sfn
     autoload :Import, 'sfn/command/import'
     autoload :Inspect, 'sfn/command/inspect'
     autoload :List, 'sfn/command/list'
+    autoload :Print, 'sfn/command/print'
     autoload :Promote, 'sfn/command/promote'
     autoload :Update, 'sfn/command/update'
     autoload :Validate, 'sfn/command/validate'
