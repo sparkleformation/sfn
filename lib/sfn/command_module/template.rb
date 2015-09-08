@@ -27,7 +27,11 @@ module Sfn
           memoize(:sparkle_collection) do
             collection = SparkleFormation::SparkleCollection.new
             begin
-              root_pack = SparkleFormation::SparklePack.new(:root => config[:base_directory])
+              if(config[:base_directory])
+                root_pack = SparkleFormation::SparklePack.new(:root => config[:base_directory])
+              else
+                root_pack = SparkleFormation::SparklePack.new
+              end
               collection.set_root(root_pack)
             rescue Errno::ENOENT
               ui.warn 'No local SparkleFormation files detected'
