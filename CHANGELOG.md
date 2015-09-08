@@ -1,3 +1,8 @@
+## v1.0.2
+* [fix] Properly detect local pack directory if available
+* Add `print` command for printing generated templates
+* Add support for custom stack resource types
+
 ## v1.0.0
 
 _NOTE: This release contains breaking changes! Please review the
