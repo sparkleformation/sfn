@@ -18,6 +18,7 @@ module Sfn
     autoload :Import, 'sfn/config/import'
     autoload :Inspect, 'sfn/config/inspect'
     autoload :List, 'sfn/config/list'
+    autoload :Print, 'sfn/config/print'
     autoload :Promote, 'sfn/config/promote'
     autoload :Update, 'sfn/config/update'
     autoload :Validate, 'sfn/config/validate'
