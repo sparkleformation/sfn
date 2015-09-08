@@ -53,7 +53,7 @@ module Sfn
           nested_stack_cleanup!(n_stack)
         end
         nest_stacks = stack.template.fetch('Resources', {}).values.find_all do |resource|
-          resource['Type'] == stack.api.class.const_get(:RESOURCE_MAPPING).key(stack.class).to_s
+          provider.connection.data[:stack_types].include?(resource['Type'])
         end.each do |resource|
           url = resource['Properties']['TemplateURL']
           if(url)

@@ -31,7 +31,7 @@ module Sfn
         resources = stack.fetch('Resources', {})
         nested_stacks = resources.find_all do |r_name, r_value|
           r_value.is_a?(Hash) &&
-            provider.connection.class.const_get(:RESOURCE_MAPPING).fetch(r_value['Type'], {})[:api] == :orchestration
+            provider.connection.data[:stack_types].include?(r_value['Type'])
         end
         nested_stacks.each do |n_name, n_resource|
           validate_stack(n_resource.fetch('Properties', {}).fetch('Stack', {}), "#{name} > #{n_name}")
