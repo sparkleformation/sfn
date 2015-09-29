@@ -248,7 +248,7 @@ module Sfn
             answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ['current', 'expected'])
             answer == 'expected'
           else
-            ui.warn "Unable to check #{p_key} for direct value modification. (Cannot auto-check expected value #{c_value.inspect})"
+#            ui.warn "Unable to check #{p_key} for direct value modification. (Cannot auto-check expected value #{c_value.inspect})"
             true
           end
         end

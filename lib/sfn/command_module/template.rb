@@ -141,11 +141,21 @@ module Sfn
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
             stack_definition = stack.compile.dump!
             stack_resource = resource._dump
+
+            if(stack.parent)
+              current_parameters = stack.parent.compile.dump!.to_smash.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new)
+            else
+              current_parameters = Smash.new
+            end
+            current_stack = c_stack ? c_stack.nested_stacks.detect{|s| s.data[:logical_id] == stack_name} : nil
+            if(current_stack && current_stack.data[:parent_stack])
+              current_parameters.merge!(current_stack.data[:parent_stack].template.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new))
+            end
             unless(config[:print_only])
               result = Smash.new(
                 'Parameters' => populate_parameters!(stack,
-                  :stack => c_stack ? c_stack.nested_stacks.detect{|s| s.data[:logical_id] == stack_name} : nil,
-                  :current_parameters => c_stack ? c_stack.template.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new) : stack_resource['Properties'].fetch('Parameters', {})
+                  :stack => current_stack,
+                  :current_parameters => current_parameters
                 )
               )
               resource.properties.delete!(:stack)
