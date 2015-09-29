@@ -1,3 +1,8 @@
+---
+title: "Overview"
+weight: 1
+---
+
 # Overview
 
 The SparkleFormation CLI (`sfn`) is a Ruby based command line interface
@@ -8,15 +13,15 @@ all the underlying features provided by the SparkleFormation library.
 ## Table of Contents
 
 - [Feature Summary](#feature-summary)
-- [Configuration](configuration.md)
-  - [sfn based](configuration.md#sfn-based)
-  - [knife based](configuration.md#knife-based)
-- [Usage](usage.md)
-  - [Commands](usage.md#commands)
-- [Callbacks](callbacks.md)
-  - [Enabling Callbacks](callbacks.md#enabling-callbacks)
-  - [Builtin Callbacks](callbacks.md#builtin-callbacks)
-  - [Custom Callbacks](callbacks.md#custom-callbacks)
+- [Configuration](configuration)
+  - [sfn based](configuration#sfn-based)
+  - [knife based](configuration#knife-based)
+- [Usage](usage)
+  - [Commands](usage#commands)
+- [Callbacks](callbacks)
+  - [Enabling Callbacks](callbacks#enabling-callbacks)
+  - [Builtin Callbacks](callbacks#builtin-callbacks)
+  - [Custom Callbacks](callbacks#custom-callbacks)
 
 ## Feature Summary
 

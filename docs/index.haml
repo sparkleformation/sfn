@@ -1,0 +1,10 @@
+---
+title: "sfn"
+section: 2
+weight: 1
+---
+
+%h2= "<code>sfn</code> (SparkleFormation CLI)"
+- current_resource.children.sort_by!{ |c| c.data[:weight] }.each do |page|
+  %ul
+    = partial "toc-helper", locals: { content: page }
