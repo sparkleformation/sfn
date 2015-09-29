@@ -44,7 +44,7 @@ module Sfn
             ui.error "Stack polling is not available when multiple stack deletion is requested!"
           end
         end
-        ui.info "  -> Destroyed Cloud Formation#{plural}: #{ui.color(stacks.join(', '), :bold, :red)}"
+        ui.info "  -> Destroyed SparkleFormation#{plural}: #{ui.color(stacks.join(', '), :bold, :red)}"
       end
 
       # Cleanup persisted templates if nested stack resources are included
