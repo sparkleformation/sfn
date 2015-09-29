@@ -196,7 +196,7 @@ module Sfn
           if(api.data.fetch(:stack_types, []).include?(resource.type))
             # Custom remote load support
             if(resource.type == 'Custom::JackalStack')
-              location, stack_id = resource.id.split('-', 2)
+              location, stack_id = resource.id.to_s.split('-', 2)
               if(l_conf = api.data[:locations][location])
                 n_stack = Miasma.api(
                   :type => :orchestration,
