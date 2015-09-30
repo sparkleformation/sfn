@@ -33,7 +33,7 @@ module Sfn
           stack = provider.connection.stacks.get(name)
 
           if(stack)
-            ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('update', :green)}"
+            ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('update', :green)}"
 
             unless(file)
               if(config[:template])

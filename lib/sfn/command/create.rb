@@ -25,7 +25,7 @@ module Sfn
         end
 
         unless(config[:print_only])
-          ui.info "#{ui.color('Cloud Formation:', :bold)} #{ui.color('create', :green)}"
+          ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('create', :green)}"
         end
 
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
