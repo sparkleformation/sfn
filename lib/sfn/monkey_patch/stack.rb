@@ -136,9 +136,9 @@ module Sfn
       # @return [Integer] percent complete (0..100)
       def percent_complete(min = 5)
         if(in_progress?)
-          total_resources = load_template.fetch('Resources', []).size
+          total_resources = template.fetch('Resources', []).size
           total_complete = resources.all.find_all do |resource|
-            resource.resource_status.downcase.end_with?('complete')
+            resource.status.downcase.end_with?('complete')
           end.size
           result = ((total_complete.to_f / total_resources) * 100).to_i
           result > min.to_i ? result : min
