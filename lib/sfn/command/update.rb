@@ -45,14 +45,15 @@ module Sfn
             end
             ui.info "  -> #{stack_info}"
 
-            apply_stacks!(stack)
 
             if(file)
-              populate_parameters!(file, stack.parameters)
               stack.template = translate_template(file)
+              apply_stacks!(stack)
+              populate_parameters!(file, stack.parameters)
               stack.parameters = config[:parameters]
               stack.template = Sfn::Utils::StackParameterScrubber.scrub!(stack.template)
             else
+              apply_stacks!(stack)
               populate_parameters!(stack.template, stack.parameters)
               stack.parameters = config[:parameters]
             end
