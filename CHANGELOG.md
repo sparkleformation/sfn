@@ -1,3 +1,6 @@
+## v0.4.16
+* Fix apply stack on update command when template provides new parameters
+
 ## v0.4.14
 * Add constraint on sparkle_formation library to stay below 1.0 release
 
