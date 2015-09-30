@@ -7,7 +7,7 @@ with orchestration APIs.
 
 ## Extra Documentation
 
-* [User Documentation](https://sparkleformation.github.io/sfn/UserDocs)
+* [User Documentation](http://www.sparkleformation.io/docs/sfn/)
 
 ## API Compatibility
 
@@ -237,7 +237,7 @@ in JSON format. The `--processing` flag will allow providing Ruby
 files to dynamically generate templates using the SparkleFormation
 library.
 
-_NOTE: (SparkleFormation Usage Documentation)[]._
+_NOTE: (SparkleFormation Usage Documentation)[http://www.sparkleformation.io/docs/sparkle_formation/]._
 
 This plugin supports the advanced stack nesting feature provided by
 the SparkleFormation library.
@@ -436,6 +436,7 @@ $ knife sparkleformation --help
 # Info
 
 * Repository: https://github.com/sparkleformation/sfn
+* Website: http://www.sparkleformation.io/docs/sfn/
 * IRC: Freenode @ #sparkleformation
 
 [miasma]: http://miasma-rb.github.io/miasma/
