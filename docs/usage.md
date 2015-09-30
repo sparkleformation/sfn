@@ -1,17 +1,29 @@
+---
+title: "Usage"
+weight: 3
+anchors:
+  - title: "Directory Structure"
+    url: "#directory-structure"
+  - title: "Template Commands"
+    url: "#template-commands"
+  - title: "Stack Commands"
+    url: "#stack-commands"
+---
+
 ## Usage
 
 The `sfn` command can be invoked in two ways. The
 first is directly:
 
-```
+~~~
 $ sfn --help
-```
+~~~
 
 The second is via the [knife][knife] plugin:
 
-```
+~~~
 $ knife sparkleformation --help
-```
+~~~
 
 Both invocations will generate the same result. The
 direct `sfn` command can be preferable as it does not
@@ -27,14 +39,14 @@ library and supports template compilation. To use SparkleFormation,
 just create the directory structure within the local project
 working directory:
 
-```
+~~~
 > tree
 .
 |____sparkleformation
 | |____dynamics
 | |____components
 | |____registry
-```
+~~~
 
 ### Commands
 
@@ -50,11 +62,11 @@ To enable the [SparkleFormation][sparkle_formation] integration
 simply include the `---processing` flag, or enable it via the
 configuration file:
 
-```ruby
+~~~ruby
 Configuration.new do
   processing true
 end
-```
+~~~
 
 When processing is enabled and no path is provided via the `--file`
 option, `sfn` will prompt for template selection allowing the user
@@ -72,11 +84,11 @@ by the [SparkleFormation][sparkle_formation] library. There are two
 styles of nesting functionality available: shallow and deep. The required
 style can be set via the configuration file:
 
-```ruby
+~~~ruby
 Configuration.new do
   apply_nesting 'deep'
 end
-```
+~~~
 
 The default nesting functionality is `"deep"`. To learn more about
 the nesting functionality please refer to the [SparkleFormation nested
@@ -88,11 +100,11 @@ into the defined bucket, but the bucket name _must_ be provided and
 the bucket _must_ exist. The bucket name can be defined within the
 configuration:
 
-```ruby
+~~~ruby
 Configuration.new do
   nesting_bucket 'my-nested-templates'
 end
-```
+~~~
 
 #### Stack Commands
 
@@ -113,9 +125,9 @@ example, given an AWS CloudFormation stack with a single EC2 resource,
 the `inspect` command can be used to provide all addresses associated
 with the instance:
 
-```
+~~~
 $ sfn inspect my-stack --attribute 'resources.all.at(0).expand.addresses'
-```
+~~~
 
 [knife]: https://docs.chef.io/knife.html
 [sparkle_formation]: https://github.com/sparkleformation/sparkle_formation
