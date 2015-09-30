@@ -1,3 +1,8 @@
+## v1.0.4
+* [fix] Set template prior to apply on update to find new parameters
+* Disable parameter validation warning on deep nesting
+* Update parameter detection on updates when using deep nesting
+
 ## v1.0.2
 * [fix] Properly detect local pack directory if available
 * Add `print` command for printing generated templates
