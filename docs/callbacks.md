@@ -149,3 +149,6 @@ Configuration.new do
   callbacks.after ['custom_callback']
 end
 ~~~
+
+[sparkle_policy]: /docs/sparkle_formation/stack-policies.html
+[sparkle_formation]: /docs/sparkle_formation/README.html
