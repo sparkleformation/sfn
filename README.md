@@ -237,7 +237,7 @@ in JSON format. The `--processing` flag will allow providing Ruby
 files to dynamically generate templates using the SparkleFormation
 library.
 
-_NOTE: (SparkleFormation Usage Documentation)[http://www.sparkleformation.io/docs/sparkle_formation/]._
+_NOTE: [SparkleFormation Usage Documentation](http://www.sparkleformation.io/docs/sparkle_formation/)._
 
 This plugin supports the advanced stack nesting feature provided by
 the SparkleFormation library.
