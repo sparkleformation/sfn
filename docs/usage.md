@@ -130,6 +130,6 @@ $ sfn inspect my-stack --attribute 'resources.all.at(0).expand.addresses'
 ~~~
 
 [knife]: https://docs.chef.io/knife.html
-[sparkle_formation]: https://github.com/sparkleformation/sparkle_formation
-[sparkle_packs]: https://sparkleformation.github.io/sparkle_formation/UserDocs/sparkle-packs.html
+[sparkle_formation]: /docs/sparkle_formation/README.html
+[sparkle_packs]: /docs/sparkle_formation/sparkle-packs.html
 [miasma]: https://github.com/miasma-rb/miasma
