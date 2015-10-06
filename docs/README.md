@@ -13,12 +13,13 @@ all the underlying features provided by the SparkleFormation library.
 ## Table of Contents
 
 - [Feature Summary](#feature-summary)
-- [Configuration](configuration)
+- [Installation](#installation)
+- [Configuration](configuration.html)
   - [sfn based](configuration#sfn-based)
   - [knife based](configuration#knife-based)
-- [Usage](usage)
+- [Usage](usage.html)
   - [Commands](usage#commands)
-- [Callbacks](callbacks)
+- [Callbacks](callbacks.html)
   - [Enabling Callbacks](callbacks#enabling-callbacks)
   - [Builtin Callbacks](callbacks#builtin-callbacks)
   - [Custom Callbacks](callbacks#custom-callbacks)
