@@ -41,7 +41,7 @@ Notable features available via the SparkleFormation CLI:
 
 ## Installation
 
-Sfn is available from [Ruby Gems](https://rubygems.org/gems/sfn). To install, simply execute:
+The SparkleFormation CLI is available from [Ruby Gems](https://rubygems.org/gems/sfn). To install, simply execute:
 
 ~~~sh
 $ gem install sfn
