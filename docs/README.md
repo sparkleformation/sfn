@@ -17,9 +17,9 @@ all the underlying features provided by the SparkleFormation library.
 - [Configuration](configuration.html)
   - [sfn based](configuration#sfn-based)
   - [knife based](configuration#knife-based)
-- [Usage](usage.html)
+- [Usage](usage)
   - [Commands](usage#commands)
-- [Callbacks](callbacks.html)
+- [Callbacks](callbacks)
   - [Enabling Callbacks](callbacks#enabling-callbacks)
   - [Builtin Callbacks](callbacks#builtin-callbacks)
   - [Custom Callbacks](callbacks#custom-callbacks)
@@ -53,4 +53,4 @@ or, if you use [Bundler](http://bundler.io/), add the following to your Gemfile:
 gem sfn', '~> 1.0.4'
 ~~~
 
-See [Configuration](configuration.html) and [Usage](usage.html) for further instructions.
+See [Configuration](configuration) and [Usage](usage) for further instructions.
