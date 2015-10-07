@@ -13,7 +13,8 @@ all the underlying features provided by the SparkleFormation library.
 ## Table of Contents
 
 - [Feature Summary](#feature-summary)
-- [Configuration](configuration)
+- [Installation](#installation)
+- [Configuration](configuration.html)
   - [sfn based](configuration#sfn-based)
   - [knife based](configuration#knife-based)
 - [Usage](usage)
@@ -37,3 +38,19 @@ Notable features available via the SparkleFormation CLI:
   - OpenStack Heat
 - Chef `knife` plugin support
 - Deep resource inspection
+
+## Installation
+
+The SparkleFormation CLI is available from [Ruby Gems](https://rubygems.org/gems/sfn). To install, simply execute:
+
+~~~sh
+$ gem install sfn
+~~~
+
+or, if you use [Bundler](http://bundler.io/), add the following to your Gemfile:
+
+~~~sh
+gem sfn', '~> 1.0.4'
+~~~
+
+See [Configuration](configuration) and [Usage](usage) for further instructions.
