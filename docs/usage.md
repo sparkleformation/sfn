@@ -92,7 +92,7 @@ end
 
 The default nesting functionality is `"deep"`. To learn more about
 the nesting functionality please refer to the [SparkleFormation nested
-stacks][nested_stacks] documentation.
+stacks][nested-stacks] documentation.
 
 When using nested stacks, a bucket is required for storage of the
 nested stack templates. `sfn` will automatically store nested templates
