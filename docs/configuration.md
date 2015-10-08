@@ -28,7 +28,7 @@ Supported formats:
 * YAML
 * JSON
 * XML
-n
+
 The configuration is contained within a file named
 `.sfn`.
 
