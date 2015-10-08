@@ -210,6 +210,7 @@ module Sfn
             if(n_stack)
               n_stack.data[:logical_id] = resource.name
               n_stack.data[:parent_stack] = self
+              n_stack.api.data[:stack_types] = api.data[:stack_types]
               if(recurse)
                 [n_stack] + n_stack.nested_stacks(recurse)
               else
