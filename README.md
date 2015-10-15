@@ -75,7 +75,6 @@ Configuration.new do
   options.on_failure 'nothing'
 end
 ```
-
 ### Configuration Options
 
 * `processing` - Enable SparkleFormation processing
@@ -369,27 +368,6 @@ style things.
 This library will also provide `cloudformation` subcommands
 to knife.
 
-### Configuration
-
-The easiest way to configure the plugin is via the
-`knife.rb` file. Credentials are the only configuration
-requirement, and the `Hash` provided is proxied to
-[Miasma][miasma]. All configuration options provided
-via the `sfn` command are allowed within the
-`knife[:cloudformation]` namespace:
-
-#### AWS
-
-```ruby
-# .chef/knife.rb
-
-knife[:cloudformation][:credentials] = {
-  :provider => :aws,
-  :aws_access_key_id => ENV['AWS_ACCESS_KEY_ID'],
-  :aws_secret_access_key => ENV['AWS_SECRET_ACCESS_KEY'],
-  :aws_region => ENV['AWS_REGION']
-}
-```
 
 #### Rackspace
 
