@@ -10,8 +10,68 @@ module Sfn
 
       # cloudformation directories that should be ignored
       TEMPLATE_IGNORE_DIRECTORIES = %w(components dynamics registry)
+      # maximum number of attempts to get valid parameter value
+      MAX_PARAMETER_ATTEMPTS = 5
 
       module InstanceMethods
+
+        # Request compile time parameter value
+        #
+        # @param p_name [String, Symbol] name of parameter
+        # @param p_config [Hash] parameter meta information
+        # @param cur_val [Object, NilClass] current value assigned to parameter
+        # @option p_config [String, Symbol] :type
+        # @option p_config [String, Symbol] :default
+        # @option p_config [String, Symbol] :description
+        # @option p_config [String, Symbol] :multiple
+        # @return [Object]
+        def request_compile_parameter(p_name, p_config, cur_val)
+          result = nil
+          attempts = 0
+          unless(cur_val)
+            cur_val = p_config[:default]
+          end
+          until(result && (!result.respond_to?(:empty?) || !result.empty?))
+            attempts += 1
+            if(config[:interactive_parameters])
+              result = ui.ask_question(
+                p_name.to_s.split('_').map(&:capitalize).join,
+                :default => cur_val
+              )
+            else
+              result = cur_val
+            end
+            case p_config.fetch(:type, 'string').to_s.downcase.to_sym
+            when :string
+              if(p_config[:multiple])
+                result = result.split(',').map(&:strip)
+              end
+            when :number
+              if(p_config[:multiple])
+                result = result.split(',').map(&:strip)
+                new_result = result.map do |item|
+                  new_item = item.to_i
+                  new_item if new_item.to_s == item
+                end
+                result = new_result.size == result.size ? new_result : []
+              else
+                new_result = result.to_i
+                result = new_result.to_s == result ? new_result : nil
+              end
+            else
+              raise ArgumentError.new "Unknown compile time parameter type provided: `#{p_config[:type].inspect}` (Parameter: #{p_name})"
+            end
+            if(result.nil? || (result.respond_to?(:empty?) && result.empty?))
+              if(attempts > MAX_PARAMETER_ATTEMPTS)
+                ui.fatal 'Failed to receive allowed parameter!'
+                exit 1
+              else
+                ui.error "Invalid value provided for parameter. Must be type: `#{p_config[:type].to_s.capitalize}`"
+              end
+            end
+          end
+          result
+        end
 
         # Load the template file
         #
@@ -32,10 +92,28 @@ module Sfn
           elsif(config[:file])
             if(config[:processing])
               sf = SparkleFormation.compile(config[:file], :sparkle)
+              state_args = config.fetch(:compile_parameters, Smash.new)
+              unless(sf.parameters.empty?)
+                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color('root', :green, :bold)}"
+                sf.parameters.each do |k,v|
+                  state_args[k] = request_compile_parameter(k, v, state_args[k])
+                end
+              end
               if(sf.nested? && !sf.isolated_nests?)
                 raise TypeError.new('Template does not contain isolated stack nesting! Cannot process in existing state.')
               end
               if(sf.nested? && config[:apply_nesting])
+                sf.compile.resources.data!.each do |r_name, r_content|
+                  next unless r_content.type == 'AWS::CloudFormation::Stack'
+                  n_stack = r_content.properties.stack._self
+                  if(n_stack.parameters && !n_stack.parameters.empty?)
+                    ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(r_name, :green, :bold)}"
+                    n_stack.parameters.each do |k,v|
+                      state_args[k] = request_compile_parameter(k, v, state_args[k])
+                    end
+                  end
+                end
+                sf.recompile(:state => state_args)
                 sf.apply_nesting do |stack_name, stack_definition|
                   bucket = provider.connection.api_for(:storage).buckets.get(
                     config[:nesting_bucket]
