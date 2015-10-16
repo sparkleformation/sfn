@@ -28,8 +28,8 @@ module Sfn
         def request_compile_parameter(p_name, p_config, cur_val)
           result = nil
           attempts = 0
-          unless(cur_val)
-            cur_val = p_config[:default]
+          unless(cur_val || p_config[:default].nil?)
+            cur_val = p_config[:default].to_s
           end
           until(result && (!result.respond_to?(:empty?) || !result.empty?))
             attempts += 1
