@@ -38,6 +38,13 @@ module Sfn
             unless(file)
               if(config[:template])
                 file = config[:template]
+                compile_params = stack.outputs.all.detect do |output|
+                  output.key == 'CompileState'
+                end
+                if(compile_params)
+                  compile_params = MultiJson.load(compile_params.value)
+                  config[:compile_parameters] = compile_params
+                end
                 stack_info << " #{ui.color('(template provided)', :green)}"
               else
                 stack_info << " #{ui.color('(no template update)', :yellow)}"
