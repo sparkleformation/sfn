@@ -18,8 +18,34 @@ module Sfn
         end
 
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
+        stack = provider.connection.stacks.get(name)
+
+        config[:compile_parameters] ||= Smash.new
 
         if(config[:file])
+          s_name = ['root']
+          c_setter = lambda do |c_stack|
+            compile_params = c_stack.outputs.detect do |output|
+              output.key == 'CompileState'
+            end
+            if(compile_params)
+              compile_params = MultiJson.load(compile_params.value)
+              c_current = config[:compile_parameters].fetch(s_name.join('_'), Smash.new)
+              config[:compile_parameters][s_name.join('_')] = compile_params.merge(c_current)
+            end
+          end
+
+          if(stack)
+            c_setter.call(stack)
+            stack.resources.all.each do |s_resource|
+              if(s_resource.type == 'AWS::CloudFormation::Stack')
+                s_name.push(s_resource.logical_id)
+                c_setter.call(s_resource.expand)
+                s_name.pop
+              end
+            end
+          end
+
           file = load_template_file
           stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
           nested_stacks = file.delete('sfn_nested_stack')
@@ -38,23 +64,6 @@ module Sfn
             unless(file)
               if(config[:template])
                 file = config[:template]
-                c_setter = lamda do |c_stack|
-                  compile_params = c_stack.outputs.all.detect do |output|
-                    output.key == 'CompileState'
-                  end
-                  if(compile_params)
-                    compile_params = MultiJson.load(compile_params.value)
-                    c_current = config[:compile_paramaters].fetch(s_name.join('_'), Smash.new)
-                    config[:compile_parameters][s_name.join('_')] = compile_params.merge(c_current)
-                  end
-                end
-                s_name = ['root']
-                c_setter.call(stack)
-                stack.resources.all do |s_resource|
-                  if(s_resource.type == 'AWS::CloudFormation::Stack')
-                    c_setter.call(s_resource.expand)
-                  end
-                end
                 stack_info << " #{ui.color('(template provided)', :green)}"
               else
                 stack_info << " #{ui.color('(no template update)', :yellow)}"
