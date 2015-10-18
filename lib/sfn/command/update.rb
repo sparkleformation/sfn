@@ -38,12 +38,22 @@ module Sfn
             unless(file)
               if(config[:template])
                 file = config[:template]
-                compile_params = stack.outputs.all.detect do |output|
-                  output.key == 'CompileState'
+                c_setter = lamda do |c_stack|
+                  compile_params = c_stack.outputs.all.detect do |output|
+                    output.key == 'CompileState'
+                  end
+                  if(compile_params)
+                    compile_params = MultiJson.load(compile_params.value)
+                    c_current = config[:compile_paramaters].fetch(s_name.join('_'), Smash.new)
+                    config[:compile_parameters][s_name.join('_')] = compile_params.merge(c_current)
+                  end
                 end
-                if(compile_params)
-                  compile_params = MultiJson.load(compile_params.value)
-                  config[:compile_parameters] = compile_params
+                s_name = ['root']
+                c_setter.call(stack)
+                stack.resources.all do |s_resource|
+                  if(s_resource.type == 'AWS::CloudFormation::Stack')
+                    c_setter.call(s_resource.expand)
+                  end
                 end
                 stack_info << " #{ui.color('(template provided)', :green)}"
               else
@@ -68,7 +78,7 @@ module Sfn
             begin
               stack.save
             rescue Miasma::Error::ApiError::RequestError => e
-              if(e.message.downcase.include?('no updates')) # :'(
+              if(e.message.downcase.include?('no updates'))
                 ui.warn "No updates detected for stack (#{stack.name})"
               else
                 raise
