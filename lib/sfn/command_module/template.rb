@@ -36,7 +36,7 @@ module Sfn
             if(config[:interactive_parameters])
               result = ui.ask_question(
                 p_name.to_s.split('_').map(&:capitalize).join,
-                :default => cur_val.to_s
+                :default => cur_val.to_s.empty? ? nil : cur_val.to_s
               )
             else
               result = cur_val
@@ -93,33 +93,25 @@ module Sfn
             if(config[:processing])
               compile_state = config.fetch(:compile_parameters, Smash.new)
               sf = SparkleFormation.compile(config[:file], :sparkle)
-              root_state = compile_state.fetch(:root, Smash.new)
-              unless(sf.parameters.empty?)
-                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color('root', :green, :bold)}"
-                sf.parameters.each do |k,v|
-                  root_state[k] = request_compile_parameter(k, v, root_state[k])
+              sf.compile_time_parameter_setter do |formation|
+                f_name = []
+                f_form = formation
+                while(f_form)
+                  f_name.push f_form.name
+                  f_form = f_form.parent
                 end
+                f_name = f_name.reverse.map{|i| Bogo::Utility.camel(i)}.join('_')
+                current_state = compile_state.fetch(f_name, Smash.new)
+                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(Bogo::Utility.camel(formation.name), :green, :bold)}"
+                formation.parameters.each do |k,v|
+                  current_state[k] = request_compile_parameter(k, v, current_state[k])
+                end
+                formation.compile_state = current_state
               end
-              sf.compile(:state => root_state)
               if(sf.nested? && !sf.isolated_nests?)
                 raise TypeError.new('Template does not contain isolated stack nesting! Cannot process in existing state.')
               end
               if(sf.nested? && config[:apply_nesting])
-                sf.compile.resources.data!.each do |r_name, r_content|
-                  next unless r_content.type == 'AWS::CloudFormation::Stack'
-                  n_stack = r_content.properties.stack._self
-                  if(n_stack.parameters && !n_stack.parameters.empty?)
-                    nested_state = compile_state.fetch("root_#{r_name}", Smash.new)
-                    if(n_stack.compile_state)
-                      nested_state = nested_state.merge(n_stack.compile_state)
-                    end
-                    ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(r_name, :green, :bold)}"
-                    n_stack.parameters.each do |k,v|
-                      nested_state[k] = request_compile_parameter(k, v, nested_state[k])
-                    end
-                    r_content.properties.stack n_stack.recompile(:state => nested_state)
-                  end
-                end
                 sf.apply_nesting do |stack_name, stack_definition|
                   if(config[:print_only])
                     puts MultiJson.dump(stack_definition, :pretty => true)

@@ -23,7 +23,7 @@ module Sfn
         config[:compile_parameters] ||= Smash.new
 
         if(config[:file])
-          s_name = ['root']
+          s_name = [name]
           c_setter = lambda do |c_stack|
             compile_params = c_stack.outputs.detect do |output|
               output.key == 'CompileState'
