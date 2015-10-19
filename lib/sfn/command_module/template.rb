@@ -30,6 +30,9 @@ module Sfn
           attempts = 0
           unless(cur_val || p_config[:default].nil?)
             cur_val = p_config[:default]
+            if(cur_val.is_a?(Array))
+              cur_val = cur_val.map(&:to_s).join(',')
+            end
           end
           until(result && (!result.respond_to?(:empty?) || !result.empty?))
             attempts += 1
