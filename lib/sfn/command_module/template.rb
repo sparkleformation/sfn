@@ -100,7 +100,7 @@ module Sfn
                   f_name.push f_form.name
                   f_form = f_form.parent
                 end
-                f_name = f_name.reverse.map{|i| Bogo::Utility.camel(i)}.join('_')
+                f_name = f_name.reverse.map.join('_')
                 current_state = compile_state.fetch(f_name, Smash.new)
                 ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(Bogo::Utility.camel(formation.name), :green, :bold)}"
                 formation.parameters.each do |k,v|
