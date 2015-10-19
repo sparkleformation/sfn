@@ -1,3 +1,6 @@
+## v0.5.0
+* Add support for compile time parameters
+
 ## v0.4.16
 * Fix apply stack on update command when template provides new parameters
 
