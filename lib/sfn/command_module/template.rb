@@ -37,7 +37,7 @@ module Sfn
           end
           until(result && (!result.respond_to?(:empty?) || !result.empty?))
             attempts += 1
-            if(config[:interactive_parameters] && (!nested || !p_config.key?(:prompt_on_nested) || p_config[:prompt_on_nested] == true))
+            if(config[:interactive_parameters] && (!nested || !p_config.key?(:prompt_when_nested) || p_config[:prompt_when_nested] == true))
               result = ui.ask_question(
                 p_name.to_s.split('_').map(&:capitalize).join,
                 :default => cur_val.to_s.empty? ? nil : cur_val.to_s
