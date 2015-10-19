@@ -43,7 +43,7 @@ module Sfn
                 :default => cur_val.to_s.empty? ? nil : cur_val.to_s
               )
             else
-              result = cur_val
+              result = cur_val.to_s
             end
             case p_config.fetch(:type, 'string').to_s.downcase.to_sym
             when :string
