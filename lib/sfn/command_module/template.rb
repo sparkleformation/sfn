@@ -93,6 +93,9 @@ module Sfn
             if(config[:processing])
               compile_state = config.fetch(:compile_parameters, Smash.new)
               sf = SparkleFormation.compile(config[:file], :sparkle)
+              if(name_args.first)
+                sf.name = name_args.first
+              end
               sf.compile_time_parameter_setter do |formation|
                 f_name = []
                 f_form = formation
@@ -100,9 +103,9 @@ module Sfn
                   f_name.push f_form.name
                   f_form = f_form.parent
                 end
-                f_name = f_name.reverse.map.join('_')
+                f_name = f_name.reverse.map(&:to_s).join('_')
                 current_state = compile_state.fetch(f_name, Smash.new)
-                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(Bogo::Utility.camel(formation.name), :green, :bold)}"
+                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(formation.name, :green, :bold)}"
                 formation.parameters.each do |k,v|
                   current_state[k] = request_compile_parameter(k, v, current_state[k])
                 end
@@ -114,9 +117,8 @@ module Sfn
               if(sf.nested? && config[:apply_nesting])
                 sf.apply_nesting do |stack_name, stack_definition|
                   if(config[:print_only])
-                    puts MultiJson.dump(stack_definition, :pretty => true)
-                    puts '---'
-                    "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
+                    # "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
+                    stack_definition
                   else
                     bucket = provider.connection.api_for(:storage).buckets.get(
                       config[:nesting_bucket]
