@@ -20,12 +20,13 @@ module Sfn
         # @param p_name [String, Symbol] name of parameter
         # @param p_config [Hash] parameter meta information
         # @param cur_val [Object, NilClass] current value assigned to parameter
+        # @param nested [TrueClass, FalseClass] template is nested
         # @option p_config [String, Symbol] :type
         # @option p_config [String, Symbol] :default
         # @option p_config [String, Symbol] :description
         # @option p_config [String, Symbol] :multiple
         # @return [Object]
-        def request_compile_parameter(p_name, p_config, cur_val)
+        def request_compile_parameter(p_name, p_config, cur_val, nested=false)
           result = nil
           attempts = 0
           unless(cur_val || p_config[:default].nil?)
@@ -36,7 +37,7 @@ module Sfn
           end
           until(result && (!result.respond_to?(:empty?) || !result.empty?))
             attempts += 1
-            if(config[:interactive_parameters])
+            if(config[:interactive_parameters] && (!nested || !p_config.key?(:prompt_on_nested) || p_config[:prompt_on_nested] == true))
               result = ui.ask_question(
                 p_name.to_s.split('_').map(&:capitalize).join,
                 :default => cur_val.to_s.empty? ? nil : cur_val.to_s
@@ -113,7 +114,7 @@ module Sfn
                 end
                 ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(formation.name, :green, :bold)}"
                 formation.parameters.each do |k,v|
-                  current_state[k] = request_compile_parameter(k, v, current_state[k])
+                  current_state[k] = request_compile_parameter(k, v, current_state[k], !!formation.parent)
                 end
                 formation.compile_state = current_state
               end
