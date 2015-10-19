@@ -108,6 +108,9 @@ module Sfn
                 end
                 f_name = f_name.reverse.map(&:to_s).join('_')
                 current_state = compile_state.fetch(f_name, Smash.new)
+                if(formation.compile_state)
+                  current_state = current_state.merge(formation.compile_state)
+                end
                 ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(formation.name, :green, :bold)}"
                 formation.parameters.each do |k,v|
                   current_state[k] = request_compile_parameter(k, v, current_state[k])
