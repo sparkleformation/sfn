@@ -155,7 +155,7 @@ module Sfn
       #   prevent parameters being overridden
       def apply_stack(remote_stack, ignore_params=nil)
         default_key = 'Default'
-        stack_parameters = template['Parameters']
+        stack_parameters = template.fetch('Parameters', {})
         valid_parameters = Smash[
           stack_parameters.map do |key, val|
             unless(val['DisableApply'])
