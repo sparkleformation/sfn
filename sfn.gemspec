@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'net-ssh'
   s.add_dependency 'sparkle_formation', '~> 1.0'
   s.executables << 'sfn'
-  s.files = Dir['{lib,bin}/**/*'] + %w(sfn.gemspec README.md CHANGELOG.md LICENSE)
+  s.files = Dir['{lib,bin,docs}/**/*'] + %w(sfn.gemspec README.md CHANGELOG.md LICENSE)
   s.post_install_message = <<-EOF
 
 This is an install of the sfn gem from the 1.0 release tree. If you
