@@ -24,7 +24,31 @@ module Sfn
           stack = nil
         end
 
+        config[:compile_parameters] ||= Smash.new
+
         if(config[:file])
+          s_name = [name]
+
+          c_setter = lambda do |c_stack|
+            compile_params = c_stack.outputs.detect do |output|
+              output.key == 'CompileState'
+            end
+            if(compile_params)
+              compile_params = MultiJson.load(compile_params.value)
+              c_current = config[:compile_parameters].fetch(s_name.join('_'), Smash.new)
+              config[:compile_parameters][s_name.join('_')] = compile_params.merge(c_current)
+            end
+            stack.nested_stacks(false).each do |n_stack|
+              s_name.push(n_stack.name)
+              c_setter.call(n_stack)
+              s_name.pop
+            end
+          end
+
+          if(stack)
+            c_setter.call(stack)
+          end
+
           file = load_template_file(:stack => stack)
           stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
           nested_stacks = file.delete('sfn_nested_stack')

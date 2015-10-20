@@ -10,8 +10,72 @@ module Sfn
 
       # cloudformation directories that should be ignored
       TEMPLATE_IGNORE_DIRECTORIES = %w(components dynamics registry)
+      # maximum number of attempts to get valid parameter value
+      MAX_PARAMETER_ATTEMPTS = 5
 
       module InstanceMethods
+
+        # Request compile time parameter value
+        #
+        # @param p_name [String, Symbol] name of parameter
+        # @param p_config [Hash] parameter meta information
+        # @param cur_val [Object, NilClass] current value assigned to parameter
+        # @param nested [TrueClass, FalseClass] template is nested
+        # @option p_config [String, Symbol] :type
+        # @option p_config [String, Symbol] :default
+        # @option p_config [String, Symbol] :description
+        # @option p_config [String, Symbol] :multiple
+        # @return [Object]
+        def request_compile_parameter(p_name, p_config, cur_val, nested=false)
+          result = nil
+          attempts = 0
+          unless(cur_val || p_config[:default].nil?)
+            cur_val = p_config[:default]
+          end
+          if(cur_val.is_a?(Array))
+            cur_val = cur_val.map(&:to_s).join(',')
+          end
+          until(result && (!result.respond_to?(:empty?) || !result.empty?))
+            attempts += 1
+            if(config[:interactive_parameters] && (!nested || !p_config.key?(:prompt_when_nested) || p_config[:prompt_when_nested] == true))
+              result = ui.ask_question(
+                p_name.to_s.split('_').map(&:capitalize).join,
+                :default => cur_val.to_s.empty? ? nil : cur_val.to_s
+              )
+            else
+              result = cur_val.to_s
+            end
+            case p_config.fetch(:type, 'string').to_s.downcase.to_sym
+            when :string
+              if(p_config[:multiple])
+                result = result.split(',').map(&:strip)
+              end
+            when :number
+              if(p_config[:multiple])
+                result = result.split(',').map(&:strip)
+                new_result = result.map do |item|
+                  new_item = item.to_i
+                  new_item if new_item.to_s == item
+                end
+                result = new_result.size == result.size ? new_result : []
+              else
+                new_result = result.to_i
+                result = new_result.to_s == result ? new_result : nil
+              end
+            else
+              raise ArgumentError.new "Unknown compile time parameter type provided: `#{p_config[:type].inspect}` (Parameter: #{p_name})"
+            end
+            if(result.nil? || (result.respond_to?(:empty?) && result.empty?))
+              if(attempts > MAX_PARAMETER_ATTEMPTS)
+                ui.fatal 'Failed to receive allowed parameter!'
+                exit 1
+              else
+                ui.error "Invalid value provided for parameter. Must be type: `#{p_config[:type].to_s.capitalize}`"
+              end
+            end
+          end
+          result
+        end
 
         # @return [Array<SparkleFormation::SparklePack>]
         def sparkle_packs
@@ -62,7 +126,30 @@ module Sfn
             config[:template]
           elsif(config[:file])
             if(config[:processing])
+              compile_state = config.fetch(:compile_parameters, Smash.new)
               sf = SparkleFormation.compile(config[:file], :sparkle)
+              if(name_args.first)
+                sf.name = name_args.first
+              end
+              sf.compile_time_parameter_setter do |formation|
+                f_name = []
+                f_form = formation
+                while(f_form)
+                  f_name.push f_form.name
+                  f_form = f_form.parent
+                end
+                pathed_name = f_name.reverse.map(&:to_s).join(' > ')
+                f_name = f_name.reverse.map(&:to_s).join('_')
+                current_state = compile_state.fetch(f_name, Smash.new)
+                if(formation.compile_state)
+                  current_state = current_state.merge(formation.compile_state)
+                end
+                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(pathed_name, :green, :bold)}"
+                formation.parameters.each do |k,v|
+                  current_state[k] = request_compile_parameter(k, v, current_state[k], !!formation.parent)
+                end
+                formation.compile_state = current_state
+              end
               sparkle_packs.each do |pack|
                 sf.sparkle.add_sparkle(pack)
               end
