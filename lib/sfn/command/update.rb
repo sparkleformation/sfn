@@ -11,11 +11,8 @@ module Sfn
 
       # Run the stack creation command
       def execute!
+        name_required!
         name = name_args.first
-        unless(name)
-          ui.fatal "Formation name must be specified!"
-          exit 1
-        end
 
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
         begin

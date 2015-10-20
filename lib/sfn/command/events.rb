@@ -12,6 +12,7 @@ module Sfn
 
       # Run the events list action
       def execute!
+        name_required!
         name = name_args.first
         ui.info "Events for Stack: #{ui.color(name, :bold)}\n"
         @stacks = []
