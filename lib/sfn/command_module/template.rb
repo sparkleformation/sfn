@@ -132,14 +132,9 @@ module Sfn
                 sf.name = name_args.first
               end
               sf.compile_time_parameter_setter do |formation|
-                f_name = []
-                f_form = formation
-                while(f_form)
-                  f_name.push f_form.name
-                  f_form = f_form.parent
-                end
-                pathed_name = f_name.reverse.map(&:to_s).join(' > ')
-                f_name = f_name.reverse.map(&:to_s).join('_')
+                f_name = formation.root_path.map(&:name).map(&:to_s)
+                pathed_name = f_name.join(' > ')
+                f_name = f_name.join('_')
                 current_state = compile_state.fetch(f_name, Smash.new)
                 if(formation.compile_state)
                   current_state = current_state.merge(formation.compile_state)
@@ -252,8 +247,9 @@ module Sfn
               unless(bucket)
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
               end
+              full_stack_name = stack.root_path.map(&:name).map(&:to_s).join('_')
               file = bucket.files.build
-              file.name = "#{name_args.first}_#{stack_name}.json"
+              file.name = "#{full_stack_name}.json"
               file.content_type = 'text/json'
               file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
               file.save
@@ -263,7 +259,7 @@ module Sfn
               )
             else
               result = Smash.new(
-                'TemplateURL' => "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
+                'TemplateURL' => "http://example.com/bucket/#{full_stack_name}.json"
               )
             end
             result.each do |k,v|

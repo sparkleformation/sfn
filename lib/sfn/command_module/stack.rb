@@ -123,6 +123,7 @@ module Sfn
             stack_parameters = sparkle.fetch('Parameters', Smash.new)
           end
           unless(stack_parameters.empty?)
+            ui.info "#{ui.color('Stack runtime parameters:', :bold)} - template: #{ui.color(sparkle.root_path.map(&:name).map(&:to_s).join(' > '), :green, :bold)}"
             if(config.get(:parameter).is_a?(Array))
               config[:parameter] = Smash[
                 *config.get(:parameter).map(&:to_a).flatten
