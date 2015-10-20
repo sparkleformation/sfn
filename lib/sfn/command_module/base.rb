@@ -150,6 +150,17 @@ module Sfn
           end
         end
 
+        # Force error exception when no name is provided
+        #
+        # @return [NilClass]
+        # @raise [ArgumentError]
+        def name_required!
+          if(name_args.empty?)
+            ui.error 'Name argument must be provided!'
+            raise ArgumentError.new 'Missing required name argument'
+          end
+        end
+
       end
 
       class << self

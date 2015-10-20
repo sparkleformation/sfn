@@ -10,6 +10,7 @@ module Sfn
 
       # Run the stack inspection action
       def execute!
+        name_required!
         stack_name = name_args.last
         stack = provider.connection.stacks.get(stack_name)
         ui.info "Stack inspection #{ui.color(stack_name, :bold)}:"

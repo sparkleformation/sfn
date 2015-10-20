@@ -14,6 +14,7 @@ module Sfn
 
       # Run the stack describe action
       def execute!
+        name_required!
         stack_name = name_args.last
         root_stack = api_action! do
           provider.connection.stacks.get(stack_name)

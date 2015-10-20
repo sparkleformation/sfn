@@ -8,6 +8,7 @@ module Sfn
 
       # Run the stack destruction action
       def execute!
+        name_required!
         stacks = name_args.sort
         plural = 's' if stacks.size > 1
         globs = stacks.find_all do |s|
