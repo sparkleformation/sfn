@@ -112,7 +112,7 @@ module Sfn
                 if(formation.compile_state)
                   current_state = current_state.merge(formation.compile_state)
                 end
-                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(formation.name, :green, :bold)}" unless(config[:print_only])
+                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(formation.name, :green, :bold)}" unless config[:print_only]
                 formation.parameters.each do |k,v|
                   current_state[k] = request_compile_parameter(k, v, current_state[k], !!formation.parent)
                 end
