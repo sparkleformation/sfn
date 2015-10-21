@@ -1,8 +1,8 @@
 ## Table of Contents
 
-- [Overview](#overview.md)
-- [Feature Summary](#feature-summary.md)
-- [Installation](#installation.md)
+- [Overview](overview.md)
+- [Feature Summary](overview.md#feature-summary)
+- [Installation](overview.md#installation)
 - [Configuration](configuration.md)
   - [sfn based](configuration.md#sfn-based)
   - [knife based](configuration.md#knife-based)
