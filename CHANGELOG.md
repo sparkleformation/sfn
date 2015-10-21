@@ -1,3 +1,9 @@
+## v1.1.0
+* Add support for compile time parameters
+* Fix valid stack type check on child stack connections
+* Provide output context for template location when prompting parameters
+* Use full stack path naming for bucket file names when storing
+
 ## v1.0.4
 * [fix] Set template prior to apply on update to find new parameters
 * Disable parameter validation warning on deep nesting
