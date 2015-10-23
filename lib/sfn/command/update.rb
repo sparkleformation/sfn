@@ -35,7 +35,7 @@ module Sfn
               c_current = config[:compile_parameters].fetch(s_name.join('_'), Smash.new)
               config[:compile_parameters][s_name.join('_')] = compile_params.merge(c_current)
             end
-            stack.nested_stacks(false).each do |n_stack|
+            c_stack.nested_stacks(false).each do |n_stack|
               s_name.push(n_stack.name)
               c_setter.call(n_stack)
               s_name.pop
