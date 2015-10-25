@@ -265,7 +265,7 @@ module Sfn
           yield
         end
       rescue => e
-        if(e.class.to_s == 'Redis::Lock::LockTimeout')
+        if(e.class.to_s.end_with?('Timeout'))
           raise if raise_on_locked
         else
           raise
@@ -284,6 +284,9 @@ module Sfn
 
     # Simple lock for memory cache
     class LocalLock
+
+      class LocalLockTimeout < RuntimeError
+      end
 
       # @return [Symbol] key name
       attr_reader :_key
@@ -320,7 +323,11 @@ module Sfn
             _lock.unlock if _lock.locked?
           end
         else
-          raise Redis::Lock::LockTimeout.new "Timeout on lock #{_key} exceeded #{_timeout} sec"
+          if(defined?(Redis))
+            raise Redis::Lock::LockTimeout.new "Timeout on lock #{_key} exceeded #{_timeout} sec"
+          else
+            raise LocalLockTimeout.new "Timeout on lock #{_key} exceeded #{_timeout} sec"
+          end
         end
       end
 
