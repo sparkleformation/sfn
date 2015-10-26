@@ -1,3 +1,7 @@
+## v1.1.2
+* [fix] stack update when extracting compile time state
+* [fix] remove use of `root_path` method when shallow nesting is in use
+
 ## v1.1.0
 * Add support for compile time parameters
 * Fix valid stack type check on child stack connections
