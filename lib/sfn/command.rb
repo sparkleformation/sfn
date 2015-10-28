@@ -23,6 +23,8 @@ module Sfn
         discover_config(cli_opts)
       end
       super(cli_opts, args)
+      run_callbacks_for(:after_config)
+      run_callbacks_for("after_config_#{Bogo::Utility.snake(self.class.name)}")
     end
 
     # @return [Smash]
