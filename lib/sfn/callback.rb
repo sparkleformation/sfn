@@ -10,6 +10,10 @@ module Sfn
     attr_reader :ui
     # @return [Smash]
     attr_reader :config
+    # @return [Array<String>] CLI arguments
+    attr_reader :arguments
+    # @return [Miasma::Models::Orchestration] remote API
+    attr_reader :api
 
     # Create a new callback instance
     #
