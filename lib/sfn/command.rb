@@ -7,6 +7,7 @@ module Sfn
     autoload :Create, 'sfn/command/create'
     autoload :Describe, 'sfn/command/describe'
     autoload :Destroy, 'sfn/command/destroy'
+    autoload :Diff, 'sfn/command/diff'
     autoload :Events, 'sfn/command/events'
     autoload :Export, 'sfn/command/export'
     autoload :Import, 'sfn/command/import'
