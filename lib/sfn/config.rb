@@ -13,6 +13,7 @@ module Sfn
     autoload :Describe, 'sfn/config/describe'
     autoload :Destroy, 'sfn/config/destroy'
     autoload :Describe, 'sfn/config/describe'
+    autoload :Diff, 'sfn/config/diff'
     autoload :Events, 'sfn/config/events'
     autoload :Export, 'sfn/config/export'
     autoload :Import, 'sfn/config/import'
