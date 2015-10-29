@@ -3,7 +3,7 @@ require 'sfn'
 
 module Sfn
   class Command
-    # Cloudformation create command
+    # Create command
     class Create < Command
 
       include Sfn::CommandModule::Base
