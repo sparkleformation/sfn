@@ -1,3 +1,6 @@
+## v1.1.4
+* [feature] Add new `diff` command
+
 ## v1.1.2
 * [fix] stack update when extracting compile time state
 * [fix] remove use of `root_path` method when shallow nesting is in use
