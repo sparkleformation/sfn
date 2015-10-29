@@ -163,6 +163,7 @@ end
 * `sfn describe`
 * `sfn inspect`
 * `sfn validate`
+* `sfn diff`
 
 _NOTE: All commands respond to `--help` and will provide a full list of valid options._
 
@@ -250,6 +251,11 @@ resources are supported.
 ### `sfn update STACK`
 
 Update an existing stack.
+
+### `sfn diff STACK`
+
+View resources differences that would be applied to a running stack
+on update.
 
 ### `sfn destroy STACK`
 
