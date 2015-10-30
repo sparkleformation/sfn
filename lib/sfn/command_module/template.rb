@@ -197,7 +197,7 @@ module Sfn
             if(config[:print_only])
               template_url = "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
             else
-              resource.properties.delete!(:stack)
+              resource.properties.delete!(:stack) unless config[:plan]
               unless(bucket)
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
               end

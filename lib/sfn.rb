@@ -14,5 +14,6 @@ module Sfn
   autoload :Knife, 'sfn/knife'
   autoload :Command, 'sfn/command'
   autoload :CommandModule, 'sfn/command_module'
+  autoload :Planner, 'sfn/planner'
 
 end
