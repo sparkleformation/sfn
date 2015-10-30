@@ -155,33 +155,35 @@ module Sfn
       #   prevent parameters being overridden
       def apply_stack(remote_stack, ignore_params=nil)
         default_key = 'Default'
-        stack_parameters = template.fetch('Parameters', {})
-        valid_parameters = Smash[
-          stack_parameters.map do |key, val|
-            unless(val['DisableApply'])
-              [snake(key), key]
-            end
-          end.compact
-        ]
-        if(ignore_params)
-          valid_parameters = Hash[
-            valid_parameters.map do |snake_param, camel_param|
-              unless(ignore_params.include?(camel_param))
-                [snake_param, camel_param]
+        stack_parameters = template['Parameters']
+        if(stack_parameters)
+          valid_parameters = Smash[
+            stack_parameters.map do |key, val|
+              unless(val['DisableApply'])
+                [snake(key), key]
               end
             end.compact
           ]
-        end
-        if(persisted?)
-          remote_stack.outputs.each do |output|
-            if(param_key = valid_parameters[snake(output.key)])
-              parameters.merge!(param_key => output.value)
-            end
+          if(ignore_params)
+            valid_parameters = Hash[
+              valid_parameters.map do |snake_param, camel_param|
+                unless(ignore_params.include?(camel_param))
+                  [snake_param, camel_param]
+                end
+              end.compact
+            ]
           end
-        else
-          remote_stack.outputs.each do |output|
-            if(param_key = valid_parameters[snake(output.key)])
-              stack_parameters[param_key][default_key] = output.value
+          if(persisted?)
+            remote_stack.outputs.each do |output|
+              if(param_key = valid_parameters[snake(output.key)])
+                parameters.merge!(param_key => output.value)
+              end
+            end
+          else
+            remote_stack.outputs.each do |output|
+              if(param_key = valid_parameters[snake(output.key)])
+                stack_parameters[param_key][default_key] = output.value
+              end
             end
           end
         end
