@@ -1,3 +1,6 @@
+## v1.1.6
+* [fix] set proper parameter hash on apply stack (#67)
+
 ## v1.1.4
 * [feature] Add new `diff` command
 
