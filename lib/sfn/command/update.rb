@@ -76,11 +76,72 @@ module Sfn
               ui.puts _format_json(translate_template(file))
               return
             end
+
+            original_template = stack.template
+            original_parameters = stack.parameters
+
             stack.template = translate_template(file)
             apply_stacks!(stack)
+
             populate_parameters!(file, :current_parameters => stack.parameters)
+
+            update_template = stack.template
+
+            stack.template = original_template
+            stack.parameters = original_parameters
+            plan = Planner::Aws.new(ui, config, arguments, stack)
+            result = plan.generate_plan(file, config_root_parameters)
+
+            ui.info ui.color('Pre-update resource planning report:', :bold)
+
+            plan_display = lambda do |info, names=[]|
+              unless(info[:stacks].empty?)
+                info[:stacks].each do |s_name, s_info|
+                  plan_display.call(s_info, [*names, s_name].compact)
+                end
+              end
+              unless(names.flatten.compact.empty?)
+                ui.puts
+                ui.puts "  #{ui.color('Update plan for:', :bold)} #{ui.color(names.join(' > '), :blue)}"
+                unless(info[:unknown].empty?)
+                  ui.puts "    #{ui.color('!!! Unknown update effect:', :red, :bold)}"
+                  print_plan_items(info, :unknown, :red)
+                  ui.puts
+                end
+                unless(info[:unavailable].empty?)
+                  ui.puts "    #{ui.color('Update request not allowed:', :red, :bold)}"
+                  print_plan_items(info, :unavailable, :red)
+                  ui.puts
+                end
+                unless(info[:replace].empty?)
+                  ui.puts "    #{ui.color('Resources to be replaced:', :red, :bold)}"
+                  print_plan_items(info, :replace, :red)
+                  ui.puts
+                end
+                unless(info[:interrupt].empty?)
+                  ui.puts "    #{ui.color('Resources to be interrupted:', :yellow, :bold)}"
+                  print_plan_items(info, :interrupt, :yellow)
+                  ui.puts
+                end
+                unless(info[:removed].empty?)
+                  ui.puts "    #{ui.color('Resources to be removed:', :red, :bold)}"
+                  print_plan_items(info, :removed, :red)
+                  ui.puts
+                end
+                unless(info[:added].empty?)
+                  ui.puts "    #{ui.color('Resources to be added:', :green, :bold)}"
+                  print_plan_items(info, :added, :green)
+                  ui.puts
+                end
+
+              end
+            end
+            plan_display.call(result)
+
+            ui.confirm 'Apply this stack update?'
+
             stack.parameters = config_root_parameters
-            stack.template = Sfn::Utils::StackParameterScrubber.scrub!(stack.template)
+            stack.template = Sfn::Utils::StackParameterScrubber.scrub!(update_template)
           else
             apply_stacks!(stack)
             populate_parameters!(stack.template, :current_parameters => stack.parameters)
@@ -112,6 +173,29 @@ module Sfn
             end
           end
 
+        end
+      end
+
+      # Print planning items
+      #
+      # @param info [Hash] plan
+      # @param key [Symbol] key of items
+      # @param color [Symbol] color to flag
+      def print_plan_items(info, key, color)
+        max_name = info[key].keys.map(&:size).max
+        max_type = info[key].values.map{|i|i[:type]}.map(&:size).max
+        info[key].each do |name, val|
+          ui.print ' ' * 6
+          ui.print ui.color("[#{val[:type]}]", color)
+          ui.print ' ' * (max_type - val[:type].size)
+          ui.print ' ' * 4
+          ui.print ui.color(name, :bold)
+          unless(val[:properties].nil? || val[:properties].empty?)
+            ui.print ' ' * (max_name - name.size)
+            ui.print ' ' * 4
+            ui.print "Reason: Updated properties: `#{val[:properties].join('`, `')}`"
+          end
+          ui.puts
         end
       end
 

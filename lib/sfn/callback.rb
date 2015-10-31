@@ -17,10 +17,10 @@ module Sfn
 
     # Create a new callback instance
     #
-    # @param [Bogo::Ui]
-    # @param [Smash] configuration hash
-    # @param [Array<String>] arguments from the CLI
-    # @param [Provider] API connection
+    # @param ui [Bogo::Ui]
+    # @param config [Smash] configuration hash
+    # @param arguments [Array<String>] arguments from the CLI
+    # @param api [Provider] API connection
     #
     # @return [self]
     def initialize(ui, config, arguments, api)

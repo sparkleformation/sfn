@@ -18,6 +18,11 @@ module Sfn
           v.is_a?(String) ? Smash[*v.split(/[=:]/, 2)] : v
         }
       )
+      attribute(
+        :plan, [TrueClass, FalseClass],
+        :default => true,
+        :description => 'Provide planning information prior to update'
+      )
 
     end
   end
