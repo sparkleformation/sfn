@@ -28,6 +28,10 @@ module Sfn
         :multiple => true,
         :description => 'Notification endpoints for stack events'
       )
+      attribute(
+        :plan, FalseClass,
+        :default => false
+      )
 
     end
   end

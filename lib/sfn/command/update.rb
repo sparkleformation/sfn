@@ -84,67 +84,34 @@ module Sfn
             apply_stacks!(stack)
 
             populate_parameters!(file, :current_parameters => stack.parameters)
-
             update_template = stack.template
 
-            stack.template = original_template
-            stack.parameters = original_parameters
-            plan = Planner::Aws.new(ui, config, arguments, stack)
-            result = plan.generate_plan(file, config_root_parameters)
-
-            ui.info ui.color('Pre-update resource planning report:', :bold)
-
-            plan_display = lambda do |info, names=[]|
-              unless(info[:stacks].empty?)
-                info[:stacks].each do |s_name, s_info|
-                  plan_display.call(s_info, [*names, s_name].compact)
-                end
-              end
-              unless(names.flatten.compact.empty?)
-                ui.puts
-                ui.puts "  #{ui.color('Update plan for:', :bold)} #{ui.color(names.join(' > '), :blue)}"
-                unless(info[:unknown].empty?)
-                  ui.puts "    #{ui.color('!!! Unknown update effect:', :red, :bold)}"
-                  print_plan_items(info, :unknown, :red)
-                  ui.puts
-                end
-                unless(info[:unavailable].empty?)
-                  ui.puts "    #{ui.color('Update request not allowed:', :red, :bold)}"
-                  print_plan_items(info, :unavailable, :red)
-                  ui.puts
-                end
-                unless(info[:replace].empty?)
-                  ui.puts "    #{ui.color('Resources to be replaced:', :red, :bold)}"
-                  print_plan_items(info, :replace, :red)
-                  ui.puts
-                end
-                unless(info[:interrupt].empty?)
-                  ui.puts "    #{ui.color('Resources to be interrupted:', :yellow, :bold)}"
-                  print_plan_items(info, :interrupt, :yellow)
-                  ui.puts
-                end
-                unless(info[:removed].empty?)
-                  ui.puts "    #{ui.color('Resources to be removed:', :red, :bold)}"
-                  print_plan_items(info, :removed, :red)
-                  ui.puts
-                end
-                unless(info[:added].empty?)
-                  ui.puts "    #{ui.color('Resources to be added:', :green, :bold)}"
-                  print_plan_items(info, :added, :green)
-                  ui.puts
-                end
-
+            if(config[:plan])
+              stack.template = original_template
+              stack.parameters = original_parameters
+              plan = build_planner(stack)
+              if(plan)
+                result = plan.generate_plan(file, config_root_parameters)
+                display_plan_information(result)
               end
             end
-            plan_display.call(result)
-
-            ui.confirm 'Apply this stack update?'
 
             stack.parameters = config_root_parameters
             stack.template = Sfn::Utils::StackParameterScrubber.scrub!(update_template)
           else
             apply_stacks!(stack)
+
+            original_parameters = stack.parameters
             populate_parameters!(stack.template, :current_parameters => stack.parameters)
+
+            if(config[:plan])
+              stack.parameters = original_parameters
+              plan = Planner::Aws.new(ui, config, arguments, stack)
+              if(plan)
+                result = plan.generate_plan(stack.template, config_root_parameters)
+                display_plan_information(result)
+              end
+            end
             stack.parameters = config_root_parameters
           end
 
@@ -174,6 +141,80 @@ module Sfn
           end
 
         end
+      end
+
+      def build_planner(stack)
+        klass_name = stack.api.class.to_s.split('::').last
+        klass = Planner.const_get(klass_name)
+        if(klass)
+          klass.new(ui, config, arguments, stack)
+        else
+          warn "Failed to build planner for current provider. No provider implemented. (`#{klass_name}`)"
+          nil
+        end
+      end
+
+      def display_plan_information(result)
+        ui.info ui.color('Pre-update resource planning report:', :bold)
+        unless(print_plan_result(result))
+          ui.info 'No resources life cycle changes detected in this update!'
+        end
+        ui.confirm 'Apply this stack update?'
+      end
+
+
+      def print_plan_result(info, names=[])
+        said_things = false
+        unless(info[:stacks].empty?)
+          info[:stacks].each do |s_name, s_info|
+            said_things = print_plan_result(s_info, [*names, s_name].compact)
+          end
+        end
+        unless(names.flatten.compact.empty?)
+          ui.puts
+          ui.puts "  #{ui.color('Update plan for:', :bold)} #{ui.color(names.join(' > '), :blue)}"
+          unless(info[:unknown].empty?)
+            ui.puts "    #{ui.color('!!! Unknown update effect:', :red, :bold)}"
+            print_plan_items(info, :unknown, :red)
+            ui.puts
+            said_things = true
+          end
+          unless(info[:unavailable].empty?)
+            ui.puts "    #{ui.color('Update request not allowed:', :red, :bold)}"
+            print_plan_items(info, :unavailable, :red)
+            ui.puts
+            said_things = true
+          end
+          unless(info[:replace].empty?)
+            ui.puts "    #{ui.color('Resources to be replaced:', :red, :bold)}"
+            print_plan_items(info, :replace, :red)
+            ui.puts
+            said_things = true
+          end
+          unless(info[:interrupt].empty?)
+            ui.puts "    #{ui.color('Resources to be interrupted:', :yellow, :bold)}"
+            print_plan_items(info, :interrupt, :yellow)
+            ui.puts
+            said_things = true
+          end
+          unless(info[:removed].empty?)
+            ui.puts "    #{ui.color('Resources to be removed:', :red, :bold)}"
+            print_plan_items(info, :removed, :red)
+            ui.puts
+            said_things = true
+          end
+          unless(info[:added].empty?)
+            ui.puts "    #{ui.color('Resources to be added:', :green, :bold)}"
+            print_plan_items(info, :added, :green)
+            ui.puts
+            said_things = true
+          end
+          unless(said_things)
+            ui.puts "    #{ui.color('No resource lifecycle changes detected!', :green)}"
+            ui.puts
+          end
+        end
+        said_things
       end
 
       # Print planning items

@@ -139,11 +139,13 @@ module Sfn
                 if(formation.compile_state)
                   current_state = current_state.merge(formation.compile_state)
                 end
-                ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(pathed_name, :green, :bold)}" unless config[:print_only]
-                formation.parameters.each do |k,v|
-                  current_state[k] = request_compile_parameter(k, v, current_state[k], !!formation.parent)
+                unless(formation.parameters.empty?)
+                  ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(pathed_name, :green, :bold)}" unless config[:print_only]
+                  formation.parameters.each do |k,v|
+                    current_state[k] = request_compile_parameter(k, v, current_state[k], !!formation.parent)
+                  end
+                  formation.compile_state = current_state
                 end
-                formation.compile_state = current_state
               end
               sparkle_packs.each do |pack|
                 sf.sparkle.add_sparkle(pack)
@@ -197,7 +199,9 @@ module Sfn
             if(config[:print_only])
               template_url = "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
             else
-              resource.properties.delete!(:stack) unless config[:plan]
+              unless(config[:plan])
+                resource.properties.delete!(:stack)
+              end
               unless(bucket)
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
               end
@@ -241,7 +245,9 @@ module Sfn
                   :current_parameters => current_parameters
                 )
               )
-              resource.properties.delete!(:stack)
+              unless(config[:plan])
+                resource.properties.delete!(:stack)
+              end
               bucket = provider.connection.api_for(:storage).buckets.get(
                 config[:nesting_bucket]
               )
