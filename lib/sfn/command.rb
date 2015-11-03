@@ -4,6 +4,9 @@ require 'bogo-cli'
 module Sfn
   class Command < Bogo::Cli::Command
 
+    include CommandModule::Callbacks
+
+    autoload :Conf, 'sfn/command/conf'
     autoload :Create, 'sfn/command/create'
     autoload :Describe, 'sfn/command/describe'
     autoload :Destroy, 'sfn/command/destroy'

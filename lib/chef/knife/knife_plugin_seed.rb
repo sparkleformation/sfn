@@ -63,6 +63,7 @@ unless(defined?(Chef::Knife::CloudformationCreate))
             base[k]
           end.compact.first || {}
           cmd_config = cmd_config.to_smash
+
           reconfig = config.find_all do |k,v|
             !v.nil?
           end
@@ -73,9 +74,14 @@ unless(defined?(Chef::Knife::CloudformationCreate))
             end
             [k,v]
           end
-          config = Smash[reconfig]
-          cmd_config = cmd_config.deep_merge(config)
+          n_config = Smash[reconfig]
+          cmd_config = cmd_config.deep_merge(n_config)
           self.class.sfn_class.new(cmd_config, name_args).execute!
+        end
+
+        # NOOP this merge as it breaks expected state
+        def merge_configs
+          config
         end
 
       end
