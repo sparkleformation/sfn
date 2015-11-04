@@ -9,6 +9,7 @@ module Sfn
     # Only values allowed designating bool type
     BOOLEAN_VALUES = [TrueClass, FalseClass]
 
+    autoload :Conf, 'sfn/config/conf'
     autoload :Create, 'sfn/config/create'
     autoload :Describe, 'sfn/config/describe'
     autoload :Destroy, 'sfn/config/destroy'
@@ -67,6 +68,7 @@ module Sfn
       :description => 'Automatically accept any requests for confirmation'
     )
 
+    attribute :conf, Conf, :coerce => proc{|v| Conf.new(v)}
     attribute :create, Create, :coerce => proc{|v| Create.new(v)}
     attribute :update, Update, :coerce => proc{|v| Update.new(v)}
     attribute :destroy, Destroy, :coerce => proc{|v| Destroy.new(v)}
