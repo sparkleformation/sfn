@@ -123,11 +123,6 @@ module Sfn
             stack_parameters = sparkle.fetch('Parameters', Smash.new)
           end
           unless(stack_parameters.empty?)
-            if(sparkle.is_a?(SparkleFormation))
-              ui.info "#{ui.color('Stack runtime parameters:', :bold)} - template: #{ui.color(sparkle.root_path.map(&:name).map(&:to_s).join(' > '), :green, :bold)}"
-            else
-              ui.info ui.color('Stack runtime parameters:', :bold)
-            end
             if(config.get(:parameter).is_a?(Array))
               config[:parameter] = Smash[
                 *config.get(:parameter).map(&:to_a).flatten
@@ -140,6 +135,7 @@ module Sfn
             else
               config.set(:parameters, config.fetch(:parameter, Smash.new))
             end
+            param_banner = false
             stack_parameters.each do |k,v|
               ns_k = (parameter_prefix + [k]).compact.join('__')
               next if config[:parameters][ns_k]
@@ -167,6 +163,14 @@ module Sfn
                 end
               end
               attempt = 0
+              if(!valid && !param_banner)
+                if(sparkle.is_a?(SparkleFormation))
+                  ui.info "#{ui.color('Stack runtime parameters:', :bold)} - template: #{ui.color(sparkle.root_path.map(&:name).map(&:to_s).join(' > '), :green, :bold)}"
+                else
+                  ui.info ui.color('Stack runtime parameters:', :bold)
+                end
+                param_banner = true
+              end
               until(valid)
                 attempt += 1
                 default = config[:parameters].fetch(

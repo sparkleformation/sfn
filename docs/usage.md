@@ -112,6 +112,7 @@ These commands are used for inspection or removal of existing stacks:
 
 * `sfn describe`
 * `sfn inspect`
+* `sfn diff`
 * `sfn events`
 * `sfn destroy`
 
