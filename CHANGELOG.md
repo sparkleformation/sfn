@@ -1,3 +1,8 @@
+## v1.1.8
+* [fix] Disable knife config mashing to get expected values (#72)
+* [feature] Add new `conf` command (#72)
+* [feature] Add planning support for stack updates (#69)
+
 ## v1.1.6
 * [fix] set proper parameter hash on apply stack (#67)
 
