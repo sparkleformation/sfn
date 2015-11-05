@@ -41,7 +41,7 @@ module Sfn
     def initialize(args={})
       args = args.to_smash
       unless(args.get(:miasma, :provider))
-        best_guess = args.fetch(:miasma, {}).keys.group_by do |key|
+        best_guess = (args[:miasma] || {}).keys.group_by do |key|
           key.to_s.split('_').first
         end.sort do |x, y|
           y.size <=> x.size
