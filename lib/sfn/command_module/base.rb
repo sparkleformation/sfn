@@ -15,25 +15,30 @@ module Sfn
 
         # @return [KnifeCloudformation::Provider]
         def provider
-          memoize(:provider, :direct) do
-            result = Sfn::Provider.new(
-              :miasma => config[:credentials],
-              :async => false,
-              :fetch => false
-            )
-            result.connection.data[:stack_types] = (
-              [
-                result.connection.class.const_get(:RESOURCE_MAPPING).detect do |klass, info|
-                  info[:api] == :orchestration
-                end.first
-              ] + custom_stack_types
-            ).compact.uniq
-            result.connection.data[:retry_ui] = ui
-            result.connection.data[:locations] = config.fetch(:locations, {})
-            result.connection.data[:retry_type] = config.fetch(:retry, :type, :exponential)
-            result.connection.data[:retry_interval] = config.fetch(:retry, :interval, 5)
-            result.connection.data[:retry_max] = config.fetch(:retry, :max_attempts, 20)
-            result
+          begin
+            memoize(:provider, :direct) do
+              result = Sfn::Provider.new(
+                :miasma => config[:credentials],
+                :async => false,
+                :fetch => false
+              )
+              result.connection.data[:stack_types] = (
+                [
+                  result.connection.class.const_get(:RESOURCE_MAPPING).detect do |klass, info|
+                    info[:api] == :orchestration
+                  end.first
+                ] + custom_stack_types
+              ).compact.uniq
+              result.connection.data[:retry_ui] = ui
+              result.connection.data[:locations] = config.fetch(:locations, {})
+              result.connection.data[:retry_type] = config.fetch(:retry, :type, :exponential)
+              result.connection.data[:retry_interval] = config.fetch(:retry, :interval, 5)
+              result.connection.data[:retry_max] = config.fetch(:retry, :max_attempts, 20)
+              result
+            end
+          rescue
+            ui.error 'Failed to create remote API connection. Please validate configuration!'
+            raise
           end
         end
 
