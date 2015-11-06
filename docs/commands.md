@@ -32,14 +32,14 @@ disable this prompting behavior, you can provide the path or name of the desired
 template:
 
 ~~~
-$ sfn create my-stack --file my-template
+$ sfn create my-stack --file my_template
 ~~~
 
 By default `sfn` will process and build SparkleFormation templates. To build a JSON
 template, disable processing in the configuration file, or via flag:
 
 ~~~
-$ sfn create my-stack --file ./my-template.json --no-processing
+$ sfn create my-stack --file ./my_template.json --no-processing
 ~~~
 
 The `create` command is only responsible for initiating the stack creation with the
@@ -50,10 +50,62 @@ command can properly notify of a _success_ or _failed_ state and exit with the p
 status code. The automatic polling behavior can be disabled:
 
 ~~~
-$ sfn create my-stack --file my-template --no-poll
+$ sfn create my-stack --file my_template --no-poll
 ~~~
 
+The `--apply-stack` option allows providing the name of an existing
+stack when creating or updating. Applying stacks is simply fetching
+the outputs from the applied stacks and automatically defaulting the
+set parameter of the new or updated stack. Outputs are matched
+by name to the parameters of the target stack. This allows an easy
+way to use values from existing stacks when building new stacks.
+
+Example:
+
+StackA:
+
+```json
+...
+  "Outputs": {
+    "LoadBalancerAddress": {
+      "Description": "Address of Load Balancer",
+      "Value": {
+        "Fn::GetAtt": [
+          "LoadBalancerResource",
+          "DNSName"
+        ]
+      }
+    }
+  }
+...
+```
+
+StackB:
+
+```json
+...
+  "Parameters": {
+    "LoadBalancerAddress": {
+      "Type": "String",
+      "Default": "unset"
+    }
+  }
+...
+```
+
+When creating StackB, if we use the `--apply-stack` option:
+
+```
+$ sfn create StackB --apply-stack StackA
+```
+
+when prompted for the stack parameters, we will find the parameter
+value for `LoadBalancerAddress` to be filled in with the output
+provided from StackA.
+
 Example of stack creation:
+
+![stack create](images/d_create.png)
 
 CREATE.mov
 
@@ -69,7 +121,7 @@ This will start an "in place" update. Only the parameters of the stack are updat
 update the template of the stack as well:
 
 ~~~
-$ sfn update my-stack --file my-template
+$ sfn update my-stack --file my_template
 ~~~
 
 The `update` command behaves like the `create` command. It is only responsible for initiating
@@ -77,12 +129,12 @@ the request with the remote provider API. It will poll the stack events to detec
 state. The polling can be disabled:
 
 ~~~
-$ sfn update my-stack --file my-template --no-poll
+$ sfn update my-stack --file my_template --no-poll
 ~~~
 
 Example of stack update:
 
-UPDATE.mov
+![stack update](images/update.png)
 
 #### Stack destroy
 
@@ -119,7 +171,7 @@ and provide a list of all matching stacks prior to destruction.
 
 Example of stack destroy:
 
-DESTROY.mov
+![stack destroy](images/d_destroy.png)
 
 ### Inspection and Information commands
 
@@ -130,6 +182,8 @@ To list existing stacks:
 ~~~
 $ sfn list
 ~~~
+
+![stack list](images/d_list.png)
 
 #### Stack describe
 
@@ -155,6 +209,8 @@ To describe only outputs:
 $ sfn describe my-stack --outputs
 ~~~
 
+![stack describe](images/d_describe.png)
+
 #### Stack events
 
 List the events genereted by the resources allocated to an existing stack:
@@ -170,6 +226,8 @@ command, the events can be polled until the stack reaches a completed state:
 $ sfn events my-stack --poll
 ~~~
 
+![stack events](images/d_events.png)
+
 #### Stack inspection
 
 Existing stacks can have their resources inspected via `sfn` using the miasma model API. The `inspect`
@@ -183,6 +241,8 @@ defined within the stack.
 ~~~
 $ sfn inspect my-stack --nodes
 ~~~
+
+![stack inspect nodes](images/d_inspect-nodes.png)
 
 When run with no options, the `inspect` command will output the data model information of the stack:
 
@@ -218,12 +278,14 @@ If only the addresses allocated to the compute instance were desired, that can b
 $ sfn inspect my-stack --attribute "resources.all.first.expand.addresses"
 ~~~
 
+![stack inspect attribute](images/d_inspect-attribute.png)
+
 #### Template print
 
 To display a generated template:
 
 ~~~
-$ sfn print --file my-template
+$ sfn print --file my_template
 ~~~
 
 #### Template validation
@@ -231,18 +293,18 @@ $ sfn print --file my-template
 Templates can be validated with the remote provide API prior to creation:
 
 ~~~
-$ sfn validate --file my-template
+$ sfn validate --file my_template
 ~~~
 
 If the template is a JSON style template, disable processing:
 
 ~~~
-$ sfn validate --file my-template --no-processing
+$ sfn validate --file my_template --no-processing
 ~~~
 
 Example of stack validate:
 
-VALIDATE.mov
+![stack validate](images/d_validate.png)
 
 #### Template diff
 
@@ -250,8 +312,10 @@ Template updates can be diff'ed against an existing stack's template to display 
 what resource modifications will be introduced by the new template:
 
 ~~~
-$ sfn diff my-stack --file my-template
+$ sfn diff my-stack --file my_template
 ~~~
+
+![stack diff](images/d_diff.png)
 
 ### Configuration commands
 
