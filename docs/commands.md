@@ -64,7 +64,7 @@ Example:
 
 StackA:
 
-```json
+~~~json
 ...
   "Outputs": {
     "LoadBalancerAddress": {
@@ -78,11 +78,11 @@ StackA:
     }
   }
 ...
-```
+~~~
 
 StackB:
 
-```json
+~~~json
 ...
   "Parameters": {
     "LoadBalancerAddress": {
@@ -91,13 +91,13 @@ StackB:
     }
   }
 ...
-```
+~~~
 
 When creating StackB, if we use the `--apply-stack` option:
 
-```
+~~~
 $ sfn create StackB --apply-stack StackA
-```
+~~~
 
 when prompted for the stack parameters, we will find the parameter
 value for `LoadBalancerAddress` to be filled in with the output
@@ -105,9 +105,7 @@ provided from StackA.
 
 Example of stack creation:
 
-![stack create](images/d_create.png)
-
-CREATE.mov
+![stack create](./images/d_create.png)
 
 #### Stack update
 
@@ -134,7 +132,7 @@ $ sfn update my-stack --file my_template --no-poll
 
 Example of stack update:
 
-![stack update](images/d_update.png)
+![stack update](./images/d_update.png)
 
 #### Stack destroy
 
@@ -171,7 +169,7 @@ and provide a list of all matching stacks prior to destruction.
 
 Example of stack destroy:
 
-![stack destroy](images/d_destroy.png)
+![stack destroy](./images/d_destroy.png)
 
 ### Inspection and Information commands
 
@@ -183,7 +181,9 @@ To list existing stacks:
 $ sfn list
 ~~~
 
-![stack list](images/d_list.png)
+Example of a stack list:
+
+![stack list](./images/d_list.png)
 
 #### Stack describe
 
@@ -209,7 +209,9 @@ To describe only outputs:
 $ sfn describe my-stack --outputs
 ~~~
 
-![stack describe](images/d_describe.png)
+Example of a stack describe:
+
+![stack describe](./images/d_describe.png)
 
 #### Stack events
 
@@ -226,7 +228,9 @@ command, the events can be polled until the stack reaches a completed state:
 $ sfn events my-stack --poll
 ~~~
 
-![stack events](images/d_events.png)
+Example of stack events:
+
+![stack events](./images/d_events.png)
 
 #### Stack inspection
 
@@ -242,7 +246,9 @@ defined within the stack.
 $ sfn inspect my-stack --nodes
 ~~~
 
-![stack inspect nodes](images/d_inspect-nodes.png)
+Example of stack node inspection:
+
+![stack inspect nodes](./images/d_inspect-nodes.png)
 
 When run with no options, the `inspect` command will output the data model information of the stack:
 
@@ -278,7 +284,9 @@ If only the addresses allocated to the compute instance were desired, that can b
 $ sfn inspect my-stack --attribute "resources.all.first.expand.addresses"
 ~~~
 
-![stack inspect attribute](images/d_inspect-attribute.png)
+Example of stack attribute inspection
+
+![stack inspect attribute](./images/d_inspect-attribute.png)
 
 #### Template print
 
@@ -304,7 +312,7 @@ $ sfn validate --file my_template --no-processing
 
 Example of stack validate:
 
-![stack validate](images/d_validate.png)
+![stack validate](./images/d_validate.png)
 
 #### Template diff
 
@@ -315,7 +323,9 @@ what resource modifications will be introduced by the new template:
 $ sfn diff my-stack --file my_template
 ~~~
 
-![stack diff](images/d_diff.png)
+Example of stack diff:
+
+![stack diff](./images/d_diff.png)
 
 ### Configuration commands
 
