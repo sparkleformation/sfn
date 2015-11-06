@@ -134,7 +134,7 @@ $ sfn update my-stack --file my_template --no-poll
 
 Example of stack update:
 
-![stack update](images/update.png)
+![stack update](images/d_update.png)
 
 #### Stack destroy
 
