@@ -9,6 +9,11 @@ module Sfn
       module InstanceMethods
 
         # @return [Array<String>]
+        def valid_stack_types
+          provider.connection.data[:stack_types]
+        end
+
+        # @return [Array<String>]
         def custom_stack_types
           [config.fetch(:stack_types, [])].flatten.compact
         end
