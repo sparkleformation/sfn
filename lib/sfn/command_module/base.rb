@@ -29,11 +29,14 @@ module Sfn
                   end.first
                 ] + custom_stack_types
               ).compact.uniq
+              retry_config = config.fetch(:retry,
+                config.fetch(:retries, {})
+              )
               result.connection.data[:retry_ui] = ui
               result.connection.data[:locations] = config.fetch(:locations, {})
-              result.connection.data[:retry_type] = config.fetch(:retry, :type, :exponential)
-              result.connection.data[:retry_interval] = config.fetch(:retry, :interval, 5)
-              result.connection.data[:retry_max] = config.fetch(:retry, :max_attempts, 20)
+              result.connection.data[:retry_type] = retry_config.fetch(:type, :exponential)
+              result.connection.data[:retry_interval] = retry_config.fetch(:interval, 5)
+              result.connection.data[:retry_max] = retry_config.fetch(:max_attempts, 20)
               result
             end
           rescue
