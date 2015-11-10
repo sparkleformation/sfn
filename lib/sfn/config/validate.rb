@@ -7,7 +7,8 @@ module Sfn
 
       attribute(
         :processing, [TrueClass, FalseClass],
-        :description => 'Call the unicorns and explode the glitter bombs'
+        :description => 'Call the unicorns and explode the glitter bombs',
+        :default => true
       )
       attribute(
         :file, String,
