@@ -1,3 +1,9 @@
+## v1.1.10
+* [enhancement] Better configuration related errors
+* [fix] Planning display on stack removal (#75)
+* [fix] Remove stack properties on update request (#76)
+* [enhancement] Add `retries` config alias for `retry` (#77)
+
 ## v1.1.8
 * [fix] Disable knife config mashing to get expected values (#72)
 * [feature] Add new `conf` command (#72)
