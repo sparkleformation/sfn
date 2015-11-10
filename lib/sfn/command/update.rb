@@ -247,7 +247,7 @@ module Sfn
       def scrub_template(template)
         template = Sfn::Utils::StackParameterScrubber.scrub!(template)
         (template['Resources'] || {}).each do |r_name, r_content|
-          if(custom_stack_types.include?(r_content['Type']))
+          if(valid_stack_types.include?(r_content['Type']))
             (r_content['Properties'] || {}).delete('Stack')
           end
         end
