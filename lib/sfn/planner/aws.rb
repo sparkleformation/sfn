@@ -243,9 +243,8 @@ module Sfn
           n_exists = is_stack?(update_template['Resources'].fetch(n_name, {})['Type'])
           n_template = update_template['Resources'].fetch(n_name, {}).fetch('Properties', {})['Stack']
           n_parameters = update_template['Resources'].fetch(n_name, {}).fetch('Properties', {})['Parameters']
-          n_type = update_template['Resources'].fetch(n_name, {}).fetch('Type',
+          n_type = update_template['Resources'].fetch(n_name, {})['Type'] ||
             origin_template['Resources'][n_name]['Type']
-          )
           resource = Smash.new(
             :name => n_name,
             :type => n_type,
