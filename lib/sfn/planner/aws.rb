@@ -242,7 +242,7 @@ module Sfn
           o_stack = stack.nested_stacks(false).detect{|s| s.data[:logical_id] == n_name}
           n_exists = is_stack?(update_template['Resources'].fetch(n_name, {})['Type'])
           n_template = update_template['Resources'].fetch(n_name, {}).fetch('Properties', {})['Stack']
-          n_parameters = update_template['Resources'].fetch(n_name, {}).fetch('Properties', {})['Parameters']
+          n_parameters = update_template['Resources'].fetch(n_name, {}).fetch('Properties', {}).fetch('Parameters', {})
           n_type = update_template['Resources'].fetch(n_name, {})['Type'] ||
             origin_template['Resources'][n_name]['Type']
           resource = Smash.new(
