@@ -80,8 +80,10 @@ Builtin callbacks distributed with `sfn`:
 
 #### Stack Policy Callback
 
-The Stack Policy Callback utilizes the [policy feature][sparkle_policy]
-built into the [SparkleFormation][sparkle_formation] library.
+The Stack Policy Callback utilizes the [policy feature](http://www.sparkleformation.io/docs/sparkle_formation/stack-policies.html)
+built into the [SparkleFormation](http://www.sparkleformation.io/docs/sparkle_formation)
+library.
+
 To enable the callback:
 
 ~~~ruby
