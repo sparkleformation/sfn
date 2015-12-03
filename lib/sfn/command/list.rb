@@ -48,9 +48,9 @@ module Sfn
       # @return [Array<String>] default attributes to display
       def default_attributes
         if(provider.connection.provider == :aws)
-          %w(name created status template_description)
+          %w(name created updated status template_description)
         else
-          %w(name created status description)
+          %w(name created updated status description)
         end
       end
 
