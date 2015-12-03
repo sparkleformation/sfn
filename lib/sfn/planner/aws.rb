@@ -1,6 +1,3 @@
-require 'pp'
-
-
 require 'sfn'
 require 'sparkle_formation/aws'
 require 'hashdiff'
@@ -13,11 +10,15 @@ module Sfn
       # Customized translator to dereference template
       class Translator < SparkleFormation::Translation
 
+        MAP = {}
+        REF_MAPPING = {}
+        FN_MAPPING = {}
+
         # @return [Array<String>] flagged items for value replacement
         attr_reader :flagged
 
         # Override to init flagged array
-        def initialize(*_)
+        def initialize(template_hash, args={})
           super
           @flagged = []
         end
@@ -147,6 +148,21 @@ module Sfn
 
       protected
 
+      # Set global parameters available for all template translations.
+      # These are pseudo-parameters that are provided by the
+      # orchestration api runtime.
+      #
+      # @return [Hash]
+      def get_global_parameters(stack)
+        Smash.new(
+          'AWS::Region' => stack.api.aws_region,
+          'AWS::AccountId' => stack.id.split(':')[4],
+          'AWS::NotificationARNs' => stack.notification_topics,
+          'AWS::StackId' => stack.id,
+          'AWS::StackName' => stack.name
+        ).merge(config.fetch(:planner, :global_parameters, {}))
+      end
+
       # Generate plan for stack
       #
       # @param stack [Miasma::Models::Orchestration::Stack]
@@ -166,7 +182,11 @@ module Sfn
           :n_outputs => []
         )
 
-        origin_template = dereference_template("#{stack.data.checksum}_origin", stack.template, stack.parameters)
+        origin_template = dereference_template(
+          "#{stack.data.checksum}_origin",
+          stack.template,
+          stack.parameters.merge(get_global_parameters(stack))
+        )
 
         t_key = "#{stack.data.checksum}_#{stack.data.fetch(:logical_id, stack.name)}"
         run_stack_diff(stack, t_key, plan_results, origin_template, new_template, new_parameters)
@@ -227,23 +247,22 @@ module Sfn
           end
         end
 
-        update_template = dereference_template(
-          t_key, new_template.to_smash, new_parameters,
-          plan_results[:replace].keys + plan_results[:unavailable].keys
-        )
+        new_parameters.merge!(get_global_parameters(stack))
+
+        new_template_hash = new_template.to_smash
 
         o_nested_stacks = origin_template['Resources'].find_all do |s_name, s_val|
           is_stack?(s_val['Type'])
         end.map(&:first)
-        n_nested_stacks = new_template['Resources'].find_all do |s_name, s_val|
+        n_nested_stacks = new_template_hash['Resources'].find_all do |s_name, s_val|
           is_stack?(s_val['Type'])
         end.map(&:first)
         [o_nested_stacks + n_nested_stacks].flatten.compact.uniq.each do |n_name|
           o_stack = stack.nested_stacks(false).detect{|s| s.data[:logical_id] == n_name}
-          n_exists = is_stack?(update_template['Resources'].fetch(n_name, {})['Type'])
-          n_template = update_template['Resources'].fetch(n_name, {}).fetch('Properties', {})['Stack']
-          n_parameters = update_template['Resources'].fetch(n_name, {}).fetch('Properties', {}).fetch('Parameters', {})
-          n_type = update_template['Resources'].fetch(n_name, {})['Type'] ||
+          n_exists = is_stack?(new_template_hash['Resources'].fetch(n_name, {})['Type'])
+          n_template = new_template_hash['Resources'].fetch(n_name, {}).fetch('Properties', {})['Stack']
+          n_parameters = new_template_hash['Resources'].fetch(n_name, {}).fetch('Properties', {}).fetch('Parameters', {})
+          n_type = new_template_hash['Resources'].fetch(n_name, {})['Type'] ||
             origin_template['Resources'][n_name]['Type']
           resource = Smash.new(
             :name => n_name,
@@ -267,9 +286,16 @@ module Sfn
             plan_results[:added][n_name] = resource
           end
         end
+
         n_nested_stacks.each do |ns_name|
-          update_template['Resources'][ns_name]['Properties'].delete('Stack')
+          new_template_hash['Resources'][ns_name]['Properties'].delete('Stack')
         end
+
+        update_template = dereference_template(
+          t_key, new_template_hash, new_parameters,
+          plan_results[:replace].keys + plan_results[:unavailable].keys
+        )
+
         HashDiff.diff(origin_template, MultiJson.load(MultiJson.dump(update_template))).group_by do |item|
           item[1]
         end.each do |a_path, diff_items|
@@ -374,8 +400,14 @@ module Sfn
         flagged.each do |item|
           translator.flag_ref(item)
         end
-        template['Resources'] = translator.dereference_processor(template['Resources'], ['Ref', 'Fn', 'DEREF'])
-        template['Outputs'] = translator.dereference_processor(template['Outputs'], ['Ref', 'Fn', 'DEREF'])
+        template.keys.each do |t_key|
+          next if ['Outputs', 'Resources'].include?(t_key)
+          template[t_key] = translator.dereference_processor(template[t_key], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap'])
+        end
+        translator.original.replace(template)
+        template['Resources'] = translator.dereference_processor(template['Resources'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap'])
+        template['Outputs'] = translator.dereference_processor(template['Outputs'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap'])
+        translator.original.replace({})
         template
       end
 
@@ -388,7 +420,9 @@ module Sfn
       def translator_for(t_key, template=nil, parameters=nil)
         o_translator = translators[t_key]
         if(template)
-          translator = Translator.new(template, :parameters => parameters)
+          translator = Translator.new(template,
+            :parameters => parameters
+          )
           if(o_translator)
             o_translator.flagged.each do |i|
               translator.flag_ref(i)
@@ -398,7 +432,9 @@ module Sfn
           o_translator = translator
         else
           unless(o_translator)
-            o_translator = Translator.new({}, :parameters => {})
+            o_translator = Translator.new({},
+              :parameters => {}
+            )
           end
         end
         o_translator
