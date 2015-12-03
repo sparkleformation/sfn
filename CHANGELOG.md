@@ -1,3 +1,8 @@
+## v1.1.12
+* [enhancement] Include updated time information on stack list
+* [enhancement] Support pseudo-parameters in update planning
+  * AWS only as it is currently the only implementation
+
 ## v1.1.10
 * [enhancement] Better configuration related errors
 * [fix] Planning display on stack removal (#75)
