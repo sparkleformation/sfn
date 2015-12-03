@@ -247,6 +247,12 @@ module Sfn
               )
               unless(config[:plan])
                 resource.properties.delete!(:stack)
+              else
+                (stack_definition['Resources'] || {}).each do |_, info|
+                  if(valid_stack_types.include?(info['Type']))
+                    info['Properties'].delete('Stack')
+                  end
+                end
               end
               bucket = provider.connection.api_for(:storage).buckets.get(
                 config[:nesting_bucket]
