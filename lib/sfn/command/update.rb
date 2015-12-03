@@ -164,57 +164,58 @@ module Sfn
 
 
       def print_plan_result(info, names=[])
-        said_things = false
+        said_any_things = false
         unless(info[:stacks].empty?)
           info[:stacks].each do |s_name, s_info|
             said_things = print_plan_result(s_info, [*names, s_name].compact)
           end
         end
         unless(names.flatten.compact.empty?)
+          said_things = false
           ui.puts
           ui.puts "  #{ui.color('Update plan for:', :bold)} #{ui.color(names.join(' > '), :blue)}"
           unless(info[:unknown].empty?)
             ui.puts "    #{ui.color('!!! Unknown update effect:', :red, :bold)}"
             print_plan_items(info, :unknown, :red)
             ui.puts
-            said_things = true
+            said_any_things = said_things = true
           end
           unless(info[:unavailable].empty?)
             ui.puts "    #{ui.color('Update request not allowed:', :red, :bold)}"
             print_plan_items(info, :unavailable, :red)
             ui.puts
-            said_things = true
+            said_any_things = said_things = true
           end
           unless(info[:replace].empty?)
             ui.puts "    #{ui.color('Resources to be replaced:', :red, :bold)}"
             print_plan_items(info, :replace, :red)
             ui.puts
-            said_things = true
+            said_any_things = said_things = true
           end
           unless(info[:interrupt].empty?)
             ui.puts "    #{ui.color('Resources to be interrupted:', :yellow, :bold)}"
             print_plan_items(info, :interrupt, :yellow)
             ui.puts
-            said_things = true
+            said_any_things = said_things = true
           end
           unless(info[:removed].empty?)
             ui.puts "    #{ui.color('Resources to be removed:', :red, :bold)}"
             print_plan_items(info, :removed, :red)
             ui.puts
-            said_things = true
+            said_any_things = said_things = true
           end
           unless(info[:added].empty?)
             ui.puts "    #{ui.color('Resources to be added:', :green, :bold)}"
             print_plan_items(info, :added, :green)
             ui.puts
-            said_things = true
+            said_any_things = said_things = true
           end
           unless(said_things)
             ui.puts "    #{ui.color('No resource lifecycle changes detected!', :green)}"
             ui.puts
           end
         end
-        said_things
+        said_any_things
       end
 
       # Print planning items

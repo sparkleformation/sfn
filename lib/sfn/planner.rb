@@ -14,6 +14,8 @@ module Sfn
     attr_reader :arguments
     # @return [Miasma::Models::Orchestration::Stack] existing remote stack
     attr_reader :origin_stack
+    # @return [Hash] custom options
+    attr_reader :options
 
     # Create a new planner instance
     #
@@ -21,13 +23,15 @@ module Sfn
     # @param config [Smash]
     # @param arguments [Array<String>]
     # @param stack [Miasma::Models::Orchestration::Stack]
+    # @param opts [Hash]
     #
     # @return [self]
-    def initialize(ui, config, arguments, stack)
+    def initialize(ui, config, arguments, stack, opts={})
       @ui = ui
       @config = config
       @arguments = arguments
       @origin_stack = stack
+      @options = opts
     end
 
     # Generate update report
