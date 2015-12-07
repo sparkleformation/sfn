@@ -28,7 +28,7 @@ module Sfn
       end
       super(cli_opts, args)
       run_callbacks_for(:after_config)
-      run_callbacks_for("after_config_#{Bogo::Utility.snake(self.class.name)}")
+      run_callbacks_for("after_config_#{Bogo::Utility.snake(self.class.name.split('::').last)}")
     end
 
     # @return [Smash]
