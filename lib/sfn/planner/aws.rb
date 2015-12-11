@@ -396,6 +396,7 @@ module Sfn
       #
       # @return [Hash]
       def dereference_template(t_key, template, parameters, flagged=[])
+        template = template.to_smash
         translator = translator_for(t_key, template, parameters)
         flagged.each do |item|
           translator.flag_ref(item)
