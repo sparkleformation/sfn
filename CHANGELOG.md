@@ -1,3 +1,6 @@
+## v1.1.16
+* [fix] Duplicate template when dereferencing within planner
+
 ## v1.1.14
 * [fix] Use correct name part for building callback name
 
