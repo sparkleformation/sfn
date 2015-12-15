@@ -30,7 +30,7 @@ module Sfn
       )
       attribute(
         :translate, String,
-        :description => 'Translate generated template to given prodiver'
+        :description => 'Translate generated template to given provider'
       )
       attribute(
         :translate_chunk, Integer,
