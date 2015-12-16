@@ -12,7 +12,7 @@ The develop branch is the current edge of development.
 
 ## Pull requests
 
-* https://github.com/heavywater/sfn/pulls
+* https://github.com/sparkleformation/sfn/pulls
 
 Please base all pull requests off the `develop` branch. Merges to
 `master` only occur through the `develop` branch. Pull requests
@@ -32,4 +32,4 @@ bundle exec rake
 
 Need to report an issue? Use the github issues:
 
-* https://github.com/heavywater/sfn/issues
+* https://github.com/sparkleformation/sfn/issues
