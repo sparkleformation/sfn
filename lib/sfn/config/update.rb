@@ -13,15 +13,52 @@ module Sfn
       attribute(
         :parameter, Smash,
         :multiple => true,
+        :description => '[DEPRECATED - use `parameters`] Pass template parameters directly (ParamName:ParamValue)',
+        :coerce => lambda{|v, inst|
+          result = inst.data[:parameter] || Array.new
+          case v
+          when String
+            v.split(',').each do |item|
+              result.push(Smash[*item.split(/[=:]/, 2)])
+            end
+          else
+            result.push(v.to_smash)
+          end
+          {:bogo_multiple => result}
+        }
+      )
+      attribute(
+        :parameters, Smash,
         :description => 'Pass template parameters directly (ParamName:ParamValue)',
         :coerce => lambda{|v|
-          v.is_a?(String) ? Smash[*v.split(/[=:]/, 2)] : v
+          case v
+          when String
+            Smash[v.split(',').map{|x| v.split(/[=:]/, 2)}]
+          when Hash
+            v.to_smash
+          else
+            v
+          end
         }
       )
       attribute(
         :plan, [TrueClass, FalseClass],
         :default => true,
         :description => 'Provide planning information prior to update'
+      )
+      attribute(
+        :compile_parameters, Smash,
+        :description => 'Pass template compile time parameters directly (ParamName:ParamValue)',
+        :coerce => lambda{|v|
+          case v
+          when String
+            Smash[v.split(',').map{|x| v.split(/[=:]/, 2)}]
+          when Hash
+            v.to_smash
+          else
+            v
+          end
+        }
       )
 
     end

@@ -42,7 +42,7 @@ module Sfn
           v
         end
       },
-      :description => 'Provider credentials'
+      :description => 'Provider credentials (CredentialName:CredentialValue)'
     )
     attribute(
       :ignore_parameters, String,
