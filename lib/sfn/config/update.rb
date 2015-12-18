@@ -29,17 +29,7 @@ module Sfn
       )
       attribute(
         :parameters, Smash,
-        :description => 'Pass template parameters directly (ParamName:ParamValue)',
-        :coerce => lambda{|v|
-          case v
-          when String
-            Smash[v.split(',').map{|x| v.split(/[=:]/, 2)}]
-          when Hash
-            v.to_smash
-          else
-            v
-          end
-        }
+        :description => 'Pass template parameters directly'
       )
       attribute(
         :plan, [TrueClass, FalseClass],
@@ -48,17 +38,7 @@ module Sfn
       )
       attribute(
         :compile_parameters, Smash,
-        :description => 'Pass template compile time parameters directly (ParamName:ParamValue)',
-        :coerce => lambda{|v|
-          case v
-          when String
-            Smash[v.split(',').map{|x| v.split(/[=:]/, 2)}]
-          when Hash
-            v.to_smash
-          else
-            v
-          end
-        }
+        :description => 'Pass template compile time parameters directly'
       )
 
     end
