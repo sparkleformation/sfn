@@ -6,6 +6,33 @@ module Sfn
   # Top level configuration
   class Config < Bogo::Config
 
+    # Override attribute helper to detect Hash types and automatically
+    # add type conversion for CLI provided values + description update
+    #
+    # @param name [String, Symbol] name of attribute
+    # @param type [Class, Array<Class>] valid types
+    # @param info [Hash] attribute information
+    # @return [Hash]
+    def self.attribute(name, type, info=Smash.new)
+      if([type].flatten.any?{|t| t.ancestors.include?(Hash)})
+        unless(info[:coerce])
+          info[:coerce] = lambda do |v|
+            case v
+            when String
+              Smash[v.split(',').map{|x| v.split(/[=:]/, 2)}]
+            when Hash
+              v.to_smash
+            else
+              v
+            end
+          end
+          info[:description] ||= ''
+          info[:description] << ' (Key:Value[,Key:Value,...])'
+        end
+      end
+      super(name, type, info)
+    end
+
     # Only values allowed designating bool type
     BOOLEAN_VALUES = [TrueClass, FalseClass]
 
@@ -32,17 +59,7 @@ module Sfn
 
     attribute(
       :credentials, Smash,
-      :coerce => proc{|v|
-        case v
-        when String
-          Smash[v.split(',').map{|x| v.split(/[=:]/, 2)}]
-        when Hash
-          v.to_smash
-        else
-          v
-        end
-      },
-      :description => 'Provider credentials (CredentialName:CredentialValue)'
+      :description => 'Provider credentials'
     )
     attribute(
       :ignore_parameters, String,
