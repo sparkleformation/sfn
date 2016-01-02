@@ -54,7 +54,7 @@ module Sfn
         :sparkle_pack, String,
         :multiple => true,
         :description => 'Load SparklePack gem',
-        :coerce => lambda{|s| require s; s}
+        :coerce => lambda{|s| s.to_s}
       )
 
     end

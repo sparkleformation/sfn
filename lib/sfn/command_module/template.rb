@@ -80,8 +80,19 @@ module Sfn
         # @return [Array<SparkleFormation::SparklePack>]
         def sparkle_packs
           memoize(:sparkle_packs) do
-            config.fetch(:sparkle_pack, []).map do |sparkle_name|
-              SparkleFormation::Sparkle.new(:name => sparkle_name)
+            [config.fetch(:sparkle_pack, [])].flatten.compact.map do |sparkle_name|
+              begin
+                require sparkle_name
+              rescue LoadError
+                ui.fatal "Failed to locate sparkle pack `#{sparkle_name}` for loading!"
+                raise
+              end
+              begin
+                SparkleFormation::Sparkle.new(:name => sparkle_name)
+              rescue ArgumentError
+                ui.fatal "Failed to properly setup sparkle pack `#{sparkle_pack}`. Check implementation."
+                raise
+              end
             end
           end
         end
