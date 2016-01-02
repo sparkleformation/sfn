@@ -367,7 +367,7 @@ module Sfn
             end
           end
         elsif(path.start_with?('Outputs'))
-          set_resource(:outputs, results, path.split('.')[1], {:properties => []})
+          set_resource(:outputs, results, path.split('.').last, {:properties => []})
         end
       end
 
