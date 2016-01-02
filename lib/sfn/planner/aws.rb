@@ -367,7 +367,13 @@ module Sfn
             end
           end
         elsif(path.start_with?('Outputs'))
-          set_resource(:outputs, results, path.split('.')[1], {:properties => []})
+          o_resource_name = path.split('.')[1]
+          if(o_resource_name)
+            set_resource(
+              :outputs, results, o_resource_name,
+              :properties => []
+            )
+          end
         end
       end
 
