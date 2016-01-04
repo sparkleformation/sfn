@@ -8,7 +8,8 @@ module Sfn
       attribute(
         :apply_stack, String,
         :multiple => true,
-        :description => 'Apply outputs from stack to input parameters'
+        :description => 'Apply outputs from stack to input parameters',
+        :short_flag => 'A'
       )
       attribute(
         :parameter, Smash,
@@ -25,20 +26,24 @@ module Sfn
             result.push(v.to_smash)
           end
           {:bogo_multiple => result}
-        }
+        },
+        :short_flag => 'R'
       )
       attribute(
         :parameters, Smash,
-        :description => 'Pass template parameters directly'
+        :description => 'Pass template parameters directly',
+        :short_flag => 'm'
       )
       attribute(
         :plan, [TrueClass, FalseClass],
         :default => true,
-        :description => 'Provide planning information prior to update'
+        :description => 'Provide planning information prior to update',
+        :short_flag => 'l'
       )
       attribute(
         :compile_parameters, Smash,
-        :description => 'Pass template compile time parameters directly'
+        :description => 'Pass template compile time parameters directly',
+        :short_flag => 'o'
       )
 
     end

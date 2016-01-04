@@ -7,7 +7,8 @@ module Sfn
 
       attribute(
         :generate, [TrueClass, FalseClass],
-        :description => 'Generate a basic configuration file'
+        :description => 'Generate a basic configuration file',
+        :short_flag => 'g'
       )
 
     end
