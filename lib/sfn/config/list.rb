@@ -8,16 +8,19 @@ module Sfn
       attribute(
         :attribute, String,
         :multiple => true,
-        :description => 'Attribute of stack to print'
+        :description => 'Attribute of stack to print',
+        :short_flag => 'a'
       )
       attribute(
         :all_attributes, [TrueClass, FalseClass],
-        :description => 'Print all available attributes'
+        :description => 'Print all available attributes',
+        :short_flag => 'A'
       )
       attribute(
         :status, String,
         :multiple => true,
-        :description => 'Match stacks with given status. Use "none" to disable.'
+        :description => 'Match stacks with given status. Use "none" to disable.',
+        :short_flag => 's'
       )
 
     end

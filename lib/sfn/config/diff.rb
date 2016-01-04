@@ -7,7 +7,8 @@ module Sfn
       attribute(
         :raw_diff, [TrueClass, FalseClass],
         :default => false,
-        :description => 'Display raw diff information'
+        :description => 'Display raw diff information',
+        :short_flag => 'w'
       )
     end
   end

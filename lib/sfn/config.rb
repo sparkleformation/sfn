@@ -54,35 +54,42 @@ module Sfn
 
     attribute(
       :config, String,
-      :description => 'Configuration file path'
+      :description => 'Configuration file path',
+      :short_flag => 'c'
     )
 
     attribute(
       :credentials, Smash,
-      :description => 'Provider credentials'
+      :description => 'Provider credentials',
+      :short_flag => 'C'
     )
     attribute(
       :ignore_parameters, String,
       :multiple => true,
-      :description => 'Parameters to ignore during modifications'
+      :description => 'Parameters to ignore during modifications',
+      :short_flag => 'i'
     )
     attribute(
       :interactive_parameters, [TrueClass, FalseClass],
       :default => true,
-      :description => 'Prompt for template parameters'
+      :description => 'Prompt for template parameters',
+      :short_flag => 'I'
     )
     attribute(
       :poll, [TrueClass, FalseClass],
       :default => true,
-      :description => 'Poll stack events on modification actions'
+      :description => 'Poll stack events on modification actions',
+      :short_flag => 'p'
     )
     attribute(
       :defaults, [TrueClass, FalseClass],
-      :description => 'Automatically accept default values'
+      :description => 'Automatically accept default values',
+      :short_flag => 'd'
     )
     attribute(
       :yes, [TrueClass, FalseClass],
-      :description => 'Automatically accept any requests for confirmation'
+      :description => 'Automatically accept any requests for confirmation',
+      :short_flag => 'y'
     )
 
     attribute :conf, Conf, :coerce => proc{|v| Conf.new(v)}
@@ -120,8 +127,9 @@ module Sfn
           end
         end.compact.reverse.inject(Smash.new){|m, n| m.deep_merge(n)}.map do |name, info|
           next unless info[:description]
-          short = name.chars.zip(name.chars.map(&:upcase)).flatten.detect do |c|
-            !shorts.include?(c)
+          short = info[:short_flag]
+          if(!short.to_s.empty? && shorts.include?(short))
+            raise ArgumentError.new "Short flag already in use! (`#{short}` not available for `#{klass}`)"
           end
           shorts << short
           info[:short] = short
