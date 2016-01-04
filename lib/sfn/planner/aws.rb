@@ -240,10 +240,12 @@ module Sfn
         translator = translator_for(t_key)
 
         new_parameters = new_parameters.dup
-        stack.parameters.each do |k,v|
-          if(new_parameters[k].is_a?(Hash))
-            val = translator.dereference(new_parameters[k])
-            new_parameters[k] = val == new_parameters[k] ? v : val
+        if(stack.parameters)
+          stack.parameters.each do |k,v|
+            if(new_parameters[k].is_a?(Hash))
+              val = translator.dereference(new_parameters[k])
+              new_parameters[k] = val == new_parameters[k] ? v : val
+            end
           end
         end
 
@@ -251,10 +253,10 @@ module Sfn
 
         new_template_hash = new_template.to_smash
 
-        o_nested_stacks = origin_template['Resources'].find_all do |s_name, s_val|
+        o_nested_stacks = origin_template.fetch('Resources', {}).find_all do |s_name, s_val|
           is_stack?(s_val['Type'])
         end.map(&:first)
-        n_nested_stacks = new_template_hash['Resources'].find_all do |s_name, s_val|
+        n_nested_stacks = new_template_hash.fetch('Resources', {}).find_all do |s_name, s_val|
           is_stack?(s_val['Type'])
         end.map(&:first)
         [o_nested_stacks + n_nested_stacks].flatten.compact.uniq.each do |n_name|
@@ -409,11 +411,21 @@ module Sfn
         end
         template.keys.each do |t_key|
           next if ['Outputs', 'Resources'].include?(t_key)
-          template[t_key] = translator.dereference_processor(template[t_key], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap'])
+          template[t_key] = translator.dereference_processor(
+            template[t_key], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap']
+          )
         end
         translator.original.replace(template)
-        template['Resources'] = translator.dereference_processor(template['Resources'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap'])
-        template['Outputs'] = translator.dereference_processor(template['Outputs'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap'])
+        if(template['Resources'])
+          template['Resources'] = translator.dereference_processor(
+            template['Resources'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap']
+          )
+        end
+        if(template['Outputs'])
+          template['Outputs'] = translator.dereference_processor(
+            template['Outputs'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap']
+          )
+        end
         translator.original.replace({})
         template
       end
