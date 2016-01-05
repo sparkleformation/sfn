@@ -123,6 +123,7 @@ module Sfn
                 if(stack.reload.state == :update_complete)
                   ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
                   stack.resources.reload
+                  stack.outputs.reload
                   namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
                 else
                   ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
