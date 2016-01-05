@@ -73,6 +73,14 @@ $ knife sparkleformation --help
 |                            | Valid         | `String`
 |                            | Default       | none
 |----------------------------|---------------|---------------------------------------------------------------
+| `sparkle_pack`             | Description   | SparklePacks to load
+|                            | Valid         | `Array<String>`
+|                            | Default       | none
+|----------------------------|---------------|---------------------------------------------------------------
+| `parameters`               | Description   | Stack runtime parameters
+|                            | Valid         | `Hash`
+|                            | Default       | none
+|----------------------------|---------------|---------------------------------------------------------------
 | `credentials`              | Description   | API credentials for target orchestration API
 |                            | Valid         | `Hash`
 |                            | Default       | none
