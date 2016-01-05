@@ -123,7 +123,6 @@ module Sfn
                 if(stack.reload.state == :update_complete)
                   ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
                   stack.resources.reload
-                  stack.outputs.reload
                   namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
                 else
                   ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
@@ -169,7 +168,7 @@ module Sfn
         said_any_things = false
         unless(info[:stacks].empty?)
           info[:stacks].each do |s_name, s_info|
-            said_things = print_plan_result(s_info, [*names, s_name].compact)
+            said_any_things ||= print_plan_result(s_info, [*names, s_name].compact)
           end
         end
         unless(names.flatten.compact.empty?)
@@ -215,6 +214,7 @@ module Sfn
           unless(said_things)
             ui.puts "    #{ui.color('No resource lifecycle changes detected!', :green)}"
             ui.puts
+            said_any_things = true
           end
         end
         said_any_things
