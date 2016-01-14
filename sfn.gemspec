@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.add_dependency 'bogo-cli', '~> 0.1.21'
   s.add_dependency 'miasma', '~> 0.2.27'
-  s.add_dependency 'miasma-aws', '~> 0.1.16'
+  s.add_dependency 'miasma-aws', '~> 0.2.0'
   s.add_dependency 'net-ssh'
   s.add_dependency 'sparkle_formation', '~> 1.1'
   s.add_dependency 'hashdiff', '~> 0.2.2'
