@@ -29,9 +29,9 @@ module Sfn
               )
               result.connection.data[:stack_types] = (
                 [
-                  result.connection.class.const_get(:RESOURCE_MAPPING).detect do |klass, info|
+                  (result.connection.class.const_get(:RESOURCE_MAPPING).detect do |klass, info|
                     info[:api] == :orchestration
-                  end.first
+                  end || []).first
                 ] + custom_stack_types
               ).compact.uniq
               retry_config = config.fetch(:retry,
