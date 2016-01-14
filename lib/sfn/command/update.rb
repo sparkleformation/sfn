@@ -126,7 +126,7 @@ module Sfn
                   namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
                 else
                   ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-                  raise
+                  raise 'Stack did not reach a successful update completion state.'
                 end
               else
                 ui.warn 'Stack state polling has been disabled.'
