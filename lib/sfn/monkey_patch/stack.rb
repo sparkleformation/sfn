@@ -18,7 +18,7 @@ module Sfn
       def status_ends_with?(*args)
         stat = status.to_s.downcase
         !!args.map(&:to_s).map(&:downcase).detect do |suffix|
-          stat.end_with?(suffix)
+          stat.end_with?(suffix) || state.to_s.end_with?(suffix)
         end
       end
 
@@ -29,7 +29,7 @@ module Sfn
       def status_starts_with?(*args)
         stat = status.to_s.downcase
         !!args.map(&:to_s).map(&:downcase).detect do |prefix|
-          stat.start_with?(prefix)
+          stat.start_with?(prefix) || state.to_s.start_with?(prefix)
         end
       end
 
