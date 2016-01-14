@@ -106,7 +106,7 @@ module Sfn
 
             if(config[:plan])
               stack.parameters = original_parameters
-              plan = Planner::Aws.new(ui, config, arguments, stack)
+              plan = build_planner(stack)
               if(plan)
                 result = plan.generate_plan(stack.template, config_root_parameters)
                 display_plan_information(result)
@@ -146,9 +146,8 @@ module Sfn
 
       def build_planner(stack)
         klass_name = stack.api.class.to_s.split('::').last
-        klass = Planner.const_get(klass_name)
-        if(klass)
-          klass.new(ui, config, arguments, stack)
+        if(Planner.const_defined?(klass_name))
+          Planner.const_get(klass_name).new(ui, config, arguments, stack)
         else
           warn "Failed to build planner for current provider. No provider implemented. (`#{klass_name}`)"
           nil
