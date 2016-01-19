@@ -13,8 +13,11 @@ module Sfn
           table(:border => false) do
             stacks = get_stacks
             row(:header => true) do
+
               allowed_attributes.each do |attr|
-                column attr.split('_').map(&:capitalize).join(' '), :width => (stacks.map{|s| s[attr].to_s.length}.max || 20) + 2
+                width_val = stacks.map{|e| e[attr].to_s.length}.push(attr.length).max + 2
+                width_val = width_val > 70 ? 70 : width_val < 20 ? 20 : width_val
+                column attr.split('_').map(&:capitalize).join(' '), :width => width_val
               end
             end
             get_stacks.each do |stack|

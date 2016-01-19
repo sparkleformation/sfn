@@ -106,7 +106,7 @@ module Sfn
 
             if(config[:plan])
               stack.parameters = original_parameters
-              plan = Planner::Aws.new(ui, config, arguments, stack)
+              plan = build_planner(stack)
               if(plan)
                 result = plan.generate_plan(stack.template, config_root_parameters)
                 display_plan_information(result)
@@ -126,7 +126,7 @@ module Sfn
                   namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
                 else
                   ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-                  raise
+                  raise 'Stack did not reach a successful update completion state.'
                 end
               else
                 ui.warn 'Stack state polling has been disabled.'
@@ -146,9 +146,8 @@ module Sfn
 
       def build_planner(stack)
         klass_name = stack.api.class.to_s.split('::').last
-        klass = Planner.const_get(klass_name)
-        if(klass)
-          klass.new(ui, config, arguments, stack)
+        if(Planner.const_defined?(klass_name))
+          Planner.const_get(klass_name).new(ui, config, arguments, stack)
         else
           warn "Failed to build planner for current provider. No provider implemented. (`#{klass_name}`)"
           nil
@@ -168,7 +167,8 @@ module Sfn
         said_any_things = false
         unless(info[:stacks].empty?)
           info[:stacks].each do |s_name, s_info|
-            said_any_things ||= print_plan_result(s_info, [*names, s_name].compact)
+            result = print_plan_result(s_info, [*names, s_name].compact)
+            said_any_things ||= result
           end
         end
         unless(names.flatten.compact.empty?)

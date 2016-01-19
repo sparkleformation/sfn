@@ -12,6 +12,10 @@ module Sfn
         UNPACK_NAME_JOINER = '-sfn-'
         # maximum number of attempts to get valid parameter value
         MAX_PARAMETER_ATTEMPTS = 5
+        # Template parameter locations
+        TEMPLATE_PARAMETER_LOCATIONS = ['Parameters', 'parameters']
+        # Template parameter default value locations
+        TEMPLATE_PARAMETER_DEFAULTS = ['Default', 'defaultValue']
 
         # Apply any defined remote stacks
         #
@@ -120,7 +124,9 @@ module Sfn
             stack_parameters = stack_parameters.nil? ? Smash.new : stack_parameters._dump
           else
             parameter_prefix = []
-            stack_parameters = sparkle.fetch('Parameters', Smash.new)
+            stack_parameters = TEMPLATE_PARAMETER_LOCATIONS.map do |loc_key|
+              sparkle[loc_key]
+            end.compact.first || Smash.new
           end
           unless(stack_parameters.empty?)
             if(config.get(:parameter).is_a?(Array))
@@ -175,7 +181,7 @@ module Sfn
                 attempt += 1
                 default = config[:parameters].fetch(
                   ns_k, current_parameters.fetch(
-                    k, v['Default']
+                    k, TEMPLATE_PARAMETER_DEFAULTS.map{|loc_key| v[loc_key]}.compact.first
                   )
                 )
                 if(config[:interactive_parameters])

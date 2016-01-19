@@ -26,7 +26,9 @@ module Sfn
                 events = get_events
                 row(:header => true) do
                   allowed_attributes.each do |attr|
-                    column attr.split('_').map(&:capitalize).join(' '), :width => ((val = events.map{|e| e[attr].to_s.length}.push(attr.length).max + 2) > 70 ? 70 : val)
+                    width_val = events.map{|e| e[attr].to_s.length}.push(attr.length).max + 2
+                    width_val = width_val > 70 ? 70 : width_val < 20 ? 20 : width_val
+                    column attr.split('_').map(&:capitalize).join(' '), :width => width_val
                   end
                 end
                 events.each do |event|
