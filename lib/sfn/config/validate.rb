@@ -56,6 +56,11 @@ module Sfn
         :short_flag => 'N'
       )
       attribute(
+        :nesting_prefix, String,
+        :description => 'File name prefix for storing template in bucket',
+        :short_flag => 'Y'
+      )
+      attribute(
         :print_only, [TrueClass, FalseClass],
         :description => 'Print the resulting stack template',
         :short_flag => 'r'
