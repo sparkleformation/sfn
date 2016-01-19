@@ -248,7 +248,10 @@ module Sfn
             if(current_stack && current_stack.data[:parent_stack])
               current_parameters.merge!(current_stack.data[:parent_stack].template.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new))
             end
-            full_stack_name = stack.root_path.map(&:name).map(&:to_s).join('_')
+            full_stack_name = [
+              config[:nesting_prefix],
+              stack.root_path.map(&:name).map(&:to_s).join('_')
+            ].compact.join('/')
             unless(config[:print_only])
               result = Smash.new(
                 'Parameters' => populate_parameters!(stack,
