@@ -14,6 +14,10 @@ module Sfn
       def execute!
         name_required!
         name = name_args.first
+
+        # NOTE: Always disable plans on create
+        config[:plan] = false
+
         if(config[:template])
           file = config[:template]
         else
