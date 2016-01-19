@@ -3,6 +3,10 @@
 require 'bogo-cli'
 require 'sfn'
 
+if(defined?(Bundler))
+  Bundler.require
+end
+
 Bogo::Cli::Setup.define do
 
   on :v, :version, 'Print version ' do
