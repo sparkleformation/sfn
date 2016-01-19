@@ -15,7 +15,7 @@ module Sfn
         # Template parameter locations
         TEMPLATE_PARAMETER_LOCATIONS = ['Parameters', 'parameters']
         # Template parameter default value locations
-        TEMPLATE_PARAMETER_DEFAULTS = ['Default', 'defaultValue']
+        TEMPLATE_PARAMETER_DEFAULTS = ['Default', 'defaultValue', 'default']
 
         # Apply any defined remote stacks
         #
