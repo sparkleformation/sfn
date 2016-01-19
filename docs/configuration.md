@@ -73,6 +73,10 @@ $ knife sparkleformation --help
 |                            | Valid         | `String`
 |                            | Default       | none
 |----------------------------|---------------|---------------------------------------------------------------
+| `nesting_prefix`           | Description   | Prefix to prepend to template file name within object store
+|                            | Valid         | `String`
+|                            | Default       | none
+|----------------------------|---------------|---------------------------------------------------------------
 | `sparkle_pack`             | Description   | SparklePacks to load
 |                            | Valid         | `Array<String>`
 |                            | Default       | none
