@@ -167,7 +167,8 @@ module Sfn
         said_any_things = false
         unless(info[:stacks].empty?)
           info[:stacks].each do |s_name, s_info|
-            said_any_things ||= print_plan_result(s_info, [*names, s_name].compact)
+            result = print_plan_result(s_info, [*names, s_name].compact)
+            said_any_things ||= result
           end
         end
         unless(names.flatten.compact.empty?)
