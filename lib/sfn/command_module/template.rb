@@ -236,17 +236,24 @@ module Sfn
         def process_nested_stack_deep(sf, c_stack=nil)
           sf.apply_nesting(:deep) do |stack_name, stack, resource|
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
-            stack_definition = stack.compile.dump!
+
             stack_resource = resource._dump
 
             if(stack.parent)
-              current_parameters = stack.parent.compile.dump!.to_smash.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new)
+              current_parameters = stack.parent.compile.resources.set!(stack_name).properties.parameters
+              current_parameters = current_parameters.nil? ? Smash.new : current_parameters._dump
             else
               current_parameters = Smash.new
             end
             current_stack = c_stack ? c_stack.nested_stacks.detect{|s| s.data[:logical_id] == stack_name} : nil
             if(current_stack && current_stack.data[:parent_stack])
-              current_parameters.merge!(current_stack.data[:parent_stack].template.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new))
+              current_parameters.merge!(
+                current_stack.data[:parent_stack].template.fetch(
+                  'Resources', stack_name, 'Properties', 'Parameters', current_stack.data[:parent_stack].template.fetch(
+                    'resources', stack_name, 'properties', 'parameters', Smash.new
+                  )
+                )
+              )
             end
             full_stack_name = [
               config[:nesting_prefix],
@@ -254,19 +261,16 @@ module Sfn
             ].compact.join('/')
             unless(config[:print_only])
               result = Smash.new(
-                'Parameters' => populate_parameters!(stack,
+                :parameters => populate_parameters!(stack,
                   :stack => current_stack,
                   :current_parameters => current_parameters
                 )
               )
-              unless(config[:plan])
-                resource.properties.delete!(:stack)
-              else
-                (stack_definition['Resources'] || {}).each do |_, info|
-                  if(valid_stack_types.include?(info['Type']))
-                    info['Properties'].delete('Stack')
-                  end
-                end
+              hold_stack = resource.properties.delete!(:stack)
+              stack_definition = stack.compile.dump!
+
+              if(config[:plan])
+                resource.properties.stack hold_stack
               end
               bucket = provider.connection.api_for(:storage).buckets.get(
                 config[:nesting_bucket]
@@ -279,18 +283,58 @@ module Sfn
               file.content_type = 'text/json'
               file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
               file.save
-              url = URI.parse(file.url)
               result.merge!(
-                'TemplateURL' => "#{url.scheme}://#{url.host}#{url.path}"
+                :url => file.url
               )
             else
               result = Smash.new(
-                'TemplateURL' => "http://example.com/bucket/#{full_stack_name}.json"
+                :url => "http://example.com/bucket/#{full_stack_name}.json"
               )
             end
-            result.each do |k,v|
+            format_nested_stack_results(resource._self.provider, result).each do |k,v|
               resource.properties.set!(k, v)
             end
+          end
+        end
+
+        # Update the nested stack information for specific provider
+        #
+        # @param provider [Symbol]
+        # @param results [Hash]
+        # @return [Hash]
+        def format_nested_stack_results(provider, results)
+          case provider
+          when :aws
+            if(results[:parameters])
+              results['Parameters'] = results.delete(:parameters)
+            end
+            if(results[:url])
+              url = URI.parse(results.delete(:url))
+              results['TemplateURL'] = "#{url.scheme}://#{url.host}#{url.path}"
+            end
+            results
+          when :heat, :rackspace
+            results[:template] = results.delete(:url)
+            results
+          when :azure
+            if(results[:parameters])
+              results[:parameters] = Smash[
+                results[:parameters].map do |key, value|
+                  [key,
+                    value.is_a?(Hash) ? value : Smash.new(:value => value)]
+                end
+              ]
+            end
+            if(results[:url])
+              results[:templateLink] = Smash.new(
+                :uri => results.delete(:url),
+                :contentVersion => '1.0.0.0'
+              )
+            end
+            results[:mode] = 'Incremental'
+            results
+          else
+            raise "Unknown stack provider value given! `#{provider}`"
           end
         end
 
