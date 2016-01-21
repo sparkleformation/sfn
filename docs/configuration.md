@@ -6,6 +6,8 @@ anchors:
     url: "#sfn-based"
   - title: "knife-based"
     url: "#knife-based"
+  - title: "Generate sfn configuration"
+    url: "#generate-sfn-configuration"
   - title: "configuration-options"
     url: "#configuration-options"
 ---
@@ -33,6 +35,20 @@ Supported formats:
 
 The configuration is contained within a file named
 `.sfn`.
+
+#### Generate sfn configuration
+
+The `sfn` command provides a `conf` subcommand. By
+default this command will display current local
+configuration values. It can also be used to generate
+an initial configuration file which can then be
+customized:
+
+~~~
+$ sfn conf --generate
+~~~
+
+This will create a new `.sfn` file in the working directory.
 
 ### `knife`-based
 
