@@ -90,7 +90,7 @@ module Sfn
               begin
                 SparkleFormation::Sparkle.new(:name => sparkle_name)
               rescue ArgumentError
-                ui.fatal "Failed to properly setup sparkle pack `#{sparkle_pack}`. Check implementation."
+                ui.fatal "Failed to properly setup sparkle pack `#{sparkle_name}`. Check implementation."
                 raise
               end
             end
