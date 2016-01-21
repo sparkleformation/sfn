@@ -1,6 +1,7 @@
 require 'sfn/version'
 require 'miasma'
 require 'bogo'
+require 'sparkle_formation'
 
 module Sfn
 
