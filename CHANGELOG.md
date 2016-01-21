@@ -1,3 +1,12 @@
+# v2.0.0
+* [enhancement] Move to SparkleFormation 2.0
+* [enhancement] Add more credential content to configuration file generator
+* [feature] Run Bundler.require if Bundler is detected (#97)
+* [enhancement] Extract provider specific details for abstracts (#98)
+* [enhancement] Add `nesting_prefix` to customize nested template storage path (#99)
+* [fix] Properly display substack planning information
+* [fix] Force minimum width on list columns to prevent bunching on no content
+
 # v1.2.0
 * [fix] Always require packs when loading
 * [fix] Prevent stale output display on update
