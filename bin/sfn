@@ -4,7 +4,11 @@ require 'bogo-cli'
 require 'sfn'
 
 if(defined?(Bundler))
-  Bundler.require
+  begin
+    Bundler.require
+  rescue Bundler::GemfileNotFound
+    # ignore load error
+  end
 end
 
 Bogo::Cli::Setup.define do
