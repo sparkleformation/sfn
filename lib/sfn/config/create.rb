@@ -17,12 +17,6 @@ module Sfn
         :short_flag => 'O'
       )
       attribute(
-        :capabilities, String,
-        :multiple => true,
-        :description => 'Capabilities to allow the stack',
-        :short_flag => 'B'
-      )
-      attribute(
         :options, Smash,
         :description => 'Extra options to apply to the API call',
         :short_flag => 'S'
