@@ -45,6 +45,7 @@ module Sfn
     autoload :Events, 'sfn/config/events'
     autoload :Export, 'sfn/config/export'
     autoload :Import, 'sfn/config/import'
+    autoload :Init, 'sfn/config/init'
     autoload :Inspect, 'sfn/config/inspect'
     autoload :List, 'sfn/config/list'
     autoload :Print, 'sfn/config/print'

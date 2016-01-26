@@ -14,6 +14,7 @@ module Sfn
     autoload :Events, 'sfn/command/events'
     autoload :Export, 'sfn/command/export'
     autoload :Import, 'sfn/command/import'
+    autoload :Init, 'sfn/command/init'
     autoload :Inspect, 'sfn/command/inspect'
     autoload :List, 'sfn/command/list'
     autoload :Print, 'sfn/command/print'
