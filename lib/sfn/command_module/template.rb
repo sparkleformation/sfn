@@ -276,7 +276,7 @@ module Sfn
                 config[:nesting_bucket]
               )
               unless(bucket)
-                raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
+                raise "Failed to locate configured bucket for stack template storage (#{config[:nesting_bucket]})!"
               end
               file = bucket.files.build
               file.name = "#{full_stack_name}.json"
