@@ -91,6 +91,11 @@ module Sfn
       :description => 'Automatically accept any requests for confirmation',
       :short_flag => 'y'
     )
+    attribute(
+      :debug, [TrueClass, FalseClass],
+      :description => 'Enable debug output',
+      :short_flag => 'u'
+    )
 
     attribute :conf, Conf, :coerce => proc{|v| Conf.new(v)}
     attribute :create, Create, :coerce => proc{|v| Create.new(v)}

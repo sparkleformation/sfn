@@ -55,9 +55,9 @@ module Sfn
         # @param e [Exception]
         # @param args [String] extra strings to output
         def _debug(e, *args)
-          if(config[:verbose])
+          if(config[:verbose] || config[:debug])
             ui.fatal "Exception information: #{e.class}: #{e.message}"
-            if(ENV['DEBUG'])
+            if(ENV['DEBUG'] || config[:debug])
               puts "#{e.backtrace.join("\n")}\n"
               if(e.is_a?(Miasma::Error::ApiError))
                 ui.fatal "Response body: #{e.response.body.to_s.inspect}"
