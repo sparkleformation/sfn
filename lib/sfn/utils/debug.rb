@@ -10,7 +10,9 @@ module Sfn
         #
         # @param msg [String]
         def debug(msg)
-          puts "<SparkleFormation>: #{msg}" if ENV['DEBUG']
+          if(ENV['DEBUG'] || (respond_to?(:config) && config[:debug]))
+            puts "<sfn - debug>: #{msg}"
+          end
         end
       end
 
