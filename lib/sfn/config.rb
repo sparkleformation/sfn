@@ -19,7 +19,11 @@ module Sfn
           info[:coerce] = lambda do |v|
             case v
             when String
-              Smash[v.split(',').map{|x| v.split(/[=:]/, 2)}]
+              Smash[
+                v.split(',').map do |item_pair|
+                  item_pair.split(/[=:]/, 2)
+                end
+              ]
             when Hash
               v.to_smash
             else
