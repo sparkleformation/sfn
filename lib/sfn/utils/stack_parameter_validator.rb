@@ -9,6 +9,31 @@ module Sfn
 
         include Bogo::AnimalStrings
 
+        # HOT parameter mapping
+        HEAT_CONSTRAINT_MAP = {
+          'MaxLength' => [:length, :max],
+          'MinLength' => [:length, :min],
+          'MaxValue' => [:range, :max],
+          'MinValue' => [:range, :min],
+          'AllowedValues' => [:allowed_values],
+          'AllowedPattern' => [:allowed_pattern]
+        }
+
+        # Parameter mapping identifier and content
+        PARAMETER_DEFINITION_MAP = {
+          'constraints' => HEAT_CONSTRAINT_MAP
+        }
+
+        # Supported parameter validations
+        PARAMETER_VALIDATIONS = [
+          'allowed_values',
+          'allowed_pattern',
+          'max_length',
+          'min_length',
+          'max_value',
+          'min_value'
+        ]
+
         # Validate a parameters
         #
         # @param value [Object] value for parameter
@@ -22,16 +47,41 @@ module Sfn
         # @return [TrueClass, Array<String>] true if valid. array of string errors if invalid
         def validate(value, parameter_definition)
           return [[:blank, 'Value cannot be blank']] if value.to_s.strip.empty?
-          result = %w(AllowedValues AllowedPattern MaxLength MinLength MaxValue MinValue).map do |key|
-            if(parameter_definition[key])
-              res = self.send(snake(key), value, parameter_definition)
-              res == true ? true : [snake(key), res]
+          parameter_definition = reformat_definition(parameter_definition)
+          result = PARAMETER_VALIDATIONS.map do |validator_key|
+            valid_key = parameter_definition.keys.detect do |pdef_key|
+              pdef_key.downcase.gsub('_', '') == validator_key.downcase.gsub('_', '')
+            end
+            if(valid_key)
+              res = self.send(validator_key, value, parameter_definition[valid_key])
+              res == true ? true : [validator_key, res]
             else
               true
             end
           end
           result.delete_if{|x| x == true}
           result.empty? ? true : result
+        end
+
+        # Reformat parameter definition with proper keys to allow
+        # validation for templates different parameter definition
+        # layout
+        #
+        # @param pdef [Hash]
+        # @return [Hash]
+        def reformat_definition(pdef)
+          new_def = pdef
+          PARAMETER_DEFINITION_MAP.each do |ident, mapping|
+            if(pdef[ident])
+              new_def = Smash.new
+              mapping.each do |new_key, current_path|
+                if(pdef.get(*current_path))
+                  new_def[new_key] = pdef.get(*current_path)
+                end
+              end
+            end
+          end
+          new_def
         end
 
         # Parameter is within allowed values
@@ -41,10 +91,10 @@ module Sfn
         # @option pdef [Array<String>] 'AllowedValues'
         # @return [TrueClass, String]
         def allowed_values(value, pdef)
-          if(pdef['AllowedValues'].include?(value))
+          if(pdef.include?(value))
             true
           else
-            "Not an allowed value: #{pdef['AllowedValues'].join(', ')}"
+            "Not an allowed value: #{pdef.join(', ')}"
           end
         end
 
@@ -55,10 +105,10 @@ module Sfn
         # @option pdef [String] 'AllowedPattern'
         # @return [TrueClass, String]
         def allowed_pattern(value, pdef)
-          if(value.match(/#{pdef['AllowedPattern']}/))
+          if(value.match(/#{pdef}/))
             true
           else
-            "Not a valid pattern. Must match: #{pdef['AllowedPattern']}"
+            "Not a valid pattern. Must match: #{pdef}"
           end
         end
 
@@ -69,10 +119,10 @@ module Sfn
         # @option pdef [String] 'MaxLength'
         # @return [TrueClass, String]
         def max_length(value, pdef)
-          if(value.length <= pdef['MaxLength'].to_i)
+          if(value.length <= pdef.to_i)
             true
           else
-            "Value must not exceed #{pdef['MaxLength']} characters"
+            "Value must not exceed #{pdef} characters"
           end
         end
 
@@ -83,10 +133,10 @@ module Sfn
         # @option pdef [String] 'MinLength'
         # @return [TrueClass, String]
         def min_length(value, pdef)
-          if(value.length >= pdef['MinLength'].to_i)
+          if(value.length >= pdef.to_i)
             true
           else
-            "Value must be at least #{pdef['MinLength']} characters"
+            "Value must be at least #{pdef} characters"
           end
         end
 
@@ -97,10 +147,10 @@ module Sfn
         # @option pdef [String] 'MaxValue'
         # @return [TrueClass, String]
         def max_value(value, pdef)
-          if(value.to_i <= pdef['MaxValue'].to_i)
+          if(value.to_i <= pdef.to_i)
             true
           else
-            "Value must not be greater than #{pdef['MaxValue']}"
+            "Value must not be greater than #{pdef}"
           end
         end
 
@@ -111,10 +161,10 @@ module Sfn
         # @option pdef [String] 'MinValue'
         # @return [TrueClass, String]
         def min_value(value, pdef)
-          if(value.to_i >= pdef['MinValue'].to_i)
+          if(value.to_i >= pdef.to_i)
             true
           else
-            "Value must not be less than #{pdef['MinValue']}"
+            "Value must not be less than #{pdef}"
           end
         end
 
