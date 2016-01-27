@@ -1,3 +1,9 @@
+# UNRELEASED
+* [task] Remove deprecated capabilities flag (#106)
+* [feature] Add `init` command for project initialization (#107)
+* [enhancement] Add `debug` config option to enable UI debug output (#108)
+* [fix] Fix hash type coerce of strings provided via CLI (#109)
+
 # v2.0.0
 * [enhancement] Move to SparkleFormation 2.0
 * [enhancement] Add more credential content to configuration file generator
