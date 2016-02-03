@@ -27,6 +27,9 @@ module Sfn
       unless(cli_opts['config'])
         discover_config(cli_opts)
       end
+      unless(ENV['DEBUG'])
+        ENV['DEBUG'] = 'true' if cli_opts[:debug]
+      end
       super(cli_opts, args)
       run_callbacks_for(:after_config)
       run_callbacks_for("after_config_#{Bogo::Utility.snake(self.class.name.split('::').last)}")
