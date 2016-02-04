@@ -46,7 +46,11 @@ module Sfn
         end
         ui.info 'Installing project bundle'
         Dir.chdir(path) do
-          Bundler.clean_system('bundle install')
+          if(defined?(Bundler))
+            Bundler.clean_system('bundle install')
+          else
+            system('bundle install')
+          end
         end
         ui.info 'Project initialization complete!'
         ui.puts "  Project path -> #{File.expand_path(path)}"
