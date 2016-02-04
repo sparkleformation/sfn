@@ -1,3 +1,7 @@
+# v2.0.4
+* [enhancement] Add `--debug` flag
+* [enhancement] Allow nested stacks to be disabled (apply_nesting :none)
+
 # v2.0.2
 * [task] Remove deprecated capabilities flag (#106)
 * [feature] Add `init` command for project initialization (#107)
