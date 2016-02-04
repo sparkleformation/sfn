@@ -179,6 +179,8 @@ module Sfn
                   process_nested_stack_deep(sf, c_stack)
                 when :shallow
                   process_nested_stack_shallow(sf, c_stack)
+                when :none
+                  sf.dump.merge('sfn_nested_stack' => !!sf.nested?)
                 else
                   raise ArgumentError.new "Unknown nesting style requested: #{config[:apply_nesting].inspect}!"
                 end
