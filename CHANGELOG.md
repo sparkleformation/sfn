@@ -1,3 +1,6 @@
+# v2.0.6
+* [fix] Remove bundler assumption within `init` command (#114)
+
 # v2.0.4
 * [enhancement] Add `--debug` flag
 * [enhancement] Allow nested stacks to be disabled (apply_nesting :none)
