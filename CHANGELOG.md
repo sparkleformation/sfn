@@ -1,3 +1,7 @@
+# v2.1.0
+* [fix] Use SparkleFormation::Collection helper to ensure proper pack ordering (#115)
+* [fix] Set minimum constraint on sparkle_formation library to 2.1.2
+
 # v2.0.6
 * [fix] Remove bundler assumption within `init` command (#114)
 
