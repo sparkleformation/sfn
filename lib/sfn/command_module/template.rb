@@ -158,9 +158,7 @@ module Sfn
                   formation.compile_state = current_state
                 end
               end
-              sparkle_packs.each do |pack|
-                sf.sparkle.add_sparkle(pack)
-              end
+              sf.sparkle.apply sparkle_collection
               custom_stack_types.each do |s_type|
                 unless(sf.stack_resource_types.include?(s_type))
                   sf.stack_resource_types.push(s_type)

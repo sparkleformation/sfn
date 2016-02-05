@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'miasma-aws', '>= 0.2.0', '< 0.4'
   s.add_runtime_dependency 'miasma-azure', '>= 0.1.0', '< 0.3'
   s.add_runtime_dependency 'net-ssh'
-  s.add_runtime_dependency 'sparkle_formation', '~> 2.0'
+  s.add_runtime_dependency 'sparkle_formation', '>= 2.1.2', '< 3'
   s.add_runtime_dependency 'hashdiff', '~> 0.2.2'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'minitest'
