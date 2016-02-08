@@ -67,7 +67,7 @@ module Sfn
             end
             if(result.nil? || (result.respond_to?(:empty?) && result.empty?))
               if(attempts > MAX_PARAMETER_ATTEMPTS)
-                ui.fatal 'Failed to receive allowed parameter!'
+                ui.fatal "Failed to receive allowed parameter! (Parameter: #{p_name})"
                 exit 1
               else
                 ui.error "Invalid value provided for parameter. Must be type: `#{p_config[:type].to_s.capitalize}`"
