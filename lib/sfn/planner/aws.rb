@@ -335,7 +335,7 @@ module Sfn
               resource_name = p_path[1]
               property_name = p_path[3].sub(/\[\d+\]$/, '')
               type = templates[:origin]['Resources'][resource_name]['Type']
-              info = SfnAws.registry[type]
+              info = SfnAws.registry.fetch(type, {})
               effect = info[:full_properties].fetch(property_name, {}).fetch(:update_causes, :unknown).to_sym
               resource = Smash.new(
                 :name => resource_name,
