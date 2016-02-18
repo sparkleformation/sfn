@@ -41,6 +41,22 @@ module Sfn
       alias_method :after_create, :submit_policy
       alias_method :after_update, :submit_policy
 
+      # Disable all existing policies prior to update
+      #
+      # @param args [Hash]
+      def before_update(args)
+        if(config.get(:stack_policy, :update).to_s == 'defenseless')
+          ui.warn 'Disabling all stack policies for update.'
+          stack = args[:api_stack]
+          ([stack] + stack.nested_stacks).compact.each do |p_stack|
+            @policies[p_stack.name] = DEFENSELESS_POLICY
+            run_action "Disabling stack policy for #{ui.color(p_stack.name, :yellow)}" do
+              save_stack_policy(p_stack)
+            end
+          end
+        end
+      end
+
       # Generate stack policy for stack and cache for the after hook
       # to handle
       #
