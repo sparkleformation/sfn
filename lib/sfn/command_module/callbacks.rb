@@ -31,14 +31,14 @@ module Sfn
         clbks = types.map do |c_type|
           callbacks_for(c_type)
         end.flatten(1).compact.uniq.each do |item|
-          callback_name, callback = item
-          ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('starting', :yellow)}"
+          callback_name, callback, quiet = item
+          ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('starting', :yellow)}" unless quiet
           if(args.empty?)
             callback.call
           else
             callback.call(*args)
           end
-          ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('complete', :green)}"
+          ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('complete', :green)}" unless quiet
         end
         nil
       end
@@ -59,7 +59,7 @@ module Sfn
             end
           end
           if(instance.respond_to?(type))
-            [c_name, instance.method(type)]
+            [c_name, instance.method(type), instance.respond_to?(:quiet) ? instance.quiet : false]
           end
         end.compact
       end
