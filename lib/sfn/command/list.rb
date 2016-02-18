@@ -11,7 +11,7 @@ module Sfn
       def execute!
         ui.table(self) do
           table(:border => false) do
-            stacks = get_stacks
+            stacks = api_action!{ get_stacks }
             row(:header => true) do
 
               allowed_attributes.each do |attr|
