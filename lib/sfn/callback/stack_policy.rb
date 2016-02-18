@@ -41,20 +41,6 @@ module Sfn
       alias_method :after_create, :submit_policy
       alias_method :after_update, :submit_policy
 
-      # Update all policies to allow resource destruction
-      def before_destroy(args)
-        ui.warn 'All policies will be disabled for stack destruction!'
-        ui.confirm 'Continue with stack destruction'
-        stack = args[:api_stack]
-        ([stack] + stack.nested_stacks).compact.each do |p_stack|
-          @policies[p_stack.name] = DEFENSELESS_POLICY
-          run_action "Disabling stack policy for #{ui.color(p_stack.name, :yellow)}" do
-            save_stack_policy(p_stack)
-          end
-        end
-        ui.warn "Policy modification for deletion not currently enabled!"
-      end
-
       # Generate stack policy for stack and cache for the after hook
       # to handle
       #
