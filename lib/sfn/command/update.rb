@@ -87,12 +87,18 @@ module Sfn
             update_template = stack.template
 
             if(config[:plan])
-              stack.template = original_template
-              stack.parameters = original_parameters
-              plan = build_planner(stack)
-              if(plan)
-                result = plan.generate_plan(file, config_root_parameters)
-                display_plan_information(result)
+              begin
+                stack.template = original_template
+                stack.parameters = original_parameters
+                plan = build_planner(stack)
+                if(plan)
+                  result = plan.generate_plan(file, config_root_parameters)
+                  display_plan_information(result)
+                end
+              rescue => e
+                ui.error "Unexpected error when generating plan information: #{e.class} - #{e}"
+                ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+                ui.confirm 'Continue with stack update?'
               end
             end
 
