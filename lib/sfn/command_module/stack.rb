@@ -257,7 +257,7 @@ module Sfn
           else
             current_value = c_value
           end
-          if(current_value && current_value != stack_value)
+          if(current_value && current_value.to_s != stack_value.to_s)
             ui.warn 'Nested stack has been altered directly! This update may cause unexpected modifications!'
             ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. Current value: #{stack_value}. Expected value: #{current_value} (via: #{c_value.inspect})"
             answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ['current', 'expected'])
