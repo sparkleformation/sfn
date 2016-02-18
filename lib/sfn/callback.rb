@@ -4,6 +4,7 @@ module Sfn
   # Interface for injecting custom functionality
   class Callback
 
+    autoload :AwsMfa, 'sfn/callback/aws_mfa'
     autoload :StackPolicy, 'sfn/callback/stack_policy'
 
     # @return [Bogo::Ui]
