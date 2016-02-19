@@ -8,6 +8,8 @@ anchors:
     url: "#builtin-callbacks"
   - title: "Custom Callbacks"
     url: "#custom-callbacks"
+  - title: "Addon Callbacks"
+    url: "#addon-callbacks"
 ---
 
 ## Callbacks
@@ -215,3 +217,37 @@ Configuration.new do
   callbacks.after ['custom_callback']
 end
 ~~~
+
+### Addon Callbacks
+
+#### Usage
+
+Addon callbacks must be installed to the local bundle, or the system depending
+on usage type.
+
+For bundle usage, add the callback to the Gemfile:
+
+~~~ruby
+gem 'sfn-callback-name'
+~~~
+
+For system usage, install the gem:
+
+~~~
+$ gem install sfn-callback-name
+~~~
+
+#### Callbacks
+
+##### sfn-parameters
+
+Manage stack parameters via files within the project repository.
+
+* https://github.com/sparkleformation/sfn-parameters
+
+##### sfn-serverspec
+
+Define Serverspec rules directly on resources within templates
+and automatically run after success stack creation or update.
+
+* https://github.com/sparkleformation/sfn-serverspec
