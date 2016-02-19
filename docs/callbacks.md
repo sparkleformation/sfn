@@ -98,6 +98,19 @@ Configuration.new do
 end
 ~~~
 
+The default virtual MFA device ARN will be used when creating the new session. If a
+non-default virutal MFA device or a hardware device is being used, set the device
+serial number with the configuration:
+
+~~~ruby
+Configuration.new do
+  credentials do
+    provider :aws
+    aws_sts_mfa_serial_number 'DEVICE_IDENTIFIER'
+  end
+end
+~~~
+
 After a session has been successfully created, the callback will store the session
 token and credentials within a file in the working directory named `.sfn-aws`. This
 path can be configured via configuration:
