@@ -80,8 +80,69 @@ end
 
 Builtin callbacks distributed with `sfn`:
 
+* AWS Assume Role
 * AWS MFA
 * Stack Policy
+
+#### AWS Assume Role
+
+When assuming a role via STS on AWS a temporary set of credentials and token
+are generated for use. This callback will cache these credentials for re-use
+to prevent re-generation of temporary credentials on every command request.
+
+To enable the callback:
+
+~~~ruby
+Configuration.new do
+  callbacks do
+    default ['aws_assume_role']
+  end
+end
+~~~
+
+Once temporary credentials have been generated, the callback will store the credentials
+within a file in the working directory named `.sfn-aws`. This path can be modified via
+configuration:
+
+~~~ruby
+Configuration.new do
+  aws_assume_role do
+    cache_file '/custom/path/to/file'
+  end
+end
+~~~
+
+Loading and storage of credentials will only occur if a role is provided to assume. Given
+a configuration of:
+
+~~~ruby
+Configuration.new do
+  callbacks.default 'aws_assume_role'
+  credentials do
+    aws_sts_role_arn ENV['AWS_STS_ROLE']
+  end
+end
+~~~
+
+The callback will be enabled when the environment variable is provided:
+
+~~~
+$ AWS_STS_ROLE="arn:...MY_ROLE" sfn list
+~~~
+
+and will not be enabled when the environment variable is not provided:
+
+~~~
+$ sfn list
+~~~
+
+It can also be disabled/enabled via configuration setting:
+
+~~~ruby
+Configuration.new do
+  aws_assume_role.status 'enabled'
+end
+~~~
 
 #### AWS Multifactor Authentication
 
