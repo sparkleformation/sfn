@@ -24,7 +24,7 @@ are generally invoked in two places:
 There are also callbacks available prior to the execution
 of a command. These can also be isolated to specific commands:
 
-* `before_config` - Prior to the execution of the command.
+* `after_config` - Prior to the execution of the command.
 
 ### Enabling Callbacks
 
