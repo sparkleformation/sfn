@@ -20,7 +20,7 @@ module Sfn
 
       # Inject MFA related configuration into
       # API provider credentials
-      def after_config
+      def after_config(*_)
         if(enabled?)
           load_stored_session
           api.connection.aws_sts_session_token_code = method(:prompt_for_code)
@@ -29,7 +29,7 @@ module Sfn
 
       # Store session token if available for
       # later use
-      def after
+      def after(*_)
         if(enabled?)
           if(api.connection.aws_sts_session_token)
             path = config.fetch(:aws_mfa, :cache_file, '.sfn-aws')
