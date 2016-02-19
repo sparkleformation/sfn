@@ -6,6 +6,8 @@ anchors:
     url: "#enabling-callbacks"
   - title: "Builtin Callbacks"
     url: "#builtin-callbacks"
+  - title: "Custom Callbacks"
+    url: "#custom-callbacks"
 ---
 
 ## Callbacks
@@ -76,7 +78,52 @@ end
 
 Builtin callbacks distributed with `sfn`:
 
+* AWS MFA
 * Stack Policy
+
+#### AWS Multifactor Authentication
+
+Support for MFA within AWS can be provided using the AWS MFA callback. It will
+prompt for an MFA token code which is then used to generate the new session.
+
+To enable the callback:
+
+~~~ruby
+Configuration.new do
+  callbacks do
+    default ['aws_mfa']
+  end
+end
+~~~
+
+After a session has been successfully created, the callback will store the session
+token and credentials within a file in the working directory named `.sfn-aws`. This
+path can be configured via configuration:
+
+~~~ruby
+Configuration.new do
+  aws_mfa do
+    cache_file '/custom/path/to/file'
+  end
+end
+~~~
+
+Use of MFA may be conditional based on actions performed. For easier toggling of
+MFA usage, a configuration value can be used to enable or disable MFA:
+
+~~~ruby
+Configuration.new do
+  aws_mfa do
+    cache_file ENV.fetch('SFN_MFA', 'enabled')
+  end
+end
+~~~
+
+With this configuration, MFA usage can be easily disabled:
+
+~~~
+$ SFN_MFA=disabled sfn list
+~~~
 
 #### Stack Policy Callback
 
@@ -91,6 +138,18 @@ Configuration.new do
   callbacks do
     default ['stack_policy']
   end
+end
+~~~
+
+By default a stack policy is not disabled when an update command is run. This may
+require multiple update commands to be run first disabling the existing policy, then
+running the actual update. Stack policies can be automatically removed prior to update
+allowing the stack to be properly updated with the newly generated policy applied on
+completion. To disable the stack policy on update, add this to your configuration:
+
+~~~ruby
+Configuration.new do
+  stack_policy.update 'defenseless'
 end
 ~~~
 
