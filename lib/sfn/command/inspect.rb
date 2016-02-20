@@ -15,7 +15,7 @@ module Sfn
         stack = provider.connection.stacks.get(stack_name)
         ui.info "Stack inspection #{ui.color(stack_name, :bold)}:"
         outputs = api_action!(:api_stack => stack) do
-          [:attribute, :nodes, :instance_failure].map do |key|
+          [:attribute, :nodes, :load_balancers, :instance_failure].map do |key|
             if(config.has_key?(key))
               send("display_#{key}", stack)
               key
@@ -157,6 +157,30 @@ module Sfn
         unless(compute_nodes.empty?)
           ui.info '  Compute Instances:'
           ui.puts MultiJson.dump(compute_nodes, :pretty => true)
+        end
+      end
+
+      def display_load_balancers(stack)
+        load_balancers = Smash[
+          stack.resources.all.find_all do |resource|
+            resource.within?(:load_balancer, :balancers)
+          end.map do |lb|
+            exp_lb = lb.expand
+            lb_pub_addrs = exp_lb.public_addresses.nil? ? nil : exp_lb.public_addresses.map(&:address)
+            lb_priv_addrs = exp_lb.private_addresses.nil? ? nil : exp_lb.private_addresses.map(&:address)
+            [lb.id, Smash.new(
+              :name => exp_lb.name,
+              :state => exp_lb.state,
+              :public_addresses => lb_pub_addrs,
+              :private_addresses => lb_priv_addrs,
+              :server_states => exp_lb.server_states
+            ).delete_if {|k,v| v.nil?}
+            ]
+          end
+        ]
+        unless load_balancers.empty?
+          ui.info '  Load Balancer Instances:'
+          ui.puts MultiJson.dump(load_balancers, :pretty => true)
         end
       end
 

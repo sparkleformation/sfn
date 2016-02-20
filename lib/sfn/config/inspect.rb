@@ -17,6 +17,11 @@ module Sfn
         :short_flag => 'n'
       )
       attribute(
+        :load_balancers, [TrueClass, FalseClass],
+        :description => 'Locate all load balancers, display addresses and server states',
+        :short_flag => 'l'
+      )
+      attribute(
         :instance_failure, [TrueClass, FalseClass],
         :description => 'Display log file error from failed not if possible',
         :short_flag => 'N'
