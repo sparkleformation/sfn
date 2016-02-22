@@ -1,3 +1,12 @@
+# v2.1.2
+* [enhancement] Include parameter name on error output when failed to receive (#116)
+* [enhancement] Rescue planner errors and notify user. Allow update to proceed (#124)
+* [feature] Add built-in callback for AWS MFA support (#123)
+* [fix] Compare parameters values on updates as String type (#126)
+* [fix] Remove policy modification on stack delete within AWS (#127)
+* [feature] Support optional stack policy removal prior to update (#127)
+* [feature] Add built-in callback for AWS Assume Role credential caching (#128)
+
 # v2.1.0
 * [fix] Use SparkleFormation::Collection helper to ensure proper pack ordering (#115)
 * [fix] Set minimum constraint on sparkle_formation library to 2.1.2
