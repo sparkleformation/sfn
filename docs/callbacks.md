@@ -292,6 +292,24 @@ Configuration.new do
 end
 ~~~
 
+The sfn command will output a notification to the user before a callback is
+run, and after it has completed. This may be too verbose for some callbacks.
+A callback may disable this output using the `quiet` method:
+
+```ruby
+module Sfn
+  class Callback
+    class MyCallback < Callback
+
+      def quiet
+        true
+      end
+
+    end
+  end
+end
+```
+
 ### Addon Callbacks
 
 #### Usage
