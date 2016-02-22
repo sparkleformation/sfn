@@ -6,6 +6,7 @@
 * [fix] Remove policy modification on stack delete within AWS (#127)
 * [feature] Support optional stack policy removal prior to update (#127)
 * [feature] Add built-in callback for AWS Assume Role credential caching (#128)
+* [feature] Add load balancer specific inspection (#129)
 
 # v2.1.0
 * [fix] Use SparkleFormation::Collection helper to ensure proper pack ordering (#115)
