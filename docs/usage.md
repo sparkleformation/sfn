@@ -92,7 +92,7 @@ end
 
 The default nesting functionality is `"deep"`. To learn more about
 the nesting functionality please refer to the [SparkleFormation nested
-stacks][nested-stacks] documentation.
+stacks][nested_stacks] documentation.
 
 When using nested stacks, a bucket is required for storage of the
 nested stack templates. `sfn` will automatically store nested templates
@@ -132,5 +132,6 @@ $ sfn inspect my-stack --attribute 'resources.all.at(0).expand.addresses'
 
 [knife]: https://docs.chef.io/knife.html
 [sparkle_formation]: https://github.com/sparkleformation/sparkle_formation
+[nested_stacks]: http://www.sparkleformation.io/docs/sparkle_formation/nested-stacks.html
 [sparkle_packs]: https://sparkleformation.github.io/sparkle_formation/UserDocs/sparkle-packs.html
 [miasma]: https://github.com/miasma-rb/miasma
