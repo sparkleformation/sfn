@@ -1,4 +1,5 @@
 require 'sfn'
+require 'fileutils'
 
 module Sfn
   class Callback
