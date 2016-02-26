@@ -28,10 +28,11 @@ describe Sfn::Planner do
       @stack = Miasma::Models::Orchestration::Stack.new(
         api, default_stack_data.merge(stack_data)
       ).valid_state
-      @stack.parameters = {}
+      @stack.parameters = stack_parameters
     end
     @stack
   end
+  let(:stack_parameters){ Smash.new }
   let(:config){ Smash.new }
   let(:arguments){ [] }
   let(:options){ Smash.new }
@@ -169,6 +170,62 @@ describe Sfn::Planner do
         result[:added].wont_be :empty?
         result[:added]['Ec2Instance']['name'].must_equal 'Ec2Instance'
         result[:added]['Ec2Instance']['type'].must_equal 'AWS::EC2::Instance'
+      end
+
+    end
+
+    describe 'Parameter types on update' do
+
+      before do
+        api.expects(:data).returns({}).at_least_once
+      end
+
+      let(:template) do
+        Smash.new(
+          'Parameters' => {
+            'TestParam' => {
+              'Type' => 'Number'
+            }
+          },
+          'Resources' => {
+            'Ec2Instance' => {
+              'Type' => 'AWS::EC2::Instance',
+              'Properties' => {
+                'ImageId' => {
+                  'Ref' => 'TestParam'
+                }
+              }
+            }
+          }
+        )
+      end
+
+      let(:stack_parameters) do
+        {'TestParam' => 1}.to_smash
+      end
+
+      it 'should return empty plan when parameters are different types but equivalent' do
+        api.expects(:stack_template_load).returns(
+          {
+            'Parameters' => {
+              'TestParam' => {
+                'Type' => 'Number'
+              }
+            },
+            'Resources' => {
+              'Ec2Instance' => {
+                'Type' => 'AWS::EC2::Instance',
+                'Properties' => {
+                  'ImageId' => {
+                    'Ref' => 'TestParam'
+                  }
+                }
+              }
+            }
+          }
+        ).at_least_once
+        result = planner.generate_plan(template, {'TestParam' => '1'})[:stacks][stack.name]
+        result[:replace].must_be :empty?
       end
 
     end
