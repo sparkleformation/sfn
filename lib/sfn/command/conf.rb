@@ -97,7 +97,7 @@ Configuration.new do
     azure_tenant_id ENV['AZURE_TENANT_ID']
     azure_client_id ENV['AZURE_CLIENT_ID']
     azure_subscription_id ENV['AZURE_SUBSCRIPTION_ID']
-    azure_client_secret ENV['AZURE_CLIENT_ID']
+    azure_client_secret ENV['AZURE_CLIENT_SECRET']
     azure_region ENV['AZURE_REGION']
     azure_blob_account_name ENV['AZURE_BLOB_ACCOUNT_NAME']
     azure_blob_secret_key ENV['AZURE_BLOB_SECRET_KEY']
