@@ -129,6 +129,7 @@ module Sfn
       #
       # @return [Hash] report
       def generate_plan(template, parameters)
+        parameters = Smash[parameters.map{|k,v| [k, v.to_s]}]
         Smash.new(
           :stacks => Smash.new(
             origin_stack.name => plan_stack(
@@ -185,7 +186,7 @@ module Sfn
         origin_template = dereference_template(
           "#{stack.data.checksum}_origin",
           stack.template,
-          stack.parameters.merge(get_global_parameters(stack))
+          Smash[stack.parameters.map{|k,v| [k, v.to_s]}].merge(get_global_parameters(stack))
         )
 
         t_key = "#{stack.data.checksum}_#{stack.data.fetch(:logical_id, stack.name)}"
