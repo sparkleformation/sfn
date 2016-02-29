@@ -40,6 +40,11 @@ module Sfn
         :description => 'Provide planning information prior to update',
         :short_flag => 'l'
       )
+      attribute(
+        :diffs, [TrueClass, FalseClass],
+        :description => 'Show planner content diff',
+        :short_flag => 'D'
+      )
 
     end
   end
