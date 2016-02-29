@@ -90,14 +90,14 @@ module Sfn
           result = nil
           if(hash.is_a?(Hash))
             if(hash.keys.first == 'Ref' && flagged?(hash.values.first))
-              result = '__MODIFIED_REFERENCE_VALUE__'
+              result = RUNTIME_MODIFIED
             elsif(hash.keys.first == 'Fn::GetAtt')
               if(hash.values.last.last.start_with?('Outputs.'))
                 if(flagged?(hash.values.join('_')))
-                  result = '__MODIFIED_REFERENCE_VALUE__'
+                  result = RUNTIME_MODIFIED
                 end
               elsif(flagged?(hash.values.first))
-                result = '__MODIFIED_REFERENCE_VALUE__'
+                result = RUNTIME_MODIFIED
               end
             end
           end
@@ -321,13 +321,20 @@ module Sfn
       # @option :templates [Hash] :update
       def register_diff(results, path, diff, translator, templates)
         diff_info = Smash.new.tap do |di|
-          diff_data = diff.first
-          di[:path] = path
-          if(diff_data.size == 3)
-            di[diff_data.first == '+' ? :updated : :original] = diff_data.last
+          if(diff.size > 1)
+            updated = diff.detect{|x| x.first == '+'}
+            original = diff.detect{|x| x.first == '-'}
+            di[:original] = original.last.to_s
+            di[:updated] = updated.last.to_s
           else
-            di[:original] = diff_data[diff_data.size - 2]
-            di[:updated] = diff_data.last
+            diff_data = diff.first
+            di[:path] = path
+            if(diff_data.size == 3)
+              di[diff_data.first == '+' ? :updated : :original] = diff_data.last
+            else
+              di[:original] = diff_data[diff_data.size - 2].to_s
+              di[:updated] = diff_data.last.to_s
+            end
           end
         end
         if(path.start_with?('Resources'))
@@ -356,7 +363,7 @@ module Sfn
                 :type => type,
                 :properties => [property_name],
                 :diffs => [
-                  diff_info
+                  diff_info.merge(:property_name => property_name)
                 ]
               )
               case effect
