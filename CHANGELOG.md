@@ -1,3 +1,10 @@
+# v2.1.4
+* [fix] Update environment variable name used for azure credentials (#135)
+* [fix] Cast all parameters to String types within planner (#137)
+* [fix] Properly support compile time parameters via CLI (#141)
+* [enhancement] Add diff output support to planner (#142)
+* [enhancement] Support writing template to file via `print` command (#139)
+
 # v2.1.2
 * [enhancement] Include parameter name on error output when failed to receive (#116)
 * [enhancement] Rescue planner errors and notify user. Allow update to proceed (#124)
