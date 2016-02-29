@@ -320,6 +320,16 @@ module Sfn
       # @option :templates [Hash] :origin
       # @option :templates [Hash] :update
       def register_diff(results, path, diff, translator, templates)
+        diff_info = Smash.new.tap do |di|
+          diff_data = diff.first
+          di[:path] = path
+          if(diff_data.size == 3)
+            di[diff_data.first == '+' ? :updated : :original] = diff_data.last
+          else
+            di[:original] = diff_data[diff_data.size - 2]
+            di[:updated] = diff_data.last
+          end
+        end
         if(path.start_with?('Resources'))
           p_path = path.split('.')
           if(p_path.size == 2)
@@ -329,7 +339,10 @@ module Sfn
             results[key][p_path.last] = Smash.new(
               :name => p_path.last,
               :type => type,
-              :properties => []
+              :properties => [],
+              :diffs => [
+                diff_info
+              ]
             )
           else
             if(p_path.include?('Properties'))
@@ -341,7 +354,10 @@ module Sfn
               resource = Smash.new(
                 :name => resource_name,
                 :type => type,
-                :properties => [property_name]
+                :properties => [property_name],
+                :diffs => [
+                  diff_info
+                ]
               )
               case effect
               when :replacement
@@ -363,7 +379,10 @@ module Sfn
                   Smash.new(
                     :name => resource_name,
                     :type => type,
-                    :properties => ['AWS::CloudFormation::Init']
+                    :properties => ['AWS::CloudFormation::Init'],
+                    :diffs => [
+                      diff_info
+                    ]
                   )
                 )
               end
@@ -374,7 +393,10 @@ module Sfn
           if(o_resource_name)
             set_resource(
               :outputs, results, o_resource_name,
-              :properties => []
+              :properties => [],
+              :diffs => [
+                diff_info
+              ]
             )
           end
         end
@@ -390,6 +412,8 @@ module Sfn
         if(results[kind][name])
           results[kind][name][:properties] += resource[:properties]
           results[kind][name][:properties].uniq!
+          results[kind][name][:diffs] += resource[:diffs]
+          results[kind][name][:diffs].uniq!
         else
           results[kind][name] = resource
         end

@@ -96,9 +96,13 @@ module Sfn
                   display_plan_information(result)
                 end
               rescue => e
-                ui.error "Unexpected error when generating plan information: #{e.class} - #{e}"
-                ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-                ui.confirm 'Continue with stack update?'
+                unless(e.message.include?('Confirmation declined'))
+                  ui.error "Unexpected error when generating plan information: #{e.class} - #{e}"
+                  ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+                  ui.confirm 'Continue with stack update?'
+                else
+                  raise
+                end
               end
             end
 
@@ -246,6 +250,31 @@ module Sfn
             ui.print "Reason: Updated properties: `#{val[:properties].join('`, `')}`"
           end
           ui.puts
+          if(config[:diffs])
+            unless(val[:diffs].empty?)
+              val[:diffs].each do |diff|
+                ui.print ' ' * 8
+                if(diff[:updated].nil?)
+                  ui.puts ui.color("#{diff[:path]}:", :red)
+                  ui.print ' ' * 10
+                  ui.print '<- '
+                  ui.puts ui.color(diff[:original], :red)
+                elsif(diff[:original.nil?])
+                  ui.print ui.color("#{diff[:path]}:", :green)
+                  ui.print ' ' * 10
+                  ui.print '-> '
+                  ui.puts ui.color(diff[:updated], :green)
+                else
+                  ui.puts ui.color("#{diff[:path]}:", :yellow)
+                  ui.print ' ' * 10
+                  ui.print ui.color(diff[:original], :red)
+                  ui.print ' -> '
+                  ui.puts ui.color(diff[:updated], :green)
+                end
+              end
+              ui.puts
+            end
+          end
         end
       end
 
