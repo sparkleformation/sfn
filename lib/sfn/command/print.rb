@@ -17,7 +17,14 @@ module Sfn
         file = Sfn::Utils::StackParameterScrubber.scrub!(file)
         file = translate_template(file)
 
-        ui.puts _format_json(file)
+        j = _format_json(file)
+        begin
+            File.write(config[:write_file], j) if config[:write_file]
+        rescue Exception => e
+          ui.fatal "Failed to write stack: #{e}"
+          ui.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+        end
+        ui.puts j
       end
 
     end
