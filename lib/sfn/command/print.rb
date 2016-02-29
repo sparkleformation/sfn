@@ -17,14 +17,21 @@ module Sfn
         file = Sfn::Utils::StackParameterScrubber.scrub!(file)
         file = translate_template(file)
 
-        j = _format_json(file)
-        begin
-            File.write(config[:write_file], j) if config[:write_file]
-        rescue Exception => e
-          ui.fatal "Failed to write stack: #{e}"
-          ui.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+        json_content = _format_json(file)
+        if(config[:write_to_file])
+          unless(File.directory?(File.dirname(config[:write_to_file])))
+            run_action 'Creating parent directory' do
+              FileUtils.mkdir_p(File.dirname(config[:write_to_file]))
+              nil
+            end
+          end
+          run_action "Writing template to file - #{config[:write_to_file]}" do
+            File.write(config[:write_to_file], json_content)
+            nil
+          end
+        else
+          ui.puts json_content
         end
-        ui.puts j
       end
 
     end

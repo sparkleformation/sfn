@@ -6,8 +6,8 @@ module Sfn
     class Print < Validate
 
       attribute(
-        :write_file, String,
-        :description => 'Write compiled sparkleformation template to path provided',
+        :write_to_file, String,
+        :description => 'Write compiled SparkleFormation template to path provided',
         :short_flag => 'w'
       )
 
