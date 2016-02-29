@@ -238,6 +238,8 @@ module Sfn
       def print_plan_items(info, key, color)
         max_name = info[key].keys.map(&:size).max
         max_type = info[key].values.map{|i|i[:type]}.map(&:size).max
+        max_p = info[key].values.map{|i| i.fetch(:diffs, [])}.flatten(1).map{|d| d.fetch(:property_name, :path).to_s.size}.max
+        max_o = info[key].values.map{|i| i.fetch(:diffs, [])}.flatten(1).map{|d| d[:original].to_s.size}.max
         info[key].each do |name, val|
           ui.print ' ' * 6
           ui.print ui.color("[#{val[:type]}]", color)
@@ -253,23 +255,19 @@ module Sfn
           if(config[:diffs])
             unless(val[:diffs].empty?)
               val[:diffs].each do |diff|
-                ui.print ' ' * 8
-                if(diff[:updated].nil?)
-                  ui.puts ui.color("#{diff[:path]}:", :red)
-                  ui.print ' ' * 10
-                  ui.print '<- '
-                  ui.puts ui.color(diff[:original], :red)
-                elsif(diff[:original.nil?])
-                  ui.print ui.color("#{diff[:path]}:", :green)
-                  ui.print ' ' * 10
-                  ui.print '-> '
-                  ui.puts ui.color(diff[:updated], :green)
-                else
-                  ui.puts ui.color("#{diff[:path]}:", :yellow)
-                  ui.print ' ' * 10
-                  ui.print ui.color(diff[:original], :red)
-                  ui.print ' -> '
-                  ui.puts ui.color(diff[:updated], :green)
+                if(diff[:updated] && diff[:original])
+                  p_name = diff.fetch(:property_name, :path)
+                  ui.print ' ' * 8
+                  ui.print "#{p_name}: "
+                  ui.print ' ' * (max_p - p_name.size)
+                  ui.print ui.color("-#{diff[:original]}", :red)
+                  ui.print ' ' * (max_o - diff[:original].size)
+                  ui.print ' '
+                  if(diff[:updated] == Sfn::Planner::RUNTIME_MODIFIED)
+                    ui.puts ui.color("+#{diff[:original]} <Dependency Modified>", :green)
+                  else
+                    ui.puts ui.color("+#{diff[:updated]}", :green)
+                  end
                 end
               end
               ui.puts
