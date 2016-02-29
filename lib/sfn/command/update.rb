@@ -254,6 +254,7 @@ module Sfn
           ui.puts
           if(config[:diffs])
             unless(val[:diffs].empty?)
+              p_name = nil
               val[:diffs].each do |diff|
                 if(diff[:updated] && diff[:original])
                   p_name = diff.fetch(:property_name, :path)
@@ -270,7 +271,7 @@ module Sfn
                   end
                 end
               end
-              ui.puts
+              ui.puts if p_name
             end
           end
         end
