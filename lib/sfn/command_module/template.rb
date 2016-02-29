@@ -145,8 +145,19 @@ module Sfn
               sf.compile_time_parameter_setter do |formation|
                 f_name = formation.root_path.map(&:name).map(&:to_s)
                 pathed_name = f_name.join(' > ')
-                f_name = f_name.join('_')
-                current_state = compile_state.fetch(f_name, Smash.new)
+                f_name = f_name.join('__')
+                current_state = compile_state[f_name]
+                unless(current_state)
+                  f_name = f_name.split('__')
+                  f_name.shift
+                  f_name = f_name.join('__')
+                  current_state = f_name.empty? ? compile_state : compile_state[f_name]
+                end
+                if(formation.root? && compile_state[f_name].nil?)
+                  current_state = compile_state
+                else
+                  current_state = compile_state.fetch(f_name, Smash.new)
+                end
                 if(formation.compile_state)
                   current_state = current_state.merge(formation.compile_state)
                 end
