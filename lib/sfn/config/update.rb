@@ -40,11 +40,6 @@ module Sfn
         :description => 'Provide planning information prior to update',
         :short_flag => 'l'
       )
-      attribute(
-        :compile_parameters, Smash,
-        :description => 'Pass template compile time parameters directly',
-        :short_flag => 'o'
-      )
 
     end
   end

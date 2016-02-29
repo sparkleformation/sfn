@@ -72,6 +72,28 @@ module Sfn
         :coerce => lambda{|s| s.to_s},
         :short_flag => 's'
       )
+      attribute(
+        :compile_parameters, Smash,
+        :description => 'Pass template compile time parameters directly',
+        :short_flag => 'o',
+        :coerce => lambda{|v|
+          case v
+          when String
+            result = Smash.new
+            v.split(',').each do |item_pair|
+              key, value = item_pair.split(/[=:]/, 2)
+              key = key.split('__')
+              key = [key.pop, key.map{|x| Bogo::Utility.camel(x)}.join('__')].reverse
+              result.set(*key, value)
+            end
+            result
+          when Hash
+            v.to_smash
+          else
+            v
+          end
+        }
+      )
 
     end
   end
