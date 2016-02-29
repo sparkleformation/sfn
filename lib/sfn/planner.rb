@@ -6,6 +6,9 @@ module Sfn
 
     autoload :Aws, 'sfn/planner/aws'
 
+    # Value to flag runtime modification
+    RUNTIME_MODIFIED = '__MODIFIED_REFERENCE_VALUE__'
+
     # @return [Bogo::Ui]
     attr_reader :ui
     # @return [Smash]
