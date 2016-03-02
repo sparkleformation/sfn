@@ -17,17 +17,17 @@ module Sfn
       # default chef environment name
       DEFAULT_CHEF_ENVIRONMENT = '_default'
       # default instance options
-      DEFAULT_OPTIONS = Mash.new(
+      DEFAULT_OPTIONS = Smash.new(
         :chef_popsicle => true,
         :ignored_parameters => ['Environment', 'StackCreator', 'Creator'],
         :chef_environment_parameter => 'Environment'
       )
       # default structure of export payload
       DEFAULT_EXPORT_STRUCTURE = {
-        :stack => Mash.new(
+        :stack => Smash.new(
           :template => nil,
           :options => {
-            :parameters => Mash.new,
+            :parameters => Smash.new,
             :capabilities => [],
             :notification_topics => []
           }
@@ -73,7 +73,7 @@ module Sfn
           end
           stack_export[:stack][:template] = stack.template
           stack_export[:generator][:timestamp] = Time.now.to_i
-          stack_export[:generator][:provider] = stack.provider.connection.provider
+          stack_export[:generator][:provider] = stack.api.provider
           if(chef_popsicle? && defined?(Chef))
             freeze_runlists(stack_export)
           end
@@ -153,7 +153,7 @@ module Sfn
       # @note this will expand all roles
       def extract_runlist_item(item)
         rl_item = item.is_a?(Chef::RunList::RunListItem) ? item : Chef::RunList::RunListItem.new(item)
-        static_content = Mash.new(:run_list => [])
+        static_content = Smash.new(:run_list => [])
         if(rl_item.recipe?)
           cookbook, recipe = rl_item.name.split('::')
           peg_version = allowed_cookbook_version(cookbook)

@@ -6,15 +6,15 @@ module Sfn
     class Export < Command
 
       include Sfn::CommandModule::Base
-      include Sfn::Utils::ObjectStorage
+#      include Sfn::Utils::ObjectStorage
 
       # Run export action
       def execute!
-        raise NotImplementedError.new 'Implementation updates required'
+        name_required!
         stack_name = name_args.first
         ui.info "#{ui.color('Stack Export:', :bold)} #{stack_name}"
         ui.confirm 'Perform export'
-        stack = provider.stacks.get(stack_name)
+        stack = provider.connection.stacks.get(stack_name)
         if(stack)
           export_options = Smash.new.tap do |opts|
             [:chef_popsicle, :chef_environment_parameter, :ignore_parameters].each do |key|
@@ -66,7 +66,6 @@ module Sfn
       # @param stack [Misama::Stack::Orchestration::Stack]
       # @return [String, NilClass] path to file
       def write_to_file(payload, stack)
-        raise NotImplementedError
         if(config[:path])
           full_path = File.join(
             config[:path],
@@ -87,7 +86,6 @@ module Sfn
       # @param stack [Miasma::Models::Orchestration::Stack]
       # @return [String, NilClass] remote bucket key
       def write_to_bucket(payload, stack)
-        raise NotImplementedError
         if(bucket = config[:bucket])
           key_path = File.join(*[
               bucket_prefix(stack),

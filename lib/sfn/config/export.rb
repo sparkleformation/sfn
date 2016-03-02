@@ -7,20 +7,24 @@ module Sfn
     class Export < Config
 
       attribute(
-        :name, String,
-        :description => 'Export file base name'
+        :file_name, String,
+        :description => 'Export file base name',
+        :short_flag => 'f'
       )
       attribute(
-        :path, String,
-        :description => 'Local path prefix for dump file'
+        :directory_path, String,
+        :description => 'Local path prefix for dump file',
+        :short_flag => 'P'
       )
       attribute(
         :bucket, String,
-        :description => 'Remote storage bucket'
+        :description => 'Remote storage bucket',
+        :short_flag => 'b'
       )
       attribute(
         :bucket_prefix, String,
-        :description => 'Remote key prefix within bucket for dump file'
+        :description => 'Remote key prefix within bucket for dump file',
+        :short_flag => 'B'
       )
 
     end
