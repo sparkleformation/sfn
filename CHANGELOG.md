@@ -1,3 +1,6 @@
+# v2.1.6
+* [fix] Prevent configuration defaults overwriting user defined values (#144)
+
 # v2.1.4
 * [fix] Update environment variable name used for azure credentials (#135)
 * [fix] Cast all parameters to String types within planner (#137)
