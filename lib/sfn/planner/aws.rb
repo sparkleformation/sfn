@@ -263,10 +263,11 @@ module Sfn
         [o_nested_stacks + n_nested_stacks].flatten.compact.uniq.each do |n_name|
           o_stack = stack.nested_stacks(false).detect{|s| s.data[:logical_id] == n_name}
           n_exists = is_stack?(new_template_hash['Resources'].fetch(n_name, {})['Type'])
-          n_template = new_template_hash['Resources'].fetch(n_name, {}).fetch('Properties', {})['Stack']
-          n_parameters = new_template_hash['Resources'].fetch(n_name, {}).fetch('Properties', {}).fetch('Parameters', {})
-          n_type = new_template_hash['Resources'].fetch(n_name, {})['Type'] ||
-            origin_template['Resources'][n_name]['Type']
+          n_template = new_template_hash.fetch('Resources', n_name, 'Properties', 'Stack')
+          n_parameters = new_template_hash.fetch('Resources', n_name, 'Properties', 'Parameters', Smash.new)
+          n_type = new_template_hash.fetch('Resources', n_name, 'Type',
+            origin_template.get('Resources', n_name, 'Type')
+          )
           resource = Smash.new(
             :name => n_name,
             :type => n_type,
@@ -357,7 +358,7 @@ module Sfn
               property_name = p_path[3].sub(/\[\d+\]$/, '')
               type = templates[:origin]['Resources'][resource_name]['Type']
               info = SfnAws.registry.fetch(type, {})
-              effect = info[:full_properties].fetch(property_name, {}).fetch(:update_causes, :unknown).to_sym
+              effect = info.fetch(:full_properties, property_name, :update_causes, :unknown).to_sym
               resource = Smash.new(
                 :name => resource_name,
                 :type => type,
