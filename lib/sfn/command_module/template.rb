@@ -214,16 +214,13 @@ module Sfn
         def process_nested_stack_shallow(sf, c_stack=nil)
           sf.apply_nesting(:shallow) do |stack_name, stack, resource|
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
-            stack_definition = stack.compile.dump!
             bucket = provider.connection.api_for(:storage).buckets.get(
               config[:nesting_bucket]
             )
             if(config[:print_only])
               template_url = "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
             else
-              unless(config[:plan])
-                resource.properties.delete!(:stack)
-              end
+              stack_definition = dump_stack_for_storage(stack)
               unless(bucket)
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"
               end
@@ -277,12 +274,7 @@ module Sfn
                   :current_parameters => current_parameters
                 )
               )
-              hold_stack = resource.properties.delete!(:stack)
-              stack_definition = stack.compile.dump!
-
-              if(config[:plan])
-                resource.properties.stack hold_stack
-              end
+              stack_definition = dump_stack_for_storage(stack)
               bucket = provider.connection.api_for(:storage).buckets.get(
                 config[:nesting_bucket]
               )
@@ -306,6 +298,24 @@ module Sfn
               resource.properties.set!(k, v)
             end
           end
+        end
+
+        # Remove internally used `Stack` property from Stack resources and
+        # and generate compiled Hash
+        #
+        # @param stack [SparkleFormation]
+        # @return [Hash]
+        def dump_stack_for_storage(stack)
+          nested_stacks = stack.nested_stacks.map do |nested_resource|
+            [nested_resource.resource_name!, stack.compile.resources.set!(nested_resource.resource_name!).properties.delete!(:stack)]
+          end
+          stack_definition = stack.compile.dump!
+          if(config[:plan])
+            nested_stacks.each do |nested_name, nested_data|
+              stack.compile.resources.set!(nested_name).properties.stack nested_data
+            end
+          end
+          stack_definition
         end
 
         # Update the nested stack information for specific provider
