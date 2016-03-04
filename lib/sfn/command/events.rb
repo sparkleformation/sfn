@@ -69,10 +69,7 @@ module Sfn
           stack.events.all.map do |e|
             e.attributes.merge(:stack_name => stack.name).to_smash
           end
-        end.flatten.compact.find_all{|e| e[:time] }
-        stack_events.sort do |x,y|
-          Time.parse(x[:time].to_s) <=> Time.parse(y[:time].to_s)
-        end
+        end.flatten.compact.find_all{|e| e[:time] }.reverse
       end
 
       # Discover stacks defined within the resources of given stack
