@@ -130,7 +130,7 @@ module Sfn
       # @return [Hash] report
       def generate_plan(template, parameters)
         parameters = Smash[parameters.map{|k,v| [k, v.to_s]}]
-        Smash.new(
+        result = Smash.new(
           :stacks => Smash.new(
             origin_stack.name => plan_stack(
               origin_stack,
@@ -145,9 +145,26 @@ module Sfn
           :unavailable => Smash.new,
           :unknown => Smash.new
         )
+#        scrub_stack_properties(template)
+        result
       end
 
       protected
+
+      # Remote custom Stack property from Stack resources within template
+      #
+      # @param template [Hash]
+      # @return [TrueClass]
+      def scrub_stack_properties(template)
+        if(template['Resources'])
+          template['Resources'].each do |name, info|
+            if(is_stack?(info['Type']) && info['Properties'].is_a?(Hash))
+              info['Properties'].delete('Stack')
+            end
+          end
+        end
+        true
+      end
 
       # Set global parameters available for all template translations.
       # These are pseudo-parameters that are provided by the
@@ -257,13 +274,13 @@ module Sfn
         o_nested_stacks = origin_template.fetch('Resources', {}).find_all do |s_name, s_val|
           is_stack?(s_val['Type'])
         end.map(&:first)
-        n_nested_stacks = new_template_hash.fetch('Resources', {}).find_all do |s_name, s_val|
+        n_nested_stacks = (new_template_hash['Resources'] || {}).find_all do |s_name, s_val|
           is_stack?(s_val['Type'])
         end.map(&:first)
         [o_nested_stacks + n_nested_stacks].flatten.compact.uniq.each do |n_name|
           o_stack = stack.nested_stacks(false).detect{|s| s.data[:logical_id] == n_name}
-          n_exists = is_stack?(new_template_hash['Resources'].fetch(n_name, {})['Type'])
-          n_template = new_template_hash.fetch('Resources', n_name, 'Properties', 'Stack')
+          n_exists = is_stack?(new_template_hash.get('Resources', n_name, 'Type'))
+          n_template = new_template_hash.get('Resources', n_name, 'Properties', 'Stack')
           n_parameters = new_template_hash.fetch('Resources', n_name, 'Properties', 'Parameters', Smash.new)
           n_type = new_template_hash.fetch('Resources', n_name, 'Type',
             origin_template.get('Resources', n_name, 'Type')
@@ -291,9 +308,7 @@ module Sfn
           end
         end
 
-        n_nested_stacks.each do |ns_name|
-          new_template_hash['Resources'][ns_name]['Properties'].delete('Stack')
-        end
+        scrub_stack_properties(new_template_hash)
 
         update_template = dereference_template(
           t_key, new_template_hash, new_parameters,
