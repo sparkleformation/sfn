@@ -132,7 +132,7 @@ module Sfn
                 poll_stack(stack.name)
                 if(stack.reload.state == :update_complete)
                   ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
-                  stack.resources.reload
+                  provider.stacks.reload
                   namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
                 else
                   ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
@@ -256,18 +256,22 @@ module Sfn
             unless(val[:diffs].empty?)
               p_name = nil
               val[:diffs].each do |diff|
-                if(diff[:updated] && diff[:original])
+                if(!diff[:updated].nil? || !diff[:original].nil?)
                   p_name = diff.fetch(:property_name, :path)
                   ui.print ' ' * 8
                   ui.print "#{p_name}: "
                   ui.print ' ' * (max_p - p_name.size)
-                  ui.print ui.color("-#{diff[:original]}", :red)
-                  ui.print ' ' * (max_o - diff[:original].size)
+                  ui.print ui.color("-#{diff[:original]}", :red) unless diff[:original].nil?
+                  ui.print ' ' * (max_o - diff[:original].to_s.size)
                   ui.print ' '
                   if(diff[:updated] == Sfn::Planner::RUNTIME_MODIFIED)
                     ui.puts ui.color("+#{diff[:original]} <Dependency Modified>", :green)
                   else
-                    ui.puts ui.color("+#{diff[:updated]}", :green)
+                    if(diff[:updated].nil?)
+                      ui.puts
+                    else
+                      ui.puts ui.color("+#{diff[:updated]}", :green)
+                    end
                   end
                 end
               end
