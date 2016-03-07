@@ -88,20 +88,20 @@ module Sfn
     end
 
     # @return [Miasma::Orchestration::Stacks]
-    def stacks
-      connection.stacks.from_json(cached_stacks)
+    def stacks(stack_id=nil)
+      connection.stacks.from_json(cached_stacks(stack_id))
     end
 
     # @return [String] json representation of cached stacks
-    def cached_stacks
-      fetch_stacks unless @initial_fetch_complete
+    def cached_stacks(stack_id=nil)
+      fetch_stacks(stack_id) unless @initial_fetch_complete
       value = cache[:stacks].value
       value ? MultiJson.dump(MultiJson.load(value).values) : '[]'
     end
 
     # @return [Miasma::Orchestration::Stack, NilClass]
     def stack(stack_id)
-      stacks.get(stack_id)
+      stacks(stack_id).get(stack_id)
     end
 
     # Store stack attribute changes
@@ -162,23 +162,32 @@ module Sfn
     # Request stack information and store in cache
     #
     # @return [TrueClass]
-    def fetch_stacks
+    def fetch_stacks(stack_id=nil)
       cache.locked_action(:stacks_lock) do
         logger.info "Lock aquired for stack update. Requesting stacks from upstream. (#{Thread.current})"
-        stacks = Hash[
-          connection.stacks.reload.all.map do |stack|
-            [stack.id, stack.attributes]
-          end
-        ]
+        if(stack_id)
+          single_stack = connection.stacks.get(stack_id)
+          stacks = single_stack ? {single_stack.id => single_stack} : {}
+        else
+          stacks = Hash[
+            connection.stacks.reload.all.map do |stack|
+              [stack.id, stack.attributes]
+            end
+          ]
+        end
         if(cache[:stacks].value)
           existing_stacks = MultiJson.load(cache[:stacks].value)
           # Force common types
           stacks = MultiJson.load(MultiJson.dump(stacks))
-          # Remove stacks that have been deleted
-          stale_ids = existing_stacks.keys - stacks.keys
-          stacks = existing_stacks.to_smash.deep_merge(stacks)
-          stale_ids.each do |stale_id|
-            stacks.delete(stale_id)
+          if(stack_id)
+            stacks = existing_stacks.to_smash.deep_merge(stacks)
+          else
+            # Remove stacks that have been deleted
+            stale_ids = existing_stacks.keys - stacks.keys
+            stacks = existing_stacks.to_smash.deep_merge(stacks)
+            stale_ids.each do |stale_id|
+              stacks.delete(stale_id)
+            end
           end
         end
         cache[:stacks].value = stacks.to_json
