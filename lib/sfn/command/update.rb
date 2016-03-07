@@ -16,7 +16,7 @@ module Sfn
 
         stack_info = "#{ui.color('Name:', :bold)} #{name}"
         begin
-          stack = provider.connection.stacks.get(name)
+          stack = provider.stacks.get(name)
         rescue Miasma::Error::ApiError::RequestError
           stack = nil
         end
@@ -132,7 +132,6 @@ module Sfn
                 poll_stack(stack.name)
                 if(stack.reload.state == :update_complete)
                   ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
-                  provider.stacks.reload
                   namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
                 else
                   ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
