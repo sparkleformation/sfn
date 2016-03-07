@@ -23,6 +23,11 @@ module Sfn
         :description => 'Display all event attributes',
         :short_flag => 'A'
       )
+      attribute(
+        :all_events,  [TrueClass, FalseClass],
+        :description => 'Display all available events',
+        :short_flag => 'L'
+      )
 
     end
   end

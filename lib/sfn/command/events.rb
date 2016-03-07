@@ -15,10 +15,7 @@ module Sfn
         name_required!
         name = name_args.first
         ui.info "Events for Stack: #{ui.color(name, :bold)}\n"
-        @stacks = []
-        @stack = provider.connection.stacks.get(name)
-        @stacks << stack
-        discover_stacks(stack)
+        @stack = provider.stack(name)
         if(stack)
           api_action!(:api_stack => stack) do
             table = ui.table(self) do
@@ -47,6 +44,7 @@ module Sfn
                   sleep(0.1)
                   to_wait -= 0.1
                 end
+                stack.resources.reload
                 stack.reload
                 table.display
               end
@@ -64,27 +62,33 @@ module Sfn
       # @param last_id [String] only return events after this ID
       # @return [Array<Hash>]
       def get_events(*args)
-        discover_stacks(stack)
-        stack_events = @stacks.map do |stack|
-          stack.events.all.map do |e|
-            e.attributes.merge(:stack_name => stack.name).to_smash
+        stack_events = discover_stacks(stack).map do |i_stack|
+          i_stack.events.all.map do |e|
+            e.attributes.merge(:stack_name => i_stack.name).to_smash
           end
         end.flatten.compact.find_all{|e| e[:time] }.reverse
+        unless(@initial_complete)
+          stack_events = stack_events.sort_by{|e| e[:time] }
+          unless(config[:all_events])
+            start_index = stack_events.rindex do |item|
+              item[:stack_name] == stack.name &&
+                item[:resource_state].to_sym == :update_in_progress &&
+                item[:resource_status_reason].to_s.downcase.include?('user init')
+            end
+            if(start_index)
+              stack_events.slice!(0, start_index)
+            end
+          end
+          @initial_complete = true
+        end
+        stack_events
       end
 
       # Discover stacks defined within the resources of given stack
       #
       # @param stack [Miasma::Models::Orchestration::Stack]
       def discover_stacks(stack)
-        stack.resources.reload.all.each do |resource|
-          if(resource.type == 'AWS::CloudFormation::Stack')
-            nested_stack = provider.connection.stacks.get(resource.id)
-            if(nested_stack)
-              @stacks.push(nested_stack).uniq!
-              discover_stacks(nested_stack)
-            end
-          end
-        end
+        @stacks = [stack] + stack.nested_stacks
       end
 
       # @return [Array<String>] default attributes for events
