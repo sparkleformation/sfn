@@ -12,7 +12,7 @@ module Sfn
       def execute!
         name_required!
         stack_name = name_args.last
-        stack = provider.connection.stacks.get(stack_name)
+        stack = provider.stack(stack_name)
         ui.info "Stack inspection #{ui.color(stack_name, :bold)}:"
         outputs = api_action!(:api_stack => stack) do
           [:attribute, :nodes, :load_balancers, :instance_failure].map do |key|
