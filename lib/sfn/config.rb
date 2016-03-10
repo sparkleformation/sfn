@@ -48,6 +48,7 @@ module Sfn
     autoload :Diff, 'sfn/config/diff'
     autoload :Events, 'sfn/config/events'
     autoload :Export, 'sfn/config/export'
+    autoload :Graph, 'sfn/config/graph'
     autoload :Import, 'sfn/config/import'
     autoload :Init, 'sfn/config/init'
     autoload :Inspect, 'sfn/config/inspect'
