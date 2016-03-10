@@ -13,6 +13,7 @@ module Sfn
     autoload :Diff, 'sfn/command/diff'
     autoload :Events, 'sfn/command/events'
     autoload :Export, 'sfn/command/export'
+    autoload :Graph, 'sfn/command/graph'
     autoload :Import, 'sfn/command/import'
     autoload :Init, 'sfn/command/init'
     autoload :Inspect, 'sfn/command/inspect'
