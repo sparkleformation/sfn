@@ -15,6 +15,7 @@ module Sfn
         name_required!
         name = name_args.first
         ui.info "Events for Stack: #{ui.color(name, :bold)}\n"
+        @seen_events = []
         @stack = provider.stack(name)
         if(stack)
           api_action!(:api_stack => stack) do
@@ -38,14 +39,13 @@ module Sfn
               end
             end.display
             if(config[:poll])
-              while(stack.in_progress?)
+              while(stack.reload.in_progress?)
                 to_wait = config.fetch(:poll_wait_time, 10).to_f
                 while(to_wait > 0)
                   sleep(0.1)
                   to_wait -= 0.1
                 end
                 stack.resources.reload
-                stack.reload
                 table.display
               end
             end
@@ -63,16 +63,19 @@ module Sfn
       # @return [Array<Hash>]
       def get_events(*args)
         stack_events = discover_stacks(stack).map do |i_stack|
-          i_stack.events.all.map do |e|
+          i_events = i_stack.events.reload.all
+          i_events.map do |e|
             e.attributes.merge(:stack_name => i_stack.name).to_smash
           end
         end.flatten.compact.find_all{|e| e[:time] }.reverse
+        stack_events.delete_if{|evt| @seen_events.include?(evt)}
+        @seen_events.concat(stack_events)
         unless(@initial_complete)
           stack_events = stack_events.sort_by{|e| e[:time] }
           unless(config[:all_events])
             start_index = stack_events.rindex do |item|
               item[:stack_name] == stack.name &&
-                item[:resource_state].to_sym == :update_in_progress &&
+                item[:resource_state].to_s.end_with?('in_progress') &&
                 item[:resource_status_reason].to_s.downcase.include?('user init')
             end
             if(start_index)
@@ -88,7 +91,7 @@ module Sfn
       #
       # @param stack [Miasma::Models::Orchestration::Stack]
       def discover_stacks(stack)
-        @stacks = [stack] + stack.nested_stacks
+        @stacks = [stack] + stack.nested_stacks.reverse
       end
 
       # @return [Array<String>] default attributes for events
