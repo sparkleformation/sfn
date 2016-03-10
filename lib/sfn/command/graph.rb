@@ -25,6 +25,10 @@ module Sfn
         end
         run_action 'Pre-processing template for graphing' do
           output_discovery(file, @outputs, nil, nil)
+          ui.debug 'Output remapping results from pre-processing:'
+          @outputs.each_pair do |o_key, o_value|
+            ui.debug "#{o_key} -> #{o_value}"
+          end
           nil
         end
         graph = nil
@@ -73,6 +77,7 @@ module Sfn
           end
         end
         if(parent_template)
+          ui.debug "Pre-processing stack resource `#{resource_name}`"
           substack_parameters = Smash[
             parent_template.fetch('Resources', resource_name, 'Properties', 'Parameters', {}).map do |key, value|
               result = [key, value]
@@ -80,16 +85,21 @@ module Sfn
                 v_key = value.keys.first
                 v_value = value.values.first
                 if(v_key == 'Fn::GetAtt' && parent_template.fetch('Resources', {}).keys.include?(v_value.first) && v_value.last.start_with?('Outputs.'))
-                  output_key = v_value.first << '__' << v_value.last.split('.', 2).last
+                  output_key = v_value.first + '__' + v_value.last.split('.', 2).last
+                  ui.debug "Output key for check: #{output_key}"
                   if(outputs.key?(output_key))
                     new_value = outputs[output_key]
                     result = [key, new_value]
+                    ui.debug "Parameter for output swap `#{key}`: #{value} -> #{new_value}"
                   end
                 end
               end
               result
             end
           ]
+
+          ui.debug "Generated internal parameters for `#{resource_name}`: #{substack_parameters}"
+
           processor = GraphProcessor.new({},
             :parameters => substack_parameters
           )
@@ -143,7 +153,7 @@ module Sfn
             )
             next
           else
-            graph.node(node_name).attributes << graph.fillcolor(colorize(node_prefix).inspect)
+            graph.node(node_name).attributes << graph.fillcolor(colorize(node_prefix.empty? ? config[:file] : node_prefix).inspect)
             graph.box3d << graph.node(node_name)
           end
           graph.filled << graph.node(node_name)
@@ -182,11 +192,21 @@ module Sfn
 
       def colorize(string)
         hash = string.chars.inject(0) do |memo, chr|
-          chr.ord + ((memo << 5) - memo)
+          if(memo + chr.ord > 127)
+            (memo - chr.ord).abs
+          else
+            memo + chr.ord
+          end
         end
         color = '#'
-        6.times do |count|
-          color << ('00' + ((hash >> count * 8) & 0xFF).to_s(16)).slice(-2)
+        3.times do |i|
+          color << (255 ^ hash).to_s(16)
+          new_val = hash + (hash * (1 / (i + 1.to_f))).to_i
+          if(hash * (i + 1) < 127)
+            hash = new_val
+          else
+            hash = hash / (i + 1)
+          end
         end
         color
       end
