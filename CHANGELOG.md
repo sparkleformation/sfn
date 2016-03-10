@@ -1,3 +1,10 @@
+# v2.1.8
+* [fix] Fix some planner errors caused by unexpected types (#146)
+* [fix] Use common stack scrubbing implementation for create and update (#148)
+* [fix] Properly expand nested stacks when displaying events (#148)
+* [enhancement] Update internal stack data caching to reduce request numbers and size (#148)
+* [feature] Add initial graph command implementation (currenty AWS only) (#152)
+
 # v2.1.6
 * [fix] Prevent configuration defaults overwriting user defined values (#144)
 
