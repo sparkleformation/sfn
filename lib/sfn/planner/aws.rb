@@ -354,7 +354,11 @@ module Sfn
           else
             if(p_path.include?('Properties'))
               resource_name = p_path[1]
-              property_name = p_path[3].sub(/\[\d+\]$/, '')
+              if(p_path.size < 4 && p_path.last == 'Properties')
+                property_name = diff.flatten.compact.last.keys.first
+              else
+                property_name = p_path[3].to_s.sub(/\[\d+\]$/, '')
+              end
               type = templates[:origin]['Resources'][resource_name]['Type']
               info = SfnAws.registry.fetch(type, {})
               effect = info[:full_properties].fetch(property_name, {}).fetch(:update_causes, :unknown).to_sym
