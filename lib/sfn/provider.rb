@@ -94,7 +94,13 @@ module Sfn
 
     # @return [String] json representation of cached stacks
     def cached_stacks(stack_id=nil)
-      fetch_stacks(stack_id) unless @initial_fetch_complete
+      unless(@initial_fetch_complete || stack_id)
+        recache = true
+        if(stack_id && @initial_fetch_complete)
+          recache = !!stacks.get(stack_id)
+        end
+        fetch_stacks(stack_id) if recache
+      end
       value = cache[:stacks].value
       value ? MultiJson.dump(MultiJson.load(value).values) : '[]'
     end
