@@ -112,7 +112,6 @@ module Sfn
 
           derefed_outs.each do |o_name, o_data|
             o_key = [name, o_name].join('__')
-            p o_key
             outputs[o_key] = o_data['Value']
           end
         end
