@@ -1,3 +1,7 @@
+# v2.1.10
+* [fix] Prevent direct output key modification on graph mapping
+* [enhancement] Restrict graph colors to readable values
+
 # v2.1.8
 * [fix] Fix some planner errors caused by unexpected types (#146)
 * [fix] Use common stack scrubbing implementation for create and update (#148)
