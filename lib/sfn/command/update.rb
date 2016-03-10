@@ -280,20 +280,6 @@ module Sfn
         end
       end
 
-      # Scrub sparkle/sfn customizations from the stack resource data
-      #
-      # @param template [Hash]
-      # @return [Hash]
-      def scrub_template(template)
-        template = Sfn::Utils::StackParameterScrubber.scrub!(template)
-        (template['Resources'] || {}).each do |r_name, r_content|
-          if(valid_stack_types.include?(r_content['Type']))
-            (r_content['Properties'] || {}).delete('Stack')
-          end
-        end
-        template
-      end
-
     end
   end
 end

@@ -318,6 +318,20 @@ module Sfn
           stack_definition
         end
 
+        # Scrub sparkle/sfn customizations from the stack resource data
+        #
+        # @param template [Hash]
+        # @return [Hash]
+        def scrub_template(template)
+          template = Sfn::Utils::StackParameterScrubber.scrub!(template)
+          (template['Resources'] || {}).each do |r_name, r_content|
+            if(valid_stack_types.include?(r_content['Type']))
+              result = (r_content['Properties'] || {}).delete('Stack')
+            end
+          end
+          template
+        end
+
         # Update the nested stack information for specific provider
         #
         # @param provider [Symbol]
