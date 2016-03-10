@@ -81,7 +81,8 @@ module Sfn
         #
         # @param name [String] name of stack
         # @return [Miasma::Models::Orchestration::Stack]
-        def stack(name)
+        def stack(name=nil)
+          name = name_args.first unless name
           provider.stacks.get(name)
         end
 

@@ -12,7 +12,7 @@ module Sfn
       def execute!
         name_required!
         stack_name = name_args.last
-        stack = provider.connection.stacks.get(stack_name)
+        stack = provider.stack(stack_name)
         ui.info "Stack inspection #{ui.color(stack_name, :bold)}:"
         outputs = api_action!(:api_stack => stack) do
           [:attribute, :nodes, :load_balancers, :instance_failure].map do |key|
@@ -95,7 +95,7 @@ module Sfn
       def display_attribute(stack)
         [config[:attribute]].flatten.compact.each do |stack_attribute|
           attr = stack_attribute.split('.').inject(stack) do |memo, key|
-            args = key.scan(/\(([^)]*)\)/).flatten.first.to_s
+            args = key.scan(/\(([^\)]*)\)/).flatten.first.to_s
             if(args)
               args = args.split(',').map{|a| a.to_i.to_s == a ? a.to_i : a}
               key = key.split('(').first
@@ -129,7 +129,7 @@ module Sfn
             [
               asg.name,
               Smash[
-                asg.servers.map(&:expand).map{|s|
+                asg.servers.map(&:expand).compact.map{|s|
                   [s.id, Smash.new(
                       :name => s.name,
                       :addresses => s.addresses.map(&:address)
@@ -144,11 +144,13 @@ module Sfn
             resource.within?(:compute, :servers)
           end.map do |srv|
             srv = srv.instance
-            [srv.id, Smash.new(
+            if(srv)
+              [srv.id, Smash.new(
                 :name => srv.name,
                 :addresses => srv.addresses.map(&:address)
-            )]
-          end
+              )]
+            end
+          end.compact
         ]
         unless(asg_nodes.empty?)
           ui.info '  AutoScale Group Instances:'

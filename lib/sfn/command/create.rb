@@ -59,7 +59,7 @@ module Sfn
           )
 
           apply_stacks!(stack)
-          stack.template = Sfn::Utils::StackParameterScrubber.scrub!(stack.template)
+          stack.template = Sfn::Utils::StackParameterScrubber.scrub!(scrub_template(stack.template))
 
           if(config[:print_only])
             ui.puts _format_json(translate_template(stack.template))
