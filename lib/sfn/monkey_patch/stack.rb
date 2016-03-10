@@ -194,7 +194,7 @@ module Sfn
       # @param recurse [TrueClass, FalseClass] recurse to fetch _all_ stacks
       # @return [Array<Miasma::Models::Orchestration::Stack>]
       def nested_stacks(recurse=true)
-        resources.all.map do |resource|
+        resources.reload.all.map do |resource|
           if(api.data.fetch(:stack_types, []).include?(resource.type))
             # Custom remote load support
             if(resource.type == 'Custom::JackalStack')
