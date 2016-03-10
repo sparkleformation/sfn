@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sparkle_formation', '>= 2.1.2', '< 3'
   s.add_runtime_dependency 'hashdiff', '~> 0.2.2'
   s.add_runtime_dependency 'graph', '~> 2.8.1'
-  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rake', '~> 10'
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'mocha'
   s.executables << 'sfn'
