@@ -77,6 +77,10 @@ $ knife sparkleformation --help
 |                            | Valid         | `Hash`
 |                            | Default       | none
 |----------------------------|---------------|---------------------------------------------------------------
+| `merge_api_options`        | Description   | Merges API options on stack update
+|                            | Valid         | `TrueClass`, `FalseClass`
+|                            | Default       | `false`
+|----------------------------|---------------|---------------------------------------------------------------
 | `ssh_attempt_users`        | Description   | List of users to attempt SSH connection on node failure
 |                            | Valid         | `Array<String>`
 |                            | Default       | none
