@@ -10,16 +10,23 @@ module Sfn
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
 
+      # Valid graph styles
+      GRAPH_STYLES = [
+        'creation',
+        'dependency'
+      ]
+
       # Generate graph
       def execute!
         config[:print_only] = true
+        validate_graph_style!
         file = load_template_file
         file.delete('sfn_nested_stack')
         file = Sfn::Utils::StackParameterScrubber.scrub!(file)
         file = translate_template(file)
         @outputs = Smash.new
         file = file.to_smash
-        ui.info 'Template resource graph generation'
+        ui.info "Template resource graph generation - Style: #{ui.color(config[:graph_style], :bold)}"
         if(config[:file])
           ui.puts "  -> path: #{config[:file]}"
         end
@@ -162,7 +169,11 @@ module Sfn
             if(resources.keys.include?(dep_name))
               dep_name = [node_prefix, dep_name].join
             end
-            @root_graph.edge(dep_name, node_name)
+            if(config[:graph_style] == 'creation')
+              @root_graph.edge(dep_name, node_name)
+            else
+              @root_graph.edge(node_name, dep_name)
+            end
           end
         end
         resource_names.concat resources.keys.map{|r_name| [node_prefix, r_name].join}
@@ -174,6 +185,10 @@ module Sfn
           data.map do |key, value|
             if(key == 'Ref' && names.include?(value))
               value
+            elsif(key == 'DependsOn')
+              [value].flatten.compact.find_all do |dependson_name|
+                names.include?(dependson_name)
+              end
             elsif(key == 'Fn::GetAtt' && names.include?(res = [value].flatten.compact.first))
               res
             else
@@ -209,6 +224,17 @@ module Sfn
           end
         end
         color
+      end
+
+      def validate_graph_style!
+        if(config[:luckymike])
+          ui.warn 'Detected luckymike power override. Forcing `dependency` style!'
+          config[:graph_style] = 'dependency'
+        end
+        config[:graph_style] = config[:graph_style].to_s
+        unless(GRAPH_STYLES.include?(config[:graph_style]))
+          raise ArgumentError.new "Invalid graph style provided `#{config[:graph_style]}`. Valid: `#{GRAPH_STYLES.join('`, `')}`"
+        end
       end
 
       class GraphProcessor < SparkleFormation::Translation
