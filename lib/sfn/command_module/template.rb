@@ -416,6 +416,9 @@ module Sfn
               config[:file] = prompt_for_template
             else
               file_lookup_path = File.expand_path(config[:file])
+              unless(File.exists?(file_lookup_path))
+                file_lookup_path = config[:file]
+              end
               config[:file] = sparkle_collection.get(
                 :template, file_lookup_path
               )[:path]
