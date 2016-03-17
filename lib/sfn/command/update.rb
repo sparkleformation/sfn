@@ -99,10 +99,14 @@ module Sfn
                 unless(e.message.include?('Confirmation declined'))
                   ui.error "Unexpected error when generating plan information: #{e.class} - #{e}"
                   ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-                  ui.confirm 'Continue with stack update?'
+                  ui.confirm 'Continue with stack update?' unless config[:plan_only]
                 else
                   raise
                 end
+              end
+              if(config[:plan_only])
+                info 'Plan only mode requested. Exiting.'
+                exit 0
               end
             end
 
@@ -110,18 +114,8 @@ module Sfn
             stack.template = scrub_template(update_template)
           else
             apply_stacks!(stack)
-
             original_parameters = stack.parameters
             populate_parameters!(stack.template, :current_parameters => stack.parameters)
-
-            if(config[:plan])
-              stack.parameters = original_parameters
-              plan = build_planner(stack)
-              if(plan)
-                result = plan.generate_plan(stack.template, config_root_parameters)
-                display_plan_information(result)
-              end
-            end
             stack.parameters = config_root_parameters
           end
 

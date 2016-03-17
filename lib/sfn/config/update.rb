@@ -41,6 +41,11 @@ module Sfn
         :short_flag => 'l'
       )
       attribute(
+        :plan_only, [TrueClass, FalseClass],
+        :default => false,
+        :description => 'Exit after plan display'
+      )
+      attribute(
         :diffs, [TrueClass, FalseClass],
         :description => 'Show planner content diff',
         :short_flag => 'D'
