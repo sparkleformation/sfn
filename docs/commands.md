@@ -327,6 +327,27 @@ Example of stack diff:
 
 ![stack diff](./images/d_diff.png)
 
+#### Template graphs
+
+Creation or dependency graphs can be created via `sfn`. Two styles of the graph can be
+generated:
+
+* `"creation"` - Resource creation flow (default)
+* `"dependency"` - Resource dependency composition
+
+To generate a graph:
+
+~~~
+$ sfn graph --file my_template --graph-style dependency
+~~~
+
+By default the graph command will create a Graphviz compatible dot format file. If Graphviz
+is installed on the local system, an image can be generated directly:
+
+~~~
+$ sfn graph --file my_template --graph-type png
+~~~
+
 ### Configuration commands
 
 To aid setup and configuration, `sfn` provides a configuration helper:
