@@ -185,6 +185,10 @@ module Sfn
           data.map do |key, value|
             if(key == 'Ref' && names.include?(value))
               value
+            elsif(key == 'DependsOn')
+              [value].flatten.compact.find_all do |dependson_name|
+                names.include?(dependson_name)
+              end
             elsif(key == 'Fn::GetAtt' && names.include?(res = [value].flatten.compact.first))
               res
             else
