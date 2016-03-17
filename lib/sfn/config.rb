@@ -142,8 +142,10 @@ module Sfn
           if(!short.to_s.empty? && shorts.include?(short))
             raise ArgumentError.new "Short flag already in use! (`#{short}` not available for `#{klass}`)"
           end
-          shorts << short
-          info[:short] = short
+          unless(short.to_s.empty?)
+            shorts << short
+            info[:short] = short
+          end
           info[:long] = name.tr('_', '-')
           info[:boolean] = [info[:type]].compact.flatten.all?{|t| BOOLEAN_VALUES.include?(t)}
           [name, info]
