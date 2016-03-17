@@ -180,6 +180,7 @@ module Sfn
               end
               run_callbacks_for(:template, :stack_name => arguments.first, :sparkle_stack => sf)
               if(sf.nested? && config[:apply_nesting])
+                validate_nesting_bucket!
                 if(config[:apply_nesting] == true)
                   config[:apply_nesting] = :deep
                 end
@@ -203,6 +204,14 @@ module Sfn
             end
           else
             raise ArgumentError.new 'Failed to locate template for processing!'
+          end
+        end
+
+        # Force user friendly error if nesting bucket is not set within configuration
+        def validate_nesting_bucket!
+          if(config[:nesting_bucket].to_s.empty?)
+            ui.error 'Missing required configuration value for `nesting_bucket`. Cannot generated nested templates!'
+            raise ArgumentError.new 'Required configuration value for `nesting_bucket` not provided.'
           end
         end
 
