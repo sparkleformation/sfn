@@ -125,6 +125,13 @@ module Sfn
             stack.parameters = config_root_parameters
           end
 
+          # Set options defined within config into stack instance for update request
+          config.fetch(:options, Smash.new).each_pair do |key, value|
+            if(stack.respond_to?("#{key}="))
+              stack.send("#{key}=", value)
+            end
+          end
+
           begin
             api_action!(:api_stack => stack) do
               stack.save
