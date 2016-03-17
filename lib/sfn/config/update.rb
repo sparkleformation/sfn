@@ -50,6 +50,11 @@ module Sfn
         :description => 'Show planner content diff',
         :short_flag => 'D'
       )
+      attribute(
+        :merge_api_options, [TrueClass, FalseClass],
+        :description => 'Merge API options defined within configuration on update',
+        :default => false
+      )
 
     end
   end
