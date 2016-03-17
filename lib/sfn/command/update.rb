@@ -105,7 +105,7 @@ module Sfn
                 end
               end
               if(config[:plan_only])
-                info 'Plan only mode requested. Exiting.'
+                ui.info 'Plan only mode requested. Exiting.'
                 exit 0
               end
             end
@@ -169,7 +169,7 @@ module Sfn
         unless(print_plan_result(result))
           ui.info 'No resources life cycle changes detected in this update!'
         end
-        ui.confirm 'Apply this stack update?'
+        ui.confirm 'Apply this stack update?' unless config[:plan_only]
       end
 
 
