@@ -1,3 +1,11 @@
+# v2.1.12
+* [fix] Provide useful error message when nesting_bucket is unset (#159)
+* [fix] Properly locate templates when relative path provided (#160)
+* [enhancement] Support plan only output on update via `--plan-only` (#158)
+* [enhancement] Allow tag updates on stack updates via `--merge-api-options` (see: #154)
+* [fix] Add `DependsOn` support to graph generation
+* [enhancement] Provide "dependency" style graph option
+
 # v2.1.10
 * [fix] Prevent direct output key modification on graph mapping
 * [enhancement] Restrict graph colors to readable values
