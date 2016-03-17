@@ -19,6 +19,18 @@ module Sfn
         :default => 'dot'
       )
 
+      attribute(
+        :graph_style, String,
+        :description => 'Style of graph (`dependency`, `creation`)',
+        :default => 'creation'
+      )
+
+      attribute(
+        :luckymike, [TrueClass, FalseClass],
+        :description => 'Force `dependency` style graph',
+        :default => false
+      )
+
     end
   end
 end
