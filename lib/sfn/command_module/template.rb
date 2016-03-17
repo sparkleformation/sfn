@@ -406,7 +406,10 @@ module Sfn
             if(!config[:file] && config[:file_path_prompt])
               config[:file] = prompt_for_template
             else
-              config[:file] = sparkle_collection.get(:template, config[:file])[:path]
+              file_lookup_path = File.expand_path(config[:file])
+              config[:file] = sparkle_collection.get(
+                :template, file_lookup_path
+              )[:path]
             end
           else
             if(config[:file])
