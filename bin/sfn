@@ -41,7 +41,11 @@ Bogo::Cli::Setup.define do
             o[:delimiter] = nil
           end
         end
-        on info[:short], on_name, info[:description], opts
+        if(info[:short])
+          on info[:short], on_name, info[:description], opts
+        else
+          on on_name, info[:description], opts
+        end
       end
 
       run do |opts, args|
