@@ -48,17 +48,20 @@ module Sfn
         def validate(value, parameter_definition)
           return [[:blank, 'Value cannot be blank']] if value.to_s.strip.empty?
           parameter_definition = reformat_definition(parameter_definition)
+          value_list = list_type?(parameter_definition['Type'].to_s) ? value.to_s.split(',') : [value]
           result = PARAMETER_VALIDATIONS.map do |validator_key|
             valid_key = parameter_definition.keys.detect do |pdef_key|
               pdef_key.downcase.gsub('_', '') == validator_key.downcase.gsub('_', '')
             end
             if(valid_key)
-              res = self.send(validator_key, value, parameter_definition[valid_key])
-              res == true ? true : [validator_key, res]
+              value_list.map do |value|
+                res = self.send(validator_key, value, parameter_definition[valid_key])
+                res == true ? true : [validator_key, res]
+              end
             else
               true
             end
-          end
+          end.flatten(1)
           result.delete_if{|x| x == true}
           result.empty? ? true : result
         end
@@ -105,7 +108,7 @@ module Sfn
         # @option pdef [String] 'AllowedPattern'
         # @return [TrueClass, String]
         def allowed_pattern(value, pdef)
-          if(value.match(/#{pdef}/))
+          if(value.match(%r{#{pdef}}))
             true
           else
             "Not a valid pattern. Must match: #{pdef}"
@@ -166,6 +169,15 @@ module Sfn
           else
             "Value must not be less than #{pdef}"
           end
+        end
+
+        # Check if type is a list type
+        #
+        # @param type [String]
+        # @return [TrueClass, FalseClass]
+        def list_type?(type)
+          type = type.downcase
+          type.start_with?('comma') || type.start_with?('list<')
         end
 
       end
