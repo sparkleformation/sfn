@@ -48,7 +48,7 @@ module Sfn
         def validate(value, parameter_definition)
           return [[:blank, 'Value cannot be blank']] if value.to_s.strip.empty?
           parameter_definition = reformat_definition(parameter_definition)
-          value_list = list_type?(parameter_definition['Type'].to_s) ? value.to_s.split(',') : [value]
+          value_list = list_type?(parameter_definition.fetch('Type', parameter_definition['type'].to_s)) ? value.to_s.split(',') : [value]
           result = PARAMETER_VALIDATIONS.map do |validator_key|
             valid_key = parameter_definition.keys.detect do |pdef_key|
               pdef_key.downcase.gsub('_', '') == validator_key.downcase.gsub('_', '')
