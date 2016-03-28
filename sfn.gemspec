@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = 'SparkleFormation CLI'
   s.license = 'Apache-2.0'
   s.require_path = 'lib'
-  s.add_runtime_dependency 'bogo-cli', '>= 0.2.4', '< 0.4'
+  s.add_runtime_dependency 'bogo-cli', '>= 0.2.5', '< 0.4'
   s.add_runtime_dependency 'bogo-ui', '>= 0.1.13', '< 0.4'
   s.add_runtime_dependency 'miasma', '>= 0.3.0', '< 0.4'
   s.add_runtime_dependency 'miasma-aws', '>= 0.3.0', '< 0.4'

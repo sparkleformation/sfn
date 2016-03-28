@@ -23,6 +23,19 @@ module Sfn
     autoload :Update, 'sfn/command/update'
     autoload :Validate, 'sfn/command/validate'
 
+    # Base name of configuration file
+    CONFIG_BASE_NAME = '.sfn'
+
+    # Supported configuration file extensions
+    VALID_CONFIG_EXTENSIONS = [
+      '',
+      '.rb',
+      '.json',
+      '.yaml',
+      '.yml',
+      '.xml'
+    ]
+
     # Override to provide config file searching
     def initialize(cli_opts, args)
       unless(cli_opts['config'])
@@ -52,13 +65,19 @@ module Sfn
     # @return [Slop]
     def discover_config(opts)
       cwd = Dir.pwd.split(File::SEPARATOR)
-      until(cwd.empty? || File.exists?(cwd.push('.sfn').join(File::SEPARATOR)))
-        cwd.pop(2)
+      detected_path = ''
+      until(cwd.empty? || File.exists?(detected_path.to_s))
+        detected_path = Dir.glob(
+          (cwd + ["#{CONFIG_BASE_NAME}{#{VALID_CONFIG_EXTENSIONS.join(',')}}"]).join(
+            File::SEPARATOR
+          )
+        ).first
+        cwd.pop
       end
       if(opts.respond_to?(:fetch_option))
-        opts.fetch_option('config').value = cwd.join(File::SEPARATOR) unless cwd.empty?
+        opts.fetch_option('config').value = detected_path if detected_path
       else
-        opts['config'] = cwd.join(File::SEPARATOR) unless cwd.empty?
+        opts['config'] = detected_path if detected_path
       end
       opts
     end
