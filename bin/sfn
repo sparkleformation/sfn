@@ -5,7 +5,11 @@ require 'sfn'
 
 if(defined?(Bundler))
   begin
-    Bundler.require
+    if(Bundler.definition.groups.include?(:sfn))
+      Bundler.require(:sfn)
+    else
+      Bundler.require
+    end
   rescue Bundler::GemfileNotFound
     # ignore load error
   end
