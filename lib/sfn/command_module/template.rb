@@ -80,7 +80,14 @@ module Sfn
         # @return [Array<SparkleFormation::SparklePack>]
         def sparkle_packs
           memoize(:sparkle_packs) do
-            [config.fetch(:sparkle_pack, [])].flatten.compact.map do |sparkle_name|
+            if(defined?(Bundler))
+              packs = Bundler.load.current_dependencies.map(&:name).select do |gem|
+                gem.include?("sparkle-pack")
+              end
+            else
+              packs = []
+            end
+            [config.fetch(:sparkle_pack, [])].flatten.concat(packs).compact.map do |sparkle_name|
               begin
                 require sparkle_name
               rescue LoadError
