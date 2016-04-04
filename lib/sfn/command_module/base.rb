@@ -21,7 +21,7 @@ module Sfn
         # @return [KnifeCloudformation::Provider]
         def provider
           begin
-            memoize(:provider, :direct) do
+            memoize(:provider) do
               result = Sfn::Provider.new(
                 :miasma => config[:credentials],
                 :async => false,
