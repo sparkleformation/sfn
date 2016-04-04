@@ -17,7 +17,7 @@ module Sfn
         name_required!
         stack_name = name_args.last
         root_stack = api_action! do
-          provider.connection.stacks.get(stack_name)
+          provider.stack(stack_name)
         end
         if(root_stack)
           ([root_stack] + root_stack.nested_stacks).compact.each do |stack|
@@ -37,7 +37,7 @@ module Sfn
           end
         else
           ui.fatal "Failed to find requested stack: #{ui.color(stack_name, :bold, :red)}"
-          exit -1
+          raise "Requested stack not found: #{stack_name}"
         end
       end
 
@@ -89,7 +89,7 @@ module Sfn
       # @param stack [Miasma::Models::Orchestration::Stack]
       def tags(stack)
         ui.info "Tags for stack: #{ui.color(stack.name, :bold)}"
-        unless(stack.tags.empty?)
+        if(stack.tags && !stack.tags.empty?)
           stack.tags.each do |key, value|
             ui.info ['  ', ui.color("#{key}:", :bold), value].join(' ')
           end
