@@ -94,7 +94,7 @@ module Sfn
 
     # @return [String] json representation of cached stacks
     def cached_stacks(stack_id=nil)
-      unless(@initial_fetch_complete || stack_id)
+      if(!@initial_fetch_complete || stack_id)
         recache = true
         if(stack_id && @initial_fetch_complete)
           recache = !!stacks.get(stack_id)
