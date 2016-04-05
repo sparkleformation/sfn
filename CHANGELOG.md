@@ -1,3 +1,8 @@
+# v2.2.0
+* [enhancement] Properly support list types when validating (#167)
+* [enhancement] Restrict automatic gem loading when `:sfn` group is present (#175)
+* [enhancement] Support loading configuration files with type extensions (#168)
+
 # v2.1.12
 * [fix] Provide useful error message when nesting_bucket is unset (#159)
 * [fix] Properly locate templates when relative path provided (#160)
