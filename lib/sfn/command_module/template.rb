@@ -254,7 +254,7 @@ module Sfn
         #
         # @param sf [SparkleFormation] stack
         # @param c_stack [Miasma::Models::Orchestration::Stack] existing stack
-        # @return [Hash] dumped stack
+        # @return [SparkleFormation::SparkleStruct] compiled structure
         def process_nested_stack_deep(sf, c_stack=nil)
           sf.apply_nesting(:deep) do |stack_name, stack, resource|
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
@@ -300,6 +300,12 @@ module Sfn
           end
         end
 
+        # Store template in remote bucket and update given result hash
+        #
+        # @param full_stack_name [String] unique resource name for template
+        # @param stack [Miasma::Models::Orchestration::Stack] existing stack
+        # @param result [Hash]
+        # @return [Hash]
         def store_template(full_stack_name, stack, result)
           stack_definition = dump_stack_for_storage(stack)
           bucket = provider.connection.api_for(:storage).buckets.get(
