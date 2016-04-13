@@ -48,112 +48,106 @@ module Sfn
 
           file = load_template_file(:stack => stack)
           stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
-          nested_stacks = file.delete('sfn_nested_stack')
         end
 
-        if(nested_stacks)
-          unpack_nesting(name, file, :update)
-        else
-          unless(stack)
-            ui.fatal "Failed to locate requested stack: #{ui.color(name, :red, :bold)}"
-            raise "Failed to locate stack: #{name}"
-          end
+        unless(stack)
+          ui.fatal "Failed to locate requested stack: #{ui.color(name, :red, :bold)}"
+          raise "Failed to locate stack: #{name}"
+        end
 
-          ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('update', :green)}"
+        ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('update', :green)}"
 
-          unless(file)
-            if(config[:template])
-              file = config[:template]
-              stack_info << " #{ui.color('(template provided)', :green)}"
-            else
-              stack_info << " #{ui.color('(no template update)', :yellow)}"
-            end
-          end
-          ui.info "  -> #{stack_info}"
-
-          if(file)
-            if(config[:print_only])
-              ui.puts _format_json(translate_template(file))
-              return
-            end
-
-            original_template = stack.template
-            original_parameters = stack.parameters
-
-            stack.template = translate_template(file)
-            apply_stacks!(stack)
-
-            populate_parameters!(file, :current_parameters => stack.parameters)
-            update_template = stack.template
-
-            if(config[:plan])
-              begin
-                stack.template = original_template
-                stack.parameters = original_parameters
-                plan = build_planner(stack)
-                if(plan)
-                  result = plan.generate_plan(file, config_root_parameters)
-                  display_plan_information(result)
-                end
-              rescue => e
-                unless(e.message.include?('Confirmation declined'))
-                  ui.error "Unexpected error when generating plan information: #{e.class} - #{e}"
-                  ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-                  ui.confirm 'Continue with stack update?' unless config[:plan_only]
-                else
-                  raise
-                end
-              end
-              if(config[:plan_only])
-                ui.info 'Plan only mode requested. Exiting.'
-                exit 0
-              end
-            end
-
-            stack.parameters = config_root_parameters
-            stack.template = scrub_template(update_template)
+        unless(file)
+          if(config[:template])
+            file = config[:template]
+            stack_info << " #{ui.color('(template provided)', :green)}"
           else
-            apply_stacks!(stack)
-            original_parameters = stack.parameters
-            populate_parameters!(stack.template, :current_parameters => stack.parameters)
-            stack.parameters = config_root_parameters
+            stack_info << " #{ui.color('(no template update)', :yellow)}"
           end
-
-          # Set options defined within config into stack instance for update request
-          if(config[:merge_api_options])
-            config.fetch(:options, Smash.new).each_pair do |key, value|
-              if(stack.respond_to?("#{key}="))
-                stack.send("#{key}=", value)
-              end
-            end
-          end
-
-          begin
-            api_action!(:api_stack => stack) do
-              stack.save
-              if(config[:poll])
-                poll_stack(stack.name)
-                if(stack.reload.state == :update_complete)
-                  ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
-                  namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
-                else
-                  ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-                  raise 'Stack did not reach a successful update completion state.'
-                end
-              else
-                ui.warn 'Stack state polling has been disabled.'
-                ui.info "Stack update initialized for #{ui.color(name, :green)}"
-              end
-            end
-          rescue Miasma::Error::ApiError::RequestError => e
-            if(e.message.downcase.include?('no updates'))
-              ui.warn "No updates detected for stack (#{stack.name})"
-            else
-              raise
-            end
-          end
-
         end
+        ui.info "  -> #{stack_info}"
+
+        if(file)
+          if(config[:print_only])
+            ui.puts format_json(parameter_scrub!(template_content(file)))
+            return
+          end
+
+          original_template = stack.template
+          original_parameters = stack.parameters
+
+          apply_stacks!(stack)
+
+          populate_parameters!(file, :current_parameters => stack.parameters)
+          update_template = stack.template
+
+          if(config[:plan])
+            begin
+              stack.template = original_template
+              stack.parameters = original_parameters
+              plan = build_planner(stack)
+              if(plan)
+                result = plan.generate_plan(file.dump, config_root_parameters)
+                display_plan_information(result)
+              end
+            rescue => e
+              unless(e.message.include?('Confirmation declined'))
+                ui.error "Unexpected error when generating plan information: #{e.class} - #{e}"
+                ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+                ui.confirm 'Continue with stack update?' unless config[:plan_only]
+              else
+                raise
+              end
+            end
+            if(config[:plan_only])
+              ui.info 'Plan only mode requested. Exiting.'
+              exit 0
+            end
+          end
+
+          stack.parameters = config_root_parameters
+          stack.template = scrub_template(update_template)
+        else
+          apply_stacks!(stack)
+          original_parameters = stack.parameters
+          populate_parameters!(stack.template, :current_parameters => stack.parameters)
+          stack.parameters = config_root_parameters
+        end
+
+        # Set options defined within config into stack instance for update request
+        if(config[:merge_api_options])
+          config.fetch(:options, Smash.new).each_pair do |key, value|
+            if(stack.respond_to?("#{key}="))
+              stack.send("#{key}=", value)
+            end
+          end
+        end
+
+        begin
+          api_action!(:api_stack => stack) do
+            stack.save
+            if(config[:poll])
+              poll_stack(stack.name)
+              if(stack.reload.state == :update_complete)
+                ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
+                namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
+              else
+                ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
+                raise 'Stack did not reach a successful update completion state.'
+              end
+            else
+              ui.warn 'Stack state polling has been disabled.'
+              ui.info "Stack update initialized for #{ui.color(name, :green)}"
+            end
+          end
+        rescue Miasma::Error::ApiError::RequestError => e
+          if(e.message.downcase.include?('no updates'))
+            ui.warn "No updates detected for stack (#{stack.name})"
+          else
+            raise
+          end
+        end
+
       end
 
       def build_planner(stack)
