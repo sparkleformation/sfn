@@ -175,9 +175,6 @@ module Sfn
                   sf.stack_resource_types.push(s_type)
                 end
               end
-              if(sf.nested? && !sf.isolated_nests?)
-#                raise TypeError.new('Template does not contain isolated stack nesting! Sfn does not support mixed resources within root stack!')
-              end
               run_callbacks_for(:template, :stack_name => arguments.first, :sparkle_stack => sf)
               if(sf.nested? && config[:apply_nesting])
                 validate_nesting_bucket!
