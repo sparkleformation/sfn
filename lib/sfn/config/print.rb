@@ -11,6 +11,11 @@ module Sfn
         :short_flag => 'w'
       )
 
+      attribute(
+        :sparkle_dump, [TrueClass, FalseClass],
+        :description => 'Do not use provider customized dump behavior'
+      )
+
     end
   end
 end

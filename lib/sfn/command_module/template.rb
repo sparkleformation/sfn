@@ -20,7 +20,11 @@ module Sfn
         # @param thing [SparkleFormation, Hash]
         # @return [Hash]
         def template_content(thing)
-          thing.is_a?(SparkleFormation) ? thing.dump : thing
+          if(thing.is_a?(SparkleFormation))
+            config[:sparkle_dump] ? thing.sparkle_dump : thing.dump
+          else
+            thing
+          end
         end
 
         # Request compile time parameter value

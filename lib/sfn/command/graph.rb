@@ -21,7 +21,7 @@ module Sfn
         config[:print_only] = true
         validate_graph_style!
         file = load_template_file
-        file = parameter_scrub!(file.dump)
+        file = parameter_scrub!(file.sparkle_dump)
         @outputs = Smash.new
         file = file.to_smash
         ui.info "Template resource graph generation - Style: #{ui.color(config[:graph_style], :bold)}"
