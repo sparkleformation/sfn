@@ -70,7 +70,7 @@ module Sfn
                 ui.fatal "Failed to receive allowed parameter! (Parameter: #{p_name})"
                 exit 1
               else
-                ui.error "Invalid value provided for parameter. Must be type: `#{p_config[:type].to_s.capitalize}`"
+                ui.error "Invalid value provided for parameter `#{p_name}`. Must be type: `#{p_config[:type].to_s.capitalize}`"
               end
             end
           end
@@ -176,7 +176,7 @@ module Sfn
                 end
               end
               if(sf.nested? && !sf.isolated_nests?)
-                raise TypeError.new('Template does not contain isolated stack nesting! Sfn does not support mixed mixed resources within root stack!')
+#                raise TypeError.new('Template does not contain isolated stack nesting! Sfn does not support mixed resources within root stack!')
               end
               run_callbacks_for(:template, :stack_name => arguments.first, :sparkle_stack => sf)
               if(sf.nested? && config[:apply_nesting])
@@ -283,21 +283,7 @@ module Sfn
                   :current_parameters => current_parameters
                 )
               )
-              stack_definition = dump_stack_for_storage(stack)
-              bucket = provider.connection.api_for(:storage).buckets.get(
-                config[:nesting_bucket]
-              )
-              unless(bucket)
-                raise "Failed to locate configured bucket for stack template storage (#{config[:nesting_bucket]})!"
-              end
-              file = bucket.files.build
-              file.name = "#{full_stack_name}.json"
-              file.content_type = 'text/json'
-              file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
-              file.save
-              result.merge!(
-                :url => file.url
-              )
+              store_template(full_stack_name, stack, result)
             else
               result = Smash.new(
                 :url => "http://example.com/bucket/#{full_stack_name}.json"
@@ -307,6 +293,24 @@ module Sfn
               resource.properties.set!(k, v)
             end
           end
+        end
+
+        def store_template(full_stack_name, stack, result)
+          stack_definition = dump_stack_for_storage(stack)
+          bucket = provider.connection.api_for(:storage).buckets.get(
+            config[:nesting_bucket]
+          )
+          unless(bucket)
+            raise "Failed to locate configured bucket for stack template storage (#{config[:nesting_bucket]})!"
+          end
+          file = bucket.files.build
+          file.name = "#{full_stack_name}.json"
+          file.content_type = 'text/json'
+          file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
+          file.save
+          result.merge!(
+            :url => file.url
+          )
         end
 
         # Remove internally used `Stack` property from Stack resources and
