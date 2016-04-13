@@ -15,6 +15,14 @@ module Sfn
 
       module InstanceMethods
 
+        # Extract template content based on type
+        #
+        # @param thing [SparkleFormation, Hash]
+        # @return [Hash]
+        def template_content(thing)
+          thing.is_a?(SparkleFormation) ? thing.dump : thing
+        end
+
         # Request compile time parameter value
         #
         # @param p_name [String, Symbol] name of parameter
@@ -523,6 +531,7 @@ module Sfn
           extend Sfn::CommandModule::Template::ClassMethods
           include Sfn::CommandModule::Template::InstanceMethods
           include Sfn::Utils::PathSelector
+          include Sfn::Utils::StackParameterScrubber
          end
       end
 
