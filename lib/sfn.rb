@@ -5,6 +5,7 @@ require 'sparkle_formation'
 
 module Sfn
 
+  autoload :ApiProvider, 'sfn/api_provider'
   autoload :Callback, 'sfn/callback'
   autoload :Provider, 'sfn/provider'
   autoload :Cache, 'sfn/cache'
