@@ -10,6 +10,7 @@ module Sfn
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
 
+      # Print the requested template
       def execute!
         config[:print_only] = true
         file = load_template_file

@@ -21,9 +21,7 @@ module Sfn
         config[:print_only] = true
         validate_graph_style!
         file = load_template_file
-        file.delete('sfn_nested_stack')
-        file = Sfn::Utils::StackParameterScrubber.scrub!(file)
-        file = translate_template(file)
+        file = parameter_scrub!(file.dump)
         @outputs = Smash.new
         file = file.to_smash
         ui.info "Template resource graph generation - Style: #{ui.color(config[:graph_style], :bold)}"
