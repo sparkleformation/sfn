@@ -2,7 +2,11 @@ require_relative '../../helper'
 
 describe Sfn::Utils::StackParameterValidator do
 
-  let(:validator){ Sfn::Utils::StackParameterValidator }
+  let(:validator) do
+    klass = Class.new
+    klass.include Sfn::Utils::StackParameterValidator
+    klass.new
+  end
 
   it 'should detect list types' do
     validator.list_type?('CommaDelimitedString').must_equal true
@@ -84,7 +88,7 @@ describe Sfn::Utils::StackParameterValidator do
   describe 'Definition validation' do
 
     it 'should reject value as too long' do
-      result = validator.validate('fubar',
+      result = validator.validate_parameter('fubar',
         'MaxLength' => 4
       )
       result.wont_equal true
@@ -95,7 +99,7 @@ describe Sfn::Utils::StackParameterValidator do
     end
 
     it 'should process multiple values when list' do
-      result = validator.validate('fubar,ack',
+      result = validator.validate_parameter('fubar,ack',
         'Type' => 'CommaDelimitedList',
         'MaxLength' => 4
       )
@@ -107,7 +111,7 @@ describe Sfn::Utils::StackParameterValidator do
     end
 
     it 'should process multiple values when list and reject all' do
-      results = validator.validate('fubar,ack',
+      results = validator.validate_parameter('fubar,ack',
         'Type' => 'CommaDelimitedList',
         'MaxLength' => 2
       )
@@ -120,7 +124,7 @@ describe Sfn::Utils::StackParameterValidator do
     end
 
     it 'should process CFN List type' do
-      results = validator.validate('fubar,ack',
+      results = validator.validate_parameter('fubar,ack',
         'Type' => 'List<String>',
         'MaxLength' => 2
       )
@@ -133,7 +137,7 @@ describe Sfn::Utils::StackParameterValidator do
     end
 
     it 'should process HOT list type' do
-      results = validator.validate('fubar,ack',
+      results = validator.validate_parameter('fubar,ack',
         'type' => 'comma_delimited_string',
         'max_length' => 2
       )
