@@ -2,14 +2,6 @@ require_relative '../helper'
 
 describe Sfn::Planner do
 
-  let(:ui) do
-    Bogo::Ui.new(
-      :app_name => 'TestUi',
-      :output_to => @stream,
-      :colors => false
-    )
-  end
-  let(:stream){ StringIO.new('') }
   let(:api) do
     unless(@api)
       @api = mock
