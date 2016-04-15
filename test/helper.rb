@@ -2,16 +2,30 @@ require 'sfn'
 require 'bogo-ui'
 require 'minitest/autorun'
 require 'mocha/mini_test'
+require 'tempfile'
+require 'openssl'
 
 # Stub out HTTP so we can easily intercept remote calls
 require 'http'
 
-class HTTP::Client
+module HTTP
 
-  HTTP::Request::METHODS.each do |h_method|
-    define_method(h_method) do |*args|
-      $mock.send(h_method, *args)
+  class << self
+    HTTP::Request::METHODS.each do |h_method|
+      define_method(h_method) do |*args|
+        $mock.send(h_method, *args)
+      end
     end
+  end
+
+  class Client
+
+    HTTP::Request::METHODS.each do |h_method|
+      define_method(h_method) do |*args|
+        $mock.send(h_method, *args)
+      end
+    end
+
   end
 
 end
@@ -25,6 +39,9 @@ module SfnHttpMock
     $mock = nil
     @ui = nil
     @stream = nil
+    if(@google_key && File.exist?(@google_key))
+      File.delete(@google_key)
+    end
   end
 
   def stream
@@ -40,12 +57,41 @@ module SfnHttpMock
   end
 
   def aws_creds
-    Smash.new(
-      :provider => :aws,
-      :aws_access_key_id => 'AWS_ACCESS_KEY_ID',
-      :aws_secret_access_key => 'AWS_SECRET_ACCESS_KEY',
-      :aws_region => 'AWS_REGION'
+    Smash[
+      %w(aws_access_key_id aws_secret_access_key aws_region).map do |key|
+        [key, key.upcase]
+      end
+    ].merge(:provider => :aws)
+  end
+
+  def azure_creds
+    Smash[
+      %w(azure_tenant_id azure_client_id azure_subscription_id azure_client_secret
+        azure_region azure_blob_account_name azure_blob_secret_key).map do |key|
+        [key, key.upcase]
+      end
+    ].merge(:provider => :azure)
+  end
+
+  def google_creds
+    key_file = Tempfile.new('sfn-test')
+    key_file.puts OpenSSL::PKey::RSA.new(2048).to_pem
+    key_file.close
+    @google_key = key_file.path
+    Smash[
+      %w(google_service_account_email google_auth_scope google_project).map do |key|
+        [key, key.upcase]
+      end
+    ].merge(
+      :provider => :google,
+      :google_service_account_private_key => @google_key
     )
+  end
+
+  def heat_creds
+  end
+
+  def rackspace_creds
   end
 
   def http_response(opts)
