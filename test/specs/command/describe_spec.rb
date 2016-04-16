@@ -192,4 +192,124 @@ describe Sfn::Command::Describe do
 
   end
 
+  describe 'Azure' do
+
+    let(:creds){ azure_creds }
+    let(:azure_get_resource_groups) do
+      Smash.new(
+        :value => [
+          Smash.new(
+            :id => 'test-stack-id',
+            :name => 'test-stack',
+            :properties => {
+              :provisioningState => 'Succeeded'
+            }
+          )
+        ]
+      )
+    end
+    let(:azure_get_resource_group) do
+      Smash.new(
+        :id => 'test-stack-id',
+        :name => 'tset-stack',
+        :properties => {
+          :mode => 'Complete',
+          :provisioningState => 'Succeeded',
+          :timestamp => Time.now.xmlschema,
+          :outputs => {
+            'testOutput' => {
+              :type => 'string',
+              :value => 'test-output-value'
+            }
+          }
+        }
+      )
+    end
+    let(:azure_get_resources) do
+      Smash.new(
+        :value => [
+          Smash.new(
+            :id => 'test-resource-id',
+            :name => 'testResource',
+            :type => 'Custom/testResource',
+            :location => 'here'
+          )
+        ]
+      )
+    end
+    let(:azure_get_resource_operations) do
+      Smash.new(
+        :value => [
+          Smash.new(
+            :id => 'test-resource-operation-id',
+            :operationId => 'operation-id',
+            :properties => {
+              :provisioningState => 'Succeeded',
+              :timestamp => Time.now.xmlschema,
+              :statusCode => 'OK',
+              :targetResource => {
+                :id => 'test-resource-id',
+                :resourceName => 'testResource',
+                :resourceType => 'Custom/testResource',
+              }
+            }
+          )
+        ]
+      )
+    end
+    let(:azure_client_access_token) do
+      Smash.new(
+        :expires_on => Time.now.to_i + 900,
+        :not_before => Time.now.to_i - 900,
+        :access_token => 'AZURE_TOKEN'
+      )
+    end
+
+    before do
+      $mock.expects(:post).with{|url|
+        url.include?('oauth2')
+      }.returns(http_response(:body => azure_client_access_token.to_json)).once
+      $mock.expects(:get).with{|url|
+        url.end_with?('resourcegroups')
+      }.returns(http_response(:body => azure_get_resource_groups.to_json)).once
+      $mock.expects(:get).with{|url|
+        url.include?('microsoft.resources')
+      }.returns(http_response(:body => azure_get_resource_group.to_json)).once
+      $mock.expects(:get).with{|url|
+        url.end_with?('test-stack/resources')
+      }.returns(http_response(:body => azure_get_resources.to_json)).once
+      $mock.expects(:get).with{|url|
+        url.include?('operations')
+      }.returns(http_response(:body => azure_get_resource_operations.to_json)).once
+    end
+
+    it 'should display outputs' do
+      instance = Sfn::Command::Describe.new({:ui => ui}.merge(credentials), ['test-stack'])
+      instance.execute!
+      stream.rewind
+      output = stream.read
+      output.must_include 'Test Output'
+      output.must_include 'test-output-value'
+    end
+
+    it 'should display resources' do
+      instance = Sfn::Command::Describe.new({:ui => ui}.merge(credentials), ['test-stack'])
+      instance.execute!
+      stream.rewind
+      output = stream.read
+      output.must_include 'testResource'
+      output.must_include 'Custom/testResource'
+    end
+
+    it 'should not display tags' do
+      instance = Sfn::Command::Describe.new({:ui => ui}.merge(credentials), ['test-stack'])
+      instance.execute!
+      stream.rewind
+      output = stream.read
+      output.must_include 'No tags'
+    end
+
+  end
+
+
 end
