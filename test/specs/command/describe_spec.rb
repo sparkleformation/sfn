@@ -312,4 +312,125 @@ describe Sfn::Command::Describe do
   end
 
 
+  describe 'Rackspace' do
+
+    let(:creds){ rackspace_creds }
+    let(:rackspace_get_stacks) do
+      Smash.new(
+        :stacks => [
+          Smash.new(
+            :stack_name => 'test-stack',
+            :id => 'test-stack-id',
+            :creation_time => Time.now.xmlschema,
+            :tags => {
+              'test-tag' => 'test-tag-value'
+            },
+            :stack_status => 'CREATE_COMPLETE'
+          )
+        ]
+      )
+    end
+    let(:rackspace_get_stack_resources) do
+      Smash.new(
+        :resources => [
+          Smash.new(
+            :resource_name => 'test_resource',
+            :logical_resource_id => 'test_resource',
+            :physical_resource_id => 'test-resource-id',
+            :creation_time => Time.now.xmlschema,
+            :resource_status => 'CREATE_COMPLETE',
+            :updated_time => Time.now.xmlschema,
+            :resource_status_reason => 'state changed',
+            :resource_type => 'Custom::TestResource'
+          )
+        ]
+      )
+    end
+    let(:rackspace_get_stack) do
+      Smash.new(
+        :stack => {
+          :stack_name => 'test-stack',
+          :id => 'test-stack-id',
+          :tags => {
+            'test-tag' => 'test-tag-value'
+          },
+          :creation_time => Time.now.xmlschema,
+          :stack_status => 'CREATE_COMPLETE',
+          :outputs => [
+            Smash.new(
+              :output_key => 'test-output',
+              :output_value => 'test-output-value'
+            )
+          ]
+        }
+      )
+    end
+    let(:rackspace_token_info) do
+      Smash.new(
+        :access => {
+          :user => 'USERNAME',
+          :serviceCatalog => [
+            Smash.new(
+              :name => 'cloudOrchestration',
+              :endpoints => [
+                Smash.new(
+                  :region => 'RACKSPACE_REGION',
+                  :publicURL => 'http://example.com/rackspace'
+                )
+              ]
+            )
+          ],
+          :token => {
+            :expires => (Time.now + 200).xmlschema,
+            :id => 'RACKSPACE_TOKEN'
+          }
+        }
+      )
+    end
+
+    before do
+      $mock.expects(:post).with{|url|
+        url.include?('tokens')
+      }.returns(http_response(:body => rackspace_token_info.to_json))
+      $mock.expects(:get).with{|url|
+        url.end_with?('stacks')
+      }.returns(http_response(:body => rackspace_get_stacks.to_json))
+      $mock.expects(:get).with{|url|
+        url.end_with?('resources')
+      }.returns(http_response(:body => rackspace_get_stack_resources.to_json))
+      $mock.expects(:get).with{|url|
+        url.end_with?('stacks/test-stack/test-stack-id')
+      }.returns(http_response(:body => rackspace_get_stack.to_json)).at_least_once
+    end
+
+    it 'should display outputs' do
+      instance = Sfn::Command::Describe.new({:ui => ui}.merge(credentials), ['test-stack'])
+      instance.execute!
+      stream.rewind
+      output = stream.read
+      output.must_include 'Test Output'
+      output.must_include 'test-output-value'
+    end
+
+    it 'should display resources' do
+      instance = Sfn::Command::Describe.new({:ui => ui}.merge(credentials), ['test-stack'])
+      instance.execute!
+      stream.rewind
+      output = stream.read
+      output.must_include 'test_resource'
+      output.must_include 'Custom::TestResource'
+    end
+
+    it 'should display tags' do
+      skip 'Tags not yet implemented in miasma'
+      instance = Sfn::Command::Describe.new({:ui => ui}.merge(credentials), ['test-stack'])
+      instance.execute!
+      stream.rewind
+      output = stream.read
+      output.must_include 'Test tag'
+      output.must_include 'test-tag-value'
+    end
+
+  end
+
 end
