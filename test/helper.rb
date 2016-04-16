@@ -92,6 +92,11 @@ module SfnHttpMock
   end
 
   def rackspace_creds
+    Smash[
+      %w(rackspace_api_key rackspace_username rackspace_region).map do |key|
+        [key, key.upcase]
+      end
+    ].merge(:provider => :rackspace)
   end
 
   def http_response(opts)
