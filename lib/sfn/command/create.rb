@@ -51,7 +51,7 @@ module Sfn
         populate_parameters!(file)
 
         stack.parameters = config_root_parameters
-        stack.template = parameter_scrub!(template_content(file))
+        stack.template = parameter_scrub!(template_content(file, :scrub))
 
         api_action!(:api_stack => stack) do
           stack.save
