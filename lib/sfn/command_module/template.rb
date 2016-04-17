@@ -18,10 +18,15 @@ module Sfn
         # Extract template content based on type
         #
         # @param thing [SparkleFormation, Hash]
+        # @param scrub [Truthy, Falsey] scrub nested templates
         # @return [Hash]
-        def template_content(thing)
+        def template_content(thing, scrub=false)
           if(thing.is_a?(SparkleFormation))
-            config[:sparkle_dump] ? thing.sparkle_dump : thing.dump
+            if(scrub)
+              dump_stack_for_storage(thing)
+            else
+              config[:sparkle_dump] ? thing.sparkle_dump : thing.dump
+            end
           else
             thing
           end
@@ -203,6 +208,7 @@ module Sfn
                 else
                   raise ArgumentError.new "Unknown nesting style requested: #{config[:apply_nesting].inspect}!"
                 end
+                sf
               else
                 sf
               end
@@ -321,7 +327,7 @@ module Sfn
           file = bucket.files.build
           file.name = "#{full_stack_name}.json"
           file.content_type = 'text/json'
-          file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
+          file.body = MultiJson.dump(parameter_scrub!(stack_definition))
           file.save
           result.merge!(
             :url => file.url
