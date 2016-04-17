@@ -99,9 +99,10 @@ module SfnHttpMock
     ].merge(:provider => :rackspace)
   end
 
-  def http_response(opts)
+  def http_response(opts={})
     opts[:version] ||= '1.1'
     opts[:status] ||= 200
+    opts[:body] ||= ''
     HTTP::Response.new(opts)
   end
 end
