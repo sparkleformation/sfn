@@ -210,14 +210,11 @@ describe Sfn::Command::Create do
 
     describe 'nesting behavior' do
 
-      before do
-      end
-
       it 'should display human error when no bucket provided' do
         instance = Sfn::Command::Create.new(
           Smash.new(
             :ui => ui,
-            :file => 'dummy_azure_nest',
+            :file => 'nested_dummy_azure',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
             :credentials => azure_creds
@@ -249,7 +246,7 @@ describe Sfn::Command::Create do
         instance = Sfn::Command::Create.new(
           Smash.new(
             :ui => ui,
-            :file => 'dummy_azure_nest',
+            :file => 'nested_dummy_azure',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
             :nesting_bucket => 'miasma-orchestration-templates',
@@ -280,7 +277,7 @@ describe Sfn::Command::Create do
         instance = Sfn::Command::Create.new(
           Smash.new(
             :ui => ui,
-            :file => 'dummy_azure_nest',
+            :file => 'nested_dummy_azure',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
             :nesting_bucket => 'miasma-orchestration-templates',
@@ -295,6 +292,9 @@ describe Sfn::Command::Create do
   end
 
   describe 'Google' do
+
+
+
   end
 
 end
