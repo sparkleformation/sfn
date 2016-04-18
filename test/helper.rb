@@ -5,6 +5,8 @@ require 'mocha/mini_test'
 require 'tempfile'
 require 'openssl'
 
+ENV['DEBUG'] = 'true'
+
 # Stub out HTTP so we can easily intercept remote calls
 require 'http'
 
