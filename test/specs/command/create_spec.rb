@@ -334,19 +334,13 @@ describe Sfn::Command::Create do
     end
 
     let(:google_get_manifest) do
-      Smash.new(
-
-      )
+      Smash.new
     end
 
     before do
       $mock.expects(:post).with{|url, opts|
         url.include?('oauth2')
       }.returns(http_response(:body => google_auth_token.to_json)).once
-      $mock.expects(:post).with{|url, opts|
-        url.end_with?('/deployments') &&
-          opts[:json]['name'] == 'test-stack'
-      }.returns(http_response(:body => google_create_deployment.to_json))
       $mock.expects(:get).with{|url|
         url.end_with?('/deployments/test-stack')
       }.returns(http_response(:body => google_get_deployment.to_json))
@@ -358,6 +352,10 @@ describe Sfn::Command::Create do
     describe 'default behavior' do
 
       it 'should display create initialize' do
+        $mock.expects(:post).with{|url, opts|
+          url.end_with?('/deployments') &&
+            opts[:json]['name'] == 'test-stack'
+        }.returns(http_response(:body => google_create_deployment.to_json))
         instance = Sfn::Command::Create.new(
           Smash.new(
             :ui => ui,
@@ -373,6 +371,32 @@ describe Sfn::Command::Create do
         output.must_include 'creation initialized for test-stack'
       end
 
+    end
+
+    describe 'nesting behavior' do
+
+      it 'should remove stack property from template when using nested stack' do
+        $mock.expects(:post).with{|url, opts|
+          if(url.end_with?('/deployments') && opts[:json]['name'] == 'test-stack')
+            import = opts[:json]['target']['imports'].detect do |i|
+              i['name'] == 'test-stack.jinja'
+            end
+            template = YAML.load(import['content'])
+            template['resources'].first.fetch(:properties, {}).keys.wont_include 'stack'
+            true
+          end
+        }.returns(http_response(:body => google_create_deployment.to_json))
+        instance = Sfn::Command::Create.new(
+          Smash.new(
+            :ui => ui,
+            :file => 'nested_dummy_google',
+            :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
+            :poll => false,
+            :credentials => google_creds
+          ), ['test-stack']
+        )
+        instance.execute!
+      end
     end
 
   end
