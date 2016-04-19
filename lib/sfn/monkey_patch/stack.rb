@@ -314,6 +314,17 @@ module Sfn
         end
       end
 
+      # Provide easy parameters override
+      #
+      # @return [Hash]
+      def root_parameters
+        if(self.respond_to?("root_parameters_#{api.provider}"))
+          self.send("root_parameters_#{api.provider}")
+        else
+          parameters
+        end
+      end
+
     end
   end
 end

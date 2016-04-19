@@ -108,11 +108,16 @@ module Sfn
             template.to_smash
           else
             layout = custom[:layout].to_smash
-            layout.delete(:resources).each do |l_resource|
+            (layout.delete(:resources) || []).each do |l_resource|
               layout.set(:resources, l_resource.delete(:name), l_resource)
             end
-            s_template.fetch(:resources, name, :properties, :stack, s_template)
+            s_template
           end
+        end
+
+        # @return [Hash]
+        def root_parameters_google
+          sparkleish_template.fetch(:resources, name, :properties, :parameters, Smash.new)
         end
 
       end
