@@ -307,8 +307,8 @@ module Sfn
       #
       # @return [Hash]
       def sparkleish_template
-        if(self.respond_to?("nesting_style_#{api.provider}"))
-          self.send("nesting_style_#{api.provider}")
+        if(self.respond_to?("sparkleish_template_#{api.provider}"))
+          self.send("sparkleish_template_#{api.provider}")
         else
           template
         end
