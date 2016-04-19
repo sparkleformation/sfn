@@ -274,6 +274,63 @@ module Sfn
         end
       end
 
+      # Reformat template data structure to SparkleFormation style structure
+      #
+      # @return [Hash]
+      def sparkleish_template
+        case api.provider
+        when :google
+          sparkleish_google_template
+        when :azure
+          sparkleish_azure_template
+        else
+          template
+        end
+      end
+
+      # @return [Hash] restructured google template
+      def sparkleish_google_template
+        copy_template = template.to_smash
+        deref = lambda do |template|
+          result = template.to_smash
+          (result.delete(:resources) || []).each do |t_resource|
+            t_name = t_resource.delete(:name)
+            if(t_resource[:type].to_s.end_with?('.jinja'))
+              schema = copy_template.fetch(:config, :content, :imports, []).delete("#{t_resource[:type]}.schema")
+              schema_content = copy_template.fetch(:imports, []).detect do |s_item|
+                s_item[:name] == schema
+              end
+              if(schema_content)
+                t_resource.set(:parameters, schema_content.get(:content, :properties))
+              end
+              n_template = copy_template.fetch(:imports, []).detect do |s_item|
+                s_item[:name] == t_resource[:type]
+              end
+              if(n_template)
+                t_resource[:type] = 'sparkleformation.stack'
+                current_properties = t_resource.delete(:properties)
+                t_resource.set(:properties, :parameters, current_properties) if current_properties
+                t_resource.set(:properties, :stack, deref.call(n_template[:content]))
+              end
+            end
+            result.set(:resources, t_name, t_resource)
+          end
+          result
+        end
+        deref.call(Smash.new(:resources => copy_template.get(:config, :content, :resources)))
+      end
+
+      # @return [Hash] restructured azure template
+      # @note Will return #template if name collision encountered within resources
+      def sparkleish_azure_template
+        new_template = template.to_smash
+        resources = new_template.delete(:resources)
+        resources.each do |resource|
+          new_template.set(:resources, resource.delete(:name), resource)
+        end
+        resources.size == new_template[:resources].size ? new_template : template
+      end
+
     end
   end
 end
