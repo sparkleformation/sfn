@@ -3,6 +3,7 @@ require 'sfn'
 module Sfn
   module MonkeyPatch
     module Stack
+      # Azure specific monkey patch implementations
       module Azure
 
         # @return [Hash] restructured azure template
