@@ -93,7 +93,7 @@ module Sfn
               valid = false
               # When parameter is a hash type, it is being set via
               # intrinsic function and we don't modify
-              if(current_parameters[k].is_a?(Hash))
+              if(function_set_parameter?(current_parameters[k]))
                 if(current_stack)
                   enable_set = validate_stack_parameter(current_stack, k, ns_k, current_parameters[k])
                 else
@@ -102,7 +102,7 @@ module Sfn
                 if(enable_set)
                   # NOTE: direct set dumps the stack (nfi). Smash will
                   # auto dup it, and works, so yay i guess.
-                  config[:parameters][ns_k] = Smash.new(current_parameters[k])
+                  config[:parameters][ns_k] = current_parameters[k].is_a?(Hash) ? Smash.new(current_parameters[k]) : current_parameters[k].dup
                   valid = true
                 end
               else
@@ -158,6 +158,14 @@ module Sfn
               end
             end.compact
           ]
+        end
+
+        # Determine if parameter was set via intrinsic function
+        #
+        # @param val [Object]
+        # @return [TrueClass, FalseClass]
+        def function_set_parameter?(val)
+          val.is_a?(Hash)
         end
 
         # @return [Hash] parameters for root stack create/update
