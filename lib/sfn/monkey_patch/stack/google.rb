@@ -32,6 +32,12 @@ module Sfn
             collection
           end
 
+          # Sub-stacks never provide events
+          def events
+            collection = Miasma::Models::Orchestration::Stack::Events.new(self)
+            collection.define_singleton_method(:perform_population){ [] }
+            collection
+          end
         end
 
         # Return all stacks contained within this stack
