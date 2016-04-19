@@ -269,8 +269,8 @@ module Sfn
           sf.apply_nesting(:deep) do |stack_name, stack, resource|
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
             stack_resource = resource._dump
-            current_parameters = extract_current_nested_template_parameters(stack, stack_name)
             current_stack = c_stack ? c_stack.nested_stacks.detect{|s| s.data[:logical_id] == stack_name} : nil
+            current_parameters = extract_current_nested_template_parameters(stack, stack_name, current_stack)
             if(current_stack && current_stack.data[:parent_stack])
               current_parameters.merge!(
                 current_stack.data[:parent_stack].template.fetch(
@@ -307,8 +307,9 @@ module Sfn
         #
         # @param stack [SparkleFormation]
         # @param stack_name [String]
+        # @param c_stack [Miasma::Models::Orchestration::Stack]
         # @return [Hash]
-        def extract_current_nested_template_parameters(stack, stack_name)
+        def extract_current_nested_template_parameters(stack, stack_name, c_stack=nil)
           if(stack.parent)
             current_parameters = stack.parent.compile.resources.set!(stack_name).properties.parameters
             current_parameters.nil? ? Smash.new : current_parameters._dump
