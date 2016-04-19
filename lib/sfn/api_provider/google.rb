@@ -14,6 +14,30 @@ module Sfn
         {}
       end
 
+      # Extract current parameters from parent template
+      #
+      # @param stack [SparkleFormation]
+      # @param stack_name [String]
+      # @return [Hash]
+      def extract_current_nested_template_parameters(stack, stack_name)
+        if(stack.parent)
+          current_parameters = stack.parent.compile.resources.set!(stack_name).properties
+          current_parameters.nil? ? Smash.new : current_parameters._dump
+        else
+          Smash.new
+        end
+      end
+
+      # Determine if parameter was set via intrinsic function
+      #
+      # @param val [Object]
+      # @return [TrueClass, FalseClass]
+      def function_set_parameter?(val)
+        if(val)
+          val.start_with?('$(') || val.start_with?('{{')
+        end
+      end
+
       # Set parameters into parent resource properites
       def populate_parameters!(template, opts={})
         result = super
@@ -25,6 +49,14 @@ module Sfn
           end
         end
         {}
+      end
+
+      def template_content(thing, *_)
+        if(thing.is_a?(SparkleFormation))
+          config[:sparkle_dump] ? thing.sparkle_dump : thing.dump
+        else
+          thing
+        end
       end
 
     end
