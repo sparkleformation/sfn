@@ -51,6 +51,15 @@ module Sfn
         {}
       end
 
+      # Override requirement of nesting bucket
+      def validate_nesting_bucket!
+        true
+      end
+
+      # Override template content extraction to disable scrub behavior
+      #
+      # @param thing [SparkleFormation, Hash]
+      # @return [Hash]
       def template_content(thing, *_)
         if(thing.is_a?(SparkleFormation))
           config[:sparkle_dump] ? thing.sparkle_dump : thing.dump

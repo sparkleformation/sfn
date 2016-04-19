@@ -293,7 +293,87 @@ describe Sfn::Command::Create do
 
   describe 'Google' do
 
+    let(:google_auth_token) do
+      Smash.new(
+        :access_token => 'TOKEN',
+        :token_type => 'TYPE',
+        :expires_in => 300
+      )
+    end
 
+    let(:google_create_deployment) do
+      Smash.new(
+        :kind => 'deploymentmanager#operation',
+        :id => 'operation-id',
+        :name => 'deployment-operation',
+        :operationType => 'insert',
+        :targetLink => 'http://example.com/deployments/test-stack',
+        :status => 'PENDING',
+        :progress => 0,
+        :startTime => Time.now.xmlschema
+      )
+    end
+
+    let(:google_get_deployment) do
+      Smash.new(
+        :id => 'test-stack-id',
+        :name => 'test-stack',
+        :insertTime => Time.now.xmlschema,
+        :operation => {
+          :id => 'operation-id',
+          :operationType => 'insert',
+          :status => 'RUNNING',
+          :progress => 0,
+          :startTime => Time.now.xmlschema
+        },
+        :fingerprint => 'FINGERPRINT-ID',
+        :update => {
+          :manifest => 'http://example.com/manifests/test-stack.manifest'
+        }
+      )
+    end
+
+    let(:google_get_manifest) do
+      Smash.new(
+
+      )
+    end
+
+    before do
+      $mock.expects(:post).with{|url, opts|
+        url.include?('oauth2')
+      }.returns(http_response(:body => google_auth_token.to_json)).once
+      $mock.expects(:post).with{|url, opts|
+        url.end_with?('/deployments') &&
+          opts[:json]['name'] == 'test-stack'
+      }.returns(http_response(:body => google_create_deployment.to_json))
+      $mock.expects(:get).with{|url|
+        url.end_with?('/deployments/test-stack')
+      }.returns(http_response(:body => google_get_deployment.to_json))
+      $mock.expects(:get).with{|url|
+        url.end_with?('/manifests/test-stack.manifest/')
+      }.returns(http_response(:body => google_get_manifest.to_json))
+    end
+
+    describe 'default behavior' do
+
+      it 'should display create initialize' do
+        instance = Sfn::Command::Create.new(
+          Smash.new(
+            :ui => ui,
+            :file => 'dummy_google',
+            :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
+            :poll => false,
+            :credentials => google_creds
+          ), ['test-stack']
+        )
+        instance.execute!
+        stream.rewind
+        output = stream.read
+        output.must_include 'creation initialized for test-stack'
+      end
+
+    end
 
   end
 

@@ -27,8 +27,10 @@ module Sfn
           s_name = [name]
 
           c_setter = lambda do |c_stack|
-            compile_params = c_stack.outputs.detect do |output|
-              output.key == 'CompileState'
+            if(c_stack.outputs)
+              compile_params = c_stack.outputs.detect do |output|
+                output.key == 'CompileState'
+              end
             end
             if(compile_params)
               compile_params = MultiJson.load(compile_params.value)
