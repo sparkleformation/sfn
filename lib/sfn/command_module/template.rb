@@ -268,15 +268,8 @@ module Sfn
         def process_nested_stack_deep(sf, c_stack=nil)
           sf.apply_nesting(:deep) do |stack_name, stack, resource|
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
-
             stack_resource = resource._dump
-
-            if(stack.parent)
-              current_parameters = stack.parent.compile.resources.set!(stack_name).properties.parameters
-              current_parameters = current_parameters.nil? ? Smash.new : current_parameters._dump
-            else
-              current_parameters = Smash.new
-            end
+            current_parameters = extract_current_nested_template_parameters(stack, stack_name)
             current_stack = c_stack ? c_stack.nested_stacks.detect{|s| s.data[:logical_id] == stack_name} : nil
             if(current_stack && current_stack.data[:parent_stack])
               current_parameters.merge!(
@@ -307,6 +300,20 @@ module Sfn
             format_nested_stack_results(resource._self.provider, result).each do |k,v|
               resource.properties.set!(k, v)
             end
+          end
+        end
+
+        # Extract currently defined parameters for nested template
+        #
+        # @param stack [SparkleFormation]
+        # @param stack_name [String]
+        # @return [Hash]
+        def extract_current_nested_template_parameters(stack, stack_name)
+          if(stack.parent)
+            current_parameters = stack.parent.compile.resources.set!(stack_name).properties.parameters
+            current_parameters.nil? ? Smash.new : current_parameters._dump
+          else
+            Smash.new
           end
         end
 
