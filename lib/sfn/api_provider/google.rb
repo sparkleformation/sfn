@@ -18,14 +18,21 @@ module Sfn
       #
       # @param stack [SparkleFormation]
       # @param stack_name [String]
+      # @param c_stack [Miasma::Models::Orchestration::Stack]
       # @return [Hash]
-      def extract_current_nested_template_parameters(stack, stack_name)
-        if(stack.parent)
-          current_parameters = stack.parent.compile.resources.set!(stack_name).properties
-          current_parameters.nil? ? Smash.new : current_parameters._dump
+      def extract_current_nested_template_parameters(stack, stack_name, c_stack)
+        if(c_stack && c_stack.data[:parent_stack])
+          c_stack.data[:parent_stack].sparkleish_template.fetch(
+            :resources, stack_name, :properties, :parameters, Smash.new
+          )
         else
           Smash.new
         end
+      end
+
+      # Disable parameter validate as we can't adjust them without template modifications
+      def validate_stack_parameter(*_)
+        true
       end
 
       # Determine if parameter was set via intrinsic function
