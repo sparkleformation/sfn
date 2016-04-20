@@ -43,10 +43,18 @@ module Sfn
         end
         begin
           ui.info "Validating: #{ui.color(name, :bold)}"
-          stack = provider.connection.stacks.build(
-            :name => 'validation-stack',
-            :template => parameter_scrub!(template)
-          )
+          if(config[:upload_root_template])
+            upload_result = store_template('validation-stack', template, Smash.new)
+            stack = provider.connection.stacks.build(
+              :name => 'validation-stack',
+              :template_url => upload_result[:url]
+            )
+          else
+            stack = provider.connection.stacks.build(
+              :name => 'validation-stack',
+              :template => parameter_scrub!(template)
+            )
+          end
           result = api_action!(:api_stack => stack) do
             stack.validate
           end

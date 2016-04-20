@@ -321,11 +321,11 @@ module Sfn
         # Store template in remote bucket and update given result hash
         #
         # @param full_stack_name [String] unique resource name for template
-        # @param stack [Miasma::Models::Orchestration::Stack] existing stack
+        # @param stack [SparkleFormation] template instance
         # @param result [Hash]
         # @return [Hash]
         def store_template(full_stack_name, stack, result)
-          stack_definition = dump_stack_for_storage(stack)
+          stack_definition = stack.is_a?(SparkleFormation) ? dump_stack_for_storage(stack) : stack
           bucket = provider.connection.api_for(:storage).buckets.get(
             config[:nesting_bucket]
           )

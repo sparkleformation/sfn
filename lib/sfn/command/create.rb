@@ -51,7 +51,13 @@ module Sfn
         populate_parameters!(file)
 
         stack.parameters = config_root_parameters
-        stack.template = parameter_scrub!(template_content(file, :scrub))
+
+        if(config[:upload_root_template])
+          upload_result = store_template(name, file, Smash.new)
+          stack.template_url = upload_result[:url]
+        else
+          stack.template = parameter_scrub!(template_content(file, :scrub))
+        end
 
         api_action!(:api_stack => stack) do
           stack.save
