@@ -46,7 +46,10 @@ module Sfn
         # @return [Array<Miasma::Models::Orchestration::Stack>]
         def nested_stacks_google(recurse=true)
           my_template = sparkleish_template
-          n_stacks = sparkleish_template[:resources].map do |s_name, content|
+          if(my_template[:resources][name])
+            my_template = my_template.get(:resources, name, :properties, :stack)
+          end
+          n_stacks = my_template[:resources].map do |s_name, content|
             if(content[:type] == 'sparkleformation.stack')
               n_stack = self.class.new(api)
               n_stack.extend PretendStack
@@ -107,7 +110,7 @@ module Sfn
           if(s_template.empty?)
             template.to_smash
           else
-            layout = custom[:layout].to_smash
+            layout = custom.fetch(:layout, {}).to_smash
             (layout.delete(:resources) || []).each do |l_resource|
               layout.set(:resources, l_resource.delete(:name), l_resource)
             end
