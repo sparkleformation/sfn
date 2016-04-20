@@ -108,7 +108,7 @@ module Sfn
           end
 
           stack.parameters = config_root_parameters
-          stack.template = parameter_scrub!(template_content(file))
+          stack.template = parameter_scrub!(template_content(file, :scrub))
         else
           apply_stacks!(stack)
           original_parameters = stack.parameters
