@@ -25,6 +25,9 @@ module Sfn
           c_stack.data[:parent_stack].sparkleish_template.fetch(
             :resources, stack_name, :properties, :parameters, Smash.new
           )
+        elsif(stack.parent)
+          val = stack.parent.compile.resources.set!(stack_name).properties
+          val.nil? ? Smash.new : val._dump
         else
           Smash.new
         end
