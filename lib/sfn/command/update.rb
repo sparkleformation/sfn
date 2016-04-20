@@ -80,7 +80,7 @@ module Sfn
 
           apply_stacks!(stack)
 
-          populate_parameters!(file, :current_parameters => stack.parameters)
+          populate_parameters!(file, :current_parameters => stack.root_parameters)
           update_template = stack.template
 
           if(config[:plan])
@@ -108,12 +108,13 @@ module Sfn
           end
 
           stack.parameters = config_root_parameters
-          stack.template = parameter_scrub!(template_content(update_template))
+          stack.template = parameter_scrub!(template_content(file))
         else
           apply_stacks!(stack)
           original_parameters = stack.parameters
-          populate_parameters!(stack.template, :current_parameters => stack.parameters)
+          populate_parameters!(file, :current_parameters => stack.root_parameters)
           stack.parameters = config_root_parameters
+          stack.template = parameter_scrub!(template_content(file))
         end
 
         # Set options defined within config into stack instance for update request
