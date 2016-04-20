@@ -22,7 +22,7 @@ module Sfn
       # @return [Hash]
       def extract_current_nested_template_parameters(stack, stack_name, c_stack)
         if(c_stack && c_stack.data[:parent_stack])
-          c_stack.data[:parent_stack].sparkleish_template.fetch(
+          c_stack.data[:parent_stack].sparkleish_template(:remove_wrapper).fetch(
             :resources, stack_name, :properties, :parameters, Smash.new
           )
         elsif(stack.parent)
