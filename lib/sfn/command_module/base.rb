@@ -110,18 +110,7 @@ module Sfn
         def poll_stack(name)
           provider.connection.stacks.reload
           retry_attempts = 0
-          begin
-            events = Sfn::Command::Events.new({:poll => true}, [name]).execute!
-          rescue => e
-            if(retry_attempts < config.fetch(:max_poll_retries, 5).to_i)
-              retry_attempts += 1
-              warn "Unexpected error encountered (#{e.class}: #{e}) Retrying [retry count: #{retry_attempts}]"
-              sleep(1)
-              retry
-            else
-              raise
-            end
-          end
+          events = Sfn::Command::Events.new({:poll => true}, [name]).execute!
         end
 
         # Wrapper for information retrieval. Provides consistent error

@@ -73,7 +73,7 @@ module Sfn
       # @param stack [Miasma::Models::Orchestration::Stack]
       def outputs(stack)
         ui.info "Outputs for stack: #{ui.color(stack.name, :bold)}"
-        unless(stack.outputs.empty?)
+        unless(stack.outputs.nil? || stack.outputs.empty?)
           stack.outputs.each do |output|
             key, value = output.key, output.value
             key = snake(key).to_s.split('_').map(&:capitalize).join(' ')

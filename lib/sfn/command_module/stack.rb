@@ -51,61 +51,6 @@ module Sfn
           stack
         end
 
-        # Apply all stacks from an unpacked stack
-        #
-        # @param stack_name [String] name of parent stack
-        # @param stack [Miasma::Models::Orchestration::Stack]
-        # @return [Miasma::Models::Orchestration::Stack]
-        def apply_unpacked_stack!(stack_name, stack)
-          result = provider.connection.stacks.all.find_all do |remote_stack|
-            remote_stack.name.start_with?("#{stack_name}#{UNPACK_NAME_JOINER}")
-          end.sort_by(&:name).map do |remote_stack|
-            stack.apply_stack(remote_stack)
-          end
-          unless(result.empty?)
-            stack
-          else
-            ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
-            raise "Failed to locate stack: #{stack_name}"
-          end
-        end
-
-        # Unpack nested stack and run action on each stack, applying
-        # the previous stacks automatically
-        #
-        # @param name [String] container stack name
-        # @param file [Hash] stack template
-        # @param action [String] create or update
-        # @return [TrueClass]
-        def unpack_nesting(name, file, action)
-          config[:apply_stacks] ||= []
-          stack_count = 0
-          file['Resources'].each do |stack_resource_name, stack_resource|
-
-            nested_stack_name = "#{name}#{UNPACK_NAME_JOINER}#{Kernel.sprintf('%0.3d', stack_count)}-#{stack_resource_name}"
-            nested_stack_template = stack_resource['Properties']['Stack']
-
-            namespace.const_get(action.to_s.capitalize).new(
-              Smash.new(
-                :print_only => config[:print_only],
-                :template => nested_stack_template,
-                :parameters => config.fetch(:parameters, Smash.new).to_smash,
-                :apply_stacks => config[:apply_stacks],
-                :options => config[:options]
-              ),
-              [nested_stack_name]
-            ).execute!
-            unless(config[:print_only])
-              config[:apply_stacks].push(nested_stack_name).uniq!
-            end
-            config[:template] = nil
-            provider.connection.stacks.reload
-            stack_count += 1
-          end
-
-          true
-        end
-
         # Prompt for parameter values and store result
         #
         # @param sparkle [SparkleFormation, Hash]
@@ -148,7 +93,7 @@ module Sfn
               valid = false
               # When parameter is a hash type, it is being set via
               # intrinsic function and we don't modify
-              if(current_parameters[k].is_a?(Hash))
+              if(function_set_parameter?(current_parameters[k]))
                 if(current_stack)
                   enable_set = validate_stack_parameter(current_stack, k, ns_k, current_parameters[k])
                 else
@@ -157,7 +102,7 @@ module Sfn
                 if(enable_set)
                   # NOTE: direct set dumps the stack (nfi). Smash will
                   # auto dup it, and works, so yay i guess.
-                  config[:parameters][ns_k] = Smash.new(current_parameters[k])
+                  config[:parameters][ns_k] = current_parameters[k].is_a?(Hash) ? Smash.new(current_parameters[k]) : current_parameters[k].dup
                   valid = true
                 end
               else
@@ -189,7 +134,7 @@ module Sfn
                 else
                   answer = default
                 end
-                validation = Sfn::Utils::StackParameterValidator.validate(answer, v)
+                validation = validate_parameter(answer, v)
                 if(validation == true)
                   config[:parameters][ns_k] = answer
                   valid = true
@@ -213,6 +158,14 @@ module Sfn
               end
             end.compact
           ]
+        end
+
+        # Determine if parameter was set via intrinsic function
+        #
+        # @param val [Object]
+        # @return [TrueClass, FalseClass]
+        def function_set_parameter?(val)
+          val.is_a?(Hash)
         end
 
         # @return [Hash] parameters for root stack create/update
@@ -280,6 +233,7 @@ module Sfn
         klass.class_eval do
           extend Sfn::CommandModule::Stack::ClassMethods
           include Sfn::CommandModule::Stack::InstanceMethods
+          include Utils::StackParameterValidator
         end
       end
 

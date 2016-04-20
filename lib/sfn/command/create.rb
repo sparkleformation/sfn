@@ -22,7 +22,6 @@ module Sfn
           file = config[:template]
         else
           file = load_template_file
-          nested_stacks_unpack = file.delete('sfn_nested_stack')
         end
 
         unless(config[:print_only])
@@ -34,66 +33,48 @@ module Sfn
           stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
         end
 
-        unless(config[:print_only])
+        if(config[:print_only])
+          ui.puts format_json(parameter_scrub!(template_content(file)))
+          return
+        else
           ui.info "  -> #{stack_info}"
         end
 
-        if(nested_stacks_unpack)
-          unpack_nesting(name, file, :create)
-        else
-
-          if(config[:print_only] && !config[:apply_stacks])
-            ui.puts _format_json(
-              translate_template(
-                Sfn::Utils::StackParameterScrubber.scrub!(file)
-              )
-            )
-            return
-          end
-
-          stack = provider.connection.stacks.build(
-            config.fetch(:options, Smash.new).dup.merge(
-              :name => name,
-              :template => file
-            )
+        stack = provider.connection.stacks.build(
+          config.fetch(:options, Smash.new).dup.merge(
+            :name => name,
+            :template => template_content(file)
           )
+        )
 
-          apply_stacks!(stack)
-          stack.template = Sfn::Utils::StackParameterScrubber.scrub!(scrub_template(stack.template))
+        apply_stacks!(stack)
+        populate_parameters!(file)
 
-          if(config[:print_only])
-            ui.puts _format_json(translate_template(stack.template))
-            return
-          end
+        stack.parameters = config_root_parameters
+        stack.template = parameter_scrub!(template_content(file, :scrub))
 
-          populate_parameters!(stack.template)
-          stack.parameters = config_root_parameters
+        api_action!(:api_stack => stack) do
+          stack.save
+          if(config[:poll])
+            poll_stack(stack.name)
+            stack = provider.stack(name)
 
-          stack.template = translate_template(stack.template)
-
-          api_action!(:api_stack => stack) do
-            stack.save
-            if(config[:poll])
-              poll_stack(stack.name)
-              stack = provider.connection.stacks.get(name)
-
-              if(stack.reload.state == :create_complete)
-                ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
-                namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
-              else
-                ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-                raise 'Stack did not reach a successful completion state.'
-              end
+            if(stack.reload.state == :create_complete)
+              ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
+              namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
             else
-              ui.warn 'Stack state polling has been disabled.'
-              ui.info "Stack creation initialized for #{ui.color(name, :green)}"
+              ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
+              raise 'Stack did not reach a successful completion state.'
             end
+          else
+            ui.warn 'Stack state polling has been disabled.'
+            ui.info "Stack creation initialized for #{ui.color(name, :green)}"
           end
-
         end
 
       end
 
     end
+
   end
 end

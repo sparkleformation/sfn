@@ -40,7 +40,13 @@ module Sfn
         end
         if(config[:poll])
           if(stacks.size == 1)
-            poll_stack(stacks.first)
+            begin
+              poll_stack(stacks.first)
+            rescue Miasma::Error::ApiError::RequestError => error
+              unless(error.response.code == 404)
+                raise error
+              end
+            end
           else
             ui.error "Stack polling is not available when multiple stack deletion is requested!"
           end

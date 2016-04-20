@@ -15,6 +15,23 @@ module Sfn
 
       module InstanceMethods
 
+        # Extract template content based on type
+        #
+        # @param thing [SparkleFormation, Hash]
+        # @param scrub [Truthy, Falsey] scrub nested templates
+        # @return [Hash]
+        def template_content(thing, scrub=false)
+          if(thing.is_a?(SparkleFormation))
+            if(scrub)
+              dump_stack_for_storage(thing)
+            else
+              config[:sparkle_dump] ? thing.sparkle_dump : thing.dump
+            end
+          else
+            thing
+          end
+        end
+
         # Request compile time parameter value
         #
         # @param p_name [String, Symbol] name of parameter
@@ -70,7 +87,7 @@ module Sfn
                 ui.fatal "Failed to receive allowed parameter! (Parameter: #{p_name})"
                 exit 1
               else
-                ui.error "Invalid value provided for parameter. Must be type: `#{p_config[:type].to_s.capitalize}`"
+                ui.error "Invalid value provided for parameter `#{p_name}`. Must be type: `#{p_config[:type].to_s.capitalize}`"
               end
             end
           end
@@ -175,9 +192,6 @@ module Sfn
                   sf.stack_resource_types.push(s_type)
                 end
               end
-              if(sf.nested? && !sf.isolated_nests?)
-                raise TypeError.new('Template does not contain isolated stack nesting! Sfn does not support mixed mixed resources within root stack!')
-              end
               run_callbacks_for(:template, :stack_name => arguments.first, :sparkle_stack => sf)
               if(sf.nested? && config[:apply_nesting])
                 validate_nesting_bucket!
@@ -190,12 +204,13 @@ module Sfn
                 when :shallow
                   process_nested_stack_shallow(sf, c_stack)
                 when :none
-                  sf.dump.merge('sfn_nested_stack' => !!sf.nested?)
+                  sf
                 else
                   raise ArgumentError.new "Unknown nesting style requested: #{config[:apply_nesting].inspect}!"
                 end
+                sf
               else
-                sf.dump.merge('sfn_nested_stack' => !!sf.nested?)
+                sf
               end
             else
               template = _from_json(File.read(config[:file]))
@@ -249,20 +264,13 @@ module Sfn
         #
         # @param sf [SparkleFormation] stack
         # @param c_stack [Miasma::Models::Orchestration::Stack] existing stack
-        # @return [Hash] dumped stack
+        # @return [SparkleFormation::SparkleStruct] compiled structure
         def process_nested_stack_deep(sf, c_stack=nil)
           sf.apply_nesting(:deep) do |stack_name, stack, resource|
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
-
             stack_resource = resource._dump
-
-            if(stack.parent)
-              current_parameters = stack.parent.compile.resources.set!(stack_name).properties.parameters
-              current_parameters = current_parameters.nil? ? Smash.new : current_parameters._dump
-            else
-              current_parameters = Smash.new
-            end
             current_stack = c_stack ? c_stack.nested_stacks.detect{|s| s.data[:logical_id] == stack_name} : nil
+            current_parameters = extract_current_nested_template_parameters(stack, stack_name, current_stack)
             if(current_stack && current_stack.data[:parent_stack])
               current_parameters.merge!(
                 current_stack.data[:parent_stack].template.fetch(
@@ -283,21 +291,7 @@ module Sfn
                   :current_parameters => current_parameters
                 )
               )
-              stack_definition = dump_stack_for_storage(stack)
-              bucket = provider.connection.api_for(:storage).buckets.get(
-                config[:nesting_bucket]
-              )
-              unless(bucket)
-                raise "Failed to locate configured bucket for stack template storage (#{config[:nesting_bucket]})!"
-              end
-              file = bucket.files.build
-              file.name = "#{full_stack_name}.json"
-              file.content_type = 'text/json'
-              file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
-              file.save
-              result.merge!(
-                :url => file.url
-              )
+              store_template(full_stack_name, stack, result)
             else
               result = Smash.new(
                 :url => "http://example.com/bucket/#{full_stack_name}.json"
@@ -307,6 +301,45 @@ module Sfn
               resource.properties.set!(k, v)
             end
           end
+        end
+
+        # Extract currently defined parameters for nested template
+        #
+        # @param stack [SparkleFormation]
+        # @param stack_name [String]
+        # @param c_stack [Miasma::Models::Orchestration::Stack]
+        # @return [Hash]
+        def extract_current_nested_template_parameters(stack, stack_name, c_stack=nil)
+          if(stack.parent)
+            current_parameters = stack.parent.compile.resources.set!(stack_name).properties.parameters
+            current_parameters.nil? ? Smash.new : current_parameters._dump
+          else
+            Smash.new
+          end
+        end
+
+        # Store template in remote bucket and update given result hash
+        #
+        # @param full_stack_name [String] unique resource name for template
+        # @param stack [Miasma::Models::Orchestration::Stack] existing stack
+        # @param result [Hash]
+        # @return [Hash]
+        def store_template(full_stack_name, stack, result)
+          stack_definition = dump_stack_for_storage(stack)
+          bucket = provider.connection.api_for(:storage).buckets.get(
+            config[:nesting_bucket]
+          )
+          unless(bucket)
+            raise "Failed to locate configured bucket for stack template storage (#{config[:nesting_bucket]})!"
+          end
+          file = bucket.files.build
+          file.name = "#{full_stack_name}.json"
+          file.content_type = 'text/json'
+          file.body = MultiJson.dump(parameter_scrub!(stack_definition))
+          file.save
+          result.merge!(
+            :url => file.url
+          )
         end
 
         # Remove internally used `Stack` property from Stack resources and
@@ -522,6 +555,7 @@ module Sfn
           extend Sfn::CommandModule::Template::ClassMethods
           include Sfn::CommandModule::Template::InstanceMethods
           include Sfn::Utils::PathSelector
+          include Sfn::Utils::StackParameterScrubber
          end
       end
 

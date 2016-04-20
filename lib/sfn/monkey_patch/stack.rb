@@ -7,7 +7,12 @@ module Sfn
     # Expand stack model functionality
     module Stack
 
+      autoload :Azure, 'sfn/monkey_patch/stack/azure'
+      autoload :Google, 'sfn/monkey_patch/stack/google'
+
       include Bogo::AnimalStrings
+      include Azure
+      include Google
 
       ## Status helpers
 
@@ -135,15 +140,19 @@ module Sfn
       # @param min [Integer] lowest allowed return value (defaults 5)
       # @return [Integer] percent complete (0..100)
       def percent_complete(min = 5)
-        if(in_progress?)
-          total_resources = template.fetch('Resources', []).size
-          total_complete = resources.all.find_all do |resource|
-            resource.status.downcase.end_with?('complete')
-          end.size
-          result = ((total_complete.to_f / total_resources) * 100).to_i
-          result > min.to_i ? result : min
+        if(self.respond_to?("percent_complete_#{api.provider}"))
+          self.send("percent_complete_#{api.provider}", min)
         else
-          100
+          if(in_progress?)
+            total_resources = template.fetch('Resources', []).size
+            total_complete = resources.all.find_all do |resource|
+              resource.status.downcase.end_with?('complete')
+            end.size
+            result = ((total_complete.to_f / total_resources) * 100).to_i
+            result > min.to_i ? result : min
+          else
+            100
+          end
         end
       end
 
@@ -154,35 +163,39 @@ module Sfn
       # @note setting `DisableApply` within parameter hash will
       #   prevent parameters being overridden
       def apply_stack(remote_stack, ignore_params=nil)
-        default_key = 'Default'
-        stack_parameters = template['Parameters']
-        if(stack_parameters)
-          valid_parameters = Smash[
-            stack_parameters.map do |key, val|
-              unless(val['DisableApply'])
-                [snake(key), key]
-              end
-            end.compact
-          ]
-          if(ignore_params)
-            valid_parameters = Hash[
-              valid_parameters.map do |snake_param, camel_param|
-                unless(ignore_params.include?(camel_param))
-                  [snake_param, camel_param]
+        if(self.respond_to?("apply_stack_#{api.provider}"))
+          self.send("apply_stack_#{api.provider}", remote_stack, ignore_params)
+        else
+          default_key = 'Default'
+          stack_parameters = template['Parameters']
+          if(stack_parameters)
+            valid_parameters = Smash[
+              stack_parameters.map do |key, val|
+                unless(val['DisableApply'])
+                  [snake(key), key]
                 end
               end.compact
             ]
-          end
-          if(persisted?)
-            remote_stack.outputs.each do |output|
-              if(param_key = valid_parameters[snake(output.key)])
-                parameters.merge!(param_key => output.value)
-              end
+            if(ignore_params)
+              valid_parameters = Hash[
+                valid_parameters.map do |snake_param, camel_param|
+                  unless(ignore_params.include?(camel_param))
+                    [snake_param, camel_param]
+                  end
+                end.compact
+              ]
             end
-          else
-            remote_stack.outputs.each do |output|
-              if(param_key = valid_parameters[snake(output.key)])
-                stack_parameters[param_key][default_key] = output.value
+            if(persisted?)
+              remote_stack.outputs.each do |output|
+                if(param_key = valid_parameters[snake(output.key)])
+                  parameters.merge!(param_key => output.value)
+                end
+              end
+            else
+              remote_stack.outputs.each do |output|
+                if(param_key = valid_parameters[snake(output.key)])
+                  stack_parameters[param_key][default_key] = output.value
+                end
               end
             end
           end
@@ -194,39 +207,47 @@ module Sfn
       # @param recurse [TrueClass, FalseClass] recurse to fetch _all_ stacks
       # @return [Array<Miasma::Models::Orchestration::Stack>]
       def nested_stacks(recurse=true)
-        resources.reload.all.map do |resource|
-          if(api.data.fetch(:stack_types, []).include?(resource.type))
-            # Custom remote load support
-            if(resource.type == 'Custom::JackalStack')
-              location, stack_id = resource.id.to_s.split('-', 2)
-              if(l_conf = api.data[:locations][location])
-                n_stack = Miasma.api(
-                  :type => :orchestration,
-                  :provider => l_conf[:provider],
-                  :credentials => l_conf
-                ).stacks.get(stack_id)
-              end
-            else
-              n_stack = resource.expand
-            end
-            if(n_stack)
-              n_stack.data[:logical_id] = resource.name
-              n_stack.data[:parent_stack] = self
-              n_stack.api.data[:stack_types] = api.data[:stack_types]
-              if(recurse)
-                [n_stack] + n_stack.nested_stacks(recurse)
+        if(self.respond_to?("nested_stacks_#{api.provider}"))
+          self.send("nested_stacks_#{api.provider}", recurse)
+        else
+          resources.reload.all.map do |resource|
+            if(api.data.fetch(:stack_types, []).include?(resource.type))
+              # Custom remote load support
+              if(resource.type == 'Custom::JackalStack')
+                location, stack_id = resource.id.to_s.split('-', 2)
+                if(l_conf = api.data[:locations][location])
+                  n_stack = Miasma.api(
+                    :type => :orchestration,
+                    :provider => l_conf[:provider],
+                    :credentials => l_conf
+                  ).stacks.get(stack_id)
+                end
               else
-                n_stack
+                n_stack = resource.expand
+              end
+              if(n_stack)
+                n_stack.data[:logical_id] = resource.name
+                n_stack.data[:parent_stack] = self
+                n_stack.api.data[:stack_types] = api.data[:stack_types]
+                if(recurse)
+                  [n_stack] + n_stack.nested_stacks(recurse)
+                else
+                  n_stack
+                end
               end
             end
-          end
-        end.flatten.compact
+          end.flatten.compact
+        end
       end
 
       # @return [TrueClass, FalseClass] stack contains nested stacks
       def nested?
-        !!resources.detect do |resource|
-          api.data.fetch(:stack_types, []).include?(resource.type)
+        if(self.respond_to?("nested_#{api.provider}?"))
+          self.send("nested_#{api.provider}?")
+        else
+          !!resources.detect do |resource|
+            api.data.fetch(:stack_types, []).include?(resource.type)
+          end
         end
       end
 
@@ -234,22 +255,26 @@ module Sfn
       #
       # @return [Smash, NilClass]
       def policy
-        if(self.api.provider == :aws) # cause this is the only one
-          begin
-            result = self.api.request(
-              :path => '/',
-              :form => Smash.new(
-                'Action' => 'GetStackPolicy',
-                'StackName' => self.id
+        if(self.respond_to?("policy_#{api.provider}"))
+          self.send("policy_#{api.provider}")
+        else
+          if(self.api.provider == :aws) # cause this is the only one
+            begin
+              result = self.api.request(
+                :path => '/',
+                :form => Smash.new(
+                  'Action' => 'GetStackPolicy',
+                  'StackName' => self.id
+                )
               )
-            )
-            serialized_policy = result.get(:body, 'GetStackPolicyResult', 'StackPolicyBody')
-            MultiJson.load(serialized_policy).to_smash
-          rescue Miasma::Error::ApiError::RequestError => e
-            if(e.response.code == 404)
-              nil
-            else
-              raise
+              serialized_policy = result.get(:body, 'GetStackPolicyResult', 'StackPolicyBody')
+              MultiJson.load(serialized_policy).to_smash
+            rescue Miasma::Error::ApiError::RequestError => e
+              if(e.response.code == 404)
+                nil
+              else
+                raise
+              end
             end
           end
         end
@@ -263,14 +288,40 @@ module Sfn
       #   contain any direct values for parameters (which is what we
       #   are testing for)
       def nesting_style
-        if(nested?)
-          self.template['Resources'].find_all do |t_resource|
-            t_resource['Type'] == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
-          end.detect do |t_resource|
-            t_resource['Properties'].fetch('Parameters', {}).values.detect do |t_value|
-              !t_value.is_a?(Hash)
-            end
-          end ? :deep : :shallow
+        if(self.respond_to?("nesting_style_#{api.provider}"))
+          self.send("nesting_style_#{api.provider}")
+        else
+          if(nested?)
+            self.template['Resources'].find_all do |t_resource|
+              t_resource['Type'] == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
+            end.detect do |t_resource|
+              t_resource['Properties'].fetch('Parameters', {}).values.detect do |t_value|
+                !t_value.is_a?(Hash)
+              end
+            end ? :deep : :shallow
+          end
+        end
+      end
+
+      # Reformat template data structure to SparkleFormation style structure
+      #
+      # @return [Hash]
+      def sparkleish_template(*args)
+        if(self.respond_to?("sparkleish_template_#{api.provider}"))
+          self.send("sparkleish_template_#{api.provider}", *args)
+        else
+          template
+        end
+      end
+
+      # Provide easy parameters override
+      #
+      # @return [Hash]
+      def root_parameters
+        if(self.respond_to?("root_parameters_#{api.provider}"))
+          self.send("root_parameters_#{api.provider}")
+        else
+          parameters
         end
       end
 

@@ -45,6 +45,7 @@ module Sfn
         ENV['DEBUG'] = 'true' if cli_opts[:debug]
       end
       super(cli_opts, args)
+      load_api_provider_extensions!
       run_callbacks_for(:after_config)
       run_callbacks_for("after_config_#{Bogo::Utility.snake(self.class.name.split('::').last)}")
     end
@@ -57,6 +58,27 @@ module Sfn
     end
 
     protected
+
+    # Load API provider specific overrides to customize behavior
+    #
+    # @return [TrueClass, FalseClass]
+    def load_api_provider_extensions!
+      if(config.get(:credentials, :provider))
+        base_ext = Bogo::Utility.camel(config.get(:credentials, :provider))
+        targ_ext = self.class.name.split('::').last
+        if(ApiProvider.const_defined?(base_ext))
+          base_module = ApiProvider.const_get(base_ext)
+          ui.debug "Loading core provider extensions via `#{base_module}`"
+          extend base_module
+          if(base_module.const_defined?(targ_ext))
+            targ_module = base_module.const_get(targ_ext)
+            ui.debug "Loading targeted provider extensions via `#{targ_module}`"
+            extend targ_module
+          end
+          true
+        end
+      end
+    end
 
     # Start with current working directory and traverse to root
     # looking for a `.sfn` configuration file

@@ -17,7 +17,7 @@ module Sfn
         name = name_args.first
 
         begin
-          stack = provider.connection.stacks.get(name)
+          stack = provider.stack(name)
         rescue Miasma::Error::ApiError::RequestError
           stack = nil
         end
@@ -25,9 +25,7 @@ module Sfn
         if(stack)
           config[:print_only] = true
           file = load_template_file
-          file.delete('sfn_nested_stack')
-          file = Sfn::Utils::StackParameterScrubber.scrub!(file)
-          file = translate_template(file)
+          file = parameter_scrub!(file.dump)
 
           ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('diff', :blue)} - #{name}"
           ui.puts
@@ -39,10 +37,11 @@ module Sfn
         end
       end
 
+      # @todo needs updates for better provider compat
       def diff_stack(stack, file, parent_names=[])
         stack_template = stack.template
         nested_stacks = Hash[
-          file['Resources'].find_all do |name, value|
+          file.fetch('Resources', file.fetch('resources', {})).find_all do |name, value|
             value.fetch('Properties', {})['Stack']
           end
         ]

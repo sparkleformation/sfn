@@ -10,14 +10,13 @@ module Sfn
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
 
+      # Print the requested template
       def execute!
         config[:print_only] = true
         file = load_template_file
-        file.delete('sfn_nested_stack')
-        file = Sfn::Utils::StackParameterScrubber.scrub!(file)
-        file = translate_template(file)
 
-        json_content = _format_json(file)
+        json_content = format_json(parameter_scrub!(template_content(file)))
+
         if(config[:write_to_file])
           unless(File.directory?(File.dirname(config[:write_to_file])))
             run_action 'Creating parent directory' do
