@@ -12,6 +12,10 @@ module Sfn
         :short_flag => 'A'
       )
       attribute(
+        :apply_mapping, Smash,
+        :description => 'Customize apply stack mapping as [StackName__]OutputName:ParameterName'
+      )
+      attribute(
         :parameter, Smash,
         :multiple => true,
         :description => '[DEPRECATED - use `parameters`] Pass template parameters directly (ParamName:ParamValue)',
