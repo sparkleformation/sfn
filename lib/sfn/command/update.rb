@@ -34,11 +34,11 @@ module Sfn
             end
             if(compile_params)
               compile_params = MultiJson.load(compile_params.value)
-              c_current = config[:compile_parameters].fetch(s_name.join('_'), Smash.new)
-              config[:compile_parameters][s_name.join('_')] = compile_params.merge(c_current)
+              c_current = config[:compile_parameters].fetch(s_name.join('__'), Smash.new)
+              config[:compile_parameters][s_name.join('__')] = compile_params.merge(c_current)
             end
             c_stack.nested_stacks(false).each do |n_stack|
-              s_name.push(n_stack.name)
+              s_name.push(n_stack.data.fetch(:logical_id, n_stack.name))
               c_setter.call(n_stack)
               s_name.pop
             end
@@ -48,6 +48,7 @@ module Sfn
             c_setter.call(stack)
           end
 
+          ui.debug "Compile parameters - #{config[:compile_parameters]}"
           file = load_template_file(:stack => stack)
           stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
         end
