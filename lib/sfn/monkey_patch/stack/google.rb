@@ -78,7 +78,7 @@ module Sfn
         end
 
         # @return [Hash] restructured google template
-        def sparkleish_template_google
+        def sparkleish_template_google(*args)
           copy_template = template.to_smash
           deref = lambda do |template|
             result = template.to_smash
@@ -114,7 +114,7 @@ module Sfn
             (layout.delete(:resources) || []).each do |l_resource|
               layout.set(:resources, l_resource.delete(:name), l_resource)
             end
-            s_template
+            args.include?(:remove_wrapper) ? s_template.get(:resources, name, :properties, :stack) : s_template
           end
         end
 

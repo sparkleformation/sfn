@@ -306,9 +306,9 @@ module Sfn
       # Reformat template data structure to SparkleFormation style structure
       #
       # @return [Hash]
-      def sparkleish_template
+      def sparkleish_template(*args)
         if(self.respond_to?("sparkleish_template_#{api.provider}"))
-          self.send("sparkleish_template_#{api.provider}")
+          self.send("sparkleish_template_#{api.provider}", *args)
         else
           template
         end
