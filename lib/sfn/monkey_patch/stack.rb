@@ -161,6 +161,7 @@ module Sfn
       # @param opts [Hash]
       # @option opts [String] :parameter_key key used for parameters block
       # @option opts [String] :default_key key used within parameter for default value
+      # @option opts [Hash] :mapping custom output -> parameter name mapping
       # @param remote_stack [Miasma::Orchestration::Stack]
       # @return [self]
       # @note setting `DisableApply` within parameter hash will
@@ -169,6 +170,9 @@ module Sfn
         if(self.respond_to?("apply_stack_#{api.provider}"))
           self.send("apply_stack_#{api.provider}", remote_stack, opts, ignore_params)
         else
+          unless(opts[:mapping])
+            opts[:mapping] = {}
+          end
           if(opts[:parameter_key])
             stack_parameters = template[opts[:parameter_key]]
             default_key = opts.fetch(
@@ -185,37 +189,36 @@ module Sfn
             end
           end
           if(stack_parameters)
-            valid_parameters = Smash[
-              stack_parameters.map do |key, val|
-                unless(val['DisableApply'] || val['disable_apply'])
-                  [snake(key), key]
-                end
-              end.compact
-            ]
-            if(ignore_params)
-              valid_parameters = Hash[
-                valid_parameters.map do |snake_param, camel_param|
-                  unless(ignore_params.include?(camel_param))
-                    [snake_param, camel_param]
-                  end
-                end.compact
-              ]
+            valid_parameters = stack_parameters.find_all do |key, val|
+              !val['DisableApply'] && !val['disable_apply']
             end
-            if(persisted?)
-              remote_stack.outputs.each do |output|
-                if(param_key = valid_parameters[snake(output.key)])
-                  parameters.merge!(param_key => output.value)
+            if(ignore_params)
+              valid_parameters.reject! do |key|
+                ignore_params.include?(key)
+              end
+            end
+            remote_stack.outputs.each do |output|
+              o_key = output.key.downcase.tr('_', '')
+              p_key = valid_parameters.detect do |v_param|
+                v_param.downcase.tr('_', '') == o_key
+              end
+              unless(p_key)
+                map_key = opts[:mapping].keys.detect do |map_key|
+                  map_key.downcase.tr('_', '') == o_key
+                end
+                if(map_key)
+                  p_key = valid_parameters.detect do |v_param|
+                    v_param.downcase.tr('_', '') == opts[:mapping][map_key].downcase.tr('_', '')
+                  end
                 end
               end
-            else
-              remote_stack.outputs.each do |output|
-                if(param_key = valid_parameters[snake(output.key)])
-                  stack_parameters[param_key][default_key] = output.value
-                end
+              if(p_key)
+                parameters.merge!(p_key => output.value)
               end
             end
           end
         end
+        self
       end
 
       # Return all stacks contained within this stack
