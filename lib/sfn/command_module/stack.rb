@@ -26,7 +26,7 @@ module Sfn
             if(remote_stack)
               apply_nested_stacks!(remote_stack, stack)
               mappings = generate_custom_apply_mappings(remote_stack)
-              execute_apply_stack(remote_stack, stack)
+              execute_apply_stack(remote_stack, stack, mappings)
             else
               ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
               raise "Failed to locate stack: #{stack}"
@@ -65,10 +65,8 @@ module Sfn
             end
             Hash[
               valid_keys.map do |a_key|
-                [
-                  a_key.to_s.slice(a_key.to_s.index('__') + 2, a_key.to_s.length),
-                  config[:apply_mapping][a_key]
-                ]
+                cut_key = a_key.include?('__') ? a_key.slice(a_key.index('__') + 2, a_key.length) : a_key
+                [cut_key, config[:apply_mapping][a_key]]
               end
             ]
           end
