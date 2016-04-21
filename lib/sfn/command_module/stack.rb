@@ -25,6 +25,7 @@ module Sfn
             remote_stack = provider.stack(stack_name)
             if(remote_stack)
               apply_nested_stacks!(remote_stack, stack)
+              mappings = generate_custom_apply_mappings(remote_stack)
               execute_apply_stack(remote_stack, stack)
             else
               ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
@@ -44,10 +45,33 @@ module Sfn
             if(valid_stack_types.include?(resource.type))
               nested_stack = resource.expand
               apply_nested_stacks!(nested_stack, stack)
-              execute_apply_stack(nested_stack, stack)
+              mappings = generate_custom_apply_mappings(nested_stack)
+              execute_apply_stack(nested_stack, stack, mappings)
             end
           end
           stack
+        end
+
+        # Build apply mappings valid for given provider stack
+        #
+        # @param provider_stack [Miasma::Models::Orchestration::Stack] stack providing outputs
+        # @return [Hash] output to parameter mapping
+        def generate_custom_apply_mappings(provider_stack)
+          if(config[:apply_mapping])
+            valid_keys = config[:apply_mapping].keys.find_all do |a_key|
+              a_key = a_key.to_s
+              !a_key.include?('__') ||
+                a_key.split('__').first == provider_stack.name
+            end
+            Hash[
+              valid_keys.map do |a_key|
+                [
+                  a_key.to_s.slice(a_key.to_s.index('__') + 2, a_key.to_s.length),
+                  config[:apply_mapping][a_key]
+                ]
+              end
+            ]
+          end
         end
 
         # Apply provider stack outputs to receiver stack parameters
@@ -55,8 +79,8 @@ module Sfn
         # @param provider_stack [Miasma::Models::Orchestration::Stack] stack providing outputs
         # @param receiver_stack [Miasma::Models::Orchestration::Stack] stack receiving outputs for parameters
         # @return [TrueClass]
-        def execute_apply_stack(provider_stack, receiver_stack)
-          receiver_stack.apply_stack(provider_stack)
+        def execute_apply_stack(provider_stack, receiver_stack, mappings)
+          receiver_stack.apply_stack(provider_stack, :mapping => mappings)
           true
         end
 
