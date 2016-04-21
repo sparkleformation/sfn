@@ -158,20 +158,36 @@ module Sfn
 
       # Apply stack outputs to current stack parameters
       #
+      # @param opts [Hash]
+      # @option opts [String] :parameter_key key used for parameters block
+      # @option opts [String] :default_key key used within parameter for default value
       # @param remote_stack [Miasma::Orchestration::Stack]
       # @return [self]
       # @note setting `DisableApply` within parameter hash will
       #   prevent parameters being overridden
-      def apply_stack(remote_stack, ignore_params=nil)
+      def apply_stack(remote_stack, opts={}, ignore_params=nil)
         if(self.respond_to?("apply_stack_#{api.provider}"))
-          self.send("apply_stack_#{api.provider}", remote_stack, ignore_params)
+          self.send("apply_stack_#{api.provider}", remote_stack, opts, ignore_params)
         else
-          default_key = 'Default'
-          stack_parameters = template['Parameters']
+          if(opts[:parameter_key])
+            stack_parameters = template[opts[:parameter_key]]
+            default_key = opts.fetch(
+              :default_key,
+              opts[:parameter_key].to_s[0,1].match(/[a-z]/) ? 'default' : 'Default'
+            )
+          else
+            if(template['Parameters'])
+              default_key = 'Default'
+              stack_parameters = template['Parameters']
+            else
+              default_key = 'default'
+              stack_parameters = template['parameters']
+            end
+          end
           if(stack_parameters)
             valid_parameters = Smash[
               stack_parameters.map do |key, val|
-                unless(val['DisableApply'])
+                unless(val['DisableApply'] || val['disable_apply'])
                   [snake(key), key]
                 end
               end.compact
