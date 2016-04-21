@@ -63,6 +63,10 @@ module Sfn
               !a_key.include?('__') ||
                 a_key.split('__').first == provider_stack.name
             end
+            to_remove = valid_keys.find_all do |key|
+              valid_keys.any?{|v_key| v_key.match(/__#{Regexp.escape(key)}$/)}
+            end
+            valid_keys -= to_remove
             Hash[
               valid_keys.map do |a_key|
                 cut_key = a_key.include?('__') ? a_key.slice(a_key.index('__') + 2, a_key.length) : a_key
