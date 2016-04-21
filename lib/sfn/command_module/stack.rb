@@ -41,7 +41,7 @@ module Sfn
         # @return [Miasma::Models::Orchestration::Stack]
         def apply_nested_stacks!(remote_stack, stack)
           remote_stack.resources.all.each do |resource|
-            if(resource.type == 'AWS::CloudFormation::Stack')
+            if(valid_stack_types.include?(resource.type))
               nested_stack = resource.expand
               apply_nested_stacks!(nested_stack, stack)
               execute_apply_stack(nested_stack, stack)
