@@ -43,12 +43,13 @@ module Sfn
         stack = provider.connection.stacks.build(
           config.fetch(:options, Smash.new).dup.merge(
             :name => name,
-            :template => template_content(file)
+            :template => template_content(file),
+            :parameters => Smash.new
           )
         )
 
         apply_stacks!(stack)
-        populate_parameters!(file)
+        populate_parameters!(file, :current_parameters => stack.parameters)
 
         stack.parameters = config_root_parameters
         stack.template = parameter_scrub!(template_content(file, :scrub))
