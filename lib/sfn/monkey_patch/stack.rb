@@ -191,7 +191,7 @@ module Sfn
           if(stack_parameters)
             valid_parameters = stack_parameters.find_all do |key, val|
               !val['DisableApply'] && !val['disable_apply']
-            end
+            end.map(&:first)
             if(ignore_params)
               valid_parameters.reject! do |key|
                 ignore_params.include?(key)
