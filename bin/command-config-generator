@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'sfn'
+
+print 'Generating command and configuration page...'
+
+klasses = Sfn::Config.constants.sort.map do |const|
+  klass = Sfn::Config.const_get(const)
+  klass if klass.is_a?(Class) && klass.respond_to?(:attributes)
+end.compact
+
+file = File.open(File.join(File.dirname(__FILE__), '..', 'docs', 'command-config.md'), 'w')
+
+file.puts <<-EOS
+---
+title: "Commands and configuration"
+weight: 3
+anchors:
+EOS
+
+klasses.each do |klass|
+  file.puts "  - title: \"#{klass.name.split('::').last} Command\""
+  file.puts "    url: \"##{klass.name.split('::').last.downcase}-command\""
+end
+file.puts '---'
+
+klasses.each do |klass|
+  file.puts "## #{klass.name.split('::').last} Command"
+  file.puts
+  file.puts '~~~'
+  file.puts "$ sfn #{klass.name.split('::').last.downcase}"
+  file.puts '~~~'
+  file.puts "\n"
+  file.puts "| Option | Attribute | Value"
+  file.puts "|--------|-----------|------"
+  klass.attributes.sort_by(&:first).map do |name, value|
+    file.puts "| `#{name}` | Description | #{value[:description]} |\n| | Valid | `#{[value[:type]].flatten.compact.join('`, `')}` |\n| | Default | #{value[:default].inspect unless value[:default].nil?}|\n"
+  end
+  file.puts
+end
+
+puts 'done'
