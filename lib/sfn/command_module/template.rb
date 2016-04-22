@@ -117,12 +117,19 @@ module Sfn
         # @return [SparkleFormation::SparkleCollection]
         def sparkle_collection
           memoize(:sparkle_collection) do
-            collection = SparkleFormation::SparkleCollection.new
+            collection = SparkleFormation::SparkleCollection.new(
+              :provider => config.get(:credentials, :provider)
+            )
             begin
               if(config[:base_directory])
-                root_pack = SparkleFormation::SparklePack.new(:root => config[:base_directory])
+                root_pack = SparkleFormation::SparklePack.new(
+                  :root => config[:base_directory],
+                  :provider => config.get(:credentials, :provider)
+                )
               else
-                root_pack = SparkleFormation::SparklePack.new
+                root_pack = SparkleFormation::SparklePack.new(
+                  :provider => config.get(:credentials, :provider)
+                )
               end
               collection.set_root(root_pack)
             rescue Errno::ENOENT
