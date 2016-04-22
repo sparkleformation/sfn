@@ -71,6 +71,7 @@ describe Sfn::Planner do
             'Ec2Instance' => {
               'Type' => 'AWS::EC2::Instance',
               'Properties' => {
+                'AvailabilityZone' => 'there',
                 'ImageId' => 'ack'
               }
             }
@@ -78,13 +79,14 @@ describe Sfn::Planner do
         )
       end
 
-      it 'should return empty plan when templates are empty' do
+      it 'should flag Ec2Instance for replacement on image id' do
         api.expects(:stack_template_load).returns(
           {
             'Resources' => {
               'Ec2Instance' => {
                 'Type' => 'AWS::EC2::Instance',
                 'Properties' => {
+                  'AvailabilityZone' => 'there',
                   'ImageId' => 'quack'
                 }
               }
@@ -96,6 +98,27 @@ describe Sfn::Planner do
         result[:replace]['Ec2Instance']['name'].must_equal 'Ec2Instance'
         result[:replace]['Ec2Instance']['type'].must_equal 'AWS::EC2::Instance'
         result[:replace]['Ec2Instance']['properties'].must_include 'ImageId'
+      end
+
+      it 'should flag Ec2Instance for replacement' do
+        api.expects(:stack_template_load).returns(
+          {
+            'Resources' => {
+              'Ec2Instance' => {
+                'Type' => 'AWS::EC2::Instance',
+                'Properties' => {
+                  'AvailabilityZone' => 'here',
+                  'ImageId' => 'ack'
+                }
+              }
+            }
+          }
+        ).at_least_once
+        result = planner.generate_plan(template, {})[:stacks][stack.name]
+        result[:replace].wont_be :empty?
+        result[:replace]['Ec2Instance']['name'].must_equal 'Ec2Instance'
+        result[:replace]['Ec2Instance']['type'].must_equal 'AWS::EC2::Instance'
+        result[:replace]['Ec2Instance']['properties'].must_include 'AvailabilityZone'
       end
 
     end
@@ -112,7 +135,7 @@ describe Sfn::Planner do
         )
       end
 
-      it 'should return empty plan when templates are empty' do
+      it 'should return Ec2Instance removal' do
         api.expects(:stack_template_load).returns(
           {
             'Resources' => {
