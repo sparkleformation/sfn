@@ -8,8 +8,6 @@ module Sfn
 
       module InstanceMethods
 
-        # unpacked stack name joiner/identifier
-        UNPACK_NAME_JOINER = '-sfn-'
         # maximum number of attempts to get valid parameter value
         MAX_PARAMETER_ATTEMPTS = 5
         # Template parameter locations
@@ -24,12 +22,14 @@ module Sfn
         def apply_stacks!(stack)
           remote_stacks = [config[:apply_stack]].flatten.compact
           remote_stacks.each do |stack_name|
-            remote_stack = provider.connection.stacks.get(stack_name)
+            remote_stack = provider.stack(stack_name)
             if(remote_stack)
               apply_nested_stacks!(remote_stack, stack)
-              stack.apply_stack(remote_stack)
+              mappings = generate_custom_apply_mappings(remote_stack)
+              execute_apply_stack(remote_stack, stack, mappings)
             else
-              apply_unpacked_stack!(stack_name, stack)
+              ui.error "Failed to apply requested stack. Unable to locate. (#{stack_name})"
+              raise "Failed to locate stack: #{stack}"
             end
           end
           stack
@@ -42,13 +42,48 @@ module Sfn
         # @return [Miasma::Models::Orchestration::Stack]
         def apply_nested_stacks!(remote_stack, stack)
           remote_stack.resources.all.each do |resource|
-            if(resource.type == 'AWS::CloudFormation::Stack')
+            if(valid_stack_types.include?(resource.type))
               nested_stack = resource.expand
               apply_nested_stacks!(nested_stack, stack)
-              stack.apply_stack(nested_stack)
+              mappings = generate_custom_apply_mappings(nested_stack)
+              execute_apply_stack(nested_stack, stack, mappings)
             end
           end
           stack
+        end
+
+        # Build apply mappings valid for given provider stack
+        #
+        # @param provider_stack [Miasma::Models::Orchestration::Stack] stack providing outputs
+        # @return [Hash] output to parameter mapping
+        def generate_custom_apply_mappings(provider_stack)
+          if(config[:apply_mapping])
+            valid_keys = config[:apply_mapping].keys.find_all do |a_key|
+              a_key = a_key.to_s
+              !a_key.include?('__') ||
+                a_key.split('__').first == provider_stack.name
+            end
+            to_remove = valid_keys.find_all do |key|
+              valid_keys.any?{|v_key| v_key.match(/__#{Regexp.escape(key)}$/)}
+            end
+            valid_keys -= to_remove
+            Hash[
+              valid_keys.map do |a_key|
+                cut_key = a_key.include?('__') ? a_key.slice(a_key.index('__') + 2, a_key.length) : a_key
+                [cut_key, config[:apply_mapping][a_key]]
+              end
+            ]
+          end
+        end
+
+        # Apply provider stack outputs to receiver stack parameters
+        #
+        # @param provider_stack [Miasma::Models::Orchestration::Stack] stack providing outputs
+        # @param receiver_stack [Miasma::Models::Orchestration::Stack] stack receiving outputs for parameters
+        # @return [TrueClass]
+        def execute_apply_stack(provider_stack, receiver_stack, mappings)
+          receiver_stack.apply_stack(provider_stack, :mapping => mappings)
+          true
         end
 
         # Prompt for parameter values and store result
