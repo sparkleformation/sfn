@@ -94,6 +94,10 @@ module Sfn
           end
         }
       )
+      attribute(
+        :upload_root_template, [TrueClass, FalseClass],
+        :description => 'Upload root template to storage bucket'
+      )
 
     end
   end

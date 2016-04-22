@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'bogo-cli', '>= 0.2.5', '< 0.4'
   s.add_runtime_dependency 'bogo-ui', '>= 0.1.13', '< 0.4'
   s.add_runtime_dependency 'miasma', '>= 0.3.0', '< 0.4'
-  s.add_runtime_dependency 'miasma-aws', '>= 0.3.0', '< 0.4'
+  s.add_runtime_dependency 'miasma-aws', '>= 0.3.3', '< 0.4'
   s.add_runtime_dependency 'miasma-azure', '>= 0.1.0', '< 0.3'
   s.add_runtime_dependency 'miasma-open-stack', '>= 0.1.0', '< 0.3'
   s.add_runtime_dependency 'miasma-rackspace', '>= 0.1.0', '< 0.3'
