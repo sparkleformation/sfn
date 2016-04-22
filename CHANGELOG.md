@@ -1,3 +1,19 @@
+# v3.0.0
+_Major release includes breaking changes!_
+* [feature] Add support for Google Cloud Deployment Manager (#181)
+* [feature] Add `--sparkle-dump` option for template printing (#181)
+* [enhancement] Minimum constraint on sparkle_formation set to 3.0
+* [enhancement] Restrict Bundler automatic gem loading to `:sfn` group only (#171)
+* [enhancement] Support uploading root template to storage bucket (#179)
+* [enhancement] Provider specific extension support (#181)
+* [enhancement] Support custom apply stack mappings (#185)
+* [enhancement] Update planner to use new SparkleFormation::Resources::Resource instances (#186)
+ * Includes conditional logic support for property modification effects
+* [fix] Mark AWS::EC2::Instance resources in planner on AWS::CloudFormation::Init modifications (#186)
+* [fix] Set compile time stack parameters under logical name not stack name on update (#180)
+* [task] Removal of `--translate` option for templates
+* [task] Remove internal stack nesting implementation support
+
 # v2.2.0
 * [enhancement] Properly support list types when validating (#167)
 * [enhancement] Restrict automatic gem loading when `:sfn` group is present (#175)
