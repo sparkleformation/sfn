@@ -22,6 +22,7 @@ Notable features available via the SparkleFormation CLI:
   - Eucalyptus
   - Rackspace Orchestration
   - OpenStack Heat
+  - Google Cloud Deployment Manager
 - Chef `knife` plugin support
 - Deep resource inspection
 
