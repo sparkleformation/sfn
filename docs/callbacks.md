@@ -76,6 +76,24 @@ Configuration.new do
 end
 ~~~
 
+#### Important note
+
+Some callbacks will require being enabled immediately upon startup
+instead of during configuration. This can be done by using a special
+`:sfn` group within your bundle. For example, to load the `sfn-serverspec`
+callback immediately the Gemfile should look like:
+
+```ruby
+# Gemfile
+source 'https://rubygems.org'
+
+gem 'sfn'
+
+group :sfn do
+  gem 'sfn-serverspec'
+end
+```
+
 ### Builtin Callbacks
 
 Builtin callbacks distributed with `sfn`:
