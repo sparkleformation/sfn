@@ -34,7 +34,9 @@ klasses.each do |klass|
   file.puts "| Option | Attribute | Value"
   file.puts "|--------|-----------|------"
   klass.attributes.sort_by(&:first).map do |name, value|
-    file.puts "| `#{name}` | Description | #{value[:description]} |\n| | Valid | `#{[value[:type]].flatten.compact.join('`, `')}` |\n| | Default | #{value[:default].inspect unless value[:default].nil?}|\n"
+    file.puts "| `--#{name.to_s.tr('_', '-')}` | Description | #{value[:description]} |"
+    file.puts "| | Valid | `#{[value[:type]].flatten.compact.join('`, `')}` |"
+    file.puts "| | Default | #{value[:default].inspect unless value[:default].nil?}|\n"
   end
   file.puts
 end
