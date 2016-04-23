@@ -3,6 +3,7 @@ _Major release includes breaking changes!_
 * [feature] Add support for Google Cloud Deployment Manager (#181)
 * [feature] Add `--sparkle-dump` option for template printing (#181)
 * [enhancement] Minimum constraint on sparkle_formation set to 3.0
+* [enhancement] Enable automatic provider restrictions using credentials provider
 * [enhancement] Restrict Bundler automatic gem loading to `:sfn` group only (#171)
 * [enhancement] Support uploading root template to storage bucket (#179)
 * [enhancement] Provider specific extension support (#181)
@@ -13,6 +14,9 @@ _Major release includes breaking changes!_
 * [fix] Set compile time stack parameters under logical name not stack name on update (#180)
 * [task] Removal of `--translate` option for templates
 * [task] Remove internal stack nesting implementation support
+
+_NOTE: Breaking changes introduced via sparkle_formation 3.0 minimum constraint. Review
+release sparkle_formation 3.0 release notes._
 
 # v2.2.0
 * [enhancement] Properly support list types when validating (#167)
