@@ -8,9 +8,11 @@ with orchestration APIs.
 ## API Compatibility
 
 * AWS
-* Rackspace
-* OpenStack
 * Azure
+* Google
+* Heat
+* OpenStack
+* Rackspace
 
 ## Documentation
 
