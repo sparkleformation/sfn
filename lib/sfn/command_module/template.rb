@@ -312,13 +312,13 @@ module Sfn
 
         # Extract currently defined parameters for nested template
         #
-        # @param stack [SparkleFormation]
+        # @param template [SparkleFormation]
         # @param stack_name [String]
         # @param c_stack [Miasma::Models::Orchestration::Stack]
         # @return [Hash]
-        def extract_current_nested_template_parameters(stack, stack_name, c_stack=nil)
-          if(stack.parent)
-            current_parameters = stack.parent.compile.resources.set!(stack_name).properties.parameters
+        def extract_current_nested_template_parameters(template, stack_name, c_stack=nil)
+          if(template.parent)
+            current_parameters = template.parent.compile.resources.set!(stack_name).properties.parameters
             current_parameters.nil? ? Smash.new : current_parameters._dump
           else
             Smash.new
@@ -328,11 +328,11 @@ module Sfn
         # Store template in remote bucket and update given result hash
         #
         # @param full_stack_name [String] unique resource name for template
-        # @param stack [SparkleFormation] template instance
+        # @param template [SparkleFormation, Hash] template instance
         # @param result [Hash]
         # @return [Hash]
-        def store_template(full_stack_name, stack, result)
-          stack_definition = stack.is_a?(SparkleFormation) ? dump_stack_for_storage(stack) : stack
+        def store_template(full_stack_name, template, result)
+          stack_definition = template.is_a?(SparkleFormation) ? dump_stack_for_storage(template) : template
           bucket = provider.connection.api_for(:storage).buckets.get(
             config[:nesting_bucket]
           )
@@ -352,16 +352,16 @@ module Sfn
         # Remove internally used `Stack` property from Stack resources and
         # and generate compiled Hash
         #
-        # @param stack [SparkleFormation]
+        # @param template [SparkleFormation]
         # @return [Hash]
-        def dump_stack_for_storage(stack)
-          nested_stacks = stack.nested_stacks.map do |nested_resource|
-            [nested_resource.resource_name!, stack.compile.resources.set!(nested_resource.resource_name!).properties.delete!(:stack)]
+        def dump_stack_for_storage(template)
+          nested_stacks = template.nested_stacks(:with_resource, :with_name).map do |nested_stack, nested_resource, nested_name|
+            [nested_name, nested_resource, nested_resource.properties.delete!(:stack)]
           end
-          stack_definition = stack.compile.dump!
+          stack_definition = template.dump
           if(config[:plan])
-            nested_stacks.each do |nested_name, nested_data|
-              stack.compile.resources.set!(nested_name).properties.stack nested_data
+            nested_stacks.each do |nested_name, nested_resource, nested_data|
+              nested_resource.properties.set!(:stack, nested_data)
             end
           end
           stack_definition
