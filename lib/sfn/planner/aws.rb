@@ -315,7 +315,7 @@ module Sfn
             stk.data[:logical_id] == stack_name
           end
           new_stack_exists = is_stack?(new_template_hash.get('Resources', stack_name, 'Type'))
-          new_stack_template = new_template_hash.get('Resources', stack_name, 'Properties', 'Stack')
+          new_stack_template = new_template_hash.fetch('Resources', stack_name, 'Properties', 'Stack', Smash.new)
           new_stack_parameters = new_stack_template.fetch('Parameters', Smash.new)
           new_stack_type = new_template_hash.fetch('Resources', stack_name, 'Type',
             origin_template.get('Resources', stack_name, 'Type')
