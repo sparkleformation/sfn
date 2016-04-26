@@ -272,10 +272,10 @@ module Sfn
         end
         new_parameters.merge!(get_global_parameters(stack))
         new_template_hash = new_template.to_smash
-        scrub_stack_properties(new_template_hash)
 
         plan_nested_stacks(stack, translator, origin_template, new_template_hash, plan_results)
 
+        scrub_stack_properties(new_template_hash)
         update_template = dereference_template(
           t_key, new_template_hash, new_parameters,
           plan_results[:replace].keys + plan_results[:unavailable].keys
