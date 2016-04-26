@@ -81,7 +81,7 @@ Configuration.new do
   # nesting_prefix 'nested-templates'
   #   Remote provider credentials
   credentials do
-    #  Remote provider name (:aws, :azure, :open_stack, :rackspace)
+    #  Remote provider name (:aws, :azure, :google, :open_stack, :rackspace)
     provider :aws
     #  AWS credentials information
     aws_access_key_id ENV['AWS_ACCESS_KEY_ID']
@@ -117,6 +117,10 @@ Configuration.new do
     rackspace_api_key ENV['RACKSPACE_API_KEY']
     rackspace_username ENV['RACKSPACE_USERNAME']
     rackspace_region ENV['RACKSPACE_REGION']
+    #  Google Cloud Deployment Manager credentials
+    google_service_account_email ENV['GOOGLE_SERVICE_ACCOUNT_EMAIL']
+    google_service_account_private_key ENV['GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY']
+    google_project ENV['GOOGLE_PROJECT']
   end
 end
 EOF
