@@ -274,7 +274,7 @@ module Sfn
                     if(diff[:updated].nil?)
                       ui.puts
                     else
-                      ui.puts ui.color("+#{diff[:updated]}", :green)
+                      ui.puts ui.color("+#{diff[:updated].to_s.gsub('__MODIFIED_REFERENCE_VALUE__', '<Dependency Modified>')}", :green)
                     end
                   end
                 end

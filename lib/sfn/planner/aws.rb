@@ -272,10 +272,10 @@ module Sfn
         end
         new_parameters.merge!(get_global_parameters(stack))
         new_template_hash = new_template.to_smash
-        scrub_stack_properties(new_template_hash)
 
         plan_nested_stacks(stack, translator, origin_template, new_template_hash, plan_results)
 
+        scrub_stack_properties(new_template_hash)
         update_template = dereference_template(
           t_key, new_template_hash, new_parameters,
           plan_results[:replace].keys + plan_results[:unavailable].keys
@@ -315,7 +315,7 @@ module Sfn
             stk.data[:logical_id] == stack_name
           end
           new_stack_exists = is_stack?(new_template_hash.get('Resources', stack_name, 'Type'))
-          new_stack_template = new_template_hash.get('Resources', stack_name, 'Properties', 'Stack')
+          new_stack_template = new_template_hash.fetch('Resources', stack_name, 'Properties', 'Stack', Smash.new)
           new_stack_parameters = new_stack_template.fetch('Parameters', Smash.new)
           new_stack_type = new_template_hash.fetch('Resources', stack_name, 'Type',
             origin_template.get('Resources', stack_name, 'Type')
