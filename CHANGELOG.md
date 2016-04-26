@@ -1,3 +1,8 @@
+# v3.0.2
+* [fix] Properly scrub nested stack pseudo property on update (#189)
+* [fix] Process nested stacks before removal within AWS planner (#190)
+* [enhancement] Add configuration options for Google cloud (#188)
+
 # v3.0.0
 _Major release includes breaking changes!_
 * [feature] Add support for Google Cloud Deployment Manager (#181)
