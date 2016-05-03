@@ -83,7 +83,7 @@ instead of during configuration. This can be done by using a special
 `:sfn` group within your bundle. For example, to load the `sfn-serverspec`
 callback immediately the Gemfile should look like:
 
-```ruby
+~~~ruby
 # Gemfile
 source 'https://rubygems.org'
 
@@ -92,7 +92,7 @@ gem 'sfn'
 group :sfn do
   gem 'sfn-serverspec'
 end
-```
+~~~
 
 ### Builtin Callbacks
 
@@ -314,7 +314,7 @@ The sfn command will output a notification to the user before a callback is
 run, and after it has completed. This may be too verbose for some callbacks.
 A callback may disable this output using the `quiet` method:
 
-```ruby
+~~~ruby
 module Sfn
   class Callback
     class MyCallback < Callback
@@ -326,7 +326,7 @@ module Sfn
     end
   end
 end
-```
+~~~
 
 ### Addon Callbacks
 
