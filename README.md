@@ -22,6 +22,7 @@ with orchestration APIs.
 
 * Repository: https://github.com/sparkleformation/sfn
 * Website: http://www.sparkleformation.io/docs/sfn/
+* Mailing List: https://groups.google.com/forum/#!forum/sparkleformation
 * IRC: Freenode @ #sparkleformation
 
 [miasma]: http://miasma-rb.github.io/miasma/
