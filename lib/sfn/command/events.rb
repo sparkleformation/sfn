@@ -63,7 +63,7 @@ module Sfn
       # @return [Array<Hash>]
       def get_events(*args)
         stack_events = discover_stacks(stack).map do |i_stack|
-          i_events = i_stack.events.reload.all
+          i_events = i_stack.events.update!
           i_events.map do |e|
             e.attributes.merge(:stack_name => i_stack.name).to_smash
           end
