@@ -63,7 +63,20 @@ module Sfn
       # @return [Array<Hash>]
       def get_events(*args)
         stack_events = discover_stacks(stack).map do |i_stack|
-          i_events = i_stack.events.update!
+          begin
+            if(@initial_complete && i_stack.in_progress?)
+              i_events = i_stack.events.update!
+            else
+              i_events = i_stack.events.all
+            end
+          rescue => e
+            if(e.class.to_s.start_with?('Errno'))
+              ui.warn "Connection error encountered: #{e.message} (retrying)"
+              ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+              sleep(5)
+              retry
+            end
+          end
           i_events.map do |e|
             e.attributes.merge(:stack_name => i_stack.name).to_smash
           end
