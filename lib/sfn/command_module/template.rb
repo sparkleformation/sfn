@@ -162,6 +162,13 @@ module Sfn
           elsif(config[:file])
             if(config[:processing])
               compile_state = config.fetch(:compile_parameters, Smash.new)
+              compile_state.keys.each do |cs_key|
+                if(cs_key.to_s.start_with?(arguments.first.to_s))
+                  cli_provided = compile_state.delete(cs_key.to_s.sub("#{arguments.first.to_s}__", ''))
+                  compile_state[cs_key].deep_merge!(cli_provided)
+                end
+              end
+              ui.debug "Merged compile parameters - #{compile_state}"
               sf = SparkleFormation.compile(config[:file], :sparkle)
               if(name_args.first)
                 sf.name = name_args.first
@@ -170,13 +177,6 @@ module Sfn
                 f_name = formation.root_path.map(&:name).map(&:to_s)
                 pathed_name = f_name.join(' > ')
                 f_name = f_name.join('__')
-                current_state = compile_state[f_name]
-                unless(current_state)
-                  f_name = f_name.split('__')
-                  f_name.shift
-                  f_name = f_name.join('__')
-                  current_state = f_name.empty? ? compile_state : compile_state[f_name]
-                end
                 if(formation.root? && compile_state[f_name].nil?)
                   current_state = compile_state
                 else
