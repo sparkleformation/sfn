@@ -1,3 +1,8 @@
+# v3.0.4
+* [fix] Update parameter values extraction location in planner
+* [fix] Merge compile time parameters when existing are available
+* [enhancement] Reduce response size on event polling where available
+
 # v3.0.2
 * [fix] Properly scrub nested stack pseudo property on update (#189)
 * [fix] Process nested stacks before removal within AWS planner (#190)
