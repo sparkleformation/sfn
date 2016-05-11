@@ -52,6 +52,7 @@ module Sfn
     autoload :Import, 'sfn/config/import'
     autoload :Init, 'sfn/config/init'
     autoload :Inspect, 'sfn/config/inspect'
+    autoload :Lint, 'sfn/config/lint'
     autoload :List, 'sfn/config/list'
     autoload :Print, 'sfn/config/print'
     autoload :Promote, 'sfn/config/promote'
