@@ -101,7 +101,11 @@ module Sfn
               end
             end
           end
-          result.nil? ? super : result
+          result = result.nil? ? super : result
+          unless(result.is_a?(Enumerable))
+            result = result.to_s
+          end
+          result
         end
 
       end
