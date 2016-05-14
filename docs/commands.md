@@ -1,5 +1,5 @@
 ---
-title: "Commands"
+title: "CLI Commands"
 weight: 4
 anchors:
   - title: "Lifecycle commands"
@@ -53,6 +53,8 @@ status code. The automatic polling behavior can be disabled:
 $ sfn create my-stack --file my_template --no-poll
 ~~~
 
+##### Apply stack
+
 The `--apply-stack` option allows providing the name of an existing
 stack when creating or updating. Applying stacks is simply fetching
 the outputs from the applied stacks and automatically defaulting the
@@ -102,6 +104,42 @@ $ sfn create StackB --apply-stack StackA
 when prompted for the stack parameters, we will find the parameter
 value for `LoadBalancerAddress` to be filled in with the output
 provided from StackA.
+
+##### Remote location apply stack
+
+Stacks that are defined in a different region, or within a
+different provider, can be applied by prefixing stack names with
+the configured location name. Using the defined `.sfn` configuration:
+
+~~~ruby
+Configuration.new do
+  ...
+  credentials do
+    provider :aws
+    aws_access_key_id ENV['AWS_ACCESS_KEY_ID']
+    aws_secret_access_key ENV['AWS_SECRET_ACCESS_KEY']
+    aws_region 'us-west-2'
+  end
+  locations do
+    ca_west do
+      provider :aws
+      aws_access_key_id ENV['AWS_ACCESS_KEY_ID']
+      aws_secret_access_key ENV['AWS_SECRET_ACCESS_KEY']
+      aws_region 'us-west-1'
+    end
+  end
+end
+~~~
+
+Now, when creating a new stack (which uses the configured credentials
+targeting `us-west-2`) a stack from the `us-west-1` region can be applied
+by prefixing the location name to the stack name:
+
+~~~
+$ sfn create StackB --apply-stack ca_west__StackA
+~~~
+
+_NOTE: Location providers are not required to be common._
 
 Example of stack creation:
 
