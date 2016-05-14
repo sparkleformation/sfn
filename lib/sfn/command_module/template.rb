@@ -489,7 +489,7 @@ module Sfn
               t_name.to_s.start_with?(prefix.to_s)
             end
           else
-            template_names = sparkle_collection.templates.keys
+            template_names = sparkle_collection.templates.fetch(provider.connection.provider, {}).keys
           end
           collections = template_names.map do |t_name|
             t_name = t_name.to_s.sub(/^#{Regexp.escape(prefix.to_s)}/, '')
