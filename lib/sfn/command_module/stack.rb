@@ -22,7 +22,10 @@ module Sfn
         def apply_stacks!(stack)
           remote_stacks = [config[:apply_stack]].flatten.compact
           remote_stacks.each do |stack_name|
-            remote_stack = provider.stack(stack_name)
+            stack_info = stack_name.split('__')
+            stack_info.shift(nil) if stack_info.size == 1
+            stack_location, stack_name = stack_info
+            remote_stack = provider_for(location).stack(stack_name)
             if(remote_stack)
               apply_nested_stacks!(remote_stack, stack)
               mappings = generate_custom_apply_mappings(remote_stack)
@@ -60,8 +63,18 @@ module Sfn
           if(config[:apply_mapping])
             valid_keys = config[:apply_mapping].keys.find_all do |a_key|
               a_key = a_key.to_s
-              !a_key.include?('__') ||
-                a_key.split('__').first == provider_stack.name
+              key_parts = a_key.split('__')
+              case key_parts.size
+              when 3
+                provider_stack.api.data[:location] == key_parts[0] &&
+                  provider_stack.name == key_parts[1]
+              when 2
+                provider_stack.name == key_parts[1]
+              when 1
+                true
+              else
+                raise ArgumentError "Invalid name format for apply stack mapping (`#{a_key}`)"
+              end
             end
             to_remove = valid_keys.find_all do |key|
               valid_keys.any?{|v_key| v_key.match(/__#{Regexp.escape(key)}$/)}
@@ -69,7 +82,7 @@ module Sfn
             valid_keys -= to_remove
             Hash[
               valid_keys.map do |a_key|
-                cut_key = a_key.include?('__') ? a_key.slice(a_key.index('__') + 2, a_key.length) : a_key
+                cut_key = a_key.split('__').last
                 [cut_key, config[:apply_mapping][a_key]]
               end
             ]
