@@ -245,5 +245,43 @@ describe Sfn::Planner do
 
     end
 
+    describe 'Template data types within planner' do
+
+      before do
+        api.expects(:data).returns({}).at_least_once
+      end
+
+      let(:template) do
+        Smash.new(
+          'Resources' => {
+            'Ec2Instance' => {
+              'Type' => 'AWS::EC2::Instance',
+              'Properties' => {
+                'ImageId' => 100
+              }
+            }
+          }
+        )
+      end
+
+      it 'should not flag removal due to type difference' do
+        api.expects(:stack_template_load).returns(
+          {
+            'Resources' => {
+              'Ec2Instance' => {
+                'Type' => 'AWS::EC2::Instance',
+                'Properties' => {
+                  'ImageId' => '100'
+                }
+              }
+            }
+          }
+        ).at_least_once
+        result = planner.generate_plan(template, {})[:stacks][stack.name]
+        result[:removed].must_be :empty?
+      end
+
+    end
+
   end
 end
