@@ -60,7 +60,8 @@ module Sfn
         :default => false
       )
       attribute(
-        :parameter_validation, ['default', 'none', 'current', 'expected'],
+        :parameter_validation, String,
+        :allowed => ['default', 'none', 'current', 'expected'],
         :description => 'Stack parameter validation behavior',
         :default => 'default'
       )
