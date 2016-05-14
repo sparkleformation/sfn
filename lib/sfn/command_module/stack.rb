@@ -63,8 +63,18 @@ module Sfn
           if(config[:apply_mapping])
             valid_keys = config[:apply_mapping].keys.find_all do |a_key|
               a_key = a_key.to_s
-              !a_key.include?('__') ||
-                a_key.split('__').first == provider_stack.name
+              key_parts = a_key.split('__')
+              case key_parts.size
+              when 3
+                provider_stack.api.data[:location] == key_parts[0] &&
+                  provider_stack.name == key_parts[1]
+              when 2
+                provider_stack.name == key_parts[1]
+              when 1
+                true
+              else
+                raise ArgumentError "Invalid name format for apply stack mapping (`#{a_key}`)"
+              end
             end
             to_remove = valid_keys.find_all do |key|
               valid_keys.any?{|v_key| v_key.match(/__#{Regexp.escape(key)}$/)}
@@ -72,7 +82,7 @@ module Sfn
             valid_keys -= to_remove
             Hash[
               valid_keys.map do |a_key|
-                cut_key = a_key.include?('__') ? a_key.slice(a_key.index('__') + 2, a_key.length) : a_key
+                cut_key = a_key.split('__').last
                 [cut_key, config[:apply_mapping][a_key]]
               end
             ]
