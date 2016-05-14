@@ -1,3 +1,10 @@
+# v3.0.6
+* [fix] Cast all value types to String within AWS planner (#194)
+* [fix] Fix template names on create/update prompting (#197)
+* [enhancement] Extend validation support for compile time parameters (#199)
+* [enhancement] Add parameter validation control on stack updates (#198)
+* [feature] Support remote locations when using apply stack (#196)
+
 # v3.0.4
 * [fix] Update parameter values extraction location in planner
 * [fix] Merge compile time parameters when existing are available
