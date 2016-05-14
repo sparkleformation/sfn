@@ -18,12 +18,24 @@ module Sfn
           [config.fetch(:stack_types, [])].flatten.compact
         end
 
-        # @return [KnifeCloudformation::Provider]
-        def provider
+        # Build provider connection for given location
+        #
+        # @param location [Symbol, String] name of location
+        # @return [Sfn::Provider]
+        def provider_for(location=nil)
+          key = ['provider', location].compact.map(&:to_s).join('_')
+          if(location)
+            credentials = config.get(:locations, location)
+            unless(credentials)
+              raise ArgumentError.new "Failed to locate provider credentials for location `#{location}`!"
+            end
+          else
+            credentials = config[:credentials]
+          end
           begin
             memoize(:provider) do
               result = Sfn::Provider.new(
-                :miasma => config[:credentials],
+                :miasma => credentials,
                 :async => false,
                 :fetch => false
               )
@@ -44,11 +56,14 @@ module Sfn
               result.connection.data[:retry_max] = retry_config.fetch(:max_attempts, 20)
               result
             end
-          rescue
+          rescue => e
             ui.error 'Failed to create remote API connection. Please validate configuration!'
+            ui.error "Connection failure reason - #{e.class} - #{e}"
             raise
           end
         end
+        alias_method :provider, :provider_for
+
 
         # Write exception information if debug is enabled
         #
