@@ -33,7 +33,7 @@ module Sfn
             credentials = config[:credentials]
           end
           begin
-            memoize(:provider) do
+            memoize(key) do
               result = Sfn::Provider.new(
                 :miasma => credentials,
                 :async => false,
