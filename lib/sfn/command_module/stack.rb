@@ -239,32 +239,39 @@ module Sfn
         def validate_stack_parameter(c_stack, p_key, p_ns_key, c_value)
           stack_value = c_stack.parameters[p_key]
           p_stack = c_stack.data[:parent_stack]
-          if(c_value.is_a?(Hash))
-            case c_value.keys.first
-            when 'Ref'
-              current_value = p_stack.parameters[c_value.values.first]
-            when 'Fn::Att'
-              resource_name, output_name = c_value.values.first.split('.', 2)
-              ref_stack = p_stack.nested_stacks.detect{|i| i.data[:logical_id] == resource_name}
-              if(ref_stack)
-                output = ref_stack.outputs.detect do |o|
-                  o.key == output_name
-                end
-                if(output)
-                  current_value = output.value
+          unless(config[:parameter_validation] == 'none')
+            if(c_value.is_a?(Hash))
+              case c_value.keys.first
+              when 'Ref'
+                current_value = p_stack.parameters[c_value.values.first]
+              when 'Fn::Att'
+                resource_name, output_name = c_value.values.first.split('.', 2)
+                ref_stack = p_stack.nested_stacks.detect{|i| i.data[:logical_id] == resource_name}
+                if(ref_stack)
+                  output = ref_stack.outputs.detect do |o|
+                    o.key == output_name
+                  end
+                  if(output)
+                    current_value = output.value
+                  end
                 end
               end
+            else
+              current_value = c_value
+            end
+            if(current_value && current_value.to_s != stack_value.to_s)
+              if(config[:parameter_validation] == 'default')
+                ui.warn 'Nested stack has been altered directly! This update may cause unexpected modifications!'
+                ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. Current value: #{stack_value}. Expected value: #{current_value} (via: #{c_value.inspect})"
+                answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ['current', 'expected'])
+              else
+                answer = config[:parameter_validation]
+              end
+              answer == 'expected'
+            else
+              true
             end
           else
-            current_value = c_value
-          end
-          if(current_value && current_value.to_s != stack_value.to_s)
-            ui.warn 'Nested stack has been altered directly! This update may cause unexpected modifications!'
-            ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. Current value: #{stack_value}. Expected value: #{current_value} (via: #{c_value.inspect})"
-            answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ['current', 'expected'])
-            answer == 'expected'
-          else
-#            ui.warn "Unable to check #{p_key} for direct value modification. (Cannot auto-check expected value #{c_value.inspect})"
             true
           end
         end
