@@ -109,6 +109,9 @@ $ sfn conf
 | `--parameter` | Description | [DEPRECATED - use `parameters`] Pass template parameters directly (ParamName:ParamValue) |
 | | Valid | `Bogo::Smash` |
 | | Default | |
+| `--parameter-validation` | Description | Stack parameter validation behavior |
+| | Valid | `String` |
+| | Default | "default"|
 | `--parameters` | Description | Pass template parameters directly (Key:Value[,Key:Value,...]) |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -220,6 +223,9 @@ $ sfn create
 | `--parameter` | Description | [DEPRECATED - use `parameters`] Pass template parameters directly (ParamName:ParamValue) |
 | | Valid | `Bogo::Smash` |
 | | Default | |
+| `--parameter-validation` | Description | Stack parameter validation behavior |
+| | Valid | `String` |
+| | Default | "default"|
 | `--parameters` | Description | Pass template parameters directly (Key:Value[,Key:Value,...]) |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -433,6 +439,9 @@ $ sfn diff
 | `--parameter` | Description | [DEPRECATED - use `parameters`] Pass template parameters directly (ParamName:ParamValue) |
 | | Valid | `Bogo::Smash` |
 | | Default | |
+| `--parameter-validation` | Description | Stack parameter validation behavior |
+| | Valid | `String` |
+| | Default | "default"|
 | `--parameters` | Description | Pass template parameters directly (Key:Value[,Key:Value,...]) |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -1165,6 +1174,9 @@ $ sfn update
 | `--parameter` | Description | [DEPRECATED - use `parameters`] Pass template parameters directly (ParamName:ParamValue) |
 | | Valid | `Bogo::Smash` |
 | | Default | |
+| `--parameter-validation` | Description | Stack parameter validation behavior |
+| | Valid | `String` |
+| | Default | "default"|
 | `--parameters` | Description | Pass template parameters directly (Key:Value[,Key:Value,...]) |
 | | Valid | `Bogo::Smash` |
 | | Default | |
