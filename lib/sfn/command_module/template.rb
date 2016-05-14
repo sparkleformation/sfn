@@ -82,12 +82,17 @@ module Sfn
             else
               raise ArgumentError.new "Unknown compile time parameter type provided: `#{p_config[:type].inspect}` (Parameter: #{p_name})"
             end
+            valid = validate_parameter(result, p_config.to_smash)
+            unless(valid == true)
+              result = nil
+              valid.each do |invalid_msg|
+                ui.error invalid_msg.last
+              end
+            end
             if(result.nil? || (result.respond_to?(:empty?) && result.empty?))
               if(attempts > MAX_PARAMETER_ATTEMPTS)
                 ui.fatal "Failed to receive allowed parameter! (Parameter: #{p_name})"
                 exit 1
-              else
-                ui.error "Invalid value provided for parameter `#{p_name}`. Must be type: `#{p_config[:type].to_s.capitalize}`"
               end
             end
           end
