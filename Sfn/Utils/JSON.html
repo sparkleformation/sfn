@@ -121,6 +121,8 @@
     
 
     
+      (also: #format_json)
+    
   </span>
   
   
@@ -145,6 +147,8 @@
     
 
     
+      (also: #load_json)
+    
   </span>
   
   
@@ -168,6 +172,8 @@
       <a href="#_to_json-instance_method" title="#_to_json (instance method)">- (String) <strong>_to_json</strong>(thing) </a>
     
 
+    
+      (also: #dump_json)
     
   </span>
   
@@ -201,6 +207,10 @@
     - (<tt>String</tt>) <strong>_format_json</strong>(thing) 
   
 
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='format_json-instance_method'>format_json</span></span>
+    </span>
   
 
   
@@ -249,13 +259,13 @@
       <pre class="lines">
 
 
-29
-30
 31
-32</pre>
+32
+33
+34</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/utils/json.rb', line 29</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/utils/json.rb', line 31</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid__format_json'>_format_json</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_thing'>thing</span> <span class='op'>=</span> <span class='id identifier rubyid__from_json'>_from_json</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_thing'>thing</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span>
@@ -272,6 +282,10 @@
     - (<tt>Object</tt>) <strong>_from_json</strong>(thing) 
   
 
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='load_json-instance_method'>load_json</span></span>
+    </span>
   
 
   
@@ -320,12 +334,12 @@
       <pre class="lines">
 
 
-21
 22
-23</pre>
+23
+24</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/utils/json.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/utils/json.rb', line 22</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid__from_json'>_from_json</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='rparen'>)</span>
   <span class='const'>MultiJson</span><span class='period'>.</span><span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='rparen'>)</span>
@@ -341,6 +355,10 @@
     - (<tt>String</tt>) <strong>_to_json</strong>(thing) 
   
 
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='dump_json-instance_method'>dump_json</span></span>
+    </span>
   
 
   
@@ -409,9 +427,9 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Sep  4 09:40:55 2015 by
+  Generated on Sat May 14 12:44:52 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.2).
+  0.8.7.6 (ruby-2.2.3).
 </div>
 
   </body>

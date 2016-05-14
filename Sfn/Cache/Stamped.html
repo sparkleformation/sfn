@@ -364,14 +364,14 @@
       <pre class="lines">
 
 
-343
-344
-345
-346
-347</pre>
+350
+351
+352
+353
+354</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 343</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 350</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_base'>base</span><span class='comma'>,</span> <span class='id identifier rubyid_cache'>cache</span><span class='rparen'>)</span>
   <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
@@ -416,12 +416,12 @@
       <pre class="lines">
 
 
-374
-375
-376</pre>
+381
+382
+383</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 374</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 381</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_restamp!'>restamp!</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
@@ -475,12 +475,12 @@
       <pre class="lines">
 
 
-364
-365
-366</pre>
+371
+372
+373</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 364</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 371</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set?'>set?</span>
   <span class='ivar'>@base</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
@@ -534,12 +534,12 @@
       <pre class="lines">
 
 
-369
-370
-371</pre>
+376
+377
+378</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 369</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 376</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stamp'>stamp</span>
   <span class='id identifier rubyid_set?'>set?</span> <span class='op'>?</span> <span class='ivar'>@base</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lbracket'>[</span><span class='symbol'>:stamp</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='float'>0.0</span>
@@ -593,12 +593,12 @@
       <pre class="lines">
 
 
-379
-380
-381</pre>
+386
+387
+388</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 379</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 386</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_update_allowed?'>update_allowed?</span>
   <span class='op'>!</span><span class='id identifier rubyid_set?'>set?</span> <span class='op'>||</span> <span class='ivar'>@cache</span><span class='period'>.</span><span class='id identifier rubyid_time_check_allow?'>time_check_allow?</span><span class='lparen'>(</span><span class='ivar'>@name</span><span class='comma'>,</span> <span class='ivar'>@base</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lbracket'>[</span><span class='symbol'>:stamp</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -652,12 +652,12 @@
       <pre class="lines">
 
 
-350
-351
-352</pre>
+357
+358
+359</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 350</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 357</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span>
   <span class='ivar'>@base</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lbracket'>[</span><span class='symbol'>:value</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_set?'>set?</span>
@@ -726,13 +726,13 @@
       <pre class="lines">
 
 
-358
-359
-360
-361</pre>
+365
+366
+367
+368</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 358</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 365</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value='>value=</span><span class='lparen'>(</span><span class='id identifier rubyid_v'>v</span><span class='rparen'>)</span>
   <span class='ivar'>@base</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:stamp</span> <span class='op'>=&gt;</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='period'>.</span><span class='id identifier rubyid_to_f'>to_f</span><span class='comma'>,</span> <span class='symbol'>:value</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_v'>v</span><span class='rbrace'>}</span>
@@ -748,9 +748,9 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Sep  4 09:40:56 2015 by
+  Generated on Sat May 14 12:44:54 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.2).
+  0.8.7.6 (ruby-2.2.3).
 </div>
 
   </body>

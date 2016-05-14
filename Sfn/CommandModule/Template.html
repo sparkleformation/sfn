@@ -78,7 +78,7 @@
   
   
     <dt class="r1">Included in:</dt>
-    <dd class="r1"><span class='object_link'><a href="../Command/Create.html" title="Sfn::Command::Create (class)">Sfn::Command::Create</a></span>, <span class='object_link'><a href="../Command/Update.html" title="Sfn::Command::Update (class)">Sfn::Command::Update</a></span>, <span class='object_link'><a href="../Command/Validate.html" title="Sfn::Command::Validate (class)">Sfn::Command::Validate</a></span></dd>
+    <dd class="r1"><span class='object_link'><a href="../Command/Create.html" title="Sfn::Command::Create (class)">Sfn::Command::Create</a></span>, <span class='object_link'><a href="../Command/Diff.html" title="Sfn::Command::Diff (class)">Sfn::Command::Diff</a></span>, <span class='object_link'><a href="../Command/Graph.html" title="Sfn::Command::Graph (class)">Sfn::Command::Graph</a></span>, <span class='object_link'><a href="../Command/Print.html" title="Sfn::Command::Print (class)">Sfn::Command::Print</a></span>, <span class='object_link'><a href="../Command/Update.html" title="Sfn::Command::Update (class)">Sfn::Command::Update</a></span>, <span class='object_link'><a href="../Command/Validate.html" title="Sfn::Command::Validate (class)">Sfn::Command::Validate</a></span></dd>
     
   
   
@@ -129,6 +129,22 @@
 </div>
         </dt>
         <dd><pre class="code"><span class='qwords_beg'>%w(</span><span class='tstring_content'>components</span><span class='words_sep'> </span><span class='tstring_content'>dynamics</span><span class='words_sep'> </span><span class='tstring_content'>registry</span><span class='words_sep'>)</span></pre></dd>
+      
+        <dt id="MAX_PARAMETER_ATTEMPTS-constant" class="">MAX_PARAMETER_ATTEMPTS =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>maximum number of attempts to get valid parameter value</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='int'>5</span></pre></dd>
       
     </dl>
   
@@ -221,22 +237,24 @@
       <pre class="lines">
 
 
-298
-299
-300
-301
-302
-303
-304</pre>
+565
+566
+567
+568
+569
+570
+571
+572</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 298</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 565</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_included'>included</span><span class='lparen'>(</span><span class='id identifier rubyid_klass'>klass</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_klass'>klass</span><span class='period'>.</span><span class='id identifier rubyid_class_eval'>class_eval</span> <span class='kw'>do</span>
     <span class='id identifier rubyid_extend'>extend</span> <span class='const'>Sfn</span><span class='op'>::</span><span class='const'>CommandModule</span><span class='op'>::</span><span class='const'>Template</span><span class='op'>::</span><span class='const'>ClassMethods</span>
     <span class='id identifier rubyid_include'>include</span> <span class='const'>Sfn</span><span class='op'>::</span><span class='const'>CommandModule</span><span class='op'>::</span><span class='const'>Template</span><span class='op'>::</span><span class='const'>InstanceMethods</span>
     <span class='id identifier rubyid_include'>include</span> <span class='const'>Sfn</span><span class='op'>::</span><span class='const'>Utils</span><span class='op'>::</span><span class='const'>PathSelector</span>
+    <span class='id identifier rubyid_include'>include</span> <span class='const'>Sfn</span><span class='op'>::</span><span class='const'>Utils</span><span class='op'>::</span><span class='const'>StackParameterScrubber</span>
    <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -249,9 +267,9 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Sep  4 09:40:55 2015 by
+  Generated on Sat May 14 12:44:53 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.2).
+  0.8.7.6 (ruby-2.2.3).
 </div>
 
   </body>

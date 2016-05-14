@@ -95,7 +95,7 @@
   
     <dt class="r2 last">Defined in:</dt>
     <dd class="r2 last">lib/sfn/callback.rb<span class="defines">,<br />
-  lib/sfn/callback/stack_policy.rb</span>
+  lib/sfn/callback/aws_mfa.rb,<br /> lib/sfn/callback/stack_policy.rb,<br /> lib/sfn/callback/aws_assume_role.rb</span>
 </dd>
   
 </dl>
@@ -114,7 +114,7 @@
 
 </div><div id="subclasses">
   <h2>Direct Known Subclasses</h2>
-  <p class="children"><span class='object_link'><a href="Callback/StackPolicy.html" title="Sfn::Callback::StackPolicy (class)">StackPolicy</a></span></p>
+  <p class="children"><span class='object_link'><a href="Callback/AwsAssumeRole.html" title="Sfn::Callback::AwsAssumeRole (class)">AwsAssumeRole</a></span>, <span class='object_link'><a href="Callback/AwsMfa.html" title="Sfn::Callback::AwsMfa (class)">AwsMfa</a></span>, <span class='object_link'><a href="Callback/StackPolicy.html" title="Sfn::Callback::StackPolicy (class)">StackPolicy</a></span></p>
 </div>
 <h2>Defined Under Namespace</h2>
 <p class="children">
@@ -122,7 +122,7 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Callback/StackPolicy.html" title="Sfn::Callback::StackPolicy (class)">StackPolicy</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Callback/AwsAssumeRole.html" title="Sfn::Callback::AwsAssumeRole (class)">AwsAssumeRole</a></span>, <span class='object_link'><a href="Callback/AwsMfa.html" title="Sfn::Callback::AwsMfa (class)">AwsMfa</a></span>, <span class='object_link'><a href="Callback/StackPolicy.html" title="Sfn::Callback::StackPolicy (class)">StackPolicy</a></span>
     
   
 </p>
@@ -132,6 +132,64 @@
 
   <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
   <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#api-instance_method" title="#api (instance method)">- (Miasma::Models::Orchestration) <strong>api</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Remote API.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#arguments-instance_method" title="#arguments (instance method)">- (Array&lt;String&gt;) <strong>arguments</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>CLI arguments.</p>
+</div></span>
+  
+</li>
+
     
       <li class="public ">
   <span class="summary_signature">
@@ -279,7 +337,7 @@
   
     <li>
       
-        <span class='name'></span>
+        <span class='name'>ui</span>
       
       
         <span class='type'>(<tt>Bogo::Ui</tt>)</span>
@@ -290,7 +348,7 @@
   
     <li>
       
-        <span class='name'>configuration</span>
+        <span class='name'>config</span>
       
       
         <span class='type'>(<tt>Smash</tt>)</span>
@@ -299,7 +357,7 @@
       
         &mdash;
         <div class='inline'>
-<p>hash</p>
+<p>configuration hash</p>
 </div>
       
     </li>
@@ -315,14 +373,14 @@
       
         &mdash;
         <div class='inline'>
-<p>from the CLI</p>
+<p>arguments from the CLI</p>
 </div>
       
     </li>
   
     <li>
       
-        <span class='name'>API</span>
+        <span class='name'>api</span>
       
       
         <span class='type'>(<tt><span class='object_link'><a href="Provider.html" title="Sfn::Provider (class)">Provider</a></span></tt>)</span>
@@ -331,7 +389,7 @@
       
         &mdash;
         <div class='inline'>
-<p>connection</p>
+<p>API connection</p>
 </div>
       
     </li>
@@ -345,15 +403,15 @@
       <pre class="lines">
 
 
-22
-23
-24
-25
-26
-27</pre>
+28
+29
+30
+31
+32
+33</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 22</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 28</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_ui'>ui</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='comma'>,</span> <span class='id identifier rubyid_arguments'>arguments</span><span class='comma'>,</span> <span class='id identifier rubyid_api'>api</span><span class='rparen'>)</span>
   <span class='ivar'>@ui</span> <span class='op'>=</span> <span class='id identifier rubyid_ui'>ui</span>
@@ -374,7 +432,129 @@
       
       <span id=""></span>
       <div class="method_details first">
-  <h3 class="signature first" id="config-instance_method">
+  <h3 class="signature first" id="api-instance_method">
+  
+    - (<tt>Miasma::Models::Orchestration</tt>) <strong>api</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns remote API</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Miasma::Models::Orchestration</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>remote API</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+18
+19
+20</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 18</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_api'>api</span>
+  <span class='ivar'>@api</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="arguments-instance_method">
+  
+    - (<tt>Array&lt;String&gt;</tt>) <strong>arguments</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns CLI arguments</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>CLI arguments</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+16
+17
+18</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 16</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_arguments'>arguments</span>
+  <span class='ivar'>@arguments</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="config-instance_method">
   
     - (<tt>Smash</tt>) <strong>config</strong>  <span class="extras">(readonly)</span>
   
@@ -410,12 +590,12 @@
       <pre class="lines">
 
 
-12
-13
-14</pre>
+14
+15
+16</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 12</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 14</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_config'>config</span>
   <span class='ivar'>@config</span>
@@ -464,12 +644,12 @@
       <pre class="lines">
 
 
-10
-11
-12</pre>
+12
+13
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 10</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ui'>ui</span>
   <span class='ivar'>@ui</span>
@@ -550,21 +730,21 @@
       <pre class="lines">
 
 
-34
-35
-36
-37
-38
-39
 40
 41
 42
 43
 44
-45</pre>
+45
+46
+47
+48
+49
+50
+51</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 34</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/callback.rb', line 40</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run_action'>run_action</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_msg'>msg</span><span class='embexpr_end'>}</span><span class='tstring_content'>... </span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:nonewline</span><span class='rparen'>)</span>
@@ -588,9 +768,9 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Sep  4 09:40:56 2015 by
+  Generated on Sat May 14 12:44:54 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.2).
+  0.8.7.6 (ruby-2.2.3).
 </div>
 
   </body>

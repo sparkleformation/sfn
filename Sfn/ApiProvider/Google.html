@@ -1,0 +1,794 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: Sfn::ApiProvider::Google
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../../';
+  framesUrl = "../../frames.html#!Sfn/ApiProvider/Google.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../../_index.html">Index (G)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../ApiProvider.html" title="Sfn::ApiProvider (module)">ApiProvider</a></span></span>
+     &raquo; 
+    <span class="title">Google</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: Sfn::ApiProvider::Google
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">lib/sfn/api_provider/google.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#extract_current_nested_template_parameters-instance_method" title="#extract_current_nested_template_parameters (instance method)">- (Hash) <strong>extract_current_nested_template_parameters</strong>(stack, stack_name, c_stack) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Extract current parameters from parent template.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#format_nested_stack_results-instance_method" title="#format_nested_stack_results (instance method)">- (Object) <strong>format_nested_stack_results</strong>(*_) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>No formatting required on stack results.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#function_set_parameter%3F-instance_method" title="#function_set_parameter? (instance method)">- (TrueClass, FalseClass) <strong>function_set_parameter?</strong>(val) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Determine if parameter was set via intrinsic function.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#populate_parameters%21-instance_method" title="#populate_parameters! (instance method)">- (Object) <strong>populate_parameters!</strong>(template, opts = {}) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Set parameters into parent resource properites.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#store_template-instance_method" title="#store_template (instance method)">- (Object) <strong>store_template</strong>(*_) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Disable remote template storage.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#template_content-instance_method" title="#template_content (instance method)">- (Hash) <strong>template_content</strong>(thing, *_) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Override template content extraction to disable scrub behavior.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#validate_nesting_bucket%21-instance_method" title="#validate_nesting_bucket! (instance method)">- (Object) <strong>validate_nesting_bucket!</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Override requirement of nesting bucket.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#validate_stack_parameter-instance_method" title="#validate_stack_parameter (instance method)">- (Object) <strong>validate_stack_parameter</strong>(*_) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Disable parameter validate as we can&#39;t adjust them without template
+modifications.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="extract_current_nested_template_parameters-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>extract_current_nested_template_parameters</strong>(stack, stack_name, c_stack) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Extract current parameters from parent template</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>stack</span>
+      
+      
+        <span class='type'>(<tt>SparkleFormation</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>stack_name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>c_stack</span>
+      
+      
+        <span class='type'>(<tt>Miasma::Models::Orchestration::Stack</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 23</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_extract_current_nested_template_parameters'>extract_current_nested_template_parameters</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='comma'>,</span> <span class='id identifier rubyid_stack_name'>stack_name</span><span class='comma'>,</span> <span class='id identifier rubyid_c_stack'>c_stack</span><span class='rparen'>)</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_c_stack'>c_stack</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c_stack'>c_stack</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:parent_stack</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_c_stack'>c_stack</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:parent_stack</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_sparkleish_template'>sparkleish_template</span><span class='lparen'>(</span><span class='symbol'>:remove_wrapper</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span>
+      <span class='symbol'>:resources</span><span class='comma'>,</span> <span class='id identifier rubyid_stack_name'>stack_name</span><span class='comma'>,</span> <span class='symbol'>:properties</span><span class='comma'>,</span> <span class='symbol'>:parameters</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+    <span class='rparen'>)</span>
+  <span class='kw'>elsif</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_val'>val</span> <span class='op'>=</span> <span class='id identifier rubyid_stack'>stack</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span><span class='period'>.</span><span class='id identifier rubyid_resources'>resources</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_name'>stack_name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_properties'>properties</span>
+    <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>?</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='op'>:</span> <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid__dump'>_dump</span>
+  <span class='kw'>else</span>
+    <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="format_nested_stack_results-instance_method">
+  
+    - (<tt>Object</tt>) <strong>format_nested_stack_results</strong>(*_) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>No formatting required on stack results</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+13
+14
+15</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 13</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_format_nested_stack_results'>format_nested_stack_results</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
+  <span class='lbrace'>{</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="function_set_parameter?-instance_method">
+  
+    - (<tt>TrueClass</tt>, <tt>FalseClass</tt>) <strong>function_set_parameter?</strong>(val) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Determine if parameter was set via intrinsic function</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>val</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>TrueClass</tt>, <tt>FalseClass</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+45
+46
+47
+48
+49</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 45</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_function_set_parameter?'>function_set_parameter?</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>$(</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>{{</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="populate_parameters!-instance_method">
+  
+    - (<tt>Object</tt>) <strong>populate_parameters!</strong>(template, opts = {}) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Set parameters into parent resource properites</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 52</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_populate_parameters!'>populate_parameters!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='kw'>super</span>
+  <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_each_pair'>each_pair</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span><span class='period'>.</span><span class='id identifier rubyid_resources'>resources</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_properties'>properties</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span><span class='period'>.</span><span class='id identifier rubyid_resources'>resources</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_properties'>properties</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='lbrace'>{</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="store_template-instance_method">
+  
+    - (<tt>Object</tt>) <strong>store_template</strong>(*_) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Disable remote template storage</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+9
+10</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 9</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_store_template'>store_template</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="template_content-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>template_content</strong>(thing, *_) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Override template content extraction to disable scrub behavior</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>thing</span>
+      
+      
+        <span class='type'>(<tt>SparkleFormation</tt>, <tt>Hash</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+73
+74
+75
+76
+77
+78
+79</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 73</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_template_content'>template_content</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>SparkleFormation</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:sparkle_dump</span><span class='rbracket'>]</span> <span class='op'>?</span> <span class='id identifier rubyid_thing'>thing</span><span class='period'>.</span><span class='id identifier rubyid_sparkle_dump'>sparkle_dump</span> <span class='op'>:</span> <span class='id identifier rubyid_thing'>thing</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_thing'>thing</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="validate_nesting_bucket!-instance_method">
+  
+    - (<tt>Object</tt>) <strong>validate_nesting_bucket!</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Override requirement of nesting bucket</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+65
+66
+67</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 65</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_validate_nesting_bucket!'>validate_nesting_bucket!</span>
+  <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="validate_stack_parameter-instance_method">
+  
+    - (<tt>Object</tt>) <strong>validate_stack_parameter</strong>(*_) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Disable parameter validate as we can&#39;t adjust them without template
+modifications</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+37
+38
+39</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 37</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_validate_stack_parameter'>validate_stack_parameter</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
+  <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Sat May 14 12:44:53 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.2.3).
+</div>
+
+  </body>
+</html>

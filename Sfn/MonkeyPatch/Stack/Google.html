@@ -1,0 +1,534 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: Sfn::MonkeyPatch::Stack::Google
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="../../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../../../';
+  framesUrl = "../../../frames.html#!Sfn/MonkeyPatch/Stack/Google.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../../../_index.html">Index (G)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../../Sfn.html" title="Sfn (module)">Sfn</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../../MonkeyPatch.html" title="Sfn::MonkeyPatch (module)">MonkeyPatch</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Stack.html" title="Sfn::MonkeyPatch::Stack (module)">Stack</a></span></span>
+     &raquo; 
+    <span class="title">Google</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../../../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../../../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: Sfn::MonkeyPatch::Stack::Google
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+    <dt class="r1">Included in:</dt>
+    <dd class="r1"><span class='object_link'><a href="../Stack.html" title="Sfn::MonkeyPatch::Stack (module)">Sfn::MonkeyPatch::Stack</a></span></dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/sfn/monkey_patch/stack/google.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Google specific monkey patch implementations</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Google/PretendStack.html" title="Sfn::MonkeyPatch::Stack::Google::PretendStack (module)">PretendStack</a></span>
+    
+  
+    
+  
+</p>
+
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#nested_stacks_google-instance_method" title="#nested_stacks_google (instance method)">- (Array&lt;Miasma::Models::Orchestration::Stack&gt;) <strong>nested_stacks_google</strong>(recurse = true) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Return all stacks contained within this stack.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#root_parameters_google-instance_method" title="#root_parameters_google (instance method)">- (Hash) <strong>root_parameters_google</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#sparkleish_template_google-instance_method" title="#sparkleish_template_google (instance method)">- (Hash) <strong>sparkleish_template_google</strong>(*args) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Restructured google template.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="nested_stacks_google-instance_method">
+  
+    - (<tt>Array&lt;Miasma::Models::Orchestration::Stack&gt;</tt>) <strong>nested_stacks_google</strong>(recurse = true) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Return all stacks contained within this stack</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>recurse</span>
+      
+      
+        <span class='type'>(<tt>TrueClass</tt>, <tt>FalseClass</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>recurse to fetch <em>all</em> stacks</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Miasma::Models::Orchestration::Stack&gt;</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/monkey_patch/stack/google.rb', line 47</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_nested_stacks_google'>nested_stacks_google</span><span class='lparen'>(</span><span class='id identifier rubyid_recurse'>recurse</span><span class='op'>=</span><span class='kw'>true</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_my_template'>my_template</span> <span class='op'>=</span> <span class='id identifier rubyid_sparkleish_template'>sparkleish_template</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_my_template'>my_template</span><span class='lbracket'>[</span><span class='symbol'>:resources</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_my_template'>my_template</span> <span class='op'>=</span> <span class='id identifier rubyid_my_template'>my_template</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='symbol'>:properties</span><span class='comma'>,</span> <span class='symbol'>:stack</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_n_stacks'>n_stacks</span> <span class='op'>=</span> <span class='id identifier rubyid_my_template'>my_template</span><span class='lbracket'>[</span><span class='symbol'>:resources</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s_name'>s_name</span><span class='comma'>,</span> <span class='id identifier rubyid_content'>content</span><span class='op'>|</span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='lbracket'>[</span><span class='symbol'>:type</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sparkleformation.stack</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_n_stack'>n_stack</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_api'>api</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_n_stack'>n_stack</span><span class='period'>.</span><span class='id identifier rubyid_extend'>extend</span> <span class='const'>PretendStack</span>
+      <span class='id identifier rubyid_n_layout'>n_layout</span> <span class='op'>=</span> <span class='id identifier rubyid_custom'>custom</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:layout</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_detect'>detect</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_r'>r</span><span class='op'>|</span> <span class='id identifier rubyid_r'>r</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_name'>name</span><span class='rbrace'>}</span>
+      <span class='id identifier rubyid_n_layout'>n_layout</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_n_layout'>n_layout</span> <span class='op'>||</span> <span class='id identifier rubyid_custom'>custom</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:layout</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_detect'>detect</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_r'>r</span><span class='op'>|</span> <span class='id identifier rubyid_r'>r</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_s_name'>s_name</span><span class='rbrace'>}</span> <span class='op'>||</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+      <span class='id identifier rubyid_n_stack'>n_stack</span><span class='period'>.</span><span class='id identifier rubyid_load_data'>load_data</span><span class='lparen'>(</span>
+        <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_s_name'>s_name</span><span class='comma'>,</span>
+        <span class='symbol'>:id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_s_name'>s_name</span><span class='comma'>,</span>
+        <span class='symbol'>:template</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:properties</span><span class='comma'>,</span> <span class='symbol'>:stack</span><span class='rparen'>)</span><span class='comma'>,</span>
+        <span class='symbol'>:outputs</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_n_layout'>n_layout</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>outputs</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_o_val'>o_val</span><span class='op'>|</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='symbol'>:key</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_o_val'>o_val</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:value</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_o_val'>o_val</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>finalValue</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='rbrace'>}</span><span class='comma'>,</span>
+        <span class='symbol'>:custom</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span>
+          <span class='symbol'>:resources</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_resources'>resources</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:attributes</span><span class='rparen'>)</span><span class='comma'>,</span>
+          <span class='symbol'>:layout</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_n_layout'>n_layout</span>
+        <span class='rbrace'>}</span>
+      <span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_valid_state'>valid_state</span>
+      <span class='id identifier rubyid_n_stack'>n_stack</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:logical_id</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_s_name'>s_name</span>
+      <span class='id identifier rubyid_n_stack'>n_stack</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:parent_stack</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>self</span>
+      <span class='id identifier rubyid_n_stack'>n_stack</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_recurse'>recurse</span><span class='rparen'>)</span>
+    <span class='lparen'>(</span><span class='id identifier rubyid_n_stacks'>n_stacks</span> <span class='op'>+</span> <span class='id identifier rubyid_n_stacks'>n_stacks</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:nested_stacks</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_n_stacks'>n_stacks</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="root_parameters_google-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>root_parameters_google</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+122
+123
+124</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/monkey_patch/stack/google.rb', line 122</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_root_parameters_google'>root_parameters_google</span>
+  <span class='id identifier rubyid_sparkleish_template'>sparkleish_template</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='symbol'>:properties</span><span class='comma'>,</span> <span class='symbol'>:parameters</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="sparkleish_template_google-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>sparkleish_template_google</strong>(*args) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns restructured google template</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>restructured google template</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/monkey_patch/stack/google.rb', line 81</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_sparkleish_template_google'>sparkleish_template_google</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_copy_template'>copy_template</span> <span class='op'>=</span> <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_to_smash'>to_smash</span>
+  <span class='id identifier rubyid_deref'>deref</span> <span class='op'>=</span> <span class='id identifier rubyid_lambda'>lambda</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_template'>template</span><span class='op'>|</span>
+    <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_to_smash'>to_smash</span>
+    <span class='lparen'>(</span><span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_t_resource'>t_resource</span><span class='op'>|</span>
+      <span class='id identifier rubyid_t_name'>t_name</span> <span class='op'>=</span> <span class='id identifier rubyid_t_resource'>t_resource</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='symbol'>:name</span><span class='rparen'>)</span>
+      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_t_resource'>t_resource</span><span class='lbracket'>[</span><span class='symbol'>:type</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.jinja</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_schema'>schema</span> <span class='op'>=</span> <span class='id identifier rubyid_copy_template'>copy_template</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:config</span><span class='comma'>,</span> <span class='symbol'>:content</span><span class='comma'>,</span> <span class='symbol'>:imports</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_t_resource'>t_resource</span><span class='lbracket'>[</span><span class='symbol'>:type</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>.schema</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_schema_content'>schema_content</span> <span class='op'>=</span> <span class='id identifier rubyid_copy_template'>copy_template</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:imports</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_detect'>detect</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s_item'>s_item</span><span class='op'>|</span>
+          <span class='id identifier rubyid_s_item'>s_item</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_schema'>schema</span>
+        <span class='kw'>end</span>
+        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_schema_content'>schema_content</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_t_resource'>t_resource</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='comma'>,</span> <span class='id identifier rubyid_schema_content'>schema_content</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:content</span><span class='comma'>,</span> <span class='symbol'>:properties</span><span class='rparen'>)</span><span class='rparen'>)</span>
+        <span class='kw'>end</span>
+        <span class='id identifier rubyid_n_template'>n_template</span> <span class='op'>=</span> <span class='id identifier rubyid_copy_template'>copy_template</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:imports</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_detect'>detect</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s_item'>s_item</span><span class='op'>|</span>
+          <span class='id identifier rubyid_s_item'>s_item</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_t_resource'>t_resource</span><span class='lbracket'>[</span><span class='symbol'>:type</span><span class='rbracket'>]</span>
+        <span class='kw'>end</span>
+        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_n_template'>n_template</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_t_resource'>t_resource</span><span class='lbracket'>[</span><span class='symbol'>:type</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sparkleformation.stack</span><span class='tstring_end'>&#39;</span></span>
+          <span class='id identifier rubyid_current_properties'>current_properties</span> <span class='op'>=</span> <span class='id identifier rubyid_t_resource'>t_resource</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='symbol'>:properties</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_t_resource'>t_resource</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:properties</span><span class='comma'>,</span> <span class='symbol'>:parameters</span><span class='comma'>,</span> <span class='id identifier rubyid_current_properties'>current_properties</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_current_properties'>current_properties</span>
+          <span class='id identifier rubyid_t_resource'>t_resource</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:properties</span><span class='comma'>,</span> <span class='symbol'>:stack</span><span class='comma'>,</span> <span class='id identifier rubyid_deref'>deref</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_n_template'>n_template</span><span class='lbracket'>[</span><span class='symbol'>:content</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='rparen'>)</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+      <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='comma'>,</span> <span class='id identifier rubyid_t_name'>t_name</span><span class='comma'>,</span> <span class='id identifier rubyid_t_resource'>t_resource</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_s_template'>s_template</span> <span class='op'>=</span> <span class='id identifier rubyid_deref'>deref</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='symbol'>:resources</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_copy_template'>copy_template</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:config</span><span class='comma'>,</span> <span class='symbol'>:content</span><span class='comma'>,</span> <span class='symbol'>:resources</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_s_template'>s_template</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_to_smash'>to_smash</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_layout'>layout</span> <span class='op'>=</span> <span class='id identifier rubyid_custom'>custom</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:layout</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_smash'>to_smash</span>
+    <span class='lparen'>(</span><span class='id identifier rubyid_layout'>layout</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_l_resource'>l_resource</span><span class='op'>|</span>
+      <span class='id identifier rubyid_layout'>layout</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='comma'>,</span> <span class='id identifier rubyid_l_resource'>l_resource</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='symbol'>:name</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_l_resource'>l_resource</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:remove_wrapper</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_s_template'>s_template</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='symbol'>:properties</span><span class='comma'>,</span> <span class='symbol'>:stack</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_s_template'>s_template</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Sat May 14 12:44:53 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.2.3).
+</div>
+
+  </body>
+</html>

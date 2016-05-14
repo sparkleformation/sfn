@@ -1,0 +1,412 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: Sfn::MonkeyPatch::Stack::Google::PretendStack
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="../../../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../../../../';
+  framesUrl = "../../../../frames.html#!Sfn/MonkeyPatch/Stack/Google/PretendStack.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../../../../_index.html">Index (P)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../../../Sfn.html" title="Sfn (module)">Sfn</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../../../MonkeyPatch.html" title="Sfn::MonkeyPatch (module)">MonkeyPatch</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../../Stack.html" title="Sfn::MonkeyPatch::Stack (module)">Stack</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Google.html" title="Sfn::MonkeyPatch::Stack::Google (module)">Google</a></span></span>
+     &raquo; 
+    <span class="title">PretendStack</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../../../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../../../../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../../../../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: Sfn::MonkeyPatch::Stack::Google::PretendStack
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">lib/sfn/monkey_patch/stack/google.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Helper module to allow nested stack behavior to function as expected
+internally within sfn</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#events-instance_method" title="#events (instance method)">- (Object) <strong>events</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sub-stacks never provide events.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#perform_template_load-instance_method" title="#perform_template_load (instance method)">- (Object) <strong>perform_template_load</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>disable template load.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reload-instance_method" title="#reload (instance method)">- (Object) <strong>reload</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>disable reload.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#resources-instance_method" title="#resources (instance method)">- (Object) <strong>resources</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>only show resources associated to this stack.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="events-instance_method">
+  
+    - (<tt>Object</tt>) <strong>events</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Sub-stacks never provide events</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38
+39
+40</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/monkey_patch/stack/google.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_events'>events</span>
+  <span class='id identifier rubyid_collection'>collection</span> <span class='op'>=</span> <span class='const'>Miasma</span><span class='op'>::</span><span class='const'>Models</span><span class='op'>::</span><span class='const'>Orchestration</span><span class='op'>::</span><span class='const'>Stack</span><span class='op'>::</span><span class='const'>Events</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_collection'>collection</span><span class='period'>.</span><span class='id identifier rubyid_define_singleton_method'>define_singleton_method</span><span class='lparen'>(</span><span class='symbol'>:perform_population</span><span class='rparen'>)</span><span class='lbrace'>{</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_collection'>collection</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="perform_template_load-instance_method">
+  
+    - (<tt>Object</tt>) <strong>perform_template_load</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>disable template load</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+19
+20
+21</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/monkey_patch/stack/google.rb', line 19</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_perform_template_load'>perform_template_load</span>
+  <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reload-instance_method">
+  
+    - (<tt>Object</tt>) <strong>reload</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>disable reload</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+14
+15
+16</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/monkey_patch/stack/google.rb', line 14</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reload'>reload</span>
+  <span class='kw'>self</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="resources-instance_method">
+  
+    - (<tt>Object</tt>) <strong>resources</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>only show resources associated to this stack</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/monkey_patch/stack/google.rb', line 24</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_resources'>resources</span>
+  <span class='id identifier rubyid_collection'>collection</span> <span class='op'>=</span> <span class='const'>Miasma</span><span class='op'>::</span><span class='const'>Models</span><span class='op'>::</span><span class='const'>Orchestration</span><span class='op'>::</span><span class='const'>Stack</span><span class='op'>::</span><span class='const'>Resources</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_collection'>collection</span><span class='period'>.</span><span class='id identifier rubyid_define_singleton_method'>define_singleton_method</span><span class='lparen'>(</span><span class='symbol'>:perform_population</span><span class='rparen'>)</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_valid'>valid</span> <span class='op'>=</span> <span class='id identifier rubyid_stack'>stack</span><span class='period'>.</span><span class='id identifier rubyid_sparkleish_template'>sparkleish_template</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:resources</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span>
+    <span class='id identifier rubyid_stack'>stack</span><span class='period'>.</span><span class='id identifier rubyid_custom'>custom</span><span class='lbracket'>[</span><span class='symbol'>:resources</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_find_all'>find_all</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_r'>r</span><span class='op'>|</span> <span class='id identifier rubyid_valid'>valid</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_r'>r</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_attrs'>attrs</span><span class='op'>|</span>
+      <span class='const'>Miasma</span><span class='op'>::</span><span class='const'>Models</span><span class='op'>::</span><span class='const'>Orchestration</span><span class='op'>::</span><span class='const'>Stack</span><span class='op'>::</span><span class='const'>Resource</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='comma'>,</span> <span class='id identifier rubyid_attrs'>attrs</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_valid_state'>valid_state</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_collection'>collection</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Sat May 14 12:44:53 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.2.3).
+</div>
+
+  </body>
+</html>

@@ -2229,7 +2229,7 @@
       <span class='kw'>yield</span>
     <span class='kw'>end</span>
   <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redis::Lock::LockTimeout</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Timeout</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_raise'>raise</span> <span class='kw'>if</span> <span class='id identifier rubyid_raise_on_locked'>raise_on_locked</span>
     <span class='kw'>else</span>
       <span class='id identifier rubyid_raise'>raise</span>
@@ -2390,9 +2390,9 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Sep  4 09:40:55 2015 by
+  Generated on Sat May 14 12:44:54 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.2).
+  0.8.7.6 (ruby-2.2.3).
 </div>
 
   </body>

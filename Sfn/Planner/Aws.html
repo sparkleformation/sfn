@@ -1,0 +1,527 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Sfn::Planner::Aws
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../../';
+  framesUrl = "../../frames.html#!Sfn/Planner/Aws.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../../_index.html">Index (A)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Planner.html" title="Sfn::Planner (class)">Planner</a></span></span>
+     &raquo; 
+    <span class="title">Aws</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: Sfn::Planner::Aws
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName"><span class='object_link'><a href="../Planner.html" title="Sfn::Planner (class)">Sfn::Planner</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="../Planner.html" title="Sfn::Planner (class)">Sfn::Planner</a></span></li>
+          
+            <li class="next">Sfn::Planner::Aws</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/sfn/planner/aws.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>AWS specific planner</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Aws/Translator.html" title="Sfn::Planner::Aws::Translator (class)">Translator</a></span>
+    
+  
+</p>
+
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="REPLACE_ON_CFN_INIT_UPDATE-constant" class="">REPLACE_ON_CFN_INIT_UPDATE =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>Resources that will be replaced on metadata init updates</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbracket'>[</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AWS::AutoScaling::LaunchConfiguration</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AWS::EC2::Instance</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbracket'>]</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+  
+  
+  <h3 class="inherited">Constants inherited
+     from <span class='object_link'><a href="../Planner.html" title="Sfn::Planner (class)">Sfn::Planner</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Planner.html#RUNTIME_MODIFIED-constant" title="Sfn::Planner::RUNTIME_MODIFIED (constant)">RUNTIME_MODIFIED</a></span></p>
+
+
+  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#translators-instance_method" title="#translators (instance method)">- (Smash) <strong>translators</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Initialized translators.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+  
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="../Planner.html" title="Sfn::Planner (class)">Sfn::Planner</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Planner.html#arguments-instance_method" title="Sfn::Planner#arguments (method)">#arguments</a></span>, <span class='object_link'><a href="../Planner.html#config-instance_method" title="Sfn::Planner#config (method)">#config</a></span>, <span class='object_link'><a href="../Planner.html#options-instance_method" title="Sfn::Planner#options (method)">#options</a></span>, <span class='object_link'><a href="../Planner.html#origin_stack-instance_method" title="Sfn::Planner#origin_stack (method)">#origin_stack</a></span>, <span class='object_link'><a href="../Planner.html#ui-instance_method" title="Sfn::Planner#ui (method)">#ui</a></span></p>
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#generate_plan-instance_method" title="#generate_plan (instance method)">- (Hash) <strong>generate_plan</strong>(template, parameters) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Generate update report.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (Aws) <strong>initialize</strong>(*_) </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Simple overload to load in aws resource set from sparkleformation.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  <div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="Sfn::Planner::Aws (class)">Aws</a></span></tt>) <strong>initialize</strong>(*_) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Simple overload to load in aws resource set from sparkleformation</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+124
+125
+126
+127
+128</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/planner/aws.rb', line 124</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
+  <span class='kw'>super</span>
+  <span class='const'>SfnAws</span><span class='period'>.</span><span class='id identifier rubyid_load!'>load!</span>
+  <span class='ivar'>@translators</span> <span class='op'>=</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id="translators=-instance_method"></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="translators-instance_method">
+  
+    - (<tt>Smash</tt>) <strong>translators</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns initialized translators</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Smash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>initialized translators</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+120
+121
+122</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/planner/aws.rb', line 120</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_translators'>translators</span>
+  <span class='ivar'>@translators</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="generate_plan-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>generate_plan</strong>(template, parameters) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Generate update report</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>template</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>updated template</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>parameters</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>runtime parameters for update</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>report</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/planner/aws.rb', line 136</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_generate_plan'>generate_plan</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='comma'>,</span> <span class='id identifier rubyid_parameters'>parameters</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_parameters'>parameters</span> <span class='op'>=</span> <span class='const'>Smash</span><span class='lbracket'>[</span><span class='id identifier rubyid_parameters'>parameters</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span> <span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
+    <span class='symbol'>:stacks</span> <span class='op'>=&gt;</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
+      <span class='id identifier rubyid_origin_stack'>origin_stack</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_plan_stack'>plan_stack</span><span class='lparen'>(</span>
+        <span class='id identifier rubyid_origin_stack'>origin_stack</span><span class='comma'>,</span>
+        <span class='id identifier rubyid_template'>template</span><span class='comma'>,</span>
+        <span class='id identifier rubyid_parameters'>parameters</span>
+      <span class='rparen'>)</span>
+    <span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='symbol'>:added</span> <span class='op'>=&gt;</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='comma'>,</span>
+    <span class='symbol'>:removed</span> <span class='op'>=&gt;</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='comma'>,</span>
+    <span class='symbol'>:replace</span> <span class='op'>=&gt;</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='comma'>,</span>
+    <span class='symbol'>:interrupt</span> <span class='op'>=&gt;</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='comma'>,</span>
+    <span class='symbol'>:unavailable</span> <span class='op'>=&gt;</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='comma'>,</span>
+    <span class='symbol'>:unknown</span> <span class='op'>=&gt;</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='rparen'>)</span>
+  <span class='id identifier rubyid_result'>result</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Sat May 14 12:44:54 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.2.3).
+</div>
+
+  </body>
+</html>

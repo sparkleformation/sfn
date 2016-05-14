@@ -92,12 +92,16 @@
     
   
     
+      <dt class="r2">Includes:</dt>
+      <dd class="r2"><span class='object_link'><a href="CommandModule/Callbacks.html" title="Sfn::CommandModule::Callbacks (module)">Sfn::CommandModule::Callbacks</a></span></dd>
+      
+    
   
   
   
-    <dt class="r2 last">Defined in:</dt>
-    <dd class="r2 last">lib/sfn/command.rb<span class="defines">,<br />
-  lib/sfn/command/list.rb,<br /> lib/sfn/command/import.rb,<br /> lib/sfn/command/update.rb,<br /> lib/sfn/command/create.rb,<br /> lib/sfn/command/events.rb,<br /> lib/sfn/command/export.rb,<br /> lib/sfn/command/inspect.rb,<br /> lib/sfn/command/destroy.rb,<br /> lib/sfn/command/promote.rb,<br /> lib/sfn/command/validate.rb,<br /> lib/sfn/command/describe.rb</span>
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">lib/sfn/command.rb<span class="defines">,<br />
+  lib/sfn/command/list.rb,<br /> lib/sfn/command/conf.rb,<br /> lib/sfn/command/init.rb,<br /> lib/sfn/command/diff.rb,<br /> lib/sfn/command/print.rb,<br /> lib/sfn/command/graph.rb,<br /> lib/sfn/command/events.rb,<br /> lib/sfn/command/create.rb,<br /> lib/sfn/command/export.rb,<br /> lib/sfn/command/update.rb,<br /> lib/sfn/command/import.rb,<br /> lib/sfn/command/inspect.rb,<br /> lib/sfn/command/promote.rb,<br /> lib/sfn/command/destroy.rb,<br /> lib/sfn/command/describe.rb,<br /> lib/sfn/command/validate.rb</span>
 </dd>
   
 </dl>
@@ -105,7 +109,7 @@
 
 <div id="subclasses">
   <h2>Direct Known Subclasses</h2>
-  <p class="children"><span class='object_link'><a href="Command/Create.html" title="Sfn::Command::Create (class)">Create</a></span>, <span class='object_link'><a href="Command/Describe.html" title="Sfn::Command::Describe (class)">Describe</a></span>, <span class='object_link'><a href="Command/Destroy.html" title="Sfn::Command::Destroy (class)">Destroy</a></span>, <span class='object_link'><a href="Command/Events.html" title="Sfn::Command::Events (class)">Events</a></span>, <span class='object_link'><a href="Command/Export.html" title="Sfn::Command::Export (class)">Export</a></span>, <span class='object_link'><a href="Command/Import.html" title="Sfn::Command::Import (class)">Import</a></span>, <span class='object_link'><a href="Command/Inspect.html" title="Sfn::Command::Inspect (class)">Inspect</a></span>, <span class='object_link'><a href="Command/List.html" title="Sfn::Command::List (class)">List</a></span>, <span class='object_link'><a href="Command/Promote.html" title="Sfn::Command::Promote (class)">Promote</a></span>, <span class='object_link'><a href="Command/Update.html" title="Sfn::Command::Update (class)">Update</a></span>, <span class='object_link'><a href="Command/Validate.html" title="Sfn::Command::Validate (class)">Validate</a></span></p>
+  <p class="children"><span class='object_link'><a href="Command/Conf.html" title="Sfn::Command::Conf (class)">Conf</a></span>, <span class='object_link'><a href="Command/Create.html" title="Sfn::Command::Create (class)">Create</a></span>, <span class='object_link'><a href="Command/Describe.html" title="Sfn::Command::Describe (class)">Describe</a></span>, <span class='object_link'><a href="Command/Destroy.html" title="Sfn::Command::Destroy (class)">Destroy</a></span>, <span class='object_link'><a href="Command/Diff.html" title="Sfn::Command::Diff (class)">Diff</a></span>, <span class='object_link'><a href="Command/Events.html" title="Sfn::Command::Events (class)">Events</a></span>, <span class='object_link'><a href="Command/Export.html" title="Sfn::Command::Export (class)">Export</a></span>, <span class='object_link'><a href="Command/Graph.html" title="Sfn::Command::Graph (class)">Graph</a></span>, <span class='object_link'><a href="Command/Import.html" title="Sfn::Command::Import (class)">Import</a></span>, <span class='object_link'><a href="Command/Init.html" title="Sfn::Command::Init (class)">Init</a></span>, <span class='object_link'><a href="Command/Inspect.html" title="Sfn::Command::Inspect (class)">Inspect</a></span>, <span class='object_link'><a href="Command/List.html" title="Sfn::Command::List (class)">List</a></span>, <span class='object_link'><a href="Command/Print.html" title="Sfn::Command::Print (class)">Print</a></span>, <span class='object_link'><a href="Command/Promote.html" title="Sfn::Command::Promote (class)">Promote</a></span>, <span class='object_link'><a href="Command/Update.html" title="Sfn::Command::Update (class)">Update</a></span>, <span class='object_link'><a href="Command/Validate.html" title="Sfn::Command::Validate (class)">Validate</a></span></p>
 </div>
 <h2>Defined Under Namespace</h2>
 <p class="children">
@@ -113,10 +117,56 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Command/Create.html" title="Sfn::Command::Create (class)">Create</a></span>, <span class='object_link'><a href="Command/Describe.html" title="Sfn::Command::Describe (class)">Describe</a></span>, <span class='object_link'><a href="Command/Destroy.html" title="Sfn::Command::Destroy (class)">Destroy</a></span>, <span class='object_link'><a href="Command/Events.html" title="Sfn::Command::Events (class)">Events</a></span>, <span class='object_link'><a href="Command/Export.html" title="Sfn::Command::Export (class)">Export</a></span>, <span class='object_link'><a href="Command/Import.html" title="Sfn::Command::Import (class)">Import</a></span>, <span class='object_link'><a href="Command/Inspect.html" title="Sfn::Command::Inspect (class)">Inspect</a></span>, <span class='object_link'><a href="Command/List.html" title="Sfn::Command::List (class)">List</a></span>, <span class='object_link'><a href="Command/Promote.html" title="Sfn::Command::Promote (class)">Promote</a></span>, <span class='object_link'><a href="Command/Update.html" title="Sfn::Command::Update (class)">Update</a></span>, <span class='object_link'><a href="Command/Validate.html" title="Sfn::Command::Validate (class)">Validate</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Command/Conf.html" title="Sfn::Command::Conf (class)">Conf</a></span>, <span class='object_link'><a href="Command/Create.html" title="Sfn::Command::Create (class)">Create</a></span>, <span class='object_link'><a href="Command/Describe.html" title="Sfn::Command::Describe (class)">Describe</a></span>, <span class='object_link'><a href="Command/Destroy.html" title="Sfn::Command::Destroy (class)">Destroy</a></span>, <span class='object_link'><a href="Command/Diff.html" title="Sfn::Command::Diff (class)">Diff</a></span>, <span class='object_link'><a href="Command/Events.html" title="Sfn::Command::Events (class)">Events</a></span>, <span class='object_link'><a href="Command/Export.html" title="Sfn::Command::Export (class)">Export</a></span>, <span class='object_link'><a href="Command/Graph.html" title="Sfn::Command::Graph (class)">Graph</a></span>, <span class='object_link'><a href="Command/Import.html" title="Sfn::Command::Import (class)">Import</a></span>, <span class='object_link'><a href="Command/Init.html" title="Sfn::Command::Init (class)">Init</a></span>, <span class='object_link'><a href="Command/Inspect.html" title="Sfn::Command::Inspect (class)">Inspect</a></span>, <span class='object_link'><a href="Command/List.html" title="Sfn::Command::List (class)">List</a></span>, <span class='object_link'><a href="Command/Print.html" title="Sfn::Command::Print (class)">Print</a></span>, <span class='object_link'><a href="Command/Promote.html" title="Sfn::Command::Promote (class)">Promote</a></span>, <span class='object_link'><a href="Command/Update.html" title="Sfn::Command::Update (class)">Update</a></span>, <span class='object_link'><a href="Command/Validate.html" title="Sfn::Command::Validate (class)">Validate</a></span>
     
   
 </p>
+
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="CONFIG_BASE_NAME-constant" class="">CONFIG_BASE_NAME =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>Base name of configuration file</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.sfn</span><span class='tstring_end'>&#39;</span></span></pre></dd>
+      
+        <dt id="VALID_CONFIG_EXTENSIONS-constant" class="">VALID_CONFIG_EXTENSIONS =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>Supported configuration file extensions</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbracket'>[</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.rb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.json</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.yaml</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.yml</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.xml</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbracket'>]</span></pre></dd>
+      
+    </dl>
+  
 
 
 
@@ -184,6 +234,18 @@
   
 
 
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="CommandModule/Callbacks.html" title="Sfn::CommandModule::Callbacks (module)">Sfn::CommandModule::Callbacks</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="CommandModule/Callbacks.html#api_action%21-instance_method" title="Sfn::CommandModule::Callbacks#api_action! (method)">#api_action!</a></span>, <span class='object_link'><a href="CommandModule/Callbacks.html#callbacks_for-instance_method" title="Sfn::CommandModule::Callbacks#callbacks_for (method)">#callbacks_for</a></span>, <span class='object_link'><a href="CommandModule/Callbacks.html#run_callbacks_for-instance_method" title="Sfn::CommandModule::Callbacks#run_callbacks_for (method)">#run_callbacks_for</a></span></p>
+
+  
   <div id="constructor_details" class="method_details_list">
   <h2>Constructor Details</h2>
   
@@ -213,21 +275,33 @@
       <pre class="lines">
 
 
-20
-21
-22
-23
-24
-25</pre>
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command.rb', line 20</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command.rb', line 40</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_cli_opts'>cli_opts</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_cli_opts'>cli_opts</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>config</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_discover_config'>discover_config</span><span class='lparen'>(</span><span class='id identifier rubyid_cli_opts'>cli_opts</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
+  <span class='kw'>unless</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>DEBUG</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>DEBUG</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>true</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_cli_opts'>cli_opts</span><span class='lbracket'>[</span><span class='symbol'>:debug</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_cli_opts'>cli_opts</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_load_api_provider_extensions!'>load_api_provider_extensions!</span>
+  <span class='id identifier rubyid_run_callbacks_for'>run_callbacks_for</span><span class='lparen'>(</span><span class='symbol'>:after_config</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_run_callbacks_for'>run_callbacks_for</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>after_config_</span><span class='embexpr_beg'>#{</span><span class='const'>Bogo</span><span class='op'>::</span><span class='const'>Utility</span><span class='period'>.</span><span class='id identifier rubyid_snake'>snake</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>::</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -278,14 +352,14 @@
       <pre class="lines">
 
 
-28
-29
-30
-31
-32</pre>
+54
+55
+56
+57
+58</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command.rb', line 28</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command.rb', line 54</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_config'>config</span>
   <span class='id identifier rubyid_memoize'>memoize</span><span class='lparen'>(</span><span class='symbol'>:config</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -302,9 +376,9 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Sep  4 09:40:56 2015 by
+  Generated on Sat May 14 12:44:54 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.2).
+  0.8.7.6 (ruby-2.2.3).
 </div>
 
   </body>

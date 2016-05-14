@@ -1,0 +1,509 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Sfn::Command::Conf
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../../';
+  framesUrl = "../../frames.html#!Sfn/Command/Conf.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../../_index.html">Index (C)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Command.html" title="Sfn::Command (class)">Command</a></span></span>
+     &raquo; 
+    <span class="title">Conf</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: Sfn::Command::Conf
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName"><span class='object_link'><a href="../Command.html" title="Sfn::Command (class)">Sfn::Command</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Bogo::Cli::Command</li>
+          
+            <li class="next"><span class='object_link'><a href="../Command.html" title="Sfn::Command (class)">Sfn::Command</a></span></li>
+          
+            <li class="next">Sfn::Command::Conf</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/sfn/command/conf.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Config command</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="SFN_CONFIG_CONTENTS-constant" class="">SFN_CONFIG_CONTENTS =
+          
+        </dt>
+        <dd><pre class="code"><span class='heredoc_beg'>&lt;&lt;-EOF</span>
+<span class='tstring_content'># This is an auto-generated configuration file for
+# the sfn CLI. To view all available configuration
+# options, please see:
+# http://www.sparkleformation.io/docs/sfn/configuration.html
+Configuration.new do
+  #   Set style of stack nesting
+  apply_nesting &#39;deep&#39;
+  #   Enable processing of SparkleFormation templates
+  processing true
+  #   Provider specific options used when creating
+  #   new stacks. Options defined here are AWS specific.
+  options do
+    on_failure &#39;nothing&#39;
+    notification_topics []
+    capabilities [&#39;CAPABILITY_IAM&#39;]
+    tags do
+      creator ENV[&#39;USER&#39;]
+    end
+  end
+  #   Name of bucket in object store to hold nested
+  #   stack templates
+  # nesting_bucket &#39;BUCKET_NAME&#39;
+  #   Prefix used on generated template path prior to storage
+  #   in the object store
+  # nesting_prefix &#39;nested-templates&#39;
+  #   Remote provider credentials
+  credentials do
+    #  Remote provider name (:aws, :azure, :google, :open_stack, :rackspace)
+    provider :aws
+    #  AWS credentials information
+    aws_access_key_id ENV[&#39;AWS_ACCESS_KEY_ID&#39;]
+    aws_secret_access_key ENV[&#39;AWS_SECRET_ACCESS_KEY&#39;]
+    aws_region ENV[&#39;AWS_REGION&#39;]
+    aws_bucket_region ENV[&#39;AWS_REGION&#39;]
+    # aws_sts_role_arn ENV[&#39;AWS_STS_ROLE_ARN&#39;]
+    #  Eucalyptus related additions
+    # api_endpoint ENV[&#39;EUCA_ENDPOINT&#39;]
+    # euca_compat &#39;path&#39;
+    # ssl_enabled false
+    #  Azure credentials information
+    azure_tenant_id ENV[&#39;AZURE_TENANT_ID&#39;]
+    azure_client_id ENV[&#39;AZURE_CLIENT_ID&#39;]
+    azure_subscription_id ENV[&#39;AZURE_SUBSCRIPTION_ID&#39;]
+    azure_client_secret ENV[&#39;AZURE_CLIENT_SECRET&#39;]
+    azure_region ENV[&#39;AZURE_REGION&#39;]
+    azure_blob_account_name ENV[&#39;AZURE_BLOB_ACCOUNT_NAME&#39;]
+    azure_blob_secret_key ENV[&#39;AZURE_BLOB_SECRET_KEY&#39;]
+    #  Defaults to &quot;miasma-orchestration-templates&quot;
+    azure_root_orchestration_container ENV[&#39;AZURE_ROOT_ORCHESTRATION_CONTAINER&#39;]
+    #  OpenStack credentials information
+    open_stack_identity_url ENV[&#39;OPENSTACK_IDENTITY_URL&#39;]
+    open_stack_username ENV[&#39;OPENSTACK_USERNAME&#39;]
+    open_stack_user_id ENV[&#39;OPENSTACK_USER_ID&#39;]
+    open_stack_password ENV[&#39;OPENSTACK_PASSWORD&#39;]
+    open_stack_token ENV[&#39;OPENSTACK_TOKEN&#39;]
+    open_stack_region ENV[&#39;OPENSTACK_REGION&#39;]
+    open_stack_tenant_name ENV[&#39;OPENSTACK_TENANT_NAME&#39;]
+    open_stack_domain ENV[&#39;OPENSTACK_DOMAIN&#39;]
+    open_stack_project ENV[&#39;OPENSTACK_PROJECT&#39;]
+    #  Rackspace credentials information
+    rackspace_api_key ENV[&#39;RACKSPACE_API_KEY&#39;]
+    rackspace_username ENV[&#39;RACKSPACE_USERNAME&#39;]
+    rackspace_region ENV[&#39;RACKSPACE_REGION&#39;]
+    #  Google Cloud Deployment Manager credentials
+    google_service_account_email ENV[&#39;GOOGLE_SERVICE_ACCOUNT_EMAIL&#39;]
+    google_service_account_private_key ENV[&#39;GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY&#39;]
+    google_project ENV[&#39;GOOGLE_PROJECT&#39;]
+  end
+end
+</span><span class='heredoc_end'>EOF</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+  
+  
+  <h3 class="inherited">Constants inherited
+     from <span class='object_link'><a href="../Command.html" title="Sfn::Command (class)">Sfn::Command</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Command.html#CONFIG_BASE_NAME-constant" title="Sfn::Command::CONFIG_BASE_NAME (constant)">CONFIG_BASE_NAME</a></span>, <span class='object_link'><a href="../Command.html#VALID_CONFIG_EXTENSIONS-constant" title="Sfn::Command::VALID_CONFIG_EXTENSIONS (constant)">VALID_CONFIG_EXTENSIONS</a></span></p>
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#execute%21-instance_method" title="#execute! (instance method)">- (Object) <strong>execute!</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Run the list command.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#format_value-instance_method" title="#format_value (instance method)">- (Object) <strong>format_value</strong>(value, indent = &#39;&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#generate_config%21-instance_method" title="#generate_config! (instance method)">- (Object) <strong>generate_config!</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="../Command.html" title="Sfn::Command (class)">Sfn::Command</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Command.html#config-instance_method" title="Sfn::Command#config (method)">#config</a></span>, <span class='object_link'><a href="../Command.html#initialize-instance_method" title="Sfn::Command#initialize (method)">#initialize</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../CommandModule/Callbacks.html" title="Sfn::CommandModule::Callbacks (module)">Sfn::CommandModule::Callbacks</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../CommandModule/Callbacks.html#api_action%21-instance_method" title="Sfn::CommandModule::Callbacks#api_action! (method)">#api_action!</a></span>, <span class='object_link'><a href="../CommandModule/Callbacks.html#callbacks_for-instance_method" title="Sfn::CommandModule::Callbacks#callbacks_for (method)">#callbacks_for</a></span>, <span class='object_link'><a href="../CommandModule/Callbacks.html#run_callbacks_for-instance_method" title="Sfn::CommandModule::Callbacks#run_callbacks_for (method)">#run_callbacks_for</a></span></p>
+
+  
+  <div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <p class="notice">This class inherits a constructor from <span class='object_link'><a href="../Command.html#initialize-instance_method" title="Sfn::Command#initialize (method)">Sfn::Command</a></span></p>
+  
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="execute!-instance_method">
+  
+    - (<tt>Object</tt>) <strong>execute!</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Run the list command</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/conf.rb', line 9</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_execute!'>execute!</span>
+  <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Current configuration state:</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='const'>Config</span><span class='op'>::</span><span class='const'>Conf</span><span class='period'>.</span><span class='id identifier rubyid_attributes'>attributes</span><span class='period'>.</span><span class='id identifier rubyid_sort_by'>sort_by</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:first</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='op'>|</span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_has_key?'>has_key?</span><span class='lparen'>(</span><span class='id identifier rubyid_k'>k</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_print'>print</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='comma'>,</span> <span class='symbol'>:green</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_format_value'>format_value</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:generate</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Generating .sfn configuration file..</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_generate_config!'>generate_config!</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Generation of .sfn configuration file </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>complete!</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:green</span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="format_value-instance_method">
+  
+    - (<tt>Object</tt>) <strong>format_value</strong>(value, indent = &#39;&#39;) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/conf.rb', line 38</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_format_value'>format_value</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='comma'>,</span> <span class='id identifier rubyid_indent'>indent</span><span class='op'>=</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span>
+    <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_sort_by'>sort_by</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:first</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
+      <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_print'>print</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_indent'>indent</span><span class='embexpr_end'>}</span><span class='tstring_content'>  </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_format_value'>format_value</span><span class='lparen'>(</span><span class='id identifier rubyid_v'>v</span><span class='comma'>,</span> <span class='id identifier rubyid_indent'>indent</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>elsif</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span>
+    <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
+      <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_print'>print</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_indent'>indent</span><span class='embexpr_end'>}</span><span class='tstring_content'>  </span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_format_value'>format_value</span><span class='lparen'>(</span><span class='id identifier rubyid_v'>v</span><span class='comma'>,</span> <span class='id identifier rubyid_indent'>indent</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="generate_config!-instance_method">
+  
+    - (<tt>Object</tt>) <strong>generate_config!</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/conf.rb', line 25</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_generate_config!'>generate_config!</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exists?'>exists?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.sfn</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Existing .sfn configuration file detected!</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_confirm'>confirm</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Overwrite current .sfn configuration file?</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_run_action'>run_action</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Writing .sfn file</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+    <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.sfn</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>w</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_file'>file</span><span class='op'>|</span>
+      <span class='id identifier rubyid_file'>file</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span> <span class='const'>SFN_CONFIG_CONTENTS</span>
+    <span class='kw'>end</span>
+    <span class='kw'>nil</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Sat May 14 12:44:55 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.2.3).
+</div>
+
+  </body>
+</html>

@@ -110,7 +110,17 @@
 <div class="tags">
   
 
-</div>
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="LocalLock/LocalLockTimeout.html" title="Sfn::Cache::LocalLock::LocalLockTimeout (class)">LocalLockTimeout</a></span>
+    
+  
+</p>
+
 
 
 
@@ -376,14 +386,14 @@
       <pre class="lines">
 
 
-300
-301
-302
 303
-304</pre>
+304
+305
+306
+307</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 300</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 303</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@_key</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span>
@@ -446,12 +456,12 @@
       <pre class="lines">
 
 
-289
-290
-291</pre>
+292
+293
+294</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 289</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 292</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid__key'>_key</span>
   <span class='ivar'>@_key</span>
@@ -507,12 +517,12 @@
       <pre class="lines">
 
 
-293
-294
-295</pre>
+296
+297
+298</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 293</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 296</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid__lock'>_lock</span>
   <span class='ivar'>@_lock</span>
@@ -568,12 +578,12 @@
       <pre class="lines">
 
 
-291
-292
-293</pre>
+294
+295
+296</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 291</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 294</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid__timeout'>_timeout</span>
   <span class='ivar'>@_timeout</span>
@@ -624,12 +634,12 @@
       <pre class="lines">
 
 
-330
-331
-332</pre>
+337
+338
+339</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 330</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 337</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_clear'>clear</span>
   <span class='comment'># noop
@@ -701,9 +711,6 @@
       <pre class="lines">
 
 
-310
-311
-312
 313
 314
 315
@@ -716,10 +723,17 @@
 322
 323
 324
-325</pre>
+325
+326
+327
+328
+329
+330
+331
+332</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 310</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 313</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_lock'>lock</span>
   <span class='id identifier rubyid_locked'>locked</span> <span class='op'>=</span> <span class='kw'>false</span>
@@ -734,7 +748,11 @@
       <span class='id identifier rubyid__lock'>_lock</span><span class='period'>.</span><span class='id identifier rubyid_unlock'>unlock</span> <span class='kw'>if</span> <span class='id identifier rubyid__lock'>_lock</span><span class='period'>.</span><span class='id identifier rubyid_locked?'>locked?</span>
     <span class='kw'>end</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>Redis</span><span class='op'>::</span><span class='const'>Lock</span><span class='op'>::</span><span class='const'>LockTimeout</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timeout on lock </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__key'>_key</span><span class='embexpr_end'>}</span><span class='tstring_content'> exceeded </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__timeout'>_timeout</span><span class='embexpr_end'>}</span><span class='tstring_content'> sec</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>Redis</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>Redis</span><span class='op'>::</span><span class='const'>Lock</span><span class='op'>::</span><span class='const'>LockTimeout</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timeout on lock </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__key'>_key</span><span class='embexpr_end'>}</span><span class='tstring_content'> exceeded </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__timeout'>_timeout</span><span class='embexpr_end'>}</span><span class='tstring_content'> sec</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>LocalLockTimeout</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timeout on lock </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__key'>_key</span><span class='embexpr_end'>}</span><span class='tstring_content'> exceeded </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__timeout'>_timeout</span><span class='embexpr_end'>}</span><span class='tstring_content'> sec</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -747,9 +765,9 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Sep  4 09:40:56 2015 by
+  Generated on Sat May 14 12:44:54 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.2).
+  0.8.7.6 (ruby-2.2.3).
 </div>
 
   </body>
