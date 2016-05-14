@@ -59,6 +59,11 @@ module Sfn
         :description => 'Merge API options defined within configuration on update',
         :default => false
       )
+      attribute(
+        :parameter_validation, ['default', 'none', 'current', 'expected'],
+        :description => 'Stack parameter validation behavior',
+        :default => 'default'
+      )
 
     end
   end
