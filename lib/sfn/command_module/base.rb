@@ -50,6 +50,7 @@ module Sfn
                 config.fetch(:retries, {})
               )
               result.connection.data[:retry_ui] = ui
+              result.connection.data[:location] = location.to_s
               result.connection.data[:locations] = config.fetch(:locations, {})
               result.connection.data[:retry_type] = retry_config.fetch(:type, :exponential)
               result.connection.data[:retry_interval] = retry_config.fetch(:interval, 5)
