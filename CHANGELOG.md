@@ -1,3 +1,6 @@
+# v3.0.8
+* [fix] Apply stack name construction (#200)
+
 # v3.0.6
 * [fix] Cast all value types to String within AWS planner (#194)
 * [fix] Fix template names on create/update prompting (#197)
