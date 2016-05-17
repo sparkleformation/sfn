@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake', '~> 10'
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'mocha'
+  s.add_development_dependency 'yard'
   s.executables << 'sfn'
   s.files = Dir['{lib,bin,docs}/**/*'] + %w(sfn.gemspec README.md CHANGELOG.md LICENSE)
 end
