@@ -23,7 +23,7 @@ module Sfn
           remote_stacks = [config[:apply_stack]].flatten.compact
           remote_stacks.each do |stack_name|
             stack_info = stack_name.split('__')
-            stack_info.shift(nil) if stack_info.size == 1
+            stack_info.unshift(nil) if stack_info.size == 1
             stack_location, stack_name = stack_info
             remote_stack = provider_for(stack_location).stack(stack_name)
             if(remote_stack)
