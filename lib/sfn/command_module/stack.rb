@@ -99,16 +99,12 @@ module Sfn
           true
         end
 
-        # Prompt for parameter values and store result
+        # Generate name prefix for config parameter based on location and
+        # extract template parameters
         #
-        # @param sparkle [SparkleFormation, Hash]
-        # @param opts [Hash]
-        # @option opts [Hash] :current_parameters current stack parameter values
-        # @option opts [Miasma::Models::Orchestration::Stack] :stack existing stack
-        # @return [Hash]
-        def populate_parameters!(sparkle, opts={})
-          current_parameters = opts.fetch(:current_parameters, {})
-          current_stack = opts[:stack]
+        # @param sparkle [SparkleFormation, Hash] template instance
+        # @return [Array<Array<String>, Smash>] prefix value, parameters
+        def prefix_parameters_setup(sparkle)
           if(sparkle.is_a?(SparkleFormation))
             parameter_prefix = sparkle.root? ? [] : (sparkle.root_path - [sparkle.root]).map do |s|
               Bogo::Utility.camel(s.name)
@@ -121,80 +117,136 @@ module Sfn
               sparkle[loc_key]
             end.compact.first || Smash.new
           end
-          unless(stack_parameters.empty?)
-            if(config.get(:parameter).is_a?(Array))
-              config[:parameter] = Smash[
-                *config.get(:parameter).map(&:to_a).flatten
-              ]
-            end
-            if(config.get(:parameters))
-              config.set(:parameters,
-                config.get(:parameters).merge(config.fetch(:parameter, Smash.new))
-              )
+          [parameter_prefix, stack_parameters]
+        end
+
+        # Format config defined parameters to ensure expected layout
+        def format_config_parameters!
+          if(config.get(:parameter).is_a?(Array))
+            config[:parameter] = Smash[
+              *config.get(:parameter).map(&:to_a).flatten
+            ]
+          end
+          if(config.get(:parameters))
+            config.set(:parameters,
+              config.get(:parameters).merge(config.fetch(:parameter, Smash.new))
+            )
+          else
+            config.set(:parameters, config.fetch(:parameter, Smash.new))
+          end
+        end
+
+        # Determine correct configuration parameter key
+        #
+        # @param parameter_prefix [Array<String>] nesting prefix names
+        # @param parameter_name [String] parameter name
+        # @return [Array<String>] [expected_template_key, configuration_used_key]
+        def locate_config_parameter_key(parameter_prefix, parameter_name)
+          check_name = parameter_name.downcase.tr('-_', '')
+          check_prefix = parameter_prefix.map{|i| i.downcase.tr('-_', '') }
+          key_match = config[:parameters].keys.detect do |cp_key|
+            cp_key = cp_key.to_s.downcase.split('__').map{|i| i.tr('-_', '') }.join('__')
+            cp_key.start_with?(check_prefix.join('__')) &&
+              cp_key.split('__').last == check_name
+          end
+          actual_key = (parameter_prefix + [parameter_name]).compact.join('__')
+          if(key_match)
+            config[:parameters][actual_key] = config[:parameters].delete(key_match)
+          end
+          actual_key
+        end
+
+        # Populate stack parameter value via user interaction
+        #
+        # @param sparkle [SparkleFormation, Hash] template
+        # @param ns_key [String] configuration parameter key name
+        # @param param_name [String] template parameter name
+        # @param param_value [Hash] template parameter value
+        # @param current_parameters [Hash] currently set stack parameters
+        # @param param_banner [TrueClass, FalseClass] parameter banner has been printed
+        # @return [TrueClass, FalseClass] parameter banner has been printed
+        def set_parameter(sparkle, ns_key, param_name, param_value, current_parameters, param_banner)
+          valid = false
+          attempt = 0
+          if(!valid && !param_banner)
+            if(sparkle.is_a?(SparkleFormation))
+              ui.info "#{ui.color('Stack runtime parameters:', :bold)} - template: #{ui.color(sparkle.root_path.map(&:name).map(&:to_s).join(' > '), :green, :bold)}"
             else
-              config.set(:parameters, config.fetch(:parameter, Smash.new))
+              ui.info ui.color('Stack runtime parameters:', :bold)
             end
+            param_banner = true
+          end
+          until(valid)
+            attempt += 1
+            default = config[:parameters].fetch(
+              ns_key, current_parameters.fetch(
+                param_name, TEMPLATE_PARAMETER_DEFAULTS.map{|loc_key| param_value[loc_key]}.compact.first
+              )
+            )
+            if(config[:interactive_parameters])
+              answer = ui.ask_question("#{param_name.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}", :default => default)
+            else
+              answer = default
+            end
+            validation = validate_parameter(answer, param_value)
+            if(validation == true)
+              config[:parameters][ns_key] = answer
+              valid = true
+            else
+              validation.each do |validation_error|
+                ui.error validation_error.last
+              end
+            end
+            if(attempt > MAX_PARAMETER_ATTEMPTS)
+              ui.fatal 'Failed to receive allowed parameter!'
+              exit 1
+            end
+          end
+          param_banner
+        end
+
+        # Prompt for parameter values and store result
+        #
+        # @param sparkle [SparkleFormation, Hash]
+        # @param opts [Hash]
+        # @option opts [Hash] :current_parameters current stack parameter values
+        # @option opts [Miasma::Models::Orchestration::Stack] :stack existing stack
+        # @return [Hash]
+        def populate_parameters!(sparkle, opts={})
+          current_parameters = opts.fetch(:current_parameters, {})
+          current_stack = opts[:stack]
+          parameter_prefix, stack_parameters = prefix_parameters_setup(sparkle)
+          unless(stack_parameters.empty?)
+            format_config_parameters!
             param_banner = false
-            stack_parameters.each do |k,v|
-              ns_k = (parameter_prefix + [k]).compact.join('__')
-              next if config[:parameters][ns_k]
-              valid = false
+            stack_parameters.each do |param_name, param_value|
+              ns_key = locate_config_parameter_key(parameter_prefix, param_name)
               # When parameter is a hash type, it is being set via
               # intrinsic function and we don't modify
-              if(function_set_parameter?(current_parameters[k]))
+              if(function_set_parameter?(current_parameters[param_name]))
                 if(current_stack)
-                  enable_set = validate_stack_parameter(current_stack, k, ns_k, current_parameters[k])
+                  enable_set = validate_stack_parameter(current_stack, param_name, ns_key, current_parameters[param_name])
                 else
                   enable_set = true
                 end
                 if(enable_set)
                   # NOTE: direct set dumps the stack (nfi). Smash will
                   # auto dup it, and works, so yay i guess.
-                  config[:parameters][ns_k] = current_parameters[k].is_a?(Hash) ? Smash.new(current_parameters[k]) : current_parameters[k].dup
+                  config[:parameters][ns_key] = current_parameters[param_name].is_a?(Hash) ?
+                    Smash.new(current_parameters[param_name]) :
+                    current_parameters[param_name].dup
                   valid = true
                 end
               else
                 if(current_stack && current_stack.data[:parent_stack])
-                  use_expected = validate_stack_parameter(current_stack, k, ns_k, current_parameters[k])
+                  use_expected = validate_stack_parameter(current_stack, param_name, ns_key, current_parameters[param_name])
                   unless(use_expected)
-                    current_parameters[k] = current_stack.parameters[k]
+                    current_parameters[param_name] = current_stack.parameters[param_name]
                   end
                 end
               end
-              attempt = 0
-              if(!valid && !param_banner)
-                if(sparkle.is_a?(SparkleFormation))
-                  ui.info "#{ui.color('Stack runtime parameters:', :bold)} - template: #{ui.color(sparkle.root_path.map(&:name).map(&:to_s).join(' > '), :green, :bold)}"
-                else
-                  ui.info ui.color('Stack runtime parameters:', :bold)
-                end
-                param_banner = true
-              end
-              until(valid)
-                attempt += 1
-                default = config[:parameters].fetch(
-                  ns_k, current_parameters.fetch(
-                    k, TEMPLATE_PARAMETER_DEFAULTS.map{|loc_key| v[loc_key]}.compact.first
-                  )
-                )
-                if(config[:interactive_parameters])
-                  answer = ui.ask_question("#{k.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}", :default => default)
-                else
-                  answer = default
-                end
-                validation = validate_parameter(answer, v)
-                if(validation == true)
-                  config[:parameters][ns_k] = answer
-                  valid = true
-                else
-                  validation.each do |validation_error|
-                    ui.error validation_error.last
-                  end
-                end
-                if(attempt > MAX_PARAMETER_ATTEMPTS)
-                  ui.fatal 'Failed to receive allowed parameter!'
-                  exit 1
-                end
+              unless(valid)
+                param_banner = set_parameter(sparkle, ns_key, param_name, param_value, current_parameters, param_banner)
               end
             end
           end
