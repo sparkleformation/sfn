@@ -13,3 +13,4 @@
   - [Enabling Callbacks](callbacks.md#enabling-callbacks)
   - [Builtin Callbacks](callbacks.md#builtin-callbacks)
   - [Custom Callbacks](callbacks.md#custom-callbacks)
+- [SparklePacks](sparklepacks.md)
