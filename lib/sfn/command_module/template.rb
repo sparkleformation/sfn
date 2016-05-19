@@ -490,7 +490,7 @@ module Sfn
               c_name.split('_').map(&:capitalize).join(' ')
             end.join(' / ')
             ui.info "Viewing collection: #{ui.color(collection_name, :bold)}"
-            template_names = sparkle_collection.templates.keys.find_all do |t_name|
+            template_names = sparkle_collection.templates.fetch(provider.connection.provider, {}).keys.find_all do |t_name|
               t_name.to_s.start_with?(prefix.to_s)
             end
           else
