@@ -14,7 +14,7 @@ and templates as reusable, redistributable software artifacts.
 A SparklePack may package up any combination of SparkleFormation
 [building blocks](http://www.sparkleformation.io/docs/sparkle_formation/building-blocks.html) and templates.
 
-sfn supports loading SparklePacks distributed as [Ruby gems](http://guides.rubygems.org/what-is-a-gem/).
+sfn supports loading SparklePacks distributed as [Ruby gems](http://www.sparkleformation.io/docs/sparkle_formation/sparkle-packs.html#distribution).
 You can find published SparklePacks on the RubyGems site by
 [searching for the sparkle-pack prefix](https://rubygems.org/search?query=sparkle-pack).
 
