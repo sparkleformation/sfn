@@ -1,3 +1,7 @@
+# v3.0.10
+* [fix] Template prompting within collections (#204)
+* [enhancement] Stack parameter matching via configuration (#203)
+
 # v3.0.8
 * [fix] Apply stack name construction (#200)
 
