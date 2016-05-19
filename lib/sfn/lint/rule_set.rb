@@ -44,6 +44,8 @@ module Sfn
 
       class << self
 
+        @@_rule_set_registry = Smash.new
+
         # RuleSet generator helper for quickly building simple rule sets
         #
         # @param name [String] name of rule set
@@ -54,6 +56,33 @@ module Sfn
           rs = Creator::RuleSet.new(provider)
           rs.instance_exec(&block)
           self.new(name, provider, rs.items)
+        end
+
+        # Register a rule set
+        #
+        # @param rule_set [RuleSet]
+        # @return [TrueClass]
+        def register(rule_set)
+          @@_rule_set_registry.set(rule_set.provider, rule_set.name, rule_set)
+          true
+        end
+
+        # Get registered rule set
+        #
+        # @param name [String] name of rule set
+        # @param provider [String] target provider
+        # @return [RuleSet, NilClass]
+        def get(name, provider=:aws)
+          provider = Bogo::Utility.snake(provider)
+          @@_rule_set_registry.get(provider, name)
+        end
+
+        # Get all rule sets for specified provider
+        #
+        # @param provider [String] target provider
+        # @return [Array<RuleSet>]
+        def get_all(provider=:aws)
+          @@_rule_set_registry.fetch(provider, {}).values
         end
 
       end

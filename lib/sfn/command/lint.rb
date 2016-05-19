@@ -53,7 +53,7 @@ module Sfn
 
       # @return [Array<Sfn::Lint::RuleSet>]
       def rule_sets
-        [config[:lint_directory]].flatten.compact.map do |directory|
+        sets = [config[:lint_directory]].flatten.compact.map do |directory|
           if(File.directory?(directory))
             files = Dir.glob(File.join(directory, '**', '**', '*.rb'))
             files.map do |path|
@@ -67,7 +67,19 @@ module Sfn
               end
             end
           end
-        end.flatten.compact
+        end.flatten.compact.find_all{|rs| rs.provider == provider.connection.provider}
+        unless(config[:local_rule_sets_only])
+          sets += Sfn::Lint::RuleSet.get_all(provider.connection.provider)
+        end
+        if(config[:disabled_rule_set])
+          disabled = [config[:disabled_rule_set]].flatten.compact
+          sets.delete_if{|i| disabled.include?(i.name.to_s) }
+        end
+        if(config[:enabled_rule_set])
+          enabled = [config[:enabled_rule_set]].flatten.compact
+          sets.delete_if{|i| enabled.include?(i.name.to_s) }
+        end
+        sets
       end
 
     end
