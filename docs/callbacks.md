@@ -1,6 +1,6 @@
 ---
 title: "Callbacks"
-weight: 4
+weight: 7
 anchors:
   - title: "Enabling Callbacks"
     url: "#enabling-callbacks"
