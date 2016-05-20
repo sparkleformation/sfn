@@ -1,6 +1,6 @@
 ---
 title: "Commands and configuration"
-weight: 3
+weight: 6
 anchors:
   - title: "Conf Command"
     url: "#conf-command"
@@ -24,6 +24,8 @@ anchors:
     url: "#init-command"
   - title: "Inspect Command"
     url: "#inspect-command"
+  - title: "Lint Command"
+    url: "#lint-command"
   - title: "List Command"
     url: "#list-command"
   - title: "Print Command"
@@ -882,6 +884,93 @@ $ sfn inspect
 | | Default | |
 | `--update` | Description |  |
 | | Valid | `Sfn::Config::Update` |
+| | Default | |
+| `--yes` | Description | Automatically accept any requests for confirmation |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+
+## Lint Command
+
+~~~
+$ sfn lint
+~~~
+
+| Option | Attribute | Value
+|--------|-----------|------
+| `--apply-nesting` | Description | Apply stack nesting |
+| | Valid | `String`, `Symbol` |
+| | Default | "deep"|
+| `--base-directory` | Description | Path to root of of templates directory |
+| | Valid | `String` |
+| | Default | |
+| `--compile-parameters` | Description | Pass template compile time parameters directly |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--config` | Description | Configuration file path |
+| | Valid | `String` |
+| | Default | |
+| `--credentials` | Description | Provider credentials (Key:Value[,Key:Value,...]) |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--debug` | Description | Enable debug output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--defaults` | Description | Automatically accept default values |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--disabled-rule-set` | Description | Disable rule set from being applied |
+| | Valid | `String` |
+| | Default | |
+| `--enabled-rule-set` | Description | Only apply this rule set |
+| | Valid | `String` |
+| | Default | |
+| `--file` | Description | Path to template file |
+| | Valid | `String` |
+| | Default | |
+| `--file-path-prompt` | Description | Enable interactive prompt for template path discovery |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--ignore-parameters` | Description | Parameters to ignore during modifications |
+| | Valid | `String` |
+| | Default | |
+| `--interactive-parameters` | Description | Prompt for template parameters |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--lint-directory` | Description | Directory containing lint rule sets |
+| | Valid | `String` |
+| | Default | |
+| `--local-rule-sets-only` | Description | Only apply rule sets provided by lint directory |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--nesting-bucket` | Description | Bucket to use for storing nested stack templates |
+| | Valid | `String` |
+| | Default | |
+| `--nesting-prefix` | Description | File name prefix for storing template in bucket |
+| | Valid | `String` |
+| | Default | |
+| `--no-base-directory` | Description | Unset any value used for the template root directory path |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--poll` | Description | Poll stack events on modification actions |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--print-only` | Description | Print the resulting stack template |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--processing` | Description | Call the unicorns and explode the glitter bombs |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--sparkle-pack` | Description | Load SparklePack gem |
+| | Valid | `String` |
+| | Default | |
+| `--translate` | Description | Translate generated template to given provider |
+| | Valid | `String` |
+| | Default | |
+| `--translate-chunk` | Description | Chunk length for serialization |
+| | Valid | `Integer` |
+| | Default | |
+| `--upload-root-template` | Description | Upload root template to storage bucket |
+| | Valid | `TrueClass`, `FalseClass` |
 | | Default | |
 | `--yes` | Description | Automatically accept any requests for confirmation |
 | | Valid | `TrueClass`, `FalseClass` |
