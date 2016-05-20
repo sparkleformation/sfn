@@ -1,3 +1,6 @@
+# v3.0.14
+* [fix] Compile time parameter merging (#211)
+
 # v3.0.12
 * [feature] New linting foundation and `lint` command (#208)
 
