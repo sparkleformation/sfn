@@ -75,6 +75,9 @@ module SfnHttpMock
 
   def google_creds
     key_file = Tempfile.new('sfn-test')
+    key_path = key_file.path
+    key_file.delete
+    key_file = File.open(key_path, 'w')
     key_file.puts OpenSSL::PKey::RSA.new(2048).to_pem
     key_file.close
     @google_key = key_file.path
