@@ -1,6 +1,13 @@
 ---
 title: "Lint"
-weight: 5
+weight: 8
+anchors:
+  - title: "Lint Framework"
+    url: "#lint-framework"
+  - title: "Composition"
+    url: "#composition"
+  - title: "Usage"
+    url: "#usage"
 ---
 
 ## Lint
