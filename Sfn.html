@@ -80,7 +80,7 @@
   
     <dt class="r1 last">Defined in:</dt>
     <dd class="r1 last">lib/sfn.rb<span class="defines">,<br />
-  lib/sfn/utils.rb,<br /> lib/sfn/cache.rb,<br /> lib/sfn/config.rb,<br /> lib/sfn/command.rb,<br /> lib/sfn/version.rb,<br /> lib/sfn/planner.rb,<br /> lib/sfn/provider.rb,<br /> lib/sfn/callback.rb,<br /> lib/sfn/utils/json.rb,<br /> lib/sfn/config/list.rb,<br /> lib/sfn/config/conf.rb,<br /> lib/sfn/config/init.rb,<br /> lib/sfn/config/diff.rb,<br /> lib/sfn/utils/ssher.rb,<br /> lib/sfn/utils/debug.rb,<br /> lib/sfn/planner/aws.rb,<br /> lib/sfn/command/list.rb,<br /> lib/sfn/command/conf.rb,<br /> lib/sfn/command/init.rb,<br /> lib/sfn/command/diff.rb,<br /> lib/sfn/config/print.rb,<br /> lib/sfn/config/graph.rb,<br /> lib/sfn/api_provider.rb,<br /> lib/sfn/utils/output.rb,<br /> lib/sfn/monkey_patch.rb,<br /> lib/sfn/command/print.rb,<br /> lib/sfn/command/graph.rb,<br /> lib/sfn/config/events.rb,<br /> lib/sfn/config/create.rb,<br /> lib/sfn/config/export.rb,<br /> lib/sfn/config/update.rb,<br /> lib/sfn/config/import.rb,<br /> lib/sfn/command/events.rb,<br /> lib/sfn/command/create.rb,<br /> lib/sfn/command/export.rb,<br /> lib/sfn/command/update.rb,<br /> lib/sfn/command/import.rb,<br /> lib/sfn/config/inspect.rb,<br /> lib/sfn/config/promote.rb,<br /> lib/sfn/config/destroy.rb,<br /> lib/sfn/command_module.rb,<br /> lib/sfn/command/inspect.rb,<br /> lib/sfn/command/promote.rb,<br /> lib/sfn/command/destroy.rb,<br /> lib/sfn/config/describe.rb,<br /> lib/sfn/config/validate.rb,<br /> lib/sfn/command/describe.rb,<br /> lib/sfn/command/validate.rb,<br /> lib/sfn/callback/aws_mfa.rb,<br /> lib/sfn/monkey_patch/stack.rb,<br /> lib/sfn/command_module/base.rb,<br /> lib/sfn/api_provider/google.rb,<br /> lib/sfn/utils/path_selector.rb,<br /> lib/sfn/command_module/stack.rb,<br /> lib/sfn/utils/object_storage.rb,<br /> lib/sfn/utils/stack_exporter.rb,<br /> lib/sfn/callback/stack_policy.rb,<br /> lib/sfn/command_module/template.rb,<br /> lib/sfn/command_module/callbacks.rb,<br /> lib/sfn/monkey_patch/stack/azure.rb,<br /> lib/sfn/callback/aws_assume_role.rb,<br /> lib/sfn/monkey_patch/stack/google.rb,<br /> lib/sfn/utils/stack_parameter_scrubber.rb,<br /> lib/sfn/utils/stack_parameter_validator.rb</span>
+  lib/sfn/lint.rb,<br /> lib/sfn/utils.rb,<br /> lib/sfn/cache.rb,<br /> lib/sfn/config.rb,<br /> lib/sfn/command.rb,<br /> lib/sfn/version.rb,<br /> lib/sfn/planner.rb,<br /> lib/sfn/provider.rb,<br /> lib/sfn/callback.rb,<br /> lib/sfn/lint/rule.rb,<br /> lib/sfn/utils/json.rb,<br /> lib/sfn/config/list.rb,<br /> lib/sfn/config/conf.rb,<br /> lib/sfn/config/init.rb,<br /> lib/sfn/config/diff.rb,<br /> lib/sfn/config/lint.rb,<br /> lib/sfn/utils/ssher.rb,<br /> lib/sfn/utils/debug.rb,<br /> lib/sfn/planner/aws.rb,<br /> lib/sfn/command/list.rb,<br /> lib/sfn/command/conf.rb,<br /> lib/sfn/command/init.rb,<br /> lib/sfn/command/diff.rb,<br /> lib/sfn/command/lint.rb,<br /> lib/sfn/config/print.rb,<br /> lib/sfn/config/graph.rb,<br /> lib/sfn/api_provider.rb,<br /> lib/sfn/utils/output.rb,<br /> lib/sfn/monkey_patch.rb,<br /> lib/sfn/command/print.rb,<br /> lib/sfn/command/graph.rb,<br /> lib/sfn/config/events.rb,<br /> lib/sfn/config/create.rb,<br /> lib/sfn/config/export.rb,<br /> lib/sfn/config/update.rb,<br /> lib/sfn/config/import.rb,<br /> lib/sfn/lint/rule_set.rb,<br /> lib/sfn/command/events.rb,<br /> lib/sfn/command/create.rb,<br /> lib/sfn/command/export.rb,<br /> lib/sfn/command/update.rb,<br /> lib/sfn/command/import.rb,<br /> lib/sfn/config/inspect.rb,<br /> lib/sfn/config/promote.rb,<br /> lib/sfn/config/destroy.rb,<br /> lib/sfn/command_module.rb,<br /> lib/sfn/command/inspect.rb,<br /> lib/sfn/command/promote.rb,<br /> lib/sfn/command/destroy.rb,<br /> lib/sfn/config/describe.rb,<br /> lib/sfn/config/validate.rb,<br /> lib/sfn/lint/definition.rb,<br /> lib/sfn/command/describe.rb,<br /> lib/sfn/command/validate.rb,<br /> lib/sfn/callback/aws_mfa.rb,<br /> lib/sfn/monkey_patch/stack.rb,<br /> lib/sfn/command_module/base.rb,<br /> lib/sfn/api_provider/google.rb,<br /> lib/sfn/utils/path_selector.rb,<br /> lib/sfn/command_module/stack.rb,<br /> lib/sfn/utils/object_storage.rb,<br /> lib/sfn/utils/stack_exporter.rb,<br /> lib/sfn/callback/stack_policy.rb,<br /> lib/sfn/command_module/template.rb,<br /> lib/sfn/command_module/callbacks.rb,<br /> lib/sfn/monkey_patch/stack/azure.rb,<br /> lib/sfn/callback/aws_assume_role.rb,<br /> lib/sfn/monkey_patch/stack/google.rb,<br /> lib/sfn/utils/stack_parameter_scrubber.rb,<br /> lib/sfn/utils/stack_parameter_validator.rb</span>
 </dd>
   
 </dl>
@@ -90,7 +90,7 @@
 <p class="children">
   
     
-      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Sfn/ApiProvider.html" title="Sfn::ApiProvider (module)">ApiProvider</a></span>, <span class='object_link'><a href="Sfn/CommandModule.html" title="Sfn::CommandModule (module)">CommandModule</a></span>, <span class='object_link'><a href="Sfn/MonkeyPatch.html" title="Sfn::MonkeyPatch (module)">MonkeyPatch</a></span>, <span class='object_link'><a href="Sfn/Utils.html" title="Sfn::Utils (module)">Utils</a></span>
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Sfn/ApiProvider.html" title="Sfn::ApiProvider (module)">ApiProvider</a></span>, <span class='object_link'><a href="Sfn/CommandModule.html" title="Sfn::CommandModule (module)">CommandModule</a></span>, <span class='object_link'><a href="Sfn/Lint.html" title="Sfn::Lint (module)">Lint</a></span>, <span class='object_link'><a href="Sfn/MonkeyPatch.html" title="Sfn::MonkeyPatch (module)">MonkeyPatch</a></span>, <span class='object_link'><a href="Sfn/Utils.html" title="Sfn::Utils (module)">Utils</a></span>
     
   
     
@@ -117,7 +117,7 @@
 
 </div>
         </dt>
-        <dd><pre class="code"><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.7</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span></pre></dd>
+        <dd><pre class="code"><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.12</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span></pre></dd>
       
     </dl>
   
@@ -133,7 +133,7 @@
 </div>
 
     <div id="footer">
-  Generated on Sat May 14 12:44:52 2016 by
+  Generated on Thu May 19 17:27:06 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-2.2.3).
 </div>

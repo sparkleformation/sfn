@@ -253,6 +253,30 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#format_config_parameters%21-instance_method" title="#format_config_parameters! (instance method)">- (Object) <strong>format_config_parameters!</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Format config defined parameters to ensure expected layout.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#function_set_parameter%3F-instance_method" title="#function_set_parameter? (instance method)">- (TrueClass, FalseClass) <strong>function_set_parameter?</strong>(val) </a>
     
 
@@ -301,6 +325,30 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#locate_config_parameter_key-instance_method" title="#locate_config_parameter_key (instance method)">- (Array&lt;String&gt;) <strong>locate_config_parameter_key</strong>(parameter_prefix, parameter_name) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Determine correct configuration parameter key.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#populate_parameters%21-instance_method" title="#populate_parameters! (instance method)">- (Hash) <strong>populate_parameters!</strong>(sparkle, opts = {}) </a>
     
 
@@ -317,6 +365,55 @@
   
     <span class="summary_desc"><div class='inline'>
 <p>Prompt for parameter values and store result.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#prefix_parameters_setup-instance_method" title="#prefix_parameters_setup (instance method)">- (Array&lt;Array&lt;String&gt;, Smash&gt;) <strong>prefix_parameters_setup</strong>(sparkle) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Generate name prefix for config parameter based on location and extract
+template parameters.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_parameter-instance_method" title="#set_parameter (instance method)">- (TrueClass, FalseClass) <strong>set_parameter</strong>(sparkle, ns_key, param_name, param_value, current_parameters, param_banner) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Populate stack parameter value via user interaction.</p>
 </div></span>
   
 </li>
@@ -542,7 +639,7 @@ stack.</p>
   <span class='id identifier rubyid_remote_stacks'>remote_stacks</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:apply_stack</span><span class='rbracket'>]</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
   <span class='id identifier rubyid_remote_stacks'>remote_stacks</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_stack_name'>stack_name</span><span class='op'>|</span>
     <span class='id identifier rubyid_stack_info'>stack_info</span> <span class='op'>=</span> <span class='id identifier rubyid_stack_name'>stack_name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_stack_info'>stack_info</span><span class='period'>.</span><span class='id identifier rubyid_shift'>shift</span><span class='lparen'>(</span><span class='kw'>nil</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_stack_info'>stack_info</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span>
+    <span class='id identifier rubyid_stack_info'>stack_info</span><span class='period'>.</span><span class='id identifier rubyid_unshift'>unshift</span><span class='lparen'>(</span><span class='kw'>nil</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_stack_info'>stack_info</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span>
     <span class='id identifier rubyid_stack_location'>stack_location</span><span class='comma'>,</span> <span class='id identifier rubyid_stack_name'>stack_name</span> <span class='op'>=</span> <span class='id identifier rubyid_stack_info'>stack_info</span>
     <span class='id identifier rubyid_remote_stack'>remote_stack</span> <span class='op'>=</span> <span class='id identifier rubyid_provider_for'>provider_for</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_location'>stack_location</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_stack'>stack</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_name'>stack_name</span><span class='rparen'>)</span>
     <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_remote_stack'>remote_stack</span><span class='rparen'>)</span>
@@ -605,16 +702,16 @@ stack.</p>
       <pre class="lines">
 
 
-220
-221
-222
-223
-224
-225
-226</pre>
+272
+273
+274
+275
+276
+277
+278</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 220</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 272</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_config_root_parameters'>config_root_parameters</span>
   <span class='const'>Hash</span><span class='lbracket'>[</span>
@@ -721,6 +818,69 @@ stack.</p>
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="format_config_parameters!-instance_method">
+  
+    - (<tt>Object</tt>) <strong>format_config_parameters!</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Format config defined parameters to ensure expected layout</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 124</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_format_config_parameters!'>format_config_parameters!</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:parameter</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameter</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Smash</span><span class='lbracket'>[</span>
+      <span class='op'>*</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:parameter</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_a</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span>
+    <span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:parameter</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:parameter</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="function_set_parameter?-instance_method">
   
     - (<tt>TrueClass</tt>, <tt>FalseClass</tt>) <strong>function_set_parameter?</strong>(val) 
@@ -774,12 +934,12 @@ stack.</p>
       <pre class="lines">
 
 
-215
-216
-217</pre>
+267
+268
+269</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 215</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 267</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_function_set_parameter?'>function_set_parameter?</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
@@ -921,6 +1081,123 @@ stack.</p>
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="locate_config_parameter_key-instance_method">
+  
+    - (<tt>Array&lt;String&gt;</tt>) <strong>locate_config_parameter_key</strong>(parameter_prefix, parameter_name) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Determine correct configuration parameter key</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>parameter_prefix</span>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>nesting prefix names</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>parameter_name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>parameter name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><dl class="rdoc-list label-list"><dt>expected_template_key, configuration_used_key
+<dd></dd></dl>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 144</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_locate_config_parameter_key'>locate_config_parameter_key</span><span class='lparen'>(</span><span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span><span class='comma'>,</span> <span class='id identifier rubyid_parameter_name'>parameter_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_check_name'>check_name</span> <span class='op'>=</span> <span class='id identifier rubyid_parameter_name'>parameter_name</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>-_</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_check_prefix'>check_prefix</span> <span class='op'>=</span> <span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_i'>i</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>-_</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_key_match'>key_match</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_detect'>detect</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_cp_key'>cp_key</span><span class='op'>|</span>
+    <span class='id identifier rubyid_cp_key'>cp_key</span> <span class='op'>=</span> <span class='id identifier rubyid_cp_key'>cp_key</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_i'>i</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>-_</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_cp_key'>cp_key</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_check_prefix'>check_prefix</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span>
+      <span class='id identifier rubyid_cp_key'>cp_key</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span> <span class='op'>==</span> <span class='id identifier rubyid_check_name'>check_name</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_actual_key'>actual_key</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span> <span class='op'>+</span> <span class='lbracket'>[</span><span class='id identifier rubyid_parameter_name'>parameter_name</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_key_match'>key_match</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_actual_key'>actual_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_key_match'>key_match</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_actual_key'>actual_key</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="populate_parameters!-instance_method">
   
     - (<tt>Hash</tt>) <strong>populate_parameters!</strong>(sparkle, opts = {}) 
@@ -1024,6 +1301,176 @@ stack.</p>
       <pre class="lines">
 
 
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 215</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_populate_parameters!'>populate_parameters!</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_current_parameters'>current_parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_opts'>opts</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:current_parameters</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_current_stack'>current_stack</span> <span class='op'>=</span> <span class='id identifier rubyid_opts'>opts</span><span class='lbracket'>[</span><span class='symbol'>:stack</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span><span class='comma'>,</span> <span class='id identifier rubyid_stack_parameters'>stack_parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_prefix_parameters_setup'>prefix_parameters_setup</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='rparen'>)</span>
+  <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_format_config_parameters!'>format_config_parameters!</span>
+    <span class='id identifier rubyid_param_banner'>param_banner</span> <span class='op'>=</span> <span class='kw'>false</span>
+    <span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_param_name'>param_name</span><span class='comma'>,</span> <span class='id identifier rubyid_param_value'>param_value</span><span class='op'>|</span>
+      <span class='id identifier rubyid_ns_key'>ns_key</span> <span class='op'>=</span> <span class='id identifier rubyid_locate_config_parameter_key'>locate_config_parameter_key</span><span class='lparen'>(</span><span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span><span class='comma'>,</span> <span class='id identifier rubyid_param_name'>param_name</span><span class='rparen'>)</span>
+      <span class='comment'># When parameter is a hash type, it is being set via
+</span>      <span class='comment'># intrinsic function and we don&#39;t modify
+</span>      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_function_set_parameter?'>function_set_parameter?</span><span class='lparen'>(</span><span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_param_name'>param_name</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='rparen'>)</span>
+        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_current_stack'>current_stack</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_enable_set'>enable_set</span> <span class='op'>=</span> <span class='id identifier rubyid_validate_stack_parameter'>validate_stack_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_current_stack'>current_stack</span><span class='comma'>,</span> <span class='id identifier rubyid_param_name'>param_name</span><span class='comma'>,</span> <span class='id identifier rubyid_ns_key'>ns_key</span><span class='comma'>,</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_param_name'>param_name</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+        <span class='kw'>else</span>
+          <span class='id identifier rubyid_enable_set'>enable_set</span> <span class='op'>=</span> <span class='kw'>true</span>
+        <span class='kw'>end</span>
+        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_enable_set'>enable_set</span><span class='rparen'>)</span>
+          <span class='comment'># NOTE: direct set dumps the stack (nfi). Smash will
+</span>          <span class='comment'># auto dup it, and works, so yay i guess.
+</span>          <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_ns_key'>ns_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_param_name'>param_name</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span> <span class='op'>?</span>
+            <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_param_name'>param_name</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>:</span>
+            <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_param_name'>param_name</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+          <span class='id identifier rubyid_valid'>valid</span> <span class='op'>=</span> <span class='kw'>true</span>
+        <span class='kw'>end</span>
+      <span class='kw'>else</span>
+        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_current_stack'>current_stack</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_current_stack'>current_stack</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:parent_stack</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_use_expected'>use_expected</span> <span class='op'>=</span> <span class='id identifier rubyid_validate_stack_parameter'>validate_stack_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_current_stack'>current_stack</span><span class='comma'>,</span> <span class='id identifier rubyid_param_name'>param_name</span><span class='comma'>,</span> <span class='id identifier rubyid_ns_key'>ns_key</span><span class='comma'>,</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_param_name'>param_name</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+          <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_use_expected'>use_expected</span><span class='rparen'>)</span>
+            <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_param_name'>param_name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_current_stack'>current_stack</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_param_name'>param_name</span><span class='rbracket'>]</span>
+          <span class='kw'>end</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+      <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_valid'>valid</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_param_banner'>param_banner</span> <span class='op'>=</span> <span class='id identifier rubyid_set_parameter'>set_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='comma'>,</span> <span class='id identifier rubyid_ns_key'>ns_key</span><span class='comma'>,</span> <span class='id identifier rubyid_param_name'>param_name</span><span class='comma'>,</span> <span class='id identifier rubyid_param_value'>param_value</span><span class='comma'>,</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='comma'>,</span> <span class='id identifier rubyid_param_banner'>param_banner</span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='const'>Smash</span><span class='lbracket'>[</span>
+    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
+      <span class='id identifier rubyid_strip_key'>strip_key</span> <span class='op'>=</span> <span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span> <span class='op'>?</span> <span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>_{2}?</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_k'>k</span>
+      <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_strip_key'>strip_key</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+        <span class='lbracket'>[</span><span class='id identifier rubyid_strip_key'>strip_key</span><span class='comma'>,</span> <span class='id identifier rubyid_v'>v</span><span class='rbracket'>]</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
+  <span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="prefix_parameters_setup-instance_method">
+  
+    - (<tt>Array&lt;Array&lt;String&gt;, Smash&gt;</tt>) <strong>prefix_parameters_setup</strong>(sparkle) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Generate name prefix for config parameter based on location and extract
+template parameters</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>sparkle</span>
+      
+      
+        <span class='type'>(<tt>SparkleFormation</tt>, <tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>template instance</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Array&lt;String&gt;, Smash&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>prefix value, parameters</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+107
+108
 109
 110
 111
@@ -1036,53 +1483,175 @@ stack.</p>
 118
 119
 120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154
-155
-156
-157
-158
-159
-160
-161
-162
-163
-164
-165
-166
-167
+121</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 107</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_prefix_parameters_setup'>prefix_parameters_setup</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='rparen'>)</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>SparkleFormation</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span> <span class='op'>=</span> <span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_root?'>root?</span> <span class='op'>?</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_root_path'>root_path</span> <span class='op'>-</span> <span class='lbracket'>[</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_root'>root</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+      <span class='const'>Bogo</span><span class='op'>::</span><span class='const'>Utility</span><span class='period'>.</span><span class='id identifier rubyid_camel'>camel</span><span class='lparen'>(</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_stack_parameters'>stack_parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span>
+    <span class='id identifier rubyid_stack_parameters'>stack_parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>?</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='op'>:</span> <span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='period'>.</span><span class='id identifier rubyid__dump'>_dump</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_stack_parameters'>stack_parameters</span> <span class='op'>=</span> <span class='const'>TEMPLATE_PARAMETER_LOCATIONS</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_loc_key'>loc_key</span><span class='op'>|</span>
+      <span class='id identifier rubyid_sparkle'>sparkle</span><span class='lbracket'>[</span><span class='id identifier rubyid_loc_key'>loc_key</span><span class='rbracket'>]</span>
+    <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span> <span class='op'>||</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='kw'>end</span>
+  <span class='lbracket'>[</span><span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span><span class='comma'>,</span> <span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_parameter-instance_method">
+  
+    - (<tt>TrueClass</tt>, <tt>FalseClass</tt>) <strong>set_parameter</strong>(sparkle, ns_key, param_name, param_value, current_parameters, param_banner) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Populate stack parameter value via user interaction</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>sparkle</span>
+      
+      
+        <span class='type'>(<tt>SparkleFormation</tt>, <tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>template</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>ns_key</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>configuration parameter key name</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>param_name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>template parameter name</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>param_value</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>template parameter value</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>current_parameters</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>currently set stack parameters</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>param_banner</span>
+      
+      
+        <span class='type'>(<tt>TrueClass</tt>, <tt>FalseClass</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>parameter banner has been printed</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>TrueClass</tt>, <tt>FalseClass</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>parameter banner has been printed</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
 168
 169
 170
@@ -1121,114 +1690,49 @@ stack.</p>
 203
 204
 205
-206
-207
-208
-209</pre>
+206</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 109</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 168</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_populate_parameters!'>populate_parameters!</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_current_parameters'>current_parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_opts'>opts</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:current_parameters</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_current_stack'>current_stack</span> <span class='op'>=</span> <span class='id identifier rubyid_opts'>opts</span><span class='lbracket'>[</span><span class='symbol'>:stack</span><span class='rbracket'>]</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>SparkleFormation</span><span class='rparen'>)</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span> <span class='op'>=</span> <span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_root?'>root?</span> <span class='op'>?</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_root_path'>root_path</span> <span class='op'>-</span> <span class='lbracket'>[</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_root'>root</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-      <span class='const'>Bogo</span><span class='op'>::</span><span class='const'>Utility</span><span class='period'>.</span><span class='id identifier rubyid_camel'>camel</span><span class='lparen'>(</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-    <span class='id identifier rubyid_stack_parameters'>stack_parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span>
-    <span class='id identifier rubyid_stack_parameters'>stack_parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>?</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='op'>:</span> <span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='period'>.</span><span class='id identifier rubyid__dump'>_dump</span>
-  <span class='kw'>else</span>
-    <span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_stack_parameters'>stack_parameters</span> <span class='op'>=</span> <span class='const'>TEMPLATE_PARAMETER_LOCATIONS</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_loc_key'>loc_key</span><span class='op'>|</span>
-      <span class='id identifier rubyid_sparkle'>sparkle</span><span class='lbracket'>[</span><span class='id identifier rubyid_loc_key'>loc_key</span><span class='rbracket'>]</span>
-    <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span> <span class='op'>||</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
-  <span class='kw'>end</span>
-  <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
-    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:parameter</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameter</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Smash</span><span class='lbracket'>[</span>
-        <span class='op'>*</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:parameter</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_a</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span>
-      <span class='rbracket'>]</span>
-    <span class='kw'>end</span>
-    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='rparen'>)</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='comma'>,</span>
-        <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:parameter</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span><span class='rparen'>)</span>
-      <span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_set_parameter'>set_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='comma'>,</span> <span class='id identifier rubyid_ns_key'>ns_key</span><span class='comma'>,</span> <span class='id identifier rubyid_param_name'>param_name</span><span class='comma'>,</span> <span class='id identifier rubyid_param_value'>param_value</span><span class='comma'>,</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='comma'>,</span> <span class='id identifier rubyid_param_banner'>param_banner</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_valid'>valid</span> <span class='op'>=</span> <span class='kw'>false</span>
+  <span class='id identifier rubyid_attempt'>attempt</span> <span class='op'>=</span> <span class='int'>0</span>
+  <span class='kw'>if</span><span class='lparen'>(</span><span class='op'>!</span><span class='id identifier rubyid_valid'>valid</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_param_banner'>param_banner</span><span class='rparen'>)</span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>SparkleFormation</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Stack runtime parameters:</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> - template: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_root_path'>root_path</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> &gt; </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='symbol'>:green</span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>else</span>
-      <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:parameter</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Stack runtime parameters:</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
-    <span class='id identifier rubyid_param_banner'>param_banner</span> <span class='op'>=</span> <span class='kw'>false</span>
-    <span class='id identifier rubyid_stack_parameters'>stack_parameters</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
-      <span class='id identifier rubyid_ns_k'>ns_k</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span> <span class='op'>+</span> <span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
-      <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_ns_k'>ns_k</span><span class='rbracket'>]</span>
-      <span class='id identifier rubyid_valid'>valid</span> <span class='op'>=</span> <span class='kw'>false</span>
-      <span class='comment'># When parameter is a hash type, it is being set via
-</span>      <span class='comment'># intrinsic function and we don&#39;t modify
-</span>      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_function_set_parameter?'>function_set_parameter?</span><span class='lparen'>(</span><span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='rparen'>)</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_current_stack'>current_stack</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_enable_set'>enable_set</span> <span class='op'>=</span> <span class='id identifier rubyid_validate_stack_parameter'>validate_stack_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_current_stack'>current_stack</span><span class='comma'>,</span> <span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid_ns_k'>ns_k</span><span class='comma'>,</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-        <span class='kw'>else</span>
-          <span class='id identifier rubyid_enable_set'>enable_set</span> <span class='op'>=</span> <span class='kw'>true</span>
-        <span class='kw'>end</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_enable_set'>enable_set</span><span class='rparen'>)</span>
-          <span class='comment'># NOTE: direct set dumps the stack (nfi). Smash will
-</span>          <span class='comment'># auto dup it, and works, so yay i guess.
-</span>          <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_ns_k'>ns_k</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
-          <span class='id identifier rubyid_valid'>valid</span> <span class='op'>=</span> <span class='kw'>true</span>
-        <span class='kw'>end</span>
-      <span class='kw'>else</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_current_stack'>current_stack</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_current_stack'>current_stack</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:parent_stack</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_use_expected'>use_expected</span> <span class='op'>=</span> <span class='id identifier rubyid_validate_stack_parameter'>validate_stack_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_current_stack'>current_stack</span><span class='comma'>,</span> <span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid_ns_k'>ns_k</span><span class='comma'>,</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-          <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_use_expected'>use_expected</span><span class='rparen'>)</span>
-            <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_current_stack'>current_stack</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span>
-          <span class='kw'>end</span>
-        <span class='kw'>end</span>
+    <span class='id identifier rubyid_param_banner'>param_banner</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>end</span>
+  <span class='kw'>until</span><span class='lparen'>(</span><span class='id identifier rubyid_valid'>valid</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_attempt'>attempt</span> <span class='op'>+=</span> <span class='int'>1</span>
+    <span class='id identifier rubyid_default'>default</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span>
+      <span class='id identifier rubyid_ns_key'>ns_key</span><span class='comma'>,</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span>
+        <span class='id identifier rubyid_param_name'>param_name</span><span class='comma'>,</span> <span class='const'>TEMPLATE_PARAMETER_DEFAULTS</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_loc_key'>loc_key</span><span class='op'>|</span> <span class='id identifier rubyid_param_value'>param_value</span><span class='lbracket'>[</span><span class='id identifier rubyid_loc_key'>loc_key</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
+      <span class='rparen'>)</span>
+    <span class='rparen'>)</span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:interactive_parameters</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_answer'>answer</span> <span class='op'>=</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_ask_question'>ask_question</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_param_name'>param_name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>([A-Z]+[^A-Z]*)</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_find_all'>find_all</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span><span class='op'>!</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:default</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_default'>default</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_answer'>answer</span> <span class='op'>=</span> <span class='id identifier rubyid_default'>default</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_validation'>validation</span> <span class='op'>=</span> <span class='id identifier rubyid_validate_parameter'>validate_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_answer'>answer</span><span class='comma'>,</span> <span class='id identifier rubyid_param_value'>param_value</span><span class='rparen'>)</span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_validation'>validation</span> <span class='op'>==</span> <span class='kw'>true</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_ns_key'>ns_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_answer'>answer</span>
+      <span class='id identifier rubyid_valid'>valid</span> <span class='op'>=</span> <span class='kw'>true</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_validation'>validation</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_validation_error'>validation_error</span><span class='op'>|</span>
+        <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_validation_error'>validation_error</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span>
       <span class='kw'>end</span>
-      <span class='id identifier rubyid_attempt'>attempt</span> <span class='op'>=</span> <span class='int'>0</span>
-      <span class='kw'>if</span><span class='lparen'>(</span><span class='op'>!</span><span class='id identifier rubyid_valid'>valid</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_param_banner'>param_banner</span><span class='rparen'>)</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>SparkleFormation</span><span class='rparen'>)</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Stack runtime parameters:</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> - template: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='id identifier rubyid_sparkle'>sparkle</span><span class='period'>.</span><span class='id identifier rubyid_root_path'>root_path</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> &gt; </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='symbol'>:green</span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-        <span class='kw'>else</span>
-          <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Stack runtime parameters:</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span>
-        <span class='kw'>end</span>
-        <span class='id identifier rubyid_param_banner'>param_banner</span> <span class='op'>=</span> <span class='kw'>true</span>
-      <span class='kw'>end</span>
-      <span class='kw'>until</span><span class='lparen'>(</span><span class='id identifier rubyid_valid'>valid</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_attempt'>attempt</span> <span class='op'>+=</span> <span class='int'>1</span>
-        <span class='id identifier rubyid_default'>default</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span>
-          <span class='id identifier rubyid_ns_k'>ns_k</span><span class='comma'>,</span> <span class='id identifier rubyid_current_parameters'>current_parameters</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span>
-            <span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='const'>TEMPLATE_PARAMETER_DEFAULTS</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_loc_key'>loc_key</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span><span class='lbracket'>[</span><span class='id identifier rubyid_loc_key'>loc_key</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
-          <span class='rparen'>)</span>
-        <span class='rparen'>)</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:interactive_parameters</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_answer'>answer</span> <span class='op'>=</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_ask_question'>ask_question</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>([A-Z]+[^A-Z]*)</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_find_all'>find_all</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span><span class='op'>!</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:default</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_default'>default</span><span class='rparen'>)</span>
-        <span class='kw'>else</span>
-          <span class='id identifier rubyid_answer'>answer</span> <span class='op'>=</span> <span class='id identifier rubyid_default'>default</span>
-        <span class='kw'>end</span>
-        <span class='id identifier rubyid_validation'>validation</span> <span class='op'>=</span> <span class='id identifier rubyid_validate_parameter'>validate_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_answer'>answer</span><span class='comma'>,</span> <span class='id identifier rubyid_v'>v</span><span class='rparen'>)</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_validation'>validation</span> <span class='op'>==</span> <span class='kw'>true</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:parameters</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_ns_k'>ns_k</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_answer'>answer</span>
-          <span class='id identifier rubyid_valid'>valid</span> <span class='op'>=</span> <span class='kw'>true</span>
-        <span class='kw'>else</span>
-          <span class='id identifier rubyid_validation'>validation</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_validation_error'>validation_error</span><span class='op'>|</span>
-            <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_validation_error'>validation_error</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span>
-          <span class='kw'>end</span>
-        <span class='kw'>end</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_attempt'>attempt</span> <span class='op'>&gt;</span> <span class='const'>MAX_PARAMETER_ATTEMPTS</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_fatal'>fatal</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Failed to receive allowed parameter!</span><span class='tstring_end'>&#39;</span></span>
-          <span class='id identifier rubyid_exit'>exit</span> <span class='int'>1</span>
-        <span class='kw'>end</span>
-      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_attempt'>attempt</span> <span class='op'>&gt;</span> <span class='const'>MAX_PARAMETER_ATTEMPTS</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_fatal'>fatal</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Failed to receive allowed parameter!</span><span class='tstring_end'>&#39;</span></span>
+      <span class='id identifier rubyid_exit'>exit</span> <span class='int'>1</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
-  <span class='const'>Smash</span><span class='lbracket'>[</span>
-    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
-      <span class='id identifier rubyid_strip_key'>strip_key</span> <span class='op'>=</span> <span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span> <span class='op'>?</span> <span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_parameter_prefix'>parameter_prefix</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>_{2}?</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_k'>k</span>
-      <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_strip_key'>strip_key</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>__</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
-        <span class='lbracket'>[</span><span class='id identifier rubyid_strip_key'>strip_key</span><span class='comma'>,</span> <span class='id identifier rubyid_v'>v</span><span class='rbracket'>]</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
-  <span class='rbracket'>]</span>
+  <span class='id identifier rubyid_param_banner'>param_banner</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1350,48 +1854,48 @@ adjusted directly but the resource sets value via intrinsic function.</p>
       <pre class="lines">
 
 
-239
-240
-241
-242
-243
-244
-245
-246
-247
-248
-249
-250
-251
-252
-253
-254
-255
-256
-257
-258
-259
-260
-261
-262
-263
-264
-265
-266
-267
-268
-269
-270
-271
-272
-273
-274
-275
-276
-277</pre>
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 239</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/stack.rb', line 291</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate_stack_parameter'>validate_stack_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_c_stack'>c_stack</span><span class='comma'>,</span> <span class='id identifier rubyid_p_key'>p_key</span><span class='comma'>,</span> <span class='id identifier rubyid_p_ns_key'>p_ns_key</span><span class='comma'>,</span> <span class='id identifier rubyid_c_value'>c_value</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_stack_value'>stack_value</span> <span class='op'>=</span> <span class='id identifier rubyid_c_stack'>c_stack</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span><span class='lbracket'>[</span><span class='id identifier rubyid_p_key'>p_key</span><span class='rbracket'>]</span>
@@ -1442,7 +1946,7 @@ adjusted directly but the resource sets value via intrinsic function.</p>
 </div>
 
     <div id="footer">
-  Generated on Sat May 14 12:44:53 2016 by
+  Generated on Thu May 19 17:27:06 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-2.2.3).
 </div>
