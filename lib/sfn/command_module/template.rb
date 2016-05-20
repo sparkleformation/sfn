@@ -166,14 +166,7 @@ module Sfn
             config[:template]
           elsif(config[:file])
             if(config[:processing])
-              compile_state = config.fetch(:compile_parameters, Smash.new)
-              compile_state.keys.each do |cs_key|
-                if(cs_key.to_s.start_with?(arguments.first.to_s))
-                  cli_provided = compile_state.delete(cs_key.to_s.sub("#{arguments.first.to_s}__", ''))
-                  compile_state[cs_key].deep_merge!(cli_provided)
-                end
-              end
-              ui.debug "Merged compile parameters - #{compile_state}"
+              compile_state = merge_compile_time_parameters
               sf = SparkleFormation.compile(config[:file], :sparkle)
               if(name_args.first)
                 sf.name = name_args.first
@@ -232,6 +225,27 @@ module Sfn
           else
             raise ArgumentError.new 'Failed to locate template for processing!'
           end
+        end
+
+        # Merge parameters provided directly via configuration into
+        # core parameter set
+        def merge_compile_time_parameters
+          compile_state = config.fetch(:compile_parameters, Smash.new)
+          compile_state.keys.each do |cs_key|
+            if(cs_key.to_s.start_with?("#{arguments.first}__"))
+              cli_provided = compile_state.delete(cs_key.to_s.sub("#{arguments.first.to_s}__", ''))
+              if(cli_provided)
+                compile_state[cs_key].deep_merge!(cli_provided)
+              end
+            end
+          end
+          compile_state.keys.each do |cs_key|
+            unless(cs_key.start_with?("#{arguments.first}__"))
+              compile_state["#{arguments.first}__#{cs_key}"] = compile_state.delete(cs_key)
+            end
+          end
+          ui.debug "Merged compile parameters - #{compile_state}"
+          compile_state
         end
 
         # Force user friendly error if nesting bucket is not set within configuration
