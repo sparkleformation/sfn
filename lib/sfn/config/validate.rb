@@ -83,7 +83,7 @@ module Sfn
             v.split(',').each do |item_pair|
               key, value = item_pair.split(/[=:]/, 2)
               key = key.split('__')
-              key = [key.pop, key.map{|x| Bogo::Utility.camel(x)}.join('__')].reverse
+              key = [key.pop, key.join('__')].reverse
               result.set(*key, value)
             end
             result
