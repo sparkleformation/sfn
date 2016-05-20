@@ -12,7 +12,7 @@ anchors:
 
 ## Lint
 
-The lint framework built within the sfn tool utilizes the JMESPath query language
+The lint framework built within the sfn tool utilizes the [JMESPath][jmespath] query language
 for identifying patterns and apply validation rules.
 
 ### Lint Framework
@@ -32,7 +32,7 @@ can be successfully applied. Linting related classes:
 ##### `Sfn::Lint::Definition`
 
 Definitions define a search expression to be applied to a given template. The search
-expression is a JMESPath compatible query expression. The matches
+expression is a [JMESPath compatible query expression][jmespath-expr]. The matches
 of the search expression are then processed. If the results are valid, a `true` result
 is expected. If the results are invalid, a `false` value is expected, or an `Array<String>`
 value is expected which provides the list of invalid items.
@@ -183,3 +183,6 @@ rule sets:
 ~~~
 $ sfn lint --file my-template --lint-directory tests/lint --local-rule-sets-only
 ~~~
+
+[jmespath]: http://jmespath.org/
+[jmespath-expr]: http://jmespath.org/specification.html
