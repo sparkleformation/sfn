@@ -17,5 +17,6 @@ module Sfn
   autoload :Command, 'sfn/command'
   autoload :CommandModule, 'sfn/command_module'
   autoload :Planner, 'sfn/planner'
+  autoload :Lint, 'sfn/lint'
 
 end
