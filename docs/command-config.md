@@ -941,7 +941,7 @@ $ sfn lint
 | | Default | |
 | `--local-rule-sets-only` | Description | Only apply rule sets provided by lint directory |
 | | Valid | `TrueClass`, `FalseClass` |
-| | Default | |
+| | Default | false|
 | `--nesting-bucket` | Description | Bucket to use for storing nested stack templates |
 | | Valid | `String` |
 | | Default | |

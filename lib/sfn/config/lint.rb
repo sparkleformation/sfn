@@ -21,7 +21,8 @@ module Sfn
       )
       attribute(
         :local_rule_sets_only, [TrueClass, FalseClass],
-        :description => 'Only apply rule sets provided by lint directory'
+        :description => 'Only apply rule sets provided by lint directory',
+        :default => false
       )
     end
   end
