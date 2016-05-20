@@ -1,3 +1,6 @@
+# v3.0.12
+* [feature] New linting foundation and `lint` command (#208)
+
 # v3.0.10
 * [fix] Template prompting within collections (#204)
 * [enhancement] Stack parameter matching via configuration (#203)
