@@ -1,6 +1,6 @@
 ---
 title: "SparklePacks"
-weight: 4
+weight: 6
 anchors:
   - title: "Enabling SparklePacks"
     url: "#enabling-sparklepacks"

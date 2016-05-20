@@ -14,7 +14,7 @@ file = File.open(File.join(File.dirname(__FILE__), '..', 'docs', 'command-config
 file.puts <<-EOS
 ---
 title: "Commands and configuration"
-weight: 3
+weight: 6
 anchors:
 EOS
 
