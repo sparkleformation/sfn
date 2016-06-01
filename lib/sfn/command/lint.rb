@@ -29,7 +29,7 @@ module Sfn
             result.each do |failure|
               ui.error "Result Set: #{ui.color(failure[:rule_set].name, :red, :bold)}"
               failure[:failures].each do |f_msg|
-                ui.fatal "#{ui.color('  *', :red, :bold)} #{f_msg}"
+                ui.fatal f_msg
               end
             end
             raise 'Linting failure'
