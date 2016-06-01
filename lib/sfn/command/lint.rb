@@ -23,13 +23,13 @@ module Sfn
         else
           result = lint_template(raw_template)
           if(result == true)
-            ui.puts ui.color('  -> VALID', :green, :bold)
+            ui.info ui.color('  -> VALID', :green, :bold)
           else
-            ui.puts ui.color('  -> INVALID', :red, :bold)
+            ui.info ui.color('  -> INVALID', :red, :bold)
             result.each do |failure|
               ui.error "Result Set: #{ui.color(failure[:rule_set].name, :red, :bold)}"
               failure[:failures].each do |f_msg|
-                ui.puts "#{ui.color('  *', :red, :bold)} #{f_msg}"
+                ui.fatal "#{ui.color('  *', :red, :bold)} #{f_msg}"
               end
             end
             raise 'Linting failure'
