@@ -277,7 +277,7 @@ module Sfn
               file = bucket.files.build
               file.name = "#{name_args.first}_#{stack_name}.json"
               file.content_type = 'text/json'
-              file.body = MultiJson.dump(Sfn::Utils::StackParameterScrubber.scrub!(stack_definition))
+              file.body = MultiJson.dump(parameter_scrub!(stack_definition))
               file.save
               url = URI.parse(file.url)
               template_url = "#{url.scheme}://#{url.host}#{url.path}"
@@ -391,7 +391,7 @@ module Sfn
         # @param template [Hash]
         # @return [Hash]
         def scrub_template(template)
-          template = Sfn::Utils::StackParameterScrubber.scrub!(template)
+          template = parameter_scrub!(template)
           (template['Resources'] || {}).each do |r_name, r_content|
             if(valid_stack_types.include?(r_content['Type']))
               result = (r_content['Properties'] || {}).delete('Stack')
