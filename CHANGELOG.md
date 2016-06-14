@@ -1,3 +1,7 @@
+# v3.0.16
+* [enhancement] Update output format of lint command(#212)
+* [fix] Fix parameter scrub to use instance method
+
 # v3.0.14
 * [fix] Compile time parameter merging (#211)
 
