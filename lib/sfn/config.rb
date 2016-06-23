@@ -103,6 +103,11 @@ module Sfn
       :description => 'Enable debug output',
       :short_flag => 'u'
     )
+    attribute(
+      :colors, [TrueClass, FalseClass],
+      :description => 'Enable colorized output',
+      :default => true
+    )
 
     attribute :conf, Conf, :coerce => proc{|v| Conf.new(v)}
     attribute :create, Create, :coerce => proc{|v| Create.new(v)}
