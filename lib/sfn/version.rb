@@ -1,4 +1,4 @@
 module Sfn
   # Current library version
-  VERSION = Gem::Version.new('3.0.17')
+  VERSION = Gem::Version.new('3.0.18')
 end

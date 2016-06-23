@@ -1,3 +1,6 @@
+# v3.0.18
+* [enhancement] Add `colors` flag to CLI commands
+
 # v3.0.16
 * [enhancement] Update output format of lint command(#212)
 * [fix] Fix parameter scrub to use instance method
