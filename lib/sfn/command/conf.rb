@@ -5,6 +5,8 @@ module Sfn
     # Config command
     class Conf < Command
 
+      include Sfn::CommandModule::Base
+
       # Run the list command
       def execute!
         ui.info ui.color("Current configuration state:")
