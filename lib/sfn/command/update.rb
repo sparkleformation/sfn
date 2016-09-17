@@ -90,7 +90,10 @@ module Sfn
               stack.parameters = original_parameters
               plan = build_planner(stack)
               if(plan)
-                result = plan.generate_plan(file.dump, config_root_parameters)
+                result = plan.generate_plan(
+                  file.respond_to?(:dump) ? file.dump : file,
+                  config_root_parameters
+                )
                 display_plan_information(result)
               end
             rescue => e
