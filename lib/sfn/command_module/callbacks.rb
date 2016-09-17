@@ -54,7 +54,8 @@ module Sfn
             begin
               klass = Sfn::Callback.const_get(Bogo::Utility.camel(c_name.to_s))
               klass.new(ui, config, arguments, provider)
-            rescue NameError
+            rescue NameError => e
+              ui.debug "Callback type lookup error: #{e.class} - #{e}"
               raise "Unknown #{type} callback requested: #{c_name} (not found)"
             end
           end
