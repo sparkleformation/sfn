@@ -22,7 +22,10 @@ module Sfn
         if(config[:print_only])
           ui.puts raw_template
         else
-          validate_stack(file.dump, sparkle_collection.get(:template, config[:file])[:name])
+          validate_stack(
+            file.respond_to?(:dump) ? file.dump : file,
+            sparkle_collection.get(:template, config[:file])[:name]
+          )
         end
       end
 
