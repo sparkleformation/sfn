@@ -21,9 +21,7 @@ module Sfn
         config[:print_only] = true
         validate_graph_style!
         file = load_template_file
-        file = parameter_scrub!(file.sparkle_dump)
         @outputs = Smash.new
-        file = file.to_smash
         ui.info "Template resource graph generation - Style: #{ui.color(config[:graph_style], :bold)}"
         if(config[:file])
           ui.puts "  -> path: #{config[:file]}"
@@ -38,14 +36,14 @@ module Sfn
         end
         graph = nil
         run_action 'Generating resource graph' do
-          graph = generate_graph(file.to_smash)
+          graph = generate_graph(file)
           nil
         end
         run_action 'Writing graph result' do
           FileUtils.mkdir_p(File.dirname(config[:output_file]))
           if(config[:output_type] == 'dot')
-            File.open("#{config[:output_file]}.dot", 'w') do |file|
-              file.puts graph.to_s
+            File.open("#{config[:output_file]}.dot", 'w') do |o_file|
+              o_file.puts graph.to_s
             end
           else
             graph.save config[:output_file], config[:output_type]
@@ -74,10 +72,11 @@ module Sfn
       end
 
       def output_discovery(template, outputs, resource_name, parent_template, name='')
-        if(template['Resources'])
-          template['Resources'].each_pair do |r_name, r_info|
-            if(r_info['Type'] == 'AWS::CloudFormation::Stack')
-              output_discovery(r_info['Properties']['Stack'], outputs, r_name, template, r_name)
+        unless(template.resources.nil?)
+          template.resources.keys!.each do |r_name|
+            r_info = template.resources[r_name]
+            if(r_info.type == template._self.stack_resource_name)
+              output_discovery(r_info.properties.stack, outputs, r_name, template, r_name)
             end
           end
         end

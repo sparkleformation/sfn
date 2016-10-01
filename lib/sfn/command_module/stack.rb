@@ -16,6 +16,8 @@ module Sfn
         TEMPLATE_PARAMETER_DEFAULTS = ['Default', 'defaultValue', 'default']
         # Template parameter no echo locations
         TEMPLATE_PARAMETER_NOECHO = ['NoEcho']
+        # Template parameter no echo custom
+        TEMPLATE_PARAMETER_SFN_NOECHO = ['Quiet', 'quiet']
 
         # Apply any defined remote stacks
         #
@@ -189,12 +191,19 @@ module Sfn
               )
             )
             if(config[:interactive_parameters])
+              no_echo = !!TEMPLATE_PARAMETER_NOECHO.detect{|loc_key|
+                param_value[loc_key].to_s.downcase == 'true'
+              }
+              sfn_no_echo = TEMPLATE_PARAMETER_SFN_NOECHO.map do |loc_key|
+                res = param_value.delete(loc_key).to_s.downcase
+                res if !res.empty? && res != 'false'
+              end.compact.first
+              no_echo = sfn_no_echo if sfn_no_echo
               answer = ui.ask_question(
                 "#{param_name.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}",
                 :default => default,
-                :no_echo => !!TEMPLATE_PARAMETER_NOECHO.detect{|loc_key|
-                  param_value[loc_key].to_s.downcase == 'true'
-                }
+                :hide_default => sfn_no_echo == 'all',
+                :no_echo => !!no_echo
               )
             else
               answer = default
