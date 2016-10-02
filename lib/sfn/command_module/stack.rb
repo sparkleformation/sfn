@@ -14,6 +14,8 @@ module Sfn
         TEMPLATE_PARAMETER_LOCATIONS = ['Parameters', 'parameters']
         # Template parameter default value locations
         TEMPLATE_PARAMETER_DEFAULTS = ['Default', 'defaultValue', 'default']
+        # Template parameter no echo locations
+        TEMPLATE_PARAMETER_NOECHO = ['NoEcho']
 
         # Apply any defined remote stacks
         #
@@ -184,7 +186,13 @@ module Sfn
               )
             )
             if(config[:interactive_parameters])
-              answer = ui.ask_question("#{param_name.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}", :default => default)
+              answer = ui.ask_question(
+                "#{param_name.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}",
+                :default => default,
+                :no_echo => !!TEMPLATE_PARAMETER_NOECHO.detect{|loc_key|
+                  param_value[loc_key].to_s.downcase == 'true'
+                }
+              )
             else
               answer = default
             end
