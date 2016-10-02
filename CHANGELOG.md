@@ -1,8 +1,12 @@
+# v3.0.20
+* [fix] Only dump templates when dumpable (#220, #223)
+* [enhancement] Support NoEcho template parameters (#226)
+
 # v3.0.18
 * [enhancement] Add `colors` flag to CLI commands
 
 # v3.0.16
-* [enhancement] Update output format of lint command(#212)
+* [enhancement] Update output format of lint command (#212)
 * [fix] Fix parameter scrub to use instance method
 
 # v3.0.14
