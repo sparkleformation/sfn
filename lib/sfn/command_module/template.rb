@@ -186,7 +186,11 @@ module Sfn
                 unless(formation.parameters.empty?)
                   ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(pathed_name, :green, :bold)}" unless config[:print_only]
                   formation.parameters.each do |k,v|
-                    current_state[k] = request_compile_parameter(k, v, current_state[k], !!formation.parent)
+                    primary_key, secondary_key = ["#{f_name}__#{k}", k]
+                    current_state[k] = request_compile_parameter(k, v,
+                      current_state.fetch(primary_key, current_state[secondary_key]),
+                      !!formation.parent
+                    )
                   end
                   formation.compile_state = current_state
                 end
