@@ -186,9 +186,18 @@ module Sfn
                 unless(formation.parameters.empty?)
                   ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(pathed_name, :green, :bold)}" unless config[:print_only]
                   formation.parameters.each do |k,v|
+                    valid_keys = [
+                      "#{f_name}__#{k}",
+                      Bogo::Utility.camel("#{f_name}__#{k}").downcase,
+                      k,
+                      Bogo::Utility.camel(k).downcase
+                    ]
+                    current_value = valid_keys.map do |key|
+                      current_state[key]
+                    end.compact.first
                     primary_key, secondary_key = ["#{f_name}__#{k}", k]
                     current_state[k] = request_compile_parameter(k, v,
-                      current_state.fetch(primary_key, current_state[secondary_key]),
+                      current_value,
                       !!formation.parent
                     )
                   end
@@ -235,17 +244,17 @@ module Sfn
         # core parameter set
         def merge_compile_time_parameters
           compile_state = config.fetch(:compile_parameters, Smash.new)
+          ui.debug "Initial compile parameters - #{compile_state}"
           compile_state.keys.each do |cs_key|
-            if(cs_key.to_s.start_with?("#{arguments.first}__"))
-              cli_provided = compile_state.delete(cs_key.to_s.sub("#{arguments.first.to_s}__", ''))
-              if(cli_provided)
-                compile_state[cs_key].deep_merge!(cli_provided)
+            unless(cs_key.to_s.start_with?("#{arguments.first}__"))
+              named_cs_key = "#{arguments.first}__#{cs_key}"
+              non_named = compile_state.delete(cs_key)
+              if(non_named && !compile_state.key?(named_cs_key))
+                ui.debug "Setting non-named compile parameter `#{cs_key}` into `#{named_cs_key}`"
+                compile_state[named_cs_key] = non_named
+              else
+                ui.debug "Discarding non-named compile parameter due to set named - `#{cs_key}` </> `#{named_cs_key}`"
               end
-            end
-          end
-          compile_state.keys.each do |cs_key|
-            unless(cs_key.start_with?("#{arguments.first}__"))
-              compile_state["#{arguments.first}__#{cs_key}"] = compile_state.delete(cs_key)
             end
           end
           ui.debug "Merged compile parameters - #{compile_state}"

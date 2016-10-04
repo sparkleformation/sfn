@@ -82,13 +82,22 @@ module Sfn
             result = Smash.new
             v.split(',').each do |item_pair|
               key, value = item_pair.split(/[=:]/, 2)
-              key = key.split('__')
-              key = [key.pop, key.join('__')].reverse
-              result.set(*key, value)
+              result[key] = value
             end
             result
           when Hash
-            v.to_smash
+            result = Smash.new
+            extractor = lambda do |data, prefix|
+              data.each_pair do |key, value|
+                local_key = "#{prefix}__#{key}"
+                if(value.is_a?(Hash))
+                  extractor.call(value, local_key)
+                else
+                  result[local_key] = data
+                end
+              end
+            end
+            result
           else
             v
           end
