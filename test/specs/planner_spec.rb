@@ -280,7 +280,6 @@ describe Sfn::Planner do
         result = planner.generate_plan(template, {})[:stacks][stack.name]
         result[:removed].must_be :empty?
       end
-
     end
 
     describe 'Template conditionals' do
@@ -396,6 +395,79 @@ describe Sfn::Planner do
             result[:removed].keys.must_include 'Ec2Instance'
           end
         end
+      end
+
+      describe 'resource modification ref conditionals' do
+        let(:template) do
+          Smash.new(
+            'Parameters' => {
+              'NodeImageId' => {
+                'Type' => 'String'
+              }
+            },
+            'Conditions' => {
+              'InSpecificAz' => {
+                'Fn::Equals' => [
+                  {
+                    'Fn::GetAtt' => [
+                      {'Ref' => 'Ec2Instance'},
+                      'AvailabilityZone'
+                    ]
+                  },
+                  'us-west-1'
+                ]
+              }
+            },
+            'Resources' => {
+              'Ec2Instance' => {
+                'Type' => 'AWS::EC2::Instance',
+                'Properties' => {
+                  'ImageId' => {
+                    'Ref' => 'NodeImageId'
+                  }
+                }
+              },
+              'OtherEc2Instance' => {
+                'Type' => 'AWS::EC2::Instance',
+                'Properties' => {
+                  'ImageId' => {
+                    'Fn::If' => [
+                      'InSpecificAz',
+                      {'Ref' => 'NodeImageId'},
+                      '12'
+                    ]
+                  }
+                }
+              }
+            }
+          )
+        end
+
+        describe 'when resource is not modified' do
+          let(:stack_parameters) do
+            Smash.new('NodeImageId' => '11')
+          end
+
+          it 'should not flag removal' do
+            api.expects(:stack_template_load).returns(template).at_least_once
+            result = planner.generate_plan(template, stack_parameters)[:stacks][stack.name]
+            result[:removed].must_be :empty?
+          end
+        end
+
+        describe 'when resource is modified' do
+          let(:stack_parameters) do
+            Smash.new('NodeImageId' => '11')
+          end
+
+          it 'should flag unknown' do
+            api.expects(:stack_template_load).returns(template).at_least_once
+            result = planner.generate_plan(template, Smash.new('NodeImageId' => '22'))[:stacks][stack.name]
+            result[:unknown].wont_be :empty?
+            result[:unknown].keys.must_include 'OtherEc2Instance'
+          end
+        end
+
       end
     end
   end

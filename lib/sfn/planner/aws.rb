@@ -14,6 +14,8 @@ module Sfn
         REF_MAPPING = {}
         FN_MAPPING = {}
 
+        UNKNOWN_RUNTIME_RESULT = '__UNKNOWN_RUNTIME_RESULT__'
+
         # @return [Array<String>] flagged items for value replacement
         attr_reader :flagged
 
@@ -55,14 +57,14 @@ module Sfn
         def apply_function(hash, funcs=[])
           if(hash.is_a?(Hash))
             k,v = hash.first
-            if(hash.size == 1 && (k.start_with?('Fn') || k == 'Ref') && (funcs.empty? || funcs.include?(k)))
+            if(hash.size == 1 && (k.start_with?('Fn') || k == 'Ref') && (funcs.include?(:all) || funcs.empty? || funcs.include?(k) || funcs == ['DEREF']))
               method_name = Bogo::Utility.snake(k.gsub('::', ''))
-              if(respond_to?(method_name))
+              if((funcs.include?(k) || funcs.include?(:all)) && respond_to?(method_name))
                 apply_function(send(method_name, v), funcs)
               else
                 case k
                 when 'Fn::GetAtt'
-                  func.include?('DEREF') ? dereference(hash) : hash
+                  funcs.include?('DEREF') ? dereference(hash) : hash
                 when 'Ref'
                   if(funcs.include?('DEREF'))
                     dereference(hash)
@@ -88,7 +90,7 @@ module Sfn
         def apply_condition(name)
           condition = conditions[name]
           if(condition)
-            !!apply_function(condition)
+            apply_function(condition, [:all, 'DEREF'])
           else
             raise "Failed to locate condition with name `#{name}`!"
           end
@@ -99,7 +101,13 @@ module Sfn
         # @param value [Array] {0: condition name, 1: true value, 2: false value}
         # @return [Object] true or false value
         def fn_if(value)
-          apply_condition(value[0]) ? value[1] : value[2]
+          result = apply_condition(value[0])
+          if(result != UNKNOWN_RUNTIME_RESULT)
+            result ? value[1] : value[2]
+          else
+            UNKNOWN_RUNTIME_RESULT
+            result
+          end
         end
 
         # Determine if all conditions are true
@@ -107,8 +115,13 @@ module Sfn
         # @param value [Array<String>] condition names
         # @return [TrueClass, FalseClass]
         def fn_and(value)
-          value.all? do |val|
+          result = value.map do |val|
             apply_condition(val)
+          end
+          if(result.to_s.include?(RUNTIME_MODIFIED))
+            UNKNOWN_RUNTIME_RESULT
+          else
+            result.all?
           end
         end
 
@@ -117,8 +130,13 @@ module Sfn
         # @param value [Array<String>] condition names
         # @return [TrueClass, FalseClass]
         def fn_or(value)
-          value.any? do |val|
+          result = value.map do |val|
             apply_condition(val)
+          end
+          if(result.to_s.include?(RUNTIME_MODIFIED))
+            UNKNOWN_RUNTIME_RESULT
+          else
+            result.any?
           end
         end
 
@@ -127,7 +145,8 @@ module Sfn
         # @param value [Array<Hash>]
         # @return [TrueClass, FalseClass]
         def fn_not(value)
-          !apply_function(value)
+          result = apply_function(value)
+          result == RUNTIME_MODIFIED ? UNKNOWN_RUNTIME_RESULT : !result
         end
 
         # Determine if values are equal
@@ -138,7 +157,11 @@ module Sfn
           value = value.map do |val|
             apply_function(val)
           end
-          value.first == value.last
+          if(value.to_s.include?(RUNTIME_MODIFIED))
+            UNKNOWN_RUNTIME_RESULT
+          else
+            value.first == value.last
+          end
         end
 
         # Join values with given delimiter
@@ -502,15 +525,19 @@ module Sfn
                 ]
               )
               begin
-                r_info = SparkleFormation::Resources::Aws.resource_lookup(type)
-                r_property = r_info.property(property_name)
-                if(r_property)
-                  effect = r_property.update_causes(
-                    templates.get(:update, 'Resources', resource_name),
-                    templates.get(:origin, 'Resources', resource_name)
-                  )
+                if(templates.get(:update, 'Resources', resource_name, 'Properties', property_name) == Translator::UNKNOWN_RUNTIME_RESULT)
+                  effect = :unknown
                 else
-                  raise KeyError.new 'Unknown property'
+                  r_info = SparkleFormation::Resources::Aws.resource_lookup(type)
+                  r_property = r_info.property(property_name)
+                  if(r_property)
+                    effect = r_property.update_causes(
+                      templates.get(:update, 'Resources', resource_name),
+                      templates.get(:origin, 'Resources', resource_name)
+                    )
+                  else
+                    raise KeyError.new 'Unknown property'
+                  end
                 end
                 case effect.to_sym
                 when :replacement
@@ -593,19 +620,16 @@ module Sfn
         template.keys.each do |t_key|
           next if ['Outputs', 'Resources'].include?(t_key)
           template[t_key] = translator.dereference_processor(
-            template[t_key], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap']
+            template[t_key], ['DEREF']
           )
         end
         translator.original.replace(template)
-        if(template['Resources'])
-          template['Resources'] = translator.dereference_processor(
-            template['Resources'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap', 'Fn::If']
-          )
-        end
-        if(template['Outputs'])
-          template['Outputs'] = translator.dereference_processor(
-            template['Outputs'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap', 'Fn::If']
-          )
+        ['Outputs', 'Resources'].each do |t_key|
+          if(template[t_key])
+            template[t_key] = translator.dereference_processor(
+              template[t_key], ['DEREF', :all]
+            )
+          end
         end
         if(template['Resources'])
           valid_resources = template['Resources'].map do |resource_name, resource_value|
