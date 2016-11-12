@@ -280,8 +280,195 @@ describe Sfn::Planner do
         result = planner.generate_plan(template, {})[:stacks][stack.name]
         result[:removed].must_be :empty?
       end
-
     end
 
+    describe 'Template conditionals' do
+
+      before do
+        api.expects(:data).returns({}).at_least_once
+      end
+
+      let(:template) do
+        Smash.new(
+          'Parameters' => {
+            'Enabled' => {
+              'Type' => 'String'
+            }
+          },
+          'Conditions' => {
+            'IsEnabled' => {
+              'Fn::Equals' => [
+                {'Ref' => 'Enabled'}, 'yes'
+              ]
+            }
+          },
+          'Resources' => {
+            'Ec2Instance' => {
+              'Type' => 'AWS::EC2::Instance',
+              'Properties' => {
+                'ImageId' => {
+                  'Fn::If' => ['IsEnabled', 100, 200]
+                }
+              }
+            }
+          }
+        )
+      end
+
+      describe 'parameter does not change condition' do
+
+        let(:stack_parameters) do
+          Smash.new('Enabled' => 'yes')
+        end
+
+        it 'should not flag removal' do
+          api.expects(:stack_template_load).returns(template).at_least_once
+          result = planner.generate_plan(template, stack_parameters)[:stacks][stack.name]
+          result[:removed].must_be :empty?
+        end
+      end
+
+      describe 'parameter changes condition' do
+
+        let(:stack_parameters) do
+          Smash.new('Enabled' => 'yes')
+        end
+
+        it 'should flag removal' do
+          api.expects(:stack_template_load).returns(template).at_least_once
+          result = planner.generate_plan(template, Smash.new('Enabled' => 'no'))[:stacks][stack.name]
+          result[:replace].wont_be :empty?
+          result[:replace].keys.must_include 'Ec2Instance'
+        end
+      end
+
+      describe 'resource specific conditions' do
+        let(:template) do
+          Smash.new(
+            'Parameters' => {
+              'Enabled' => {
+                'Type' => 'String'
+              }
+            },
+            'Conditions' => {
+              'IsEnabled' => {
+                'Fn::Equals' => [
+                  {'Ref' => 'Enabled'}, 'yes'
+                ]
+              }
+            },
+            'Resources' => {
+              'Ec2Instance' => {
+                'OnCondition' => 'IsEnabled',
+                'Type' => 'AWS::EC2::Instance',
+                'Properties' => {
+                  'ImageId' => 9
+                }
+              }
+            }
+          )
+        end
+
+        describe 'parameter does not change condition' do
+
+          let(:stack_parameters) do
+            Smash.new('Enabled' => 'yes')
+          end
+
+          it 'should not flag removal' do
+            api.expects(:stack_template_load).returns(template).at_least_once
+            result = planner.generate_plan(template, stack_parameters)[:stacks][stack.name]
+            result[:removed].must_be :empty?
+          end
+        end
+
+        describe 'parameter changes condition' do
+
+          let(:stack_parameters) do
+            Smash.new('Enabled' => 'yes')
+          end
+
+          it 'should flag removal' do
+            api.expects(:stack_template_load).returns(template).at_least_once
+            result = planner.generate_plan(template, Smash.new('Enabled' => 'no'))[:stacks][stack.name]
+            result[:removed].wont_be :empty?
+            result[:removed].keys.must_include 'Ec2Instance'
+          end
+        end
+      end
+
+      describe 'resource modification ref conditionals' do
+        let(:template) do
+          Smash.new(
+            'Parameters' => {
+              'NodeImageId' => {
+                'Type' => 'String'
+              }
+            },
+            'Conditions' => {
+              'InSpecificAz' => {
+                'Fn::Equals' => [
+                  {
+                    'Fn::GetAtt' => [
+                      {'Ref' => 'Ec2Instance'},
+                      'AvailabilityZone'
+                    ]
+                  },
+                  'us-west-1'
+                ]
+              }
+            },
+            'Resources' => {
+              'Ec2Instance' => {
+                'Type' => 'AWS::EC2::Instance',
+                'Properties' => {
+                  'ImageId' => {
+                    'Ref' => 'NodeImageId'
+                  }
+                }
+              },
+              'OtherEc2Instance' => {
+                'Type' => 'AWS::EC2::Instance',
+                'Properties' => {
+                  'ImageId' => {
+                    'Fn::If' => [
+                      'InSpecificAz',
+                      {'Ref' => 'NodeImageId'},
+                      '12'
+                    ]
+                  }
+                }
+              }
+            }
+          )
+        end
+
+        describe 'when resource is not modified' do
+          let(:stack_parameters) do
+            Smash.new('NodeImageId' => '11')
+          end
+
+          it 'should not flag removal' do
+            api.expects(:stack_template_load).returns(template).at_least_once
+            result = planner.generate_plan(template, stack_parameters)[:stacks][stack.name]
+            result[:removed].must_be :empty?
+          end
+        end
+
+        describe 'when resource is modified' do
+          let(:stack_parameters) do
+            Smash.new('NodeImageId' => '11')
+          end
+
+          it 'should flag unknown' do
+            api.expects(:stack_template_load).returns(template).at_least_once
+            result = planner.generate_plan(template, Smash.new('NodeImageId' => '22'))[:stacks][stack.name]
+            result[:unknown].wont_be :empty?
+            result[:unknown].keys.must_include 'OtherEc2Instance'
+          end
+        end
+
+      end
+    end
   end
 end

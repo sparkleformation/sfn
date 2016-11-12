@@ -14,6 +14,8 @@ module Sfn
         REF_MAPPING = {}
         FN_MAPPING = {}
 
+        UNKNOWN_RUNTIME_RESULT = '__UNKNOWN_RUNTIME_RESULT__'
+
         # @return [Array<String>] flagged items for value replacement
         attr_reader :flagged
 
@@ -21,6 +23,11 @@ module Sfn
         def initialize(template_hash, args={})
           super
           @flagged = []
+        end
+
+        # @return [Hash] defined conditions
+        def conditions
+          @original.fetch('Conditions', {})
         end
 
         # Flag a reference as modified
@@ -48,36 +55,138 @@ module Sfn
         # @note also allows 'Ref' within funcs to provide mapping
         #   replacements using the REF_MAPPING constant
         def apply_function(hash, funcs=[])
-          k,v = hash.first
-          if(hash.size == 1 && (k.start_with?('Fn') || k == 'Ref') && (funcs.empty? || funcs.include?(k)))
-            case k
-            when 'Fn::Join'
-              v.last.join(v.first)
-            when 'Fn::FindInMap'
-              map_holder = mappings[v[0]]
-              if(map_holder)
-                map_item = map_holder[dereference(v[1])]
-                if(map_item)
-                  map_item[v[2]]
+          if(hash.is_a?(Hash))
+            k,v = hash.first
+            if(hash.size == 1 && (k.start_with?('Fn') || k == 'Ref') && (funcs.include?(:all) || funcs.empty? || funcs.include?(k) || funcs == ['DEREF']))
+              method_name = Bogo::Utility.snake(k.gsub('::', ''))
+              if((funcs.include?(k) || funcs.include?(:all)) && respond_to?(method_name))
+                apply_function(send(method_name, v), funcs)
+              else
+                case k
+                when 'Fn::GetAtt'
+                  funcs.include?('DEREF') ? dereference(hash) : hash
+                when 'Ref'
+                  if(funcs.include?('DEREF'))
+                    dereference(hash)
+                  else
+                    {'Ref' => self.class.const_get(:REF_MAPPING).fetch(v, v)}
+                  end
                 else
-                  raise "Failed to find mapping item! (#{v[0]} -> #{v[1]})"
+                  hash
                 end
-              else
-                raise "Failed to find mapping! (#{v[0]})"
-              end
-            when 'Fn::GetAtt'
-              func.include?('DEREF') ? dereference(hash) : hash
-            when 'Ref'
-              if(funcs.include?('DEREF'))
-                dereference(hash)
-              else
-                {'Ref' => self.class.const_get(:REF_MAPPING).fetch(v, v)}
               end
             else
               hash
             end
           else
             hash
+          end
+        end
+
+        # Evaluate given condition
+        #
+        # @param name [String] condition name
+        # @return [TrueClass, FalseClass]
+        def apply_condition(name)
+          condition = conditions[name]
+          if(condition)
+            apply_function(condition, [:all, 'DEREF'])
+          else
+            raise "Failed to locate condition with name `#{name}`!"
+          end
+        end
+
+        # Evaluate `if` conditional
+        #
+        # @param value [Array] {0: condition name, 1: true value, 2: false value}
+        # @return [Object] true or false value
+        def fn_if(value)
+          result = apply_condition(value[0])
+          if(result != UNKNOWN_RUNTIME_RESULT)
+            result ? value[1] : value[2]
+          else
+            UNKNOWN_RUNTIME_RESULT
+            result
+          end
+        end
+
+        # Determine if all conditions are true
+        #
+        # @param value [Array<String>] condition names
+        # @return [TrueClass, FalseClass]
+        def fn_and(value)
+          result = value.map do |val|
+            apply_condition(val)
+          end
+          if(result.to_s.include?(RUNTIME_MODIFIED))
+            UNKNOWN_RUNTIME_RESULT
+          else
+            result.all?
+          end
+        end
+
+        # Determine if any values are true
+        #
+        # @param value [Array<String>] condition names
+        # @return [TrueClass, FalseClass]
+        def fn_or(value)
+          result = value.map do |val|
+            apply_condition(val)
+          end
+          if(result.to_s.include?(RUNTIME_MODIFIED))
+            UNKNOWN_RUNTIME_RESULT
+          else
+            result.any?
+          end
+        end
+
+        # Negate given value
+        #
+        # @param value [Array<Hash>]
+        # @return [TrueClass, FalseClass]
+        def fn_not(value)
+          result = apply_function(value)
+          result == RUNTIME_MODIFIED ? UNKNOWN_RUNTIME_RESULT : !result
+        end
+
+        # Determine if values are equal
+        #
+        # @param value [Array] values
+        # @return [TrueClass, FalseClass]
+        def fn_equals(value)
+          value = value.map do |val|
+            apply_function(val)
+          end
+          if(value.to_s.include?(RUNTIME_MODIFIED))
+            UNKNOWN_RUNTIME_RESULT
+          else
+            value.first == value.last
+          end
+        end
+
+        # Join values with given delimiter
+        #
+        # @param value [Array<String,Array<String>>]
+        # @return [String]
+        def fn_join(value)
+          value.last.join(value.first)
+        end
+
+        # Lookup value in mappings
+        #
+        # @param value [Array]
+        # @return [String, Fixnum]
+        def fn_find_in_map(value)
+          map_holder = mappings[value[0]]
+          if(map_holder)
+            map_item = map_holder[dereference(value[1])]
+            if(map_item)
+              map_item[value[2]]
+            else
+              raise "Failed to find mapping item! (#{value[0]} -> #{value[1]})"
+            end
+          else
+            raise "Failed to find mapping! (#{value[0]})"
           end
         end
 
@@ -416,15 +525,19 @@ module Sfn
                 ]
               )
               begin
-                r_info = SparkleFormation::Resources::Aws.resource_lookup(type)
-                r_property = r_info.property(property_name)
-                if(r_property)
-                  effect = r_property.update_causes(
-                    templates.get(:update, 'Resources', resource_name),
-                    templates.get(:origin, 'Resources', resource_name)
-                  )
+                if(templates.get(:update, 'Resources', resource_name, 'Properties', property_name) == Translator::UNKNOWN_RUNTIME_RESULT)
+                  effect = :unknown
                 else
-                  raise KeyError.new 'Unknown property'
+                  r_info = SparkleFormation::Resources::Aws.resource_lookup(type)
+                  r_property = r_info.property(property_name)
+                  if(r_property)
+                    effect = r_property.update_causes(
+                      templates.get(:update, 'Resources', resource_name),
+                      templates.get(:origin, 'Resources', resource_name)
+                    )
+                  else
+                    raise KeyError.new 'Unknown property'
+                  end
                 end
                 case effect.to_sym
                 when :replacement
@@ -507,19 +620,30 @@ module Sfn
         template.keys.each do |t_key|
           next if ['Outputs', 'Resources'].include?(t_key)
           template[t_key] = translator.dereference_processor(
-            template[t_key], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap']
+            template[t_key], ['DEREF']
           )
         end
         translator.original.replace(template)
-        if(template['Resources'])
-          template['Resources'] = translator.dereference_processor(
-            template['Resources'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap']
-          )
+        ['Outputs', 'Resources'].each do |t_key|
+          if(template[t_key])
+            template[t_key] = translator.dereference_processor(
+              template[t_key], ['DEREF', :all]
+            )
+          end
         end
-        if(template['Outputs'])
-          template['Outputs'] = translator.dereference_processor(
-            template['Outputs'], ['Ref', 'Fn', 'DEREF', 'Fn::FindInMap']
-          )
+        if(template['Resources'])
+          valid_resources = template['Resources'].map do |resource_name, resource_value|
+            if(resource_value['OnCondition'])
+              if(translator.apply_condition(resource_value['OnCondition']))
+                resource_name
+              end
+            else
+              resource_name
+            end
+          end.compact
+          (template['Resources'].keys - valid_resources).each do |resource_to_remove|
+            template['Resources'].delete(resource_to_remove)
+          end
         end
         translator.original.replace({})
         template
