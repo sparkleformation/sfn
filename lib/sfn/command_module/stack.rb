@@ -143,16 +143,19 @@ module Sfn
         # @param parameter_prefix [Array<String>] nesting prefix names
         # @param parameter_name [String] parameter name
         # @return [Array<String>] [expected_template_key, configuration_used_key]
-        def locate_config_parameter_key(parameter_prefix, parameter_name)
+        def locate_config_parameter_key(parameter_prefix, parameter_name, root_name)
           check_name = parameter_name.downcase.tr('-_', '')
           check_prefix = parameter_prefix.map{|i| i.downcase.tr('-_', '') }
           key_match = config[:parameters].keys.detect do |cp_key|
             cp_key = cp_key.to_s.downcase.split('__').map{|i| i.tr('-_', '') }.join('__')
-            cp_key.start_with?(check_prefix.join('__')) &&
-              cp_key.split('__').last == check_name
+            non_root_matcher = (check_prefix + [check_name]).join('__')
+            root_matcher = ([root_name] + check_prefix + [check_name]).join('__')
+            cp_key == non_root_matcher ||
+              cp_key == root_matcher
           end
           actual_key = (parameter_prefix + [parameter_name]).compact.join('__')
           if(key_match)
+            ui.debug "Remapping configuration runtime parameter `#{key_match}` -> `#{actual_key}`"
             config[:parameters][actual_key] = config[:parameters].delete(key_match)
           end
           actual_key
@@ -228,14 +231,18 @@ module Sfn
             format_config_parameters!
             param_banner = false
             stack_parameters.each do |param_name, param_value|
-              ns_key = locate_config_parameter_key(parameter_prefix, param_name)
+              ns_key = locate_config_parameter_key(parameter_prefix, param_name, sparkle.root.name)
               # When parameter is a hash type, it is being set via
               # intrinsic function and we don't modify
               if(function_set_parameter?(current_parameters[param_name]))
-                if(current_stack)
-                  enable_set = validate_stack_parameter(current_stack, param_name, ns_key, current_parameters[param_name])
+                if(!config[:parameters][ns_key].nil?)
+                  ui.warn "Overriding mapped parameter value with explicit assignment `#{ns_key}`!"
                 else
-                  enable_set = true
+                  if(current_stack)
+                    enable_set = validate_stack_parameter(current_stack, param_name, ns_key, current_parameters[param_name])
+                  else
+                    enable_set = true
+                  end
                 end
                 if(enable_set)
                   # NOTE: direct set dumps the stack (nfi). Smash will

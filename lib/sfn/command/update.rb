@@ -69,7 +69,6 @@ module Sfn
           end
         end
         ui.info "  -> #{stack_info}"
-
         if(file)
           if(config[:print_only])
             ui.puts format_json(parameter_scrub!(template_content(file)))
