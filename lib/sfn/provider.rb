@@ -78,7 +78,7 @@ module Sfn
       )
       @cache = args.fetch(:cache, Cache.new(:local))
       @async = args.fetch(:async, true)
-      @miamsa_args = args[:miasma].dup
+      @miasma_args = args[:miasma].dup
       cache.init(:stacks_lock, :lock, :timeout => 0.1)
       cache.init(:stacks, :stamped)
       cache.init(:stack_expansion_lock, :lock, :timeout => 0.1)
