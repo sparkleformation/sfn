@@ -13,6 +13,7 @@ with orchestration APIs.
 * Heat
 * OpenStack
 * Rackspace
+* Terraform
 
 ## Documentation
 
