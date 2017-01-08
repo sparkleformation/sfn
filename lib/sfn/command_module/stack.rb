@@ -233,7 +233,7 @@ module Sfn
         # @option opts [Miasma::Models::Orchestration::Stack] :stack existing stack
         # @return [Hash]
         def populate_parameters!(sparkle, opts={})
-          current_parameters = opts.fetch(:current_parameters, {})
+          current_parameters = opts[:current_parameters] || {}
           current_stack = opts[:stack]
           parameter_prefix, stack_parameters = prefix_parameters_setup(sparkle)
           unless(stack_parameters.empty?)
