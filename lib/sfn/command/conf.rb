@@ -83,7 +83,7 @@ Configuration.new do
   # nesting_prefix 'nested-templates'
   #   Remote provider credentials
   credentials do
-    #  Remote provider name (:aws, :azure, :google, :open_stack, :rackspace)
+    #  Remote provider name (:aws, :azure, :google, :open_stack, :rackspace, :terraform)
     provider :aws
     #  AWS credentials information
     aws_access_key_id ENV['AWS_ACCESS_KEY_ID']
@@ -123,6 +123,14 @@ Configuration.new do
     google_service_account_email ENV['GOOGLE_SERVICE_ACCOUNT_EMAIL']
     google_service_account_private_key ENV['GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY']
     google_project ENV['GOOGLE_PROJECT']
+    #  Terraform credentials information
+    #  Valid driver names: :atlas, :boule, :local
+    terraform_driver :local
+    terraform_atlas_endpoint ENV['ATLAS_URL']
+    terraform_atlas_token ENV['ATLAS_TOKEN']
+    terraform_boule_endpoint ENV['BOULE_URL']
+    terraform_local_directory './terraform-stacks'
+    terraform_local_scrub_destroyed false
   end
 end
 EOF

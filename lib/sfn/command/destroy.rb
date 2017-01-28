@@ -30,8 +30,14 @@ module Sfn
           stack = provider.connection.stacks.get(stack_name)
           if(stack)
             nested_stack_cleanup!(stack)
-            api_action!(:api_stack => stack) do
-              stack.destroy
+            begin
+              api_action!(:api_stack => stack) do
+                stack.destroy
+              end
+            rescue Miasma::Error::ApiError::RequestError => error
+              raise unless error.response.code == 404
+              # if stack is already gone, disable polling
+              config[:poll] = false
             end
             ui.info "Destroy request complete for stack: #{ui.color(stack_name, :red)}"
           else
