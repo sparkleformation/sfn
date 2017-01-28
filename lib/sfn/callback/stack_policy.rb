@@ -74,19 +74,26 @@ module Sfn
       # @param p_stack [Miasma::Models::Orchestration::Stack]
       # @return [NilClass]
       def save_stack_policy(p_stack)
+        valid_logical_ids = p_stack.resources.reload.all.map(&:logical_id)
+        stack_policy = @policies.fetch(p_stack.id,
+          @policies.fetch(p_stack.data[:logical_id]),
+          @policies[p_stack.name]
+        ).to_smash
+        stack_policy[:statement].delete_if do |policy_item|
+          policy_match = policy_item[:resource].to_s.match(
+            %r{LogicalResourceId/(?<logical_id>.+)$}
+          )
+          if(policy_match)
+            !valid_logical_ids.include?(policy_match["logical_id"])
+          end
+        end
         result = p_stack.api.request(
           :path => '/',
           :method => :post,
           :form => Smash.new(
             'Action' => 'SetStackPolicy',
             'StackName' => p_stack.id,
-            'StackPolicyBody' => MultiJson.dump(
-              @policies.fetch(p_stack.id,
-                @policies.fetch(p_stack.data[:logical_id],
-                  @policies[p_stack.name]
-                )
-              )
-            )
+            'StackPolicyBody' => MultiJson.dump(stack_policy)
           )
         )
       end
