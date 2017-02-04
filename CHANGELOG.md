@@ -1,3 +1,9 @@
+# v3.0.22
+* [fix] Properly match compile time parameters (#235)
+* [fix] Remove AWS policy statements for undefined resources (#240)
+* [enhancement] Support conditions when possible within planner (#230)
+* [feature] Add alpha support for Terraform (#236)
+
 # v3.0.20
 * [fix] Only dump templates when dumpable (#220, #223)
 * [enhancement] Support NoEcho template parameters (#226)
