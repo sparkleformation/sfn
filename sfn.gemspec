@@ -26,6 +26,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'graph', '~> 2.8.1'
   s.add_development_dependency 'rake', '~> 10'
   s.add_development_dependency 'minitest'
+  s.add_development_dependency 'rspec', '~> 3.5'
+  s.add_development_dependency 'rubocop', '0.38.0'
   s.add_development_dependency 'mocha'
   s.add_development_dependency 'yard'
   s.executables << 'sfn'
