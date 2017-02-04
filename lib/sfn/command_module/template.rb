@@ -180,6 +180,10 @@ module Sfn
                 else
                   current_state = compile_state.fetch(f_name, Smash.new)
                 end
+
+                # NOTE: Prevent nesting stack compile state within stack compile state
+                current_state.delete("#{f_name}__#{f_name}")
+
                 if(formation.compile_state)
                   current_state = current_state.merge(formation.compile_state)
                 end
