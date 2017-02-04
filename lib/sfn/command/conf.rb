@@ -124,10 +124,10 @@ Configuration.new do
     google_service_account_private_key ENV['GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY']
     google_project ENV['GOOGLE_PROJECT']
     #  Terraform credentials information
-    #  Valid driver names: :atlas, :boule, :local
+    #  Valid driver names: :tfe, :boule, :local
     terraform_driver :local
-    terraform_atlas_endpoint ENV['ATLAS_URL']
-    terraform_atlas_token ENV['ATLAS_TOKEN']
+    terraform_tfe_endpoint ENV['TFE_URL']
+    terraform_tfe_token ENV['TFE_TOKEN']
     terraform_boule_endpoint ENV['BOULE_URL']
     terraform_local_directory './terraform-stacks'
     terraform_local_scrub_destroyed false
