@@ -79,12 +79,14 @@ module Sfn
           @policies.fetch(p_stack.data[:logical_id]),
           @policies[p_stack.name]
         ).to_smash
-        stack_policy[:statement].delete_if do |policy_item|
-          policy_match = policy_item[:resource].to_s.match(
-            %r{LogicalResourceId/(?<logical_id>.+)$}
-          )
-          if(policy_match)
-            !valid_logical_ids.include?(policy_match["logical_id"])
+        if(stack_policy)
+          stack_policy[:statement].delete_if do |policy_item|
+            policy_match = policy_item[:resource].to_s.match(
+              %r{LogicalResourceId/(?<logical_id>.+)$}
+            )
+            if(policy_match)
+              !valid_logical_ids.include?(policy_match["logical_id"])
+            end
           end
         end
         result = p_stack.api.request(
