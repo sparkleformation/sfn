@@ -18,6 +18,7 @@ with orchestration APIs.
 ## Documentation
 
 * [User Documentation](http://www.sparkleformation.io/docs/sfn/)
+* [sfn API Documentation](http://www.sparkleformation.io/docs/sfn/)
 
 # Info
 
