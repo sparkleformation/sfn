@@ -1,12 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   Module: Sfn::Utils::StackParameterValidator
   
-    &mdash; Documentation by YARD 0.8.7.6
+    &mdash; Documentation by YARD 0.9.8
   
 </title>
 
@@ -15,9 +15,8 @@
   <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
 
 <script type="text/javascript" charset="utf-8">
-  hasFrames = window.top.frames.main ? true : false;
+  pathId = "Sfn::Utils::StackParameterValidator";
   relpath = '../../';
-  framesUrl = "../../frames.html#!Sfn/Utils/StackParameterValidator.html";
 </script>
 
 
@@ -28,65 +27,66 @@
 
   </head>
   <body>
-    <div id="header">
-      <div id="menu">
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
   
     <a href="../../_index.html">Index (S)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Utils.html" title="Sfn::Utils (module)">Utils</a></span></span>
      &raquo; 
     <span class="title">StackParameterValidator</span>
   
-
-  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
 </div>
 
-      <div id="search">
+        <div id="search">
   
     <a class="full_list_link" id="class_list_link"
         href="../../class_list.html">
-      Class List
-    </a>
-  
-    <a class="full_list_link" id="method_list_link"
-        href="../../method_list.html">
-      Method List
-    </a>
-  
-    <a class="full_list_link" id="file_list_link"
-        href="../../file_list.html">
-      File List
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
     </a>
   
 </div>
-      <div class="clear"></div>
-    </div>
+        <div class="clear"></div>
+      </div>
 
-    <iframe id="search_frame"></iframe>
-
-    <div id="content"><h1>Module: Sfn::Utils::StackParameterValidator
+      <div id="content"><h1>Module: Sfn::Utils::StackParameterValidator
   
   
   
 </h1>
+<div class="box_info">
+  
 
-<dl class="box">
-  
-  
-    
-  
-    
-      <dt class="r1">Includes:</dt>
-      <dd class="r1">Bogo::AnimalStrings</dd>
-      
-    
   
   
   
-    <dt class="r2 last">Defined in:</dt>
-    <dd class="r2 last">lib/sfn/utils/stack_parameter_validator.rb</dd>
   
-</dl>
-<div class="clear"></div>
+  <dl>
+      <dt>Includes:</dt>
+      <dd>Bogo::AnimalStrings</dd>
+  </dl>
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/sfn/utils/stack_parameter_validator.rb</dd>
+  </dl>
+  
+</div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
@@ -101,11 +101,10 @@
 
 </div>
   <h2>Constant Summary</h2>
-  
-    <dl class="constants">
-      
-        <dt id="HEAT_CONSTRAINT_MAP-constant" class="">HEAT_CONSTRAINT_MAP =
-          <div class="docstring">
+  <dl class="constants">
+    
+      <dt id="HEAT_CONSTRAINT_MAP-constant" class="">HEAT_CONSTRAINT_MAP =
+        <div class="docstring">
   <div class="discussion">
     
 <p>HOT parameter mapping</p>
@@ -117,8 +116,8 @@
   
 
 </div>
-        </dt>
-        <dd><pre class="code"><span class='lbrace'>{</span>
+      </dt>
+      <dd><pre class="code"><span class='lbrace'>{</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MaxLength</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:length</span><span class='comma'>,</span> <span class='symbol'>:max</span><span class='rbracket'>]</span><span class='comma'>,</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MinLength</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:length</span><span class='comma'>,</span> <span class='symbol'>:min</span><span class='rbracket'>]</span><span class='comma'>,</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MaxValue</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:range</span><span class='comma'>,</span> <span class='symbol'>:max</span><span class='rbracket'>]</span><span class='comma'>,</span>
@@ -126,9 +125,9 @@
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AllowedValues</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:allowed_values</span><span class='rbracket'>]</span><span class='comma'>,</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AllowedPattern</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:allowed_pattern</span><span class='rbracket'>]</span>
 <span class='rbrace'>}</span></pre></dd>
-      
-        <dt id="GOOGLE_CONSTRAINT_MAP-constant" class="">GOOGLE_CONSTRAINT_MAP =
-          <div class="docstring">
+    
+      <dt id="GOOGLE_CONSTRAINT_MAP-constant" class="">GOOGLE_CONSTRAINT_MAP =
+        <div class="docstring">
   <div class="discussion">
     
 <p>GCDM parameter mapping</p>
@@ -140,15 +139,15 @@
   
 
 </div>
-        </dt>
-        <dd><pre class="code"><span class='lbrace'>{</span>
+      </dt>
+      <dd><pre class="code"><span class='lbrace'>{</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AllowedPattern</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:pattern</span><span class='rbracket'>]</span><span class='comma'>,</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MaxValue</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:maximum</span><span class='rbracket'>]</span><span class='comma'>,</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MinValue</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:minimum</span><span class='rbracket'>]</span>
 <span class='rbrace'>}</span></pre></dd>
-      
-        <dt id="PARAMETER_DEFINITION_MAP-constant" class="">PARAMETER_DEFINITION_MAP =
-          <div class="docstring">
+    
+      <dt id="PARAMETER_DEFINITION_MAP-constant" class="">PARAMETER_DEFINITION_MAP =
+        <div class="docstring">
   <div class="discussion">
     
 <p>Parameter mapping identifier and content</p>
@@ -160,13 +159,13 @@
   
 
 </div>
-        </dt>
-        <dd><pre class="code"><span class='lbrace'>{</span>
-  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>constraints</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='const'>HEAT_CONSTRAINT_MAP</span>
+      </dt>
+      <dd><pre class="code"><span class='lbrace'>{</span>
+  <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>constraints</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='const'><span class='object_link'><a href="#HEAT_CONSTRAINT_MAP-constant" title="Sfn::Utils::StackParameterValidator::HEAT_CONSTRAINT_MAP (constant)">HEAT_CONSTRAINT_MAP</a></span></span>
 <span class='rbrace'>}</span></pre></dd>
-      
-        <dt id="PARAMETER_VALIDATIONS-constant" class="">PARAMETER_VALIDATIONS =
-          <div class="docstring">
+    
+      <dt id="PARAMETER_VALIDATIONS-constant" class="">PARAMETER_VALIDATIONS =
+        <div class="docstring">
   <div class="discussion">
     
 <p>Supported parameter validations</p>
@@ -178,8 +177,8 @@
   
 
 </div>
-        </dt>
-        <dd><pre class="code"><span class='lbracket'>[</span>
+      </dt>
+      <dd><pre class="code"><span class='lbracket'>[</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>allowed_values</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>allowed_pattern</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>max_length</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
@@ -187,9 +186,8 @@
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>max_value</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
   <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>min_value</span><span class='tstring_end'>&#39;</span></span>
 <span class='rbracket'>]</span></pre></dd>
-      
-    </dl>
-  
+    
+  </dl>
 
 
 
@@ -200,7 +198,7 @@
   
     <h2>
       Instance Method Summary
-      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+      <small><a href="#" class="summary_toggle">collapse</a></small>
     </h2>
 
     <ul class="summary">
@@ -208,7 +206,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#allowed_pattern-instance_method" title="#allowed_pattern (instance method)">- (TrueClass, String) <strong>allowed_pattern</strong>(value, pdef) </a>
+      <a href="#allowed_pattern-instance_method" title="#allowed_pattern (instance method)">#<strong>allowed_pattern</strong>(value, pdef)  &#x21d2; TrueClass, String </a>
     
 
     
@@ -232,7 +230,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#allowed_values-instance_method" title="#allowed_values (instance method)">- (TrueClass, String) <strong>allowed_values</strong>(value, pdef) </a>
+      <a href="#allowed_values-instance_method" title="#allowed_values (instance method)">#<strong>allowed_values</strong>(value, pdef)  &#x21d2; TrueClass, String </a>
     
 
     
@@ -256,7 +254,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#list_type%3F-instance_method" title="#list_type? (instance method)">- (TrueClass, FalseClass) <strong>list_type?</strong>(type) </a>
+      <a href="#list_type%3F-instance_method" title="#list_type? (instance method)">#<strong>list_type?</strong>(type)  &#x21d2; TrueClass, FalseClass </a>
     
 
     
@@ -280,7 +278,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#max_length-instance_method" title="#max_length (instance method)">- (TrueClass, String) <strong>max_length</strong>(value, pdef) </a>
+      <a href="#max_length-instance_method" title="#max_length (instance method)">#<strong>max_length</strong>(value, pdef)  &#x21d2; TrueClass, String </a>
     
 
     
@@ -304,7 +302,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#max_value-instance_method" title="#max_value (instance method)">- (TrueClass, String) <strong>max_value</strong>(value, pdef) </a>
+      <a href="#max_value-instance_method" title="#max_value (instance method)">#<strong>max_value</strong>(value, pdef)  &#x21d2; TrueClass, String </a>
     
 
     
@@ -328,7 +326,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#min_length-instance_method" title="#min_length (instance method)">- (TrueClass, String) <strong>min_length</strong>(value, pdef) </a>
+      <a href="#min_length-instance_method" title="#min_length (instance method)">#<strong>min_length</strong>(value, pdef)  &#x21d2; TrueClass, String </a>
     
 
     
@@ -352,7 +350,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#min_value-instance_method" title="#min_value (instance method)">- (TrueClass, String) <strong>min_value</strong>(value, pdef) </a>
+      <a href="#min_value-instance_method" title="#min_value (instance method)">#<strong>min_value</strong>(value, pdef)  &#x21d2; TrueClass, String </a>
     
 
     
@@ -376,7 +374,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#reformat_definition-instance_method" title="#reformat_definition (instance method)">- (Hash) <strong>reformat_definition</strong>(pdef) </a>
+      <a href="#reformat_definition-instance_method" title="#reformat_definition (instance method)">#<strong>reformat_definition</strong>(pdef)  &#x21d2; Hash </a>
     
 
     
@@ -401,7 +399,7 @@ templates different parameter definition layout.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#validate_parameter-instance_method" title="#validate_parameter (instance method)">- (TrueClass, Array&lt;String&gt;) <strong>validate_parameter</strong>(value, parameter_definition) </a>
+      <a href="#validate_parameter-instance_method" title="#validate_parameter (instance method)">#<strong>validate_parameter</strong>(value, parameter_definition)  &#x21d2; TrueClass, Array&lt;String&gt; </a>
     
 
     
@@ -435,7 +433,7 @@ templates different parameter definition layout.</p>
       <div class="method_details first">
   <h3 class="signature first" id="allowed_pattern-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>String</tt>) <strong>allowed_pattern</strong>(value, pdef) 
+    #<strong>allowed_pattern</strong>(value, pdef)  &#x21d2; <tt>TrueClass</tt>, <tt>String</tt> 
   
 
   
@@ -548,7 +546,7 @@ templates different parameter definition layout.</p>
       <div class="method_details ">
   <h3 class="signature " id="allowed_values-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>String</tt>) <strong>allowed_values</strong>(value, pdef) 
+    #<strong>allowed_values</strong>(value, pdef)  &#x21d2; <tt>TrueClass</tt>, <tt>String</tt> 
   
 
   
@@ -661,7 +659,7 @@ templates different parameter definition layout.</p>
       <div class="method_details ">
   <h3 class="signature " id="list_type?-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>FalseClass</tt>) <strong>list_type?</strong>(type) 
+    #<strong>list_type?</strong>(type)  &#x21d2; <tt>TrueClass</tt>, <tt>FalseClass</tt> 
   
 
   
@@ -732,7 +730,7 @@ templates different parameter definition layout.</p>
       <div class="method_details ">
   <h3 class="signature " id="max_length-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>String</tt>) <strong>max_length</strong>(value, pdef) 
+    #<strong>max_length</strong>(value, pdef)  &#x21d2; <tt>TrueClass</tt>, <tt>String</tt> 
   
 
   
@@ -845,7 +843,7 @@ templates different parameter definition layout.</p>
       <div class="method_details ">
   <h3 class="signature " id="max_value-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>String</tt>) <strong>max_value</strong>(value, pdef) 
+    #<strong>max_value</strong>(value, pdef)  &#x21d2; <tt>TrueClass</tt>, <tt>String</tt> 
   
 
   
@@ -958,7 +956,7 @@ templates different parameter definition layout.</p>
       <div class="method_details ">
   <h3 class="signature " id="min_length-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>String</tt>) <strong>min_length</strong>(value, pdef) 
+    #<strong>min_length</strong>(value, pdef)  &#x21d2; <tt>TrueClass</tt>, <tt>String</tt> 
   
 
   
@@ -1071,7 +1069,7 @@ templates different parameter definition layout.</p>
       <div class="method_details ">
   <h3 class="signature " id="min_value-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>String</tt>) <strong>min_value</strong>(value, pdef) 
+    #<strong>min_value</strong>(value, pdef)  &#x21d2; <tt>TrueClass</tt>, <tt>String</tt> 
   
 
   
@@ -1184,7 +1182,7 @@ templates different parameter definition layout.</p>
       <div class="method_details ">
   <h3 class="signature " id="reformat_definition-instance_method">
   
-    - (<tt>Hash</tt>) <strong>reformat_definition</strong>(pdef) 
+    #<strong>reformat_definition</strong>(pdef)  &#x21d2; <tt>Hash</tt> 
   
 
   
@@ -1256,7 +1254,7 @@ templates different parameter definition layout</p>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reformat_definition'>reformat_definition</span><span class='lparen'>(</span><span class='id identifier rubyid_pdef'>pdef</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_new_def'>new_def</span> <span class='op'>=</span> <span class='id identifier rubyid_pdef'>pdef</span>
-  <span class='const'>PARAMETER_DEFINITION_MAP</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ident'>ident</span><span class='comma'>,</span> <span class='id identifier rubyid_mapping'>mapping</span><span class='op'>|</span>
+  <span class='const'><span class='object_link'><a href="#PARAMETER_DEFINITION_MAP-constant" title="Sfn::Utils::StackParameterValidator::PARAMETER_DEFINITION_MAP (constant)">PARAMETER_DEFINITION_MAP</a></span></span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ident'>ident</span><span class='comma'>,</span> <span class='id identifier rubyid_mapping'>mapping</span><span class='op'>|</span>
     <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_pdef'>pdef</span><span class='lbracket'>[</span><span class='id identifier rubyid_ident'>ident</span><span class='rbracket'>]</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_new_def'>new_def</span> <span class='op'>=</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
       <span class='id identifier rubyid_mapping'>mapping</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_new_key'>new_key</span><span class='comma'>,</span> <span class='id identifier rubyid_current_path'>current_path</span><span class='op'>|</span>
@@ -1276,7 +1274,7 @@ templates different parameter definition layout</p>
       <div class="method_details ">
   <h3 class="signature " id="validate_parameter-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>Array&lt;String&gt;</tt>) <strong>validate_parameter</strong>(value, parameter_definition) 
+    #<strong>validate_parameter</strong>(value, parameter_definition)  &#x21d2; <tt>TrueClass</tt>, <tt>Array&lt;String&gt;</tt> 
   
 
   
@@ -1441,7 +1439,7 @@ templates different parameter definition layout</p>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='lbracket'>[</span><span class='symbol'>:blank</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Value cannot be blank</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
   <span class='id identifier rubyid_parameter_definition'>parameter_definition</span> <span class='op'>=</span> <span class='id identifier rubyid_reformat_definition'>reformat_definition</span><span class='lparen'>(</span><span class='id identifier rubyid_parameter_definition'>parameter_definition</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_value_list'>value_list</span> <span class='op'>=</span> <span class='id identifier rubyid_list_type?'>list_type?</span><span class='lparen'>(</span><span class='id identifier rubyid_parameter_definition'>parameter_definition</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Type</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_parameter_definition'>parameter_definition</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>,</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='op'>:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span>
-  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='const'>PARAMETER_VALIDATIONS</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_validator_key'>validator_key</span><span class='op'>|</span>
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="#PARAMETER_VALIDATIONS-constant" title="Sfn::Utils::StackParameterValidator::PARAMETER_VALIDATIONS (constant)">PARAMETER_VALIDATIONS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_validator_key'>validator_key</span><span class='op'>|</span>
     <span class='id identifier rubyid_valid_key'>valid_key</span> <span class='op'>=</span> <span class='id identifier rubyid_parameter_definition'>parameter_definition</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_detect'>detect</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_pdef_key'>pdef_key</span><span class='op'>|</span>
       <span class='id identifier rubyid_pdef_key'>pdef_key</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>_</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='op'>==</span> <span class='id identifier rubyid_validator_key'>validator_key</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>_</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
     <span class='kw'>end</span>
@@ -1466,11 +1464,12 @@ templates different parameter definition layout</p>
 
 </div>
 
-    <div id="footer">
-  Generated on Thu May 19 17:27:07 2016 by
+      <div id="footer">
+  Generated on Mon Feb  6 20:51:19 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.2.3).
+  0.9.8 (ruby-2.2.3).
 </div>
 
+    </div>
   </body>
 </html>

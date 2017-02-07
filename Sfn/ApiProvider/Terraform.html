@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  Module: Sfn::ApiProvider::Google
+  Module: Sfn::ApiProvider::Terraform
   
     &mdash; Documentation by YARD 0.9.8
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
 
 <script type="text/javascript" charset="utf-8">
-  pathId = "Sfn::ApiProvider::Google";
+  pathId = "Sfn::ApiProvider::Terraform";
   relpath = '../../';
 </script>
 
@@ -36,10 +36,10 @@
       <div id="header">
         <div id="menu">
   
-    <a href="../../_index.html">Index (G)</a> &raquo;
+    <a href="../../_index.html">Index (T)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../ApiProvider.html" title="Sfn::ApiProvider (module)">ApiProvider</a></span></span>
      &raquo; 
-    <span class="title">Google</span>
+    <span class="title">Terraform</span>
   
 </div>
 
@@ -59,7 +59,7 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><h1>Module: Sfn::ApiProvider::Google
+      <div id="content"><h1>Module: Sfn::ApiProvider::Terraform
   
   
   
@@ -78,7 +78,7 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/sfn/api_provider/google.rb</dd>
+    <dd>lib/sfn/api_provider/terraform.rb</dd>
   </dl>
   
 </div>
@@ -165,30 +165,6 @@
   
     <span class="summary_desc"><div class='inline'>
 <p>Determine if parameter was set via intrinsic function.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#populate_parameters!-instance_method" title="#populate_parameters! (instance method)">#<strong>populate_parameters!</strong>(template, opts = {})  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Set parameters into parent resource properites.</p>
 </div></span>
   
 </li>
@@ -390,7 +366,7 @@ modifications.</p>
 34</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 23</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/terraform.rb', line 23</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extract_current_nested_template_parameters'>extract_current_nested_template_parameters</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='comma'>,</span> <span class='id identifier rubyid_stack_name'>stack_name</span><span class='comma'>,</span> <span class='id identifier rubyid_c_stack'>c_stack</span><span class='rparen'>)</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_c_stack'>c_stack</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c_stack'>c_stack</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:parent_stack</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -440,7 +416,7 @@ modifications.</p>
 15</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 13</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/terraform.rb', line 13</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_format_nested_stack_results'>format_nested_stack_results</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
   <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -511,69 +487,12 @@ modifications.</p>
 49</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 45</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/terraform.rb', line 45</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_function_set_parameter?'>function_set_parameter?</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>$(</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>{{</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>${</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="populate_parameters!-instance_method">
-  
-    #<strong>populate_parameters!</strong>(template, opts = {})  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Set parameters into parent resource properites</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 52</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_populate_parameters!'>populate_parameters!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='kw'>super</span>
-  <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_each_pair'>each_pair</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
-    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span><span class='period'>.</span><span class='id identifier rubyid_resources'>resources</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_properties'>properties</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
-    <span class='kw'>else</span>
-      <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span><span class='period'>.</span><span class='id identifier rubyid_resources'>resources</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_properties'>properties</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
-  <span class='lbrace'>{</span><span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -610,7 +529,7 @@ modifications.</p>
 10</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 9</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/terraform.rb', line 9</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_store_template'>store_template</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
@@ -673,16 +592,16 @@ modifications.</p>
       <pre class="lines">
 
 
-73
-74
-75
-76
-77
-78
-79</pre>
+60
+61
+62
+63
+64
+65
+66</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 73</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/terraform.rb', line 60</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_template_content'>template_content</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>SparkleFormation</span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -722,12 +641,12 @@ modifications.</p>
       <pre class="lines">
 
 
-65
-66
-67</pre>
+52
+53
+54</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 65</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/terraform.rb', line 52</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate_nesting_bucket!'>validate_nesting_bucket!</span>
   <span class='kw'>true</span>
@@ -769,7 +688,7 @@ modifications</p>
 39</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/google.rb', line 37</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/api_provider/terraform.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate_stack_parameter'>validate_stack_parameter</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid__'>_</span><span class='rparen'>)</span>
   <span class='kw'>true</span>

@@ -1,12 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   Class: Sfn::Provider
   
-    &mdash; Documentation by YARD 0.8.7.6
+    &mdash; Documentation by YARD 0.9.8
   
 </title>
 
@@ -15,9 +15,8 @@
   <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
 
 <script type="text/javascript" charset="utf-8">
-  hasFrames = window.top.frames.main ? true : false;
+  pathId = "Sfn::Provider";
   relpath = '../';
-  framesUrl = "../frames.html#!Sfn/Provider.html";
 </script>
 
 
@@ -28,51 +27,48 @@
 
   </head>
   <body>
-    <div id="header">
-      <div id="menu">
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
   
     <a href="../_index.html">Index (P)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../Sfn.html" title="Sfn (module)">Sfn</a></span></span>
      &raquo; 
     <span class="title">Provider</span>
   
-
-  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
 </div>
 
-      <div id="search">
+        <div id="search">
   
     <a class="full_list_link" id="class_list_link"
         href="../class_list.html">
-      Class List
-    </a>
-  
-    <a class="full_list_link" id="method_list_link"
-        href="../method_list.html">
-      Method List
-    </a>
-  
-    <a class="full_list_link" id="file_list_link"
-        href="../file_list.html">
-      File List
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
     </a>
   
 </div>
-      <div class="clear"></div>
-    </div>
+        <div class="clear"></div>
+      </div>
 
-    <iframe id="search_frame"></iframe>
-
-    <div id="content"><h1>Class: Sfn::Provider
+      <div id="content"><h1>Class: Sfn::Provider
   
   
   
 </h1>
-
-<dl class="box">
+<div class="box_info">
   
-    <dt class="r1">Inherits:</dt>
-    <dd class="r1">
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
       <span class="inheritName">Object</span>
       
         <ul class="fullTree">
@@ -83,25 +79,30 @@
         </ul>
         <a href="#" class="inheritanceTree">show all</a>
       
-      </dd>
-    
+    </dd>
+  </dl>
   
-  
-    
-  
-    
-      <dt class="r2">Includes:</dt>
-      <dd class="r2">Bogo::AnimalStrings</dd>
-      
-    
+
   
   
   
-    <dt class="r1 last">Defined in:</dt>
-    <dd class="r1 last">lib/sfn/provider.rb</dd>
   
-</dl>
-<div class="clear"></div>
+  <dl>
+      <dt>Includes:</dt>
+      <dd>Bogo::AnimalStrings</dd>
+  </dl>
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/sfn/provider.rb</dd>
+  </dl>
+  
+</div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
@@ -116,11 +117,10 @@
 
 </div>
   <h2>Constant Summary</h2>
-  
-    <dl class="constants">
-      
-        <dt id="STACK_EXPAND_INTERVAL-constant" class="">STACK_EXPAND_INTERVAL =
-          <div class="docstring">
+  <dl class="constants">
+    
+      <dt id="STACK_EXPAND_INTERVAL-constant" class="">STACK_EXPAND_INTERVAL =
+        <div class="docstring">
   <div class="discussion">
     
 <p>Minimum number of seconds to wait before re-expanding in progress stack</p>
@@ -132,11 +132,11 @@
   
 
 </div>
-        </dt>
-        <dd><pre class="code"><span class='int'>45</span></pre></dd>
-      
-        <dt id="STACK_LIST_INTERVAL-constant" class="">STACK_LIST_INTERVAL =
-          <div class="docstring">
+      </dt>
+      <dd><pre class="code"><span class='int'>45</span></pre></dd>
+    
+      <dt id="STACK_LIST_INTERVAL-constant" class="">STACK_LIST_INTERVAL =
+        <div class="docstring">
   <div class="discussion">
     
 <p>Default interval for refreshing stack list in cache</p>
@@ -148,22 +148,21 @@
   
 
 </div>
-        </dt>
-        <dd><pre class="code"><span class='int'>120</span></pre></dd>
-      
-    </dl>
-  
+      </dt>
+      <dd><pre class="code"><span class='int'>120</span></pre></dd>
+    
+  </dl>
 
 
 
 
-  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
   <ul class="summary">
     
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#async-instance_method" title="#async (instance method)">- (TrueClass, FalseClass) <strong>async</strong> </a>
+      <a href="#async-instance_method" title="#async (instance method)">#<strong>async</strong>  &#x21d2; TrueClass, FalseClass </a>
     
 
     
@@ -192,7 +191,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#cache-instance_method" title="#cache (instance method)">- (Cache) <strong>cache</strong> </a>
+      <a href="#cache-instance_method" title="#cache (instance method)">#<strong>cache</strong>  &#x21d2; Cache </a>
     
 
     
@@ -219,7 +218,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#connection-instance_method" title="#connection (instance method)">- (Miasma::Models::Orchestration) <strong>connection</strong> </a>
+      <a href="#connection-instance_method" title="#connection (instance method)">#<strong>connection</strong>  &#x21d2; Miasma::Models::Orchestration </a>
     
 
     
@@ -246,7 +245,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#logger-instance_method" title="#logger (instance method)">- (Logger, NilClass) <strong>logger</strong> </a>
+      <a href="#logger-instance_method" title="#logger (instance method)">#<strong>logger</strong>  &#x21d2; Logger, NilClass </a>
     
 
     
@@ -275,7 +274,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#stack_expansion_interval-instance_method" title="#stack_expansion_interval (instance method)">- (Numeric) <strong>stack_expansion_interval</strong> </a>
+      <a href="#stack_expansion_interval-instance_method" title="#stack_expansion_interval (instance method)">#<strong>stack_expansion_interval</strong>  &#x21d2; Numeric </a>
     
 
     
@@ -304,7 +303,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#stack_list_interval-instance_method" title="#stack_list_interval (instance method)">- (Numeric) <strong>stack_list_interval</strong> </a>
+      <a href="#stack_list_interval-instance_method" title="#stack_list_interval (instance method)">#<strong>stack_list_interval</strong>  &#x21d2; Numeric </a>
     
 
     
@@ -333,7 +332,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#updater-instance_method" title="#updater (instance method)">- (Thread, NilClass) <strong>updater</strong> </a>
+      <a href="#updater-instance_method" title="#updater (instance method)">#<strong>updater</strong>  &#x21d2; Thread, NilClass </a>
     
 
     
@@ -365,7 +364,7 @@
   
     <h2>
       Instance Method Summary
-      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+      <small><a href="#" class="summary_toggle">collapse</a></small>
     </h2>
 
     <ul class="summary">
@@ -373,7 +372,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#cached_stacks-instance_method" title="#cached_stacks (instance method)">- (String) <strong>cached_stacks</strong>(stack_id = nil) </a>
+      <a href="#cached_stacks-instance_method" title="#cached_stacks (instance method)">#<strong>cached_stacks</strong>(stack_id = nil)  &#x21d2; String </a>
     
 
     
@@ -397,7 +396,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#expand_stack-instance_method" title="#expand_stack (instance method)">- (Object) <strong>expand_stack</strong>(stack) </a>
+      <a href="#expand_stack-instance_method" title="#expand_stack (instance method)">#<strong>expand_stack</strong>(stack)  &#x21d2; Object </a>
     
 
     
@@ -421,7 +420,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#fetch_stacks-instance_method" title="#fetch_stacks (instance method)">- (TrueClass) <strong>fetch_stacks</strong>(stack_id = nil) </a>
+      <a href="#fetch_stacks-instance_method" title="#fetch_stacks (instance method)">#<strong>fetch_stacks</strong>(stack_id = nil)  &#x21d2; TrueClass </a>
     
 
     
@@ -445,7 +444,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">- (Provider) <strong>initialize</strong>(args = {}) </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(args = {})  &#x21d2; Provider </a>
     
 
     
@@ -471,7 +470,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#remove_stack-instance_method" title="#remove_stack (instance method)">- (TrueClass, FalseClass) <strong>remove_stack</strong>(stack_id) </a>
+      <a href="#remove_stack-instance_method" title="#remove_stack (instance method)">#<strong>remove_stack</strong>(stack_id)  &#x21d2; TrueClass, FalseClass </a>
     
 
     
@@ -495,7 +494,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#save_expanded_stack-instance_method" title="#save_expanded_stack (instance method)">- (TrueClass) <strong>save_expanded_stack</strong>(stack_id, stack_attributes) </a>
+      <a href="#save_expanded_stack-instance_method" title="#save_expanded_stack (instance method)">#<strong>save_expanded_stack</strong>(stack_id, stack_attributes)  &#x21d2; TrueClass </a>
     
 
     
@@ -519,7 +518,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#service_for-instance_method" title="#service_for (instance method)">- (Miasma::Model) <strong>service_for</strong>(service) </a>
+      <a href="#service_for-instance_method" title="#service_for (instance method)">#<strong>service_for</strong>(service)  &#x21d2; Miasma::Model </a>
     
 
     
@@ -543,7 +542,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#stack-instance_method" title="#stack (instance method)">- (Miasma::Orchestration::Stack, NilClass) <strong>stack</strong>(stack_id) </a>
+      <a href="#stack-instance_method" title="#stack (instance method)">#<strong>stack</strong>(stack_id)  &#x21d2; Miasma::Orchestration::Stack, NilClass </a>
     
 
     
@@ -565,7 +564,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#stacks-instance_method" title="#stacks (instance method)">- (Miasma::Orchestration::Stacks) <strong>stacks</strong>(stack_id = nil) </a>
+      <a href="#stacks-instance_method" title="#stacks (instance method)">#<strong>stacks</strong>(stack_id = nil)  &#x21d2; Miasma::Orchestration::Stacks </a>
     
 
     
@@ -587,7 +586,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#update_stack_list%21-instance_method" title="#update_stack_list! (instance method)">- (TrueClass, FalseClass) <strong>update_stack_list!</strong> </a>
+      <a href="#update_stack_list!-instance_method" title="#update_stack_list! (instance method)">#<strong>update_stack_list!</strong>  &#x21d2; TrueClass, FalseClass </a>
     
 
     
@@ -618,7 +617,7 @@
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    - (<tt><span class='object_link'><a href="" title="Sfn::Provider (class)">Provider</a></span></tt>) <strong>initialize</strong>(args = {}) 
+    #<strong>initialize</strong>(args = {})  &#x21d2; <tt><span class='object_link'><a href="" title="Sfn::Provider (class)">Provider</a></span></tt> 
   
 
   
@@ -824,16 +823,16 @@
     <span class='kw'>end</span>
   <span class='kw'>end</span>
   <span class='ivar'>@logger</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:logger</span><span class='comma'>,</span> <span class='const'>Logger</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_log_to'>log_to</span><span class='rparen'>)</span><span class='rparen'>)</span>
-  <span class='ivar'>@stack_expansion_interval</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:stack_expansion_interval</span><span class='comma'>,</span> <span class='const'>STACK_EXPAND_INTERVAL</span><span class='rparen'>)</span>
-  <span class='ivar'>@stack_list_interval</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:stack_list_interval</span><span class='comma'>,</span> <span class='const'>STACK_LIST_INTERVAL</span><span class='rparen'>)</span>
+  <span class='ivar'>@stack_expansion_interval</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:stack_expansion_interval</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#STACK_EXPAND_INTERVAL-constant" title="Sfn::Provider::STACK_EXPAND_INTERVAL (constant)">STACK_EXPAND_INTERVAL</a></span></span><span class='rparen'>)</span>
+  <span class='ivar'>@stack_list_interval</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:stack_list_interval</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#STACK_LIST_INTERVAL-constant" title="Sfn::Provider::STACK_LIST_INTERVAL (constant)">STACK_LIST_INTERVAL</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@connection</span> <span class='op'>=</span> <span class='const'>Miasma</span><span class='period'>.</span><span class='id identifier rubyid_api'>api</span><span class='lparen'>(</span>
     <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_provider'>provider</span><span class='comma'>,</span>
     <span class='symbol'>:type</span> <span class='op'>=&gt;</span> <span class='symbol'>:orchestration</span><span class='comma'>,</span>
     <span class='symbol'>:credentials</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_args'>args</span><span class='lbracket'>[</span><span class='symbol'>:miasma</span><span class='rbracket'>]</span>
   <span class='rparen'>)</span>
-  <span class='ivar'>@cache</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:cache</span><span class='comma'>,</span> <span class='const'>Cache</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='symbol'>:local</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='ivar'>@cache</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:cache</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Cache.html" title="Sfn::Cache (class)">Cache</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache.html#initialize-instance_method" title="Sfn::Cache#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:local</span><span class='rparen'>)</span><span class='rparen'>)</span>
   <span class='ivar'>@async</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:async</span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span>
-  <span class='ivar'>@miamsa_args</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='lbracket'>[</span><span class='symbol'>:miasma</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+  <span class='ivar'>@miasma_args</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='lbracket'>[</span><span class='symbol'>:miasma</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
   <span class='id identifier rubyid_cache'>cache</span><span class='period'>.</span><span class='id identifier rubyid_init'>init</span><span class='lparen'>(</span><span class='symbol'>:stacks_lock</span><span class='comma'>,</span> <span class='symbol'>:lock</span><span class='comma'>,</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='float'>0.1</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_cache'>cache</span><span class='period'>.</span><span class='id identifier rubyid_init'>init</span><span class='lparen'>(</span><span class='symbol'>:stacks</span><span class='comma'>,</span> <span class='symbol'>:stamped</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_cache'>cache</span><span class='period'>.</span><span class='id identifier rubyid_init'>init</span><span class='lparen'>(</span><span class='symbol'>:stack_expansion_lock</span><span class='comma'>,</span> <span class='symbol'>:lock</span><span class='comma'>,</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='float'>0.1</span><span class='rparen'>)</span>
@@ -856,7 +855,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="async-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>FalseClass</tt>) <strong>async</strong>  <span class="extras">(readonly)</span>
+    #<strong>async</strong>  &#x21d2; <tt>TrueClass</tt>, <tt>FalseClass</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -917,7 +916,7 @@
       <div class="method_details ">
   <h3 class="signature " id="cache-instance_method">
   
-    - (<tt><span class='object_link'><a href="Cache.html" title="Sfn::Cache (class)">Cache</a></span></tt>) <strong>cache</strong>  <span class="extras">(readonly)</span>
+    #<strong>cache</strong>  &#x21d2; <tt><span class='object_link'><a href="Cache.html" title="Sfn::Cache (class)">Cache</a></span></tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -971,7 +970,7 @@
       <div class="method_details ">
   <h3 class="signature " id="connection-instance_method">
   
-    - (<tt>Miasma::Models::Orchestration</tt>) <strong>connection</strong>  <span class="extras">(readonly)</span>
+    #<strong>connection</strong>  &#x21d2; <tt>Miasma::Models::Orchestration</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -1025,7 +1024,7 @@
       <div class="method_details ">
   <h3 class="signature " id="logger-instance_method">
   
-    - (<tt>Logger</tt>, <tt>NilClass</tt>) <strong>logger</strong>  <span class="extras">(readonly)</span>
+    #<strong>logger</strong>  &#x21d2; <tt>Logger</tt>, <tt>NilClass</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -1086,7 +1085,7 @@
       <div class="method_details ">
   <h3 class="signature " id="stack_expansion_interval-instance_method">
   
-    - (<tt>Numeric</tt>) <strong>stack_expansion_interval</strong>  <span class="extras">(readonly)</span>
+    #<strong>stack_expansion_interval</strong>  &#x21d2; <tt>Numeric</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -1147,7 +1146,7 @@
       <div class="method_details ">
   <h3 class="signature " id="stack_list_interval-instance_method">
   
-    - (<tt>Numeric</tt>) <strong>stack_list_interval</strong>  <span class="extras">(readonly)</span>
+    #<strong>stack_list_interval</strong>  &#x21d2; <tt>Numeric</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -1208,7 +1207,7 @@
       <div class="method_details ">
   <h3 class="signature " id="updater-instance_method">
   
-    - (<tt>Thread</tt>, <tt>NilClass</tt>) <strong>updater</strong> 
+    #<strong>updater</strong>  &#x21d2; <tt>Thread</tt>, <tt>NilClass</tt> 
   
 
   
@@ -1274,7 +1273,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="cached_stacks-instance_method">
   
-    - (<tt>String</tt>) <strong>cached_stacks</strong>(stack_id = nil) 
+    #<strong>cached_stacks</strong>(stack_id = nil)  &#x21d2; <tt>String</tt> 
   
 
   
@@ -1349,7 +1348,7 @@
       <div class="method_details ">
   <h3 class="signature " id="expand_stack-instance_method">
   
-    - (<tt>Object</tt>) <strong>expand_stack</strong>(stack) 
+    #<strong>expand_stack</strong>(stack)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -1441,7 +1440,7 @@
       <div class="method_details ">
   <h3 class="signature " id="fetch_stacks-instance_method">
   
-    - (<tt>TrueClass</tt>) <strong>fetch_stacks</strong>(stack_id = nil) 
+    #<strong>fetch_stacks</strong>(stack_id = nil)  &#x21d2; <tt>TrueClass</tt> 
   
 
   
@@ -1555,7 +1554,7 @@
       <div class="method_details ">
   <h3 class="signature " id="remove_stack-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>FalseClass</tt>) <strong>remove_stack</strong>(stack_id) 
+    #<strong>remove_stack</strong>(stack_id)  &#x21d2; <tt>TrueClass</tt>, <tt>FalseClass</tt> 
   
 
   
@@ -1638,7 +1637,7 @@
       <div class="method_details ">
   <h3 class="signature " id="save_expanded_stack-instance_method">
   
-    - (<tt>TrueClass</tt>) <strong>save_expanded_stack</strong>(stack_id, stack_attributes) 
+    #<strong>save_expanded_stack</strong>(stack_id, stack_attributes)  &#x21d2; <tt>TrueClass</tt> 
   
 
   
@@ -1730,7 +1729,7 @@
       <div class="method_details ">
   <h3 class="signature " id="service_for-instance_method">
   
-    - (<tt>Miasma::Model</tt>) <strong>service_for</strong>(service) 
+    #<strong>service_for</strong>(service)  &#x21d2; <tt>Miasma::Model</tt> 
   
 
   
@@ -1799,7 +1798,7 @@
       <div class="method_details ">
   <h3 class="signature " id="stack-instance_method">
   
-    - (<tt>Miasma::Orchestration::Stack</tt>, <tt>NilClass</tt>) <strong>stack</strong>(stack_id) 
+    #<strong>stack</strong>(stack_id)  &#x21d2; <tt>Miasma::Orchestration::Stack</tt>, <tt>NilClass</tt> 
   
 
   
@@ -1851,7 +1850,7 @@
       <div class="method_details ">
   <h3 class="signature " id="stacks-instance_method">
   
-    - (<tt>Miasma::Orchestration::Stacks</tt>) <strong>stacks</strong>(stack_id = nil) 
+    #<strong>stacks</strong>(stack_id = nil)  &#x21d2; <tt>Miasma::Orchestration::Stacks</tt> 
   
 
   
@@ -1903,7 +1902,7 @@
       <div class="method_details ">
   <h3 class="signature " id="update_stack_list!-instance_method">
   
-    - (<tt>TrueClass</tt>, <tt>FalseClass</tt>) <strong>update_stack_list!</strong> 
+    #<strong>update_stack_list!</strong>  &#x21d2; <tt>TrueClass</tt>, <tt>FalseClass</tt> 
   
 
   
@@ -1987,11 +1986,12 @@
 
 </div>
 
-    <div id="footer">
-  Generated on Thu May 19 17:27:08 2016 by
+      <div id="footer">
+  Generated on Mon Feb  6 20:51:20 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.2.3).
+  0.9.8 (ruby-2.2.3).
 </div>
 
+    </div>
   </body>
 </html>

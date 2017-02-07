@@ -1,12 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   Class: Sfn::Cache::LocalLock
   
-    &mdash; Documentation by YARD 0.8.7.6
+    &mdash; Documentation by YARD 0.9.8
   
 </title>
 
@@ -15,9 +15,8 @@
   <link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8" />
 
 <script type="text/javascript" charset="utf-8">
-  hasFrames = window.top.frames.main ? true : false;
+  pathId = "Sfn::Cache::LocalLock";
   relpath = '../../';
-  framesUrl = "../../frames.html#!Sfn/Cache/LocalLock.html";
 </script>
 
 
@@ -28,51 +27,48 @@
 
   </head>
   <body>
-    <div id="header">
-      <div id="menu">
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
   
     <a href="../../_index.html">Index (L)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Cache.html" title="Sfn::Cache (class)">Cache</a></span></span>
      &raquo; 
     <span class="title">LocalLock</span>
   
-
-  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
 </div>
 
-      <div id="search">
+        <div id="search">
   
     <a class="full_list_link" id="class_list_link"
         href="../../class_list.html">
-      Class List
-    </a>
-  
-    <a class="full_list_link" id="method_list_link"
-        href="../../method_list.html">
-      Method List
-    </a>
-  
-    <a class="full_list_link" id="file_list_link"
-        href="../../file_list.html">
-      File List
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
     </a>
   
 </div>
-      <div class="clear"></div>
-    </div>
+        <div class="clear"></div>
+      </div>
 
-    <iframe id="search_frame"></iframe>
-
-    <div id="content"><h1>Class: Sfn::Cache::LocalLock
+      <div id="content"><h1>Class: Sfn::Cache::LocalLock
   
   
   
 </h1>
-
-<dl class="box">
+<div class="box_info">
   
-    <dt class="r1">Inherits:</dt>
-    <dd class="r1">
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
       <span class="inheritName">Object</span>
       
         <ul class="fullTree">
@@ -83,21 +79,25 @@
         </ul>
         <a href="#" class="inheritanceTree">show all</a>
       
-      </dd>
-    
+    </dd>
+  </dl>
   
-  
-    
-  
-    
+
   
   
   
-    <dt class="r2 last">Defined in:</dt>
-    <dd class="r2 last">lib/sfn/cache.rb</dd>
   
-</dl>
-<div class="clear"></div>
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/sfn/cache.rb</dd>
+  </dl>
+  
+</div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
@@ -124,13 +124,13 @@
 
 
 
-  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
   <ul class="summary">
     
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#_key-instance_method" title="#_key (instance method)">- (Symbol) <strong>_key</strong> </a>
+      <a href="#_key-instance_method" title="#_key (instance method)">#<strong>_key</strong>  &#x21d2; Symbol </a>
     
 
     
@@ -159,7 +159,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#_lock-instance_method" title="#_lock (instance method)">- (Mutex) <strong>_lock</strong> </a>
+      <a href="#_lock-instance_method" title="#_lock (instance method)">#<strong>_lock</strong>  &#x21d2; Mutex </a>
     
 
     
@@ -188,7 +188,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#_timeout-instance_method" title="#_timeout (instance method)">- (Numeric) <strong>_timeout</strong> </a>
+      <a href="#_timeout-instance_method" title="#_timeout (instance method)">#<strong>_timeout</strong>  &#x21d2; Numeric </a>
     
 
     
@@ -222,7 +222,7 @@
   
     <h2>
       Instance Method Summary
-      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+      <small><a href="#" class="summary_toggle">collapse</a></small>
     </h2>
 
     <ul class="summary">
@@ -230,7 +230,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#clear-instance_method" title="#clear (instance method)">- (Object) <strong>clear</strong> </a>
+      <a href="#clear-instance_method" title="#clear (instance method)">#<strong>clear</strong>  &#x21d2; Object </a>
     
 
     
@@ -254,7 +254,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">- (LocalLock) <strong>initialize</strong>(name, args = {}) </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(name, args = {})  &#x21d2; LocalLock </a>
     
 
     
@@ -280,7 +280,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#lock-instance_method" title="#lock (instance method)">- (Object) <strong>lock</strong> { ... }</a>
+      <a href="#lock-instance_method" title="#lock (instance method)">#<strong>lock</strong> { ... } &#x21d2; Object </a>
     
 
     
@@ -310,7 +310,7 @@
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    - (<tt><span class='object_link'><a href="" title="Sfn::Cache::LocalLock (class)">LocalLock</a></span></tt>) <strong>initialize</strong>(name, args = {}) 
+    #<strong>initialize</strong>(name, args = {})  &#x21d2; <tt><span class='object_link'><a href="" title="Sfn::Cache::LocalLock (class)">LocalLock</a></span></tt> 
   
 
   
@@ -415,7 +415,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="_key-instance_method">
   
-    - (<tt>Symbol</tt>) <strong>_key</strong>  <span class="extras">(readonly)</span>
+    #<strong>_key</strong>  &#x21d2; <tt>Symbol</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -476,7 +476,7 @@
       <div class="method_details ">
   <h3 class="signature " id="_lock-instance_method">
   
-    - (<tt>Mutex</tt>) <strong>_lock</strong>  <span class="extras">(readonly)</span>
+    #<strong>_lock</strong>  &#x21d2; <tt>Mutex</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -537,7 +537,7 @@
       <div class="method_details ">
   <h3 class="signature " id="_timeout-instance_method">
   
-    - (<tt>Numeric</tt>) <strong>_timeout</strong>  <span class="extras">(readonly)</span>
+    #<strong>_timeout</strong>  &#x21d2; <tt>Numeric</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -603,7 +603,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="clear-instance_method">
   
-    - (<tt>Object</tt>) <strong>clear</strong> 
+    #<strong>clear</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -652,7 +652,7 @@
       <div class="method_details ">
   <h3 class="signature " id="lock-instance_method">
   
-    - (<tt>Object</tt>) <strong>lock</strong> { ... }
+    #<strong>lock</strong> { ... } &#x21d2; <tt>Object</tt> 
   
 
   
@@ -751,7 +751,7 @@
     <span class='kw'>if</span><span class='lparen'>(</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>Redis</span><span class='rparen'>)</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_raise'>raise</span> <span class='const'>Redis</span><span class='op'>::</span><span class='const'>Lock</span><span class='op'>::</span><span class='const'>LockTimeout</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timeout on lock </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__key'>_key</span><span class='embexpr_end'>}</span><span class='tstring_content'> exceeded </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__timeout'>_timeout</span><span class='embexpr_end'>}</span><span class='tstring_content'> sec</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>else</span>
-      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>LocalLockTimeout</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timeout on lock </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__key'>_key</span><span class='embexpr_end'>}</span><span class='tstring_content'> exceeded </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__timeout'>_timeout</span><span class='embexpr_end'>}</span><span class='tstring_content'> sec</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="LocalLock/LocalLockTimeout.html" title="Sfn::Cache::LocalLock::LocalLockTimeout (class)">LocalLockTimeout</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Sfn::Cache::LocalLock#initialize (method)">new</a></span></span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timeout on lock </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__key'>_key</span><span class='embexpr_end'>}</span><span class='tstring_content'> exceeded </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid__timeout'>_timeout</span><span class='embexpr_end'>}</span><span class='tstring_content'> sec</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -764,11 +764,12 @@
 
 </div>
 
-    <div id="footer">
-  Generated on Thu May 19 17:27:07 2016 by
+      <div id="footer">
+  Generated on Mon Feb  6 20:51:19 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.2.3).
+  0.9.8 (ruby-2.2.3).
 </div>
 
+    </div>
   </body>
 </html>
