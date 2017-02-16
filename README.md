@@ -25,5 +25,6 @@ with orchestration APIs.
 * Website: http://www.sparkleformation.io/docs/sfn/
 * Mailing List: https://groups.google.com/forum/#!forum/sparkleformation
 * IRC: Freenode @ #sparkleformation
+* Gitter: [![Join at https://gitter.im/SparkleFormation/sparkleformation](https://badges.gitter.im/SparkleFormation/sparkleformation.svg)](https://gitter.im/SparkleFormation/sparkleformation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [miasma]: http://miasma-rb.github.io/miasma/
