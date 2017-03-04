@@ -109,17 +109,21 @@ module Sfn
         # @param sparkle [SparkleFormation, Hash] template instance
         # @return [Array<Array<String>, Smash>] prefix value, parameters
         def prefix_parameters_setup(sparkle)
-          if(sparkle.is_a?(SparkleFormation))
+          case sparkle
+          when SparkleFormation
             parameter_prefix = sparkle.root? ? [] : (sparkle.root_path - [sparkle.root]).map do |s|
               Bogo::Utility.camel(s.name)
             end
             stack_parameters = sparkle.compile.parameters
             stack_parameters = stack_parameters.nil? ? Smash.new : stack_parameters._dump
-          else
+          when Hash
             parameter_prefix = []
             stack_parameters = TEMPLATE_PARAMETER_LOCATIONS.map do |loc_key|
               sparkle[loc_key]
             end.compact.first || Smash.new
+          else
+            parameter_prefix = []
+            stack_parameters = Smash.new
           end
           [parameter_prefix, stack_parameters]
         end
