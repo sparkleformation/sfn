@@ -69,7 +69,7 @@ module Sfn
           provider.connection.data[:stack_types].include?(resource['Type'])
         end.each do |resource|
           url = resource['Properties']['TemplateURL']
-          if(url)
+          if(url && url.is_a?(String))
             _, bucket_name, path = URI.parse(url).path.split('/', 3)
             bucket = provider.connection.api_for(:storage).buckets.get(bucket_name)
             if(bucket)
