@@ -12,6 +12,8 @@ module Sfn
       TEMPLATE_IGNORE_DIRECTORIES = %w(components dynamics registry)
       # maximum number of attempts to get valid parameter value
       MAX_PARAMETER_ATTEMPTS = 5
+      # default provider used when credentials are unset
+      DEFAULT_PROVIDER_NAME = :aws
 
       module InstanceMethods
 
@@ -123,17 +125,17 @@ module Sfn
         def sparkle_collection
           memoize(:sparkle_collection) do
             collection = SparkleFormation::SparkleCollection.new(
-              :provider => config.get(:credentials, :provider)
+              :provider => config.fetch(:credentials, :provider, DEFAULT_PROVIDER_NAME)
             )
             begin
               if(config[:base_directory])
                 root_pack = SparkleFormation::SparklePack.new(
                   :root => config[:base_directory],
-                  :provider => config.get(:credentials, :provider)
+                  :provider => config.fetch(:credentials, :provider, DEFAULT_PROVIDER_NAME)
                 )
               else
                 root_pack = SparkleFormation::SparklePack.new(
-                  :provider => config.get(:credentials, :provider)
+                  :provider => config.fetch(:credentials, :provider, DEFAULT_PROVIDER_NAME)
                 )
               end
               collection.set_root(root_pack)
