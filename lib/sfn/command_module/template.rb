@@ -599,7 +599,8 @@ module Sfn
           include Sfn::CommandModule::Template::InstanceMethods
           include Sfn::Utils::PathSelector
           include Sfn::Utils::StackParameterScrubber
-         end
+          include Sfn::Utils::StackParameterValidator
+        end
       end
 
     end
