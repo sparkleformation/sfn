@@ -15,7 +15,13 @@ module Sfn
         config[:print_only] = true
         file = load_template_file
 
-        json_content = format_json(parameter_scrub!(template_content(file)))
+        output_content = parameter_scrub!(template_content(file))
+        if(config[:yaml])
+          require 'yaml'
+          output_content = YAML.dump(output_content)
+        else
+          output_content = format_json(output_content)
+        end
 
         if(config[:write_to_file])
           unless(File.directory?(File.dirname(config[:write_to_file])))
@@ -25,11 +31,11 @@ module Sfn
             end
           end
           run_action "Writing template to file - #{config[:write_to_file]}" do
-            File.write(config[:write_to_file], json_content)
+            File.write(config[:write_to_file], output_content)
             nil
           end
         else
-          ui.puts json_content
+          ui.puts output_content
         end
       end
 
