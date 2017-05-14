@@ -1,3 +1,11 @@
+# v3.0.24
+* [fix] Quieter print only output (#258)
+* [fix] Require all modules for lint (#248)
+* [fix] Fix parameter processing when no template provided
+* [enhancement] Default provider to aws when unset (#251)
+* [enhancement] Only delete remote templates when URL is full string (#250)
+* [enhancement] Support YAML output when printing (#252)
+
 # v3.0.22
 * [fix] Properly match compile time parameters (#235)
 * [fix] Remove AWS policy statements for undefined resources (#240)
