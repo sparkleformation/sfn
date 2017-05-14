@@ -240,11 +240,12 @@ module Sfn
           current_parameters = opts[:current_parameters] || {}
           current_stack = opts[:stack]
           parameter_prefix, stack_parameters = prefix_parameters_setup(sparkle)
+          sparkle_root_name = sparkle.is_a?(SparkleFormation) ? sparkle.root.name : nil
           unless(stack_parameters.empty?)
             format_config_parameters!
             param_banner = false
             stack_parameters.each do |param_name, param_value|
-              ns_key = locate_config_parameter_key(parameter_prefix, param_name, sparkle.root.name)
+              ns_key = locate_config_parameter_key(parameter_prefix, param_name, sparkle_root_name)
               # When parameter is a hash type, it is being set via
               # intrinsic function and we don't modify
               if(function_set_parameter?(current_parameters[param_name]))
