@@ -16,6 +16,11 @@ module Sfn
         :description => 'Do not use provider customized dump behavior'
       )
 
+      attribute(
+        :yaml, [TrueClass, FalseClass],
+        :description => 'Output template content in YAML format'
+      )
+
     end
   end
 end
