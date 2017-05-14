@@ -58,7 +58,9 @@ module Sfn
           raise "Failed to locate stack: #{name}"
         end
 
-        ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('update', :green)}"
+        unless(config[:print_only])
+          ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('update', :green)}"
+        end
 
         unless(file)
           if(config[:template])
@@ -68,7 +70,9 @@ module Sfn
             stack_info << " #{ui.color('(no template update)', :yellow)}"
           end
         end
-        ui.info "  -> #{stack_info}"
+        unless(config[:print_only])
+          ui.info "  -> #{stack_info}"
+        end
         if(file)
           if(config[:print_only])
             ui.puts format_json(parameter_scrub!(template_content(file)))

@@ -32,6 +32,7 @@ module Sfn
           callbacks_for(c_type)
         end.flatten(1).compact.uniq.each do |item|
           callback_name, callback, quiet = item
+          quiet = true if config[:print_only]
           ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('starting', :yellow)}" unless quiet
           if(args.empty?)
             callback.call
