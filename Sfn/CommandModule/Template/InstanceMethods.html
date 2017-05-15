@@ -569,8 +569,6 @@ generate compiled Hash</p>
       <pre class="lines">
 
 
-393
-394
 395
 396
 397
@@ -580,10 +578,12 @@ generate compiled Hash</p>
 401
 402
 403
-404</pre>
+404
+405
+406</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 393</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 395</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_dump_stack_for_storage'>dump_stack_for_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_nested_stacks'>nested_stacks</span> <span class='op'>=</span> <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_nested_stacks'>nested_stacks</span><span class='lparen'>(</span><span class='symbol'>:with_resource</span><span class='comma'>,</span> <span class='symbol'>:with_name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_nested_stack'>nested_stack</span><span class='comma'>,</span> <span class='id identifier rubyid_nested_resource'>nested_resource</span><span class='comma'>,</span> <span class='id identifier rubyid_nested_name'>nested_name</span><span class='op'>|</span>
@@ -680,17 +680,17 @@ generate compiled Hash</p>
       <pre class="lines">
 
 
-355
-356
 357
 358
 359
 360
 361
-362</pre>
+362
+363
+364</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 355</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 357</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extract_current_nested_template_parameters'>extract_current_nested_template_parameters</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='comma'>,</span> <span class='id identifier rubyid_stack_name'>stack_name</span><span class='comma'>,</span> <span class='id identifier rubyid_c_stack'>c_stack</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span><span class='rparen'>)</span>
@@ -770,8 +770,6 @@ generate compiled Hash</p>
       <pre class="lines">
 
 
-425
-426
 427
 428
 429
@@ -804,10 +802,12 @@ generate compiled Hash</p>
 456
 457
 458
-459</pre>
+459
+460
+461</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 425</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 427</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_format_nested_stack_results'>format_nested_stack_results</span><span class='lparen'>(</span><span class='id identifier rubyid_provider'>provider</span><span class='comma'>,</span> <span class='id identifier rubyid_results'>results</span><span class='rparen'>)</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_provider'>provider</span>
@@ -913,8 +913,6 @@ generate compiled Hash</p>
       <pre class="lines">
 
 
-154
-155
 156
 157
 158
@@ -1004,10 +1002,12 @@ generate compiled Hash</p>
 242
 243
 244
-245</pre>
+245
+246
+247</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 154</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 156</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_load_template_file'>load_template_file</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_c_stack'>c_stack</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_detect'>detect</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_i'>i</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span><span class='rbrace'>}</span> <span class='op'>||</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='symbol'>:stack</span><span class='rbracket'>]</span>
@@ -1133,8 +1133,6 @@ set</p>
       <pre class="lines">
 
 
-249
-250
 251
 252
 253
@@ -1150,10 +1148,12 @@ set</p>
 263
 264
 265
-266</pre>
+266
+267
+268</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 249</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 251</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_merge_compile_time_parameters'>merge_compile_time_parameters</span>
   <span class='id identifier rubyid_compile_state'>compile_state</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:compile_parameters</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span>
@@ -1260,8 +1260,6 @@ set</p>
       <pre class="lines">
 
 
-311
-312
 313
 314
 315
@@ -1296,10 +1294,12 @@ set</p>
 344
 345
 346
-347</pre>
+347
+348
+349</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 311</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 313</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_process_nested_stack_deep'>process_nested_stack_deep</span><span class='lparen'>(</span><span class='id identifier rubyid_sf'>sf</span><span class='comma'>,</span> <span class='id identifier rubyid_c_stack'>c_stack</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_sf'>sf</span><span class='period'>.</span><span class='id identifier rubyid_apply_nesting'>apply_nesting</span><span class='lparen'>(</span><span class='symbol'>:deep</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_stack_name'>stack_name</span><span class='comma'>,</span> <span class='id identifier rubyid_stack'>stack</span><span class='comma'>,</span> <span class='id identifier rubyid_resource'>resource</span><span class='op'>|</span>
@@ -1425,8 +1425,6 @@ set</p>
       <pre class="lines">
 
 
-281
-282
 283
 284
 285
@@ -1448,10 +1446,12 @@ set</p>
 301
 302
 303
-304</pre>
+304
+305
+306</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 281</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 283</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_process_nested_stack_shallow'>process_nested_stack_shallow</span><span class='lparen'>(</span><span class='id identifier rubyid_sf'>sf</span><span class='comma'>,</span> <span class='id identifier rubyid_c_stack'>c_stack</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_sf'>sf</span><span class='period'>.</span><span class='id identifier rubyid_apply_nesting'>apply_nesting</span><span class='lparen'>(</span><span class='symbol'>:shallow</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_stack_name'>stack_name</span><span class='comma'>,</span> <span class='id identifier rubyid_stack'>stack</span><span class='comma'>,</span> <span class='id identifier rubyid_resource'>resource</span><span class='op'>|</span>
@@ -1548,8 +1548,6 @@ set</p>
       <pre class="lines">
 
 
-518
-519
 520
 521
 522
@@ -1616,10 +1614,12 @@ set</p>
 583
 584
 585
-586</pre>
+586
+587
+588</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 518</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 520</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prompt_for_template'>prompt_for_template</span><span class='lparen'>(</span><span class='id identifier rubyid_prefix'>prefix</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_prefix'>prefix</span><span class='rparen'>)</span>
@@ -1855,8 +1855,6 @@ set</p>
       <pre class="lines">
 
 
-46
-47
 48
 49
 50
@@ -1909,10 +1907,12 @@ set</p>
 97
 98
 99
-100</pre>
+100
+101
+102</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 46</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 48</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_request_compile_parameter'>request_compile_parameter</span><span class='lparen'>(</span><span class='id identifier rubyid_p_name'>p_name</span><span class='comma'>,</span> <span class='id identifier rubyid_p_config'>p_config</span><span class='comma'>,</span> <span class='id identifier rubyid_cur_val'>cur_val</span><span class='comma'>,</span> <span class='id identifier rubyid_nested'>nested</span><span class='op'>=</span><span class='kw'>false</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='kw'>nil</span>
@@ -2028,18 +2028,18 @@ set</p>
       <pre class="lines">
 
 
-410
-411
 412
 413
 414
 415
 416
 417
-418</pre>
+418
+419
+420</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 410</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 412</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_scrub_template'>scrub_template</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_template'>template</span> <span class='op'>=</span> <span class='id identifier rubyid_parameter_scrub!'>parameter_scrub!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span>
@@ -2094,8 +2094,6 @@ set</p>
       <pre class="lines">
 
 
-489
-490
 491
 492
 493
@@ -2117,10 +2115,12 @@ set</p>
 509
 510
 511
-512</pre>
+512
+513
+514</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 489</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 491</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_paths_and_discover_file!'>set_paths_and_discover_file!</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:processing</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -2188,8 +2188,6 @@ set</p>
       <pre class="lines">
 
 
-123
-124
 125
 126
 127
@@ -2213,25 +2211,27 @@ set</p>
 145
 146
 147
-148</pre>
+148
+149
+150</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 123</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 125</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sparkle_collection'>sparkle_collection</span>
   <span class='id identifier rubyid_memoize'>memoize</span><span class='lparen'>(</span><span class='symbol'>:sparkle_collection</span><span class='rparen'>)</span> <span class='kw'>do</span>
     <span class='id identifier rubyid_collection'>collection</span> <span class='op'>=</span> <span class='const'>SparkleFormation</span><span class='op'>::</span><span class='const'>SparkleCollection</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
-      <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:credentials</span><span class='comma'>,</span> <span class='symbol'>:provider</span><span class='rparen'>)</span>
+      <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:credentials</span><span class='comma'>,</span> <span class='symbol'>:provider</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Template.html#DEFAULT_PROVIDER_NAME-constant" title="Sfn::CommandModule::Template::DEFAULT_PROVIDER_NAME (constant)">DEFAULT_PROVIDER_NAME</a></span></span><span class='rparen'>)</span>
     <span class='rparen'>)</span>
     <span class='kw'>begin</span>
       <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:base_directory</span><span class='rbracket'>]</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_root_pack'>root_pack</span> <span class='op'>=</span> <span class='const'>SparkleFormation</span><span class='op'>::</span><span class='const'>SparklePack</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
           <span class='symbol'>:root</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:base_directory</span><span class='rbracket'>]</span><span class='comma'>,</span>
-          <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:credentials</span><span class='comma'>,</span> <span class='symbol'>:provider</span><span class='rparen'>)</span>
+          <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:credentials</span><span class='comma'>,</span> <span class='symbol'>:provider</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Template.html#DEFAULT_PROVIDER_NAME-constant" title="Sfn::CommandModule::Template::DEFAULT_PROVIDER_NAME (constant)">DEFAULT_PROVIDER_NAME</a></span></span><span class='rparen'>)</span>
         <span class='rparen'>)</span>
       <span class='kw'>else</span>
         <span class='id identifier rubyid_root_pack'>root_pack</span> <span class='op'>=</span> <span class='const'>SparkleFormation</span><span class='op'>::</span><span class='const'>SparklePack</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
-          <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:credentials</span><span class='comma'>,</span> <span class='symbol'>:provider</span><span class='rparen'>)</span>
+          <span class='symbol'>:provider</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:credentials</span><span class='comma'>,</span> <span class='symbol'>:provider</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Template.html#DEFAULT_PROVIDER_NAME-constant" title="Sfn::CommandModule::Template::DEFAULT_PROVIDER_NAME (constant)">DEFAULT_PROVIDER_NAME</a></span></span><span class='rparen'>)</span>
         <span class='rparen'>)</span>
       <span class='kw'>end</span>
       <span class='id identifier rubyid_collection'>collection</span><span class='period'>.</span><span class='id identifier rubyid_set_root'>set_root</span><span class='lparen'>(</span><span class='id identifier rubyid_root_pack'>root_pack</span><span class='rparen'>)</span>
@@ -2286,8 +2286,6 @@ set</p>
       <pre class="lines">
 
 
-103
-104
 105
 106
 107
@@ -2303,10 +2301,12 @@ set</p>
 117
 118
 119
-120</pre>
+120
+121
+122</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 103</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 105</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sparkle_packs'>sparkle_packs</span>
   <span class='id identifier rubyid_memoize'>memoize</span><span class='lparen'>(</span><span class='symbol'>:sparkle_packs</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -2417,8 +2417,6 @@ set</p>
       <pre class="lines">
 
 
-370
-371
 372
 373
 374
@@ -2433,10 +2431,12 @@ set</p>
 383
 384
 385
-386</pre>
+386
+387
+388</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 370</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 372</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_store_template'>store_template</span><span class='lparen'>(</span><span class='id identifier rubyid_full_stack_name'>full_stack_name</span><span class='comma'>,</span> <span class='id identifier rubyid_template'>template</span><span class='comma'>,</span> <span class='id identifier rubyid_result'>result</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_stack_definition'>stack_definition</span> <span class='op'>=</span> <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>SparkleFormation</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_dump_stack_for_storage'>dump_stack_for_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_template'>template</span>
@@ -2532,8 +2532,6 @@ set</p>
       <pre class="lines">
 
 
-23
-24
 25
 26
 27
@@ -2542,10 +2540,12 @@ set</p>
 30
 31
 32
-33</pre>
+33
+34
+35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 23</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 25</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_template_content'>template_content</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='comma'>,</span> <span class='id identifier rubyid_scrub'>scrub</span><span class='op'>=</span><span class='kw'>false</span><span class='rparen'>)</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_thing'>thing</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>SparkleFormation</span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -2617,8 +2617,6 @@ set</p>
       <pre class="lines">
 
 
-465
-466
 467
 468
 469
@@ -2636,10 +2634,12 @@ set</p>
 481
 482
 483
-484</pre>
+484
+485
+486</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 465</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 467</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_translate_template'>translate_template</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_klass_name'>klass_name</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:translate</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -2692,15 +2692,15 @@ set</p>
       <pre class="lines">
 
 
-269
-270
 271
 272
 273
-274</pre>
+274
+275
+276</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 269</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 271</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate_nesting_bucket!'>validate_nesting_bucket!</span>
   <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:nesting_bucket</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
@@ -2718,7 +2718,7 @@ set</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Feb  6 20:51:19 2017 by
+  Generated on Sun May 14 09:05:55 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.2.3).
 </div>

@@ -145,6 +145,22 @@
       </dt>
       <dd><pre class="code"><span class='int'>5</span></pre></dd>
     
+      <dt id="DEFAULT_PROVIDER_NAME-constant" class="">DEFAULT_PROVIDER_NAME =
+        <div class="docstring">
+  <div class="discussion">
+    
+<p>default provider used when credentials are unset</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+      </dt>
+      <dd><pre class="code"><span class='symbol'>:aws</span></pre></dd>
+    
   </dl>
 
 
@@ -235,17 +251,18 @@
       <pre class="lines">
 
 
-596
-597
 598
 599
 600
 601
 602
-603</pre>
+603
+604
+605
+606</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 596</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 598</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_included'>included</span><span class='lparen'>(</span><span class='id identifier rubyid_klass'>klass</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_klass'>klass</span><span class='period'>.</span><span class='id identifier rubyid_class_eval'>class_eval</span> <span class='kw'>do</span>
@@ -253,7 +270,8 @@
     <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../CommandModule.html" title="Sfn::CommandModule (module)">CommandModule</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Sfn::CommandModule::Template (module)">Template</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Template/InstanceMethods.html" title="Sfn::CommandModule::Template::InstanceMethods (module)">InstanceMethods</a></span></span>
     <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils.html" title="Sfn::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils/PathSelector.html" title="Sfn::Utils::PathSelector (module)">PathSelector</a></span></span>
     <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils.html" title="Sfn::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils/StackParameterScrubber.html" title="Sfn::Utils::StackParameterScrubber (module)">StackParameterScrubber</a></span></span>
-   <span class='kw'>end</span>
+    <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils.html" title="Sfn::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils/StackParameterValidator.html" title="Sfn::Utils::StackParameterValidator (module)">StackParameterValidator</a></span></span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -265,7 +283,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Feb  6 20:51:18 2017 by
+  Generated on Sun May 14 09:05:55 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.2.3).
 </div>
