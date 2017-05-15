@@ -2,6 +2,8 @@
 
 # SparkleFormation CLI
 
+[![Join the chat at https://gitter.im/SparkleFormation/sfn](https://badges.gitter.im/SparkleFormation/sfn.svg)](https://gitter.im/SparkleFormation/sfn?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 SparkleFormation command line interface for interacting
 with orchestration APIs.
 
