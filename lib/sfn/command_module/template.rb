@@ -253,7 +253,7 @@ module Sfn
           ui.debug "Initial compile parameters - #{compile_state}"
           compile_state.keys.each do |cs_key|
             unless(cs_key.to_s.start_with?("#{arguments.first}__"))
-              named_cs_key = "#{arguments.first}__#{cs_key}"
+              named_cs_key = [arguments.first, cs_key].compact.join('__')
               non_named = compile_state.delete(cs_key)
               if(non_named && !compile_state.key?(named_cs_key))
                 ui.debug "Setting non-named compile parameter `#{cs_key}` into `#{named_cs_key}`"
