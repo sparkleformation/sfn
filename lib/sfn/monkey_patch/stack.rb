@@ -213,7 +213,7 @@ module Sfn
                 end
               end
               if(p_key)
-                parameters.merge!(p_key => output.value)
+                self.parameters = parameters.merge(p_key => output.value)
               end
             end
           end
