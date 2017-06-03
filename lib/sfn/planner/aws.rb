@@ -169,7 +169,12 @@ module Sfn
         # @param value [Array<String,Array<String>>]
         # @return [String]
         def fn_join(value)
-          value.last.join(value.first)
+          unless(value.last.is_a?(Array))
+            val = value.last.to_s.split(',')
+          else
+            val = value.last
+          end
+          val.join(value.first)
         end
 
         # Lookup value in mappings
