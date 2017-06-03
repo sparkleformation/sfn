@@ -51,6 +51,8 @@ module Sfn
           ui.debug "Compile parameters - #{config[:compile_parameters]}"
           file = load_template_file(:stack => stack)
           stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
+        else
+          file = stack.template if config[:plan]
         end
 
         unless(stack)
@@ -114,18 +116,18 @@ module Sfn
             end
           end
           stack.parameters = config_root_parameters
+
+          if(config[:upload_root_template])
+            upload_result = store_template(name, file, Smash.new)
+            stack.template_url = upload_result[:url]
+          else
+            stack.template = parameter_scrub!(template_content(file, :scrub))
+          end
         else
           apply_stacks!(stack)
           original_parameters = stack.parameters
-          populate_parameters!(file, :current_parameters => stack.root_parameters)
+          populate_parameters!(stack.template, :current_parameters => stack.root_parameters)
           stack.parameters = config_root_parameters
-        end
-
-        if(config[:upload_root_template])
-          upload_result = store_template(name, file, Smash.new)
-          stack.template_url = upload_result[:url]
-        else
-          stack.template = parameter_scrub!(template_content(file, :scrub))
         end
 
         # Set options defined within config into stack instance for update request
