@@ -52,7 +52,7 @@ module Sfn
           file = load_template_file(:stack => stack)
           stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
         else
-          file = stack.template if config[:plan]
+          file = stack.template.dup if config[:plan]
         end
 
         unless(stack)
