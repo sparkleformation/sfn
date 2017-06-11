@@ -63,7 +63,7 @@ module Sfn
       # @param info [Hash]
       def template(info)
         if(info[:sparkle_stack])
-          @policies.set(info[:stack_name],
+          @policies.set(info.fetch(:stack_name, 'unknown'),
             info[:sparkle_stack].generate_policy
           )
         end
