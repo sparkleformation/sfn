@@ -21,34 +21,40 @@ module Sfn
         config[:print_only] = true
         validate_graph_style!
         file = load_template_file
-        @outputs = Smash.new
-        ui.info "Template resource graph generation - Style: #{ui.color(config[:graph_style], :bold)}"
-        if(config[:file])
-          ui.puts "  -> path: #{config[:file]}"
-        end
-        run_action 'Pre-processing template for graphing' do
-          output_discovery(file, @outputs, nil, nil)
-          ui.debug 'Output remapping results from pre-processing:'
-          @outputs.each_pair do |o_key, o_value|
-            ui.debug "#{o_key} -> #{o_value}"
+        if(file.provider == :aws)
+          @outputs = Smash.new
+          ui.info "Template resource graph generation - Style: #{ui.color(config[:graph_style], :bold)}"
+          if(config[:file])
+            ui.puts "  -> path: #{config[:file]}"
           end
-          nil
-        end
-        graph = nil
-        run_action 'Generating resource graph' do
-          graph = generate_graph(file)
-          nil
-        end
-        run_action 'Writing graph result' do
-          FileUtils.mkdir_p(File.dirname(config[:output_file]))
-          if(config[:output_type] == 'dot')
-            File.open("#{config[:output_file]}.dot", 'w') do |o_file|
-              o_file.puts graph.to_s
+          template_dump = file.compile.dump!.to_smash
+          run_action 'Pre-processing template for graphing' do
+            output_discovery(template_dump, @outputs, nil, nil)
+            ui.debug 'Output remapping results from pre-processing:'
+            @outputs.each_pair do |o_key, o_value|
+              ui.debug "#{o_key} -> #{o_value}"
             end
-          else
-            graph.save config[:output_file], config[:output_type]
+            nil
           end
-          nil
+          graph = nil
+          run_action 'Generating resource graph' do
+            graph = generate_graph(template_dump)
+            nil
+          end
+          run_action 'Writing graph result' do
+            FileUtils.mkdir_p(File.dirname(config[:output_file]))
+            if(config[:output_type] == 'dot')
+              File.open("#{config[:output_file]}.dot", 'w') do |o_file|
+                o_file.puts graph.to_s
+              end
+            else
+              graph.save config[:output_file], config[:output_type]
+            end
+            nil
+          end
+        else
+          ui.error "Graphing for provider `#{file.provider}` not currently supported."
+          ui.error "Currently supported providers: `aws`."
         end
       end
 
@@ -72,11 +78,11 @@ module Sfn
       end
 
       def output_discovery(template, outputs, resource_name, parent_template, name='')
-        unless(template.resources.nil?)
-          template.resources.keys!.each do |r_name|
-            r_info = template.resources[r_name]
-            if(r_info.type == template._self.stack_resource_name)
-              output_discovery(r_info.properties.stack, outputs, r_name, template, r_name)
+        if(template['Resources'])
+          template['Resources'].keys.each do |r_name|
+            r_info = template['Resources'][r_name]
+            if(r_info['Type'] == 'AWS::CloudFormation::Stack')
+              output_discovery(r_info['Properties']['Stack'], outputs, r_name, template, r_name)
             end
           end
         end
