@@ -1,3 +1,11 @@
+# v3.0.26
+* [fix] Properly support compile time parameter setting with/without stack name (#261)
+* [fix] Default stack name when storing policy internally if no name provided
+* [fix] Apply stack parameters via accessor on update so changes are detected properly
+* [fix] Prevent planner from splitting non-String values
+* [fix] Process template through grapher as dumped Hash, error on non-AWS providers
+* [enhancement] Support processing complex compile time parameter types
+
 # v3.0.24
 * [fix] Quieter print only output (#258)
 * [fix] Require all modules for lint (#248)
