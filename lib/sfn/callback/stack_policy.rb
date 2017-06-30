@@ -80,8 +80,8 @@ module Sfn
           @policies[p_stack.name]
         ).to_smash
         if(stack_policy)
-          stack_policy[:statement].delete_if do |policy_item|
-            policy_match = policy_item[:resource].to_s.match(
+          stack_policy[:Statement].delete_if do |policy_item|
+            policy_match = policy_item[:Resource].to_s.match(
               %r{LogicalResourceId/(?<logical_id>.+)$}
             )
             if(policy_match)
