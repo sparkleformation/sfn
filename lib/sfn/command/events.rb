@@ -73,9 +73,12 @@ module Sfn
             if(e.class.to_s.start_with?('Errno'))
               ui.warn "Connection error encountered: #{e.message} (retrying)"
               ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-              sleep(5)
-              retry
+            else
+              ui.error "Unexpected error received fetching events: #{e.message}"
+              ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
             end
+            sleep(5)
+            retry
           end
           i_events.map do |e|
             e.attributes.merge(:stack_name => i_stack.name).to_smash
