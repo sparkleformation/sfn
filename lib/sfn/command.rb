@@ -65,13 +65,13 @@ module Sfn
     # @return [TrueClass, FalseClass]
     def load_api_provider_extensions!
       if(config.get(:credentials, :provider))
-        base_ext = Bogo::Utility.camel(config.get(:credentials, :provider))
+        base_ext = Bogo::Utility.camel(config.get(:credentials, :provider)).to_sym
         targ_ext = self.class.name.split('::').last
-        if(ApiProvider.const_defined?(base_ext))
+        if(ApiProvider.constants.include?(base_ext))
           base_module = ApiProvider.const_get(base_ext)
           ui.debug "Loading core provider extensions via `#{base_module}`"
           extend base_module
-          if(base_module.const_defined?(targ_ext))
+          if(base_module.constants.include?(targ_ext))
             targ_module = base_module.const_get(targ_ext)
             ui.debug "Loading targeted provider extensions via `#{targ_module}`"
             extend targ_module
