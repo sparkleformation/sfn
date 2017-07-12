@@ -66,6 +66,5 @@ module Sfn
       end
 
     end
-
   end
 end
