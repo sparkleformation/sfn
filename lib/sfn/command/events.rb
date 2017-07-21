@@ -62,7 +62,7 @@ module Sfn
       # @param last_id [String] only return events after this ID
       # @return [Array<Hash>]
       def get_events(*args)
-        stack_events = discover_stacks(stack).map do |i_stack|
+        stack_events = discover_stacks(stack)&.map do |i_stack|
           begin
             if(@initial_complete && i_stack.in_progress?)
               i_events = i_stack.events.update!
@@ -80,7 +80,7 @@ module Sfn
             sleep(5)
             retry
           end
-          i_events.map do |e|
+          i_events&.map do |e|
             e.attributes.merge(:stack_name => i_stack.name).to_smash
           end
         end.flatten.compact.find_all{|e| e[:time] }.reverse
