@@ -63,6 +63,7 @@ module Sfn
       # @return [Array<Hash>]
       def get_events(*args)
         stack_events = discover_stacks(stack).map do |i_stack|
+          i_events = []
           begin
             if(@initial_complete && i_stack.in_progress?)
               i_events = i_stack.events.update!
@@ -80,8 +81,10 @@ module Sfn
             sleep(5)
             retry
           end
-          i_events.map do |e|
-            e.attributes.merge(:stack_name => i_stack.name).to_smash
+          if(i_events)
+            i_events.map do |e|
+              e.attributes.merge(:stack_name => i_stack.name).to_smash
+            end
           end
         end.flatten.compact.find_all{|e| e[:time] }.reverse
         stack_events.delete_if{|evt| @seen_events.include?(evt)}
