@@ -1,3 +1,8 @@
+# v3.0.28
+* [fix] Fix stack save policy callback (#264)
+* [fix] Prevent processing unset event arrays
+* [enhancement] Support graphing terraform provider templates
+
 # v3.0.26
 * [fix] Properly support compile time parameter setting with/without stack name (#261)
 * [fix] Default stack name when storing policy internally if no name provided
