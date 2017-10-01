@@ -20,7 +20,7 @@ module Sfn
             case v
             when String
               Smash[
-                v.split(',').map do |item_pair|
+                v.split(/,(?=[^,]*:)/).map do |item_pair|
                   item_pair.split(/[=:]/, 2)
                 end
               ]
