@@ -85,7 +85,7 @@ describe Sfn::Command::Create do
         $mock.expects(:post).with { |url, opts|
           MultiJson.load(opts.to_smash.get(:form, 'TemplateBody')).to_smash.get(
             'Resources', 'Dummy', 'Properties', 'Stack'
-          ).must_equal nil
+          ).must_be_nil
           opts.to_smash.get(:form, 'Action') == 'CreateStack'
         }.returns(http_response(:body => '[]'))
         instance = Sfn::Command::Create.new(
@@ -228,7 +228,7 @@ describe Sfn::Command::Create do
         }.returns(http_response)
         $mock.expects(:put).with { |url, opts|
           if url.include?('blob') && url.include?('test-stack-') && url.include?('.json')
-            MultiJson.load(opts[:body]).to_smash.fetch(:resources, [{}]).first.get(:properties, :stack).must_equal nil
+            MultiJson.load(opts[:body]).to_smash.fetch(:resources, [{}]).first.get(:properties, :stack).must_be_nil
             true
           end
         }.returns(http_response(:status => 201))
@@ -259,7 +259,7 @@ describe Sfn::Command::Create do
         }.returns(http_response)
         $mock.expects(:put).with { |url, opts|
           if url.include?('blob') && url.include?('test-stack-') && url.include?('.json')
-            MultiJson.load(opts[:body]).to_smash.fetch(:resources, [{}]).first.get(:properties, :stack).must_equal nil
+            MultiJson.load(opts[:body]).to_smash.fetch(:resources, [{}]).first.get(:properties, :stack).must_be_nil
             true
           end
         }.returns(http_response(:status => 201))
