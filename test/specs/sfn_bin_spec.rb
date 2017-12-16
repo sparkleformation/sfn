@@ -2,7 +2,7 @@ require_relative '../helper'
 
 describe 'sfn' do
   def be_sh(command, options = {})
-    result = `bundle exec #{command} 2>&1`
+    result = `#{command} 2>&1`
     unless $?.success?
       unless options[:fail] == true || options[:fail] == $?.exitstatus
         raise "Command Failed `#{command}` - #{result}"
