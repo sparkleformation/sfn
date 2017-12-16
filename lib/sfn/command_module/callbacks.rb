@@ -5,7 +5,6 @@ module Sfn
   module CommandModule
     # Callback processor helpers
     module Callbacks
-
       include Bogo::Memoization
 
       # Run expected callbacks around action
@@ -34,7 +33,7 @@ module Sfn
           callback_name, callback, quiet = item
           quiet = true if config[:print_only]
           ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('starting', :yellow)}" unless quiet
-          if(args.empty?)
+          if args.empty?
             callback.call
           else
             callback.call(*args)
@@ -60,12 +59,11 @@ module Sfn
               raise "Unknown #{type} callback requested: #{c_name} (not found)"
             end
           end
-          if(instance.respond_to?(type))
+          if instance.respond_to?(type)
             [c_name, instance.method(type), instance.respond_to?(:quiet) ? instance.quiet : false]
           end
         end.compact
       end
-
     end
   end
 end

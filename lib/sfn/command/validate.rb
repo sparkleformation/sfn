@@ -5,7 +5,6 @@ module Sfn
   class Command
     # Validate command
     class Validate < Command
-
       include Sfn::CommandModule::Base
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
@@ -19,7 +18,7 @@ module Sfn
 
         raw_template = _format_json(parameter_scrub!(template_content(file)))
 
-        if(config[:print_only])
+        if config[:print_only]
           ui.puts raw_template
         else
           validate_stack(
@@ -46,16 +45,16 @@ module Sfn
         end
         begin
           ui.info "Validating: #{ui.color(name, :bold)}"
-          if(config[:upload_root_template])
+          if config[:upload_root_template]
             upload_result = store_template('validation-stack', template, Smash.new)
             stack = provider.connection.stacks.build(
               :name => 'validation-stack',
-              :template_url => upload_result[:url]
+              :template_url => upload_result[:url],
             )
           else
             stack = provider.connection.stacks.build(
               :name => 'validation-stack',
-              :template => parameter_scrub!(template)
+              :template => parameter_scrub!(template),
             )
           end
           result = api_action!(:api_stack => stack) do
@@ -69,7 +68,6 @@ module Sfn
           raise e
         end
       end
-
     end
   end
 end

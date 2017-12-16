@@ -7,22 +7,22 @@ module Sfn
       attribute(
         :lint_directory, String,
         :description => 'Directory containing lint rule sets',
-        :multiple => true
+        :multiple => true,
       )
       attribute(
         :disabled_rule_set, String,
         :description => 'Disable rule set from being applied',
-        :multiple => true
+        :multiple => true,
       )
       attribute(
         :enabled_rule_set, String,
         :description => 'Only apply this rule set',
-        :multiple => true
+        :multiple => true,
       )
       attribute(
         :local_rule_sets_only, [TrueClass, FalseClass],
         :description => 'Only apply rule sets provided by lint directory',
-        :default => false
+        :default => false,
       )
     end
   end

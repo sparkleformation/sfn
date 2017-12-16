@@ -3,7 +3,6 @@ require 'sfn'
 module Sfn
   # Utility classes and modules
   module Utils
-
     autoload :Output, 'sfn/utils/output'
     autoload :StackParameterValidator, 'sfn/utils/stack_parameter_validator'
     autoload :StackParameterScrubber, 'sfn/utils/stack_parameter_scrubber'
@@ -18,6 +17,5 @@ module Sfn
     extend JSON
     extend ObjectStorage
     extend Bogo::AnimalStrings
-
   end
 end

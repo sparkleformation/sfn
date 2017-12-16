@@ -3,7 +3,6 @@ require 'sfn'
 module Sfn
   # Interface for injecting custom functionality
   class Callback
-
     autoload :AwsAssumeRole, 'sfn/callback/aws_assume_role'
     autoload :AwsMfa, 'sfn/callback/aws_mfa'
     autoload :StackPolicy, 'sfn/callback/stack_policy'
@@ -49,6 +48,5 @@ module Sfn
         raise
       end
     end
-
   end
 end

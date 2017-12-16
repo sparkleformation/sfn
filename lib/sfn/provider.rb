@@ -4,7 +4,6 @@ require 'sfn'
 module Sfn
   # Remote provider interface
   class Provider
-
     include Bogo::AnimalStrings
 
     # Minimum number of seconds to wait before re-expanding in
@@ -38,15 +37,15 @@ module Sfn
     # @option args [Logger] :logger use custom logger
     # @option args [Numeric] :stack_expansion_interval interval to wait between stack data expands
     # @option args [Numeric] :stack_list_interval interval to wait between stack list refresh
-    def initialize(args={})
+    def initialize(args = {})
       args = args.to_smash
-      unless(args.get(:miasma, :provider))
+      unless args.get(:miasma, :provider)
         best_guess = (args[:miasma] || {}).keys.group_by do |key|
           key.to_s.split('_').first
         end.sort do |x, y|
           y.size <=> x.size
         end.first
-        if(best_guess)
+        if best_guess
           provider = best_guess.first.to_sym
         else
           raise ArgumentError.new 'Cannot auto determine :provider value for credentials'
@@ -54,15 +53,15 @@ module Sfn
       else
         provider = args[:miasma].delete(:provider).to_sym
       end
-      if(provider == :aws)
-        if(args[:miasma][:region])
+      if provider == :aws
+        if args[:miasma][:region]
           args[:miasma][:aws_region] = args[:miasma].delete(:region)
         end
       end
-      if(ENV['DEBUG'].to_s.downcase == 'true')
+      if ENV['DEBUG'].to_s.downcase == 'true'
         log_to = STDOUT
       else
-        if(Gem.win_platform?)
+        if Gem.win_platform?
           log_to = 'NUL'
         else
           log_to = '/dev/null'
@@ -74,7 +73,7 @@ module Sfn
       @connection = Miasma.api(
         :provider => provider,
         :type => :orchestration,
-        :credentials => args[:miasma]
+        :credentials => args[:miasma],
       )
       @cache = args.fetch(:cache, Cache.new(:local))
       @async = args.fetch(:async, true)
@@ -82,21 +81,21 @@ module Sfn
       cache.init(:stacks_lock, :lock, :timeout => 0.1)
       cache.init(:stacks, :stamped)
       cache.init(:stack_expansion_lock, :lock, :timeout => 0.1)
-      if(args.fetch(:fetch, false))
+      if args.fetch(:fetch, false)
         async ? update_stack_list! : fetch_stacks
       end
     end
 
     # @return [Miasma::Orchestration::Stacks]
-    def stacks(stack_id=nil)
+    def stacks(stack_id = nil)
       connection.stacks.from_json(cached_stacks(stack_id))
     end
 
     # @return [String] json representation of cached stacks
-    def cached_stacks(stack_id=nil)
-      if(!@initial_fetch_complete || stack_id)
+    def cached_stacks(stack_id = nil)
+      if !@initial_fetch_complete || stack_id
         recache = true
-        if(stack_id && @initial_fetch_complete)
+        if stack_id && @initial_fetch_complete
           recache = !!stacks.get(stack_id)
         end
         fetch_stacks(stack_id) if recache
@@ -145,7 +144,7 @@ module Sfn
     # @param stack [Miasma::Models::Orchestration::Stack]
     def expand_stack(stack)
       logger.info "Stack expansion requested (#{stack.id})"
-      if((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > stack_expansion_interval) ||
+      if ((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > stack_expansion_interval) ||
           !stack.attributes['Cached'])
         begin
           expanded = false
@@ -154,7 +153,7 @@ module Sfn
             stack.reload
             stack.data['Cached'] = Time.now.to_i
           end
-          if(expanded)
+          if expanded
             save_expanded_stack(stack.id, stack.to_json)
           end
         rescue => e
@@ -168,10 +167,10 @@ module Sfn
     # Request stack information and store in cache
     #
     # @return [TrueClass]
-    def fetch_stacks(stack_id=nil)
+    def fetch_stacks(stack_id = nil)
       cache.locked_action(:stacks_lock) do
         logger.info "Lock aquired for stack update. Requesting stacks from upstream. (#{Thread.current})"
-        if(stack_id)
+        if stack_id
           single_stack = connection.stacks.get(stack_id)
           stacks = single_stack ? {single_stack.id => single_stack} : {}
         else
@@ -181,11 +180,11 @@ module Sfn
             end
           ]
         end
-        if(cache[:stacks].value)
+        if cache[:stacks].value
           existing_stacks = MultiJson.load(cache[:stacks].value)
           # Force common types
           stacks = MultiJson.load(MultiJson.dump(stacks))
-          if(stack_id)
+          if stack_id
             stacks = existing_stacks.to_smash.deep_merge(stacks)
           else
             # Remove stacks that have been deleted
@@ -207,8 +206,8 @@ module Sfn
     #
     # @return [TrueClass, FalseClass]
     def update_stack_list!
-      if(updater.nil? || !updater.alive?)
-        self.updater = Thread.new{
+      if updater.nil? || !updater.alive?
+        self.updater = Thread.new {
           loop do
             begin
               fetch_stacks
@@ -231,7 +230,6 @@ module Sfn
     def service_for(service)
       connection.api_for(service)
     end
-
   end
 end
 

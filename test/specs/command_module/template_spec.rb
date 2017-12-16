@@ -1,7 +1,6 @@
 require_relative '../../helper'
 
 describe Sfn::CommandModule::Template do
-
   before do
     @template = Class.new do
       def initialize
@@ -9,15 +8,15 @@ describe Sfn::CommandModule::Template do
         @arguments = []
         @ui = AttributeStruct.new
       end
+
       attr_reader :config, :arguments, :ui
     end
     @template.include Sfn::CommandModule::Template
   end
 
-  let(:instance){ @instance ||= @template.new }
+  let(:instance) { @instance ||= @template.new }
 
   describe 'Compile time parameter merging' do
-
     it 'should automatically merge items when stack name is not used' do
       instance.arguments << 'stack-name'
       instance.config.set(:compile_parameters, 'stack-name__Fubar', 'key1', 'value')
@@ -35,7 +34,5 @@ describe Sfn::CommandModule::Template do
       result.get('stack-name__Fubar', 'key2').must_equal 'value2'
       result.get('Fubar').must_be_nil
     end
-
   end
-
 end

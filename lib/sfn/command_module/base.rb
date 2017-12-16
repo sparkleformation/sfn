@@ -22,11 +22,11 @@ module Sfn
         #
         # @param location [Symbol, String] name of location
         # @return [Sfn::Provider]
-        def provider_for(location=nil)
+        def provider_for(location = nil)
           key = ['provider', location].compact.map(&:to_s).join('_')
-          if(location)
+          if location
             credentials = config.get(:locations, location)
-            unless(credentials)
+            unless credentials
               raise ArgumentError.new "Failed to locate provider credentials for location `#{location}`!"
             end
           else
@@ -37,18 +37,15 @@ module Sfn
               result = Sfn::Provider.new(
                 :miasma => credentials,
                 :async => false,
-                :fetch => false
+                :fetch => false,
               )
-              result.connection.data[:stack_types] = (
-                [
-                  (result.connection.class.const_get(:RESOURCE_MAPPING).detect do |klass, info|
-                    info[:api] == :orchestration
-                  end || []).first
-                ] + custom_stack_types
-              ).compact.uniq
+              result.connection.data[:stack_types] = ([
+                (result.connection.class.const_get(:RESOURCE_MAPPING).detect do |klass, info|
+                  info[:api] == :orchestration
+                end || []).first,
+              ] + custom_stack_types).compact.uniq
               retry_config = config.fetch(:retry,
-                config.fetch(:retries, {})
-              )
+                                          config.fetch(:retries, {}))
               result.connection.data[:retry_ui] = ui
               result.connection.data[:location] = location.to_s
               result.connection.data[:locations] = config.fetch(:locations, {})
@@ -63,19 +60,19 @@ module Sfn
             raise
           end
         end
-        alias_method :provider, :provider_for
 
+        alias_method :provider, :provider_for
 
         # Write exception information if debug is enabled
         #
         # @param e [Exception]
         # @param args [String] extra strings to output
         def _debug(e, *args)
-          if(config[:verbose] || config[:debug])
+          if config[:verbose] || config[:debug]
             ui.fatal "Exception information: #{e.class}: #{e.message}"
-            if(ENV['DEBUG'] || config[:debug])
+            if ENV['DEBUG'] || config[:debug]
               puts "#{e.backtrace.join("\n")}\n"
-              if(e.is_a?(Miasma::Error::ApiError))
+              if e.is_a?(Miasma::Error::ApiError)
                 ui.fatal "Response body: #{e.response.body.to_s.inspect}"
               end
             end
@@ -97,7 +94,7 @@ module Sfn
         #
         # @param name [String] name of stack
         # @return [Miasma::Models::Orchestration::Stack]
-        def stack(name=nil)
+        def stack(name = nil)
           name = name_args.first unless name
           provider.stacks.get(name)
         end
@@ -136,7 +133,7 @@ module Sfn
         # @param message [String] failure message
         # @yield block to wrap error handling
         # @return [Object] result of yield
-        def get_things(stack=nil, message=nil)
+        def get_things(stack = nil, message = nil)
           begin
             yield
           rescue => e
@@ -174,18 +171,16 @@ module Sfn
         # @return [NilClass]
         # @raise [ArgumentError]
         def name_required!
-          if(name_args.empty?)
+          if name_args.empty?
             ui.error 'Name argument must be provided!'
             raise ArgumentError.new 'Missing required name argument'
           end
         end
-
       end
 
       class << self
         def included(klass)
           klass.instance_eval do
-
             include Sfn::CommandModule::Base::InstanceMethods
             include Sfn::CommandModule::Callbacks
             include Sfn::Utils::JSON
@@ -193,12 +188,9 @@ module Sfn
             include Bogo::AnimalStrings
             include Bogo::Memoization
             include Bogo::Constants
-
           end
-
         end
       end
     end
-
   end
 end

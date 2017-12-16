@@ -21,7 +21,7 @@ module Sfn
       # @param fail_message [String] message to describe failure
       # @param provider [String, Symbol] target provider
       # @return [self]
-      def initialize(name, definitions, fail_message, provider=:aws)
+      def initialize(name, definitions, fail_message, provider = :aws)
         @name = name.to_sym
         @definitions = definitions.dup.uniq.freeze
         @fail_message = fail_message
@@ -33,13 +33,13 @@ module Sfn
       # result set.
       def generate_fail_message(results)
         msg = fail_message.dup
-        unless(results.empty?)
+        unless results.empty?
           failed_items = results.map do |item|
             f_item = item[:failures]
             next if f_item.nil? || f_item == true || f_item == false
             f_item
           end.flatten.compact.map(&:to_s)
-          unless(failed_items.empty?)
+          unless failed_items.empty?
             msg = "#{msg} (failures: `#{failed_items.join('`, `')}`)"
           end
         end
@@ -55,10 +55,10 @@ module Sfn
           result = definition.apply(template)
           result == true ? result : Smash.new(:definition => definition, :failures => result)
         end
-        if(results.all?{|item| item == true})
+        if results.all? { |item| item == true }
           true
         else
-          results.delete_if{|item| item == true}
+          results.delete_if { |item| item == true }
           results
         end
       end
@@ -107,12 +107,11 @@ module Sfn
         non_match = definitions.find_all do |definition|
           definition.provider != provider
         end
-        unless(non_match.empty?)
+        unless non_match.empty?
           raise ArgumentError.new "Rule defines `#{provider}` as provider but includes definitions for " \
-            "non matching providers. (#{non_match.map(&:provider).map(&:to_s).uniq.sort.join(', ')})"
+                                  "non matching providers. (#{non_match.map(&:provider).map(&:to_s).uniq.sort.join(', ')})"
         end
       end
-
     end
   end
 end

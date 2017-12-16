@@ -2,11 +2,8 @@ require_relative '../../helper'
 require 'http'
 
 describe Sfn::Command::Create do
-
   describe 'AWS' do
-
     describe 'default behavior' do
-
       before do
         $mock.expects(:post).returns(http_response(:body => '[]'))
       end
@@ -18,7 +15,7 @@ describe Sfn::Command::Create do
             :file => 'dummy',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
-            :credentials => aws_creds
+            :credentials => aws_creds,
           ), ['test-stack']
         )
         instance.execute!
@@ -26,13 +23,11 @@ describe Sfn::Command::Create do
         output = stream.read
         output.must_include 'creation initialized for test-stack'
       end
-
     end
 
     describe 'nesting behavior' do
-
       before do
-        $mock.expects(:head).with{|url|
+        $mock.expects(:head).with { |url|
           url.include?('s3') && url.include?('bucket')
         }.returns(http_response)
       end
@@ -44,10 +39,10 @@ describe Sfn::Command::Create do
             :file => 'nested_dummy',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
-            :credentials => aws_creds
+            :credentials => aws_creds,
           ), ['test-stack']
         )
-        ->{ instance.execute! }.must_raise StandardError
+        -> { instance.execute! }.must_raise StandardError
         stream.rewind
         output = stream.read
         output.must_include 'Missing required configuration value'
@@ -56,11 +51,11 @@ describe Sfn::Command::Create do
 
       it 'should store nested template in bucket' do
         $mock.expects(:post).returns(http_response(:body => '[]'))
-        $mock.expects(:put).with{|url, opts|
+        $mock.expects(:put).with { |url, opts|
           opts[:body].must_equal({'Value' => true}.to_json)
           url.include?('s3') && url.end_with?('.json')
         }.returns(http_response)
-        $mock.expects(:get).with{|url, opts|
+        $mock.expects(:get).with { |url, opts|
           url.include?('s3') && url.end_with?('.json')
         }.returns(http_response)
         instance = Sfn::Command::Create.new(
@@ -70,7 +65,7 @@ describe Sfn::Command::Create do
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
             :nesting_bucket => 'bucket',
-            :credentials => aws_creds
+            :credentials => aws_creds,
           ), ['test-stack']
         )
         instance.execute!
@@ -80,14 +75,14 @@ describe Sfn::Command::Create do
       end
 
       it 'should remove stack property from template when using nested stack' do
-        $mock.expects(:put).with{|url, opts|
+        $mock.expects(:put).with { |url, opts|
           opts[:body].must_equal({'Value' => true}.to_json)
           url.include?('s3') && url.end_with?('.json')
         }.returns(http_response)
-        $mock.expects(:get).with{|url, opts|
+        $mock.expects(:get).with { |url, opts|
           url.include?('s3') && url.end_with?('.json')
         }.returns(http_response)
-        $mock.expects(:post).with{|url, opts|
+        $mock.expects(:post).with { |url, opts|
           MultiJson.load(opts.to_smash.get(:form, 'TemplateBody')).to_smash.get(
             'Resources', 'Dummy', 'Properties', 'Stack'
           ).must_equal nil
@@ -100,18 +95,15 @@ describe Sfn::Command::Create do
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
             :nesting_bucket => 'bucket',
-            :credentials => aws_creds
+            :credentials => aws_creds,
           ), ['test-stack']
         )
         instance.execute!
       end
-
     end
-
   end
 
   describe 'Azure' do
-
     let(:azure_container_result) do
       Smash.new(
         'EnumerationResults' => {
@@ -123,12 +115,12 @@ describe Sfn::Command::Create do
                   'Last_Modified' => Time.now.rfc2822,
                   'Etag' => '"0000"',
                   'LeaseStatus' => 'unlocked',
-                  'LeaseState' => 'available'
-                }
-              )
-            ]
-          }
-        }
+                  'LeaseState' => 'available',
+                },
+              ),
+            ],
+          },
+        },
       )
     end
 
@@ -139,11 +131,11 @@ describe Sfn::Command::Create do
         :location => 'AZURE_REGION',
         :tags => {
           :created => Time.now.to_i,
-          :state => 'create'
+          :state => 'create',
         },
         :properties => {
-          :provisioningState => 'Succeeded'
-        }
+          :provisioningState => 'Succeeded',
+        },
       )
     end
 
@@ -154,8 +146,8 @@ describe Sfn::Command::Create do
         :properties => {
           :mode => 'Complete',
           :provisioningState => 'Accepted',
-          :timestamp => Time.now.xmlschema
-        }
+          :timestamp => Time.now.xmlschema,
+        },
       )
     end
 
@@ -163,33 +155,32 @@ describe Sfn::Command::Create do
       Smash.new(
         :expires_on => Time.now.to_i + 900,
         :not_before => Time.now.to_i - 900,
-        :access_token => 'AZURE_TOKEN'
+        :access_token => 'AZURE_TOKEN',
       )
     end
 
     before do
-      $mock.expects(:post).with{|url|
+      $mock.expects(:post).with { |url|
         url.include?('oauth2')
       }.returns(http_response(:body => azure_client_access_token.to_json)).once
-      $mock.expects(:get).with{|url, opts={}|
+      $mock.expects(:get).with { |url, opts = {}|
         url.include?('blob') && opts.fetch(:params, {})['comp'] == 'list'
       }.returns(http_response(:body => azure_container_result.to_json))
-      $mock.expects(:put).with{|url|
+      $mock.expects(:put).with { |url|
         url.include?('blob')
       }.returns(http_response(:status => 201))
-      $mock.expects(:head).with{|url|
+      $mock.expects(:head).with { |url|
         url.include?('blob')
       }.returns(http_response)
-      $mock.expects(:put).with{|url|
+      $mock.expects(:put).with { |url|
         url.end_with?('resourcegroups/test-stack')
       }.returns(http_response(:body => azure_create_resource_group.to_json))
-      $mock.expects(:put).with{|url|
+      $mock.expects(:put).with { |url|
         url.end_with?('deployments/miasma-stack')
       }.returns(http_response(:body => azure_create_deployment.to_json))
     end
 
     describe 'default behavior' do
-
       it 'should display create initialize' do
         instance = Sfn::Command::Create.new(
           Smash.new(
@@ -197,7 +188,7 @@ describe Sfn::Command::Create do
             :file => 'dummy_azure',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
-            :credentials => azure_creds
+            :credentials => azure_creds,
           ), ['test-stack']
         )
         instance.execute!
@@ -205,11 +196,9 @@ describe Sfn::Command::Create do
         output = stream.read
         output.must_include 'creation initialized for test-stack'
       end
-
     end
 
     describe 'nesting behavior' do
-
       it 'should display human error when no bucket provided' do
         instance = Sfn::Command::Create.new(
           Smash.new(
@@ -217,10 +206,10 @@ describe Sfn::Command::Create do
             :file => 'nested_dummy_azure',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
-            :credentials => azure_creds
+            :credentials => azure_creds,
           ), ['test-stack']
         )
-        ->{ instance.execute! }.must_raise StandardError
+        -> { instance.execute! }.must_raise StandardError
         stream.rewind
         output = stream.read
         output.must_include 'Missing required configuration value'
@@ -228,17 +217,17 @@ describe Sfn::Command::Create do
       end
 
       it 'should store nested template in bucket' do
-        $mock.expects(:put).with{|url, opts|
-          if(url.end_with?('test-stack_dummyAzure.json'))
+        $mock.expects(:put).with { |url, opts|
+          if url.end_with?('test-stack_dummyAzure.json')
             opts[:body].must_equal({'value' => true}.to_json)
             true
           end
         }.returns(http_response(:status => 201))
-        $mock.expects(:head).with{|url, opts|
+        $mock.expects(:head).with { |url, opts|
           url.end_with?('test-stack_dummyAzure.json')
         }.returns(http_response)
-        $mock.expects(:put).with{|url, opts|
-          if(url.include?('blob') && url.include?('test-stack-') && url.include?('.json'))
+        $mock.expects(:put).with { |url, opts|
+          if url.include?('blob') && url.include?('test-stack-') && url.include?('.json')
             MultiJson.load(opts[:body]).to_smash.fetch(:resources, [{}]).first.get(:properties, :stack).must_equal nil
             true
           end
@@ -250,7 +239,7 @@ describe Sfn::Command::Create do
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
             :nesting_bucket => 'miasma-orchestration-templates',
-            :credentials => azure_creds
+            :credentials => azure_creds,
           ), ['test-stack']
         )
         instance.execute!
@@ -260,16 +249,16 @@ describe Sfn::Command::Create do
       end
 
       it 'should remove stack property from template when using nested stack' do
-        $mock.expects(:put).with{|url, opts|
-          if(url.end_with?('test-stack_dummyAzure.json'))
+        $mock.expects(:put).with { |url, opts|
+          if url.end_with?('test-stack_dummyAzure.json')
             true
           end
         }.returns(http_response(:status => 201))
-        $mock.expects(:head).with{|url, opts|
+        $mock.expects(:head).with { |url, opts|
           url.end_with?('test-stack_dummyAzure.json')
         }.returns(http_response)
-        $mock.expects(:put).with{|url, opts|
-          if(url.include?('blob') && url.include?('test-stack-') && url.include?('.json'))
+        $mock.expects(:put).with { |url, opts|
+          if url.include?('blob') && url.include?('test-stack-') && url.include?('.json')
             MultiJson.load(opts[:body]).to_smash.fetch(:resources, [{}]).first.get(:properties, :stack).must_equal nil
             true
           end
@@ -281,23 +270,20 @@ describe Sfn::Command::Create do
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
             :nesting_bucket => 'miasma-orchestration-templates',
-            :credentials => azure_creds
+            :credentials => azure_creds,
           ), ['test-stack']
         )
         instance.execute!
       end
-
     end
-
   end
 
   describe 'Google' do
-
     let(:google_auth_token) do
       Smash.new(
         :access_token => 'TOKEN',
         :token_type => 'TYPE',
-        :expires_in => 300
+        :expires_in => 300,
       )
     end
 
@@ -310,7 +296,7 @@ describe Sfn::Command::Create do
         :targetLink => 'http://example.com/deployments/test-stack',
         :status => 'PENDING',
         :progress => 0,
-        :startTime => Time.now.xmlschema
+        :startTime => Time.now.xmlschema,
       )
     end
 
@@ -324,12 +310,12 @@ describe Sfn::Command::Create do
           :operationType => 'insert',
           :status => 'RUNNING',
           :progress => 0,
-          :startTime => Time.now.xmlschema
+          :startTime => Time.now.xmlschema,
         },
         :fingerprint => 'FINGERPRINT-ID',
         :update => {
-          :manifest => 'http://example.com/manifests/test-stack.manifest'
-        }
+          :manifest => 'http://example.com/manifests/test-stack.manifest',
+        },
       )
     end
 
@@ -338,21 +324,20 @@ describe Sfn::Command::Create do
     end
 
     before do
-      $mock.expects(:post).with{|url, opts|
+      $mock.expects(:post).with { |url, opts|
         url.include?('oauth2')
       }.returns(http_response(:body => google_auth_token.to_json)).once
-      $mock.expects(:get).with{|url|
+      $mock.expects(:get).with { |url|
         url.end_with?('/deployments/test-stack')
       }.returns(http_response(:body => google_get_deployment.to_json))
-      $mock.expects(:get).with{|url|
+      $mock.expects(:get).with { |url|
         url.end_with?('/manifests/test-stack.manifest/')
       }.returns(http_response(:body => google_get_manifest.to_json))
     end
 
     describe 'default behavior' do
-
       it 'should display create initialize' do
-        $mock.expects(:post).with{|url, opts|
+        $mock.expects(:post).with { |url, opts|
           url.end_with?('/deployments') &&
             opts[:json]['name'] == 'test-stack'
         }.returns(http_response(:body => google_create_deployment.to_json))
@@ -362,7 +347,7 @@ describe Sfn::Command::Create do
             :file => 'dummy_google',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
-            :credentials => google_creds
+            :credentials => google_creds,
           ), ['test-stack']
         )
         instance.execute!
@@ -370,14 +355,12 @@ describe Sfn::Command::Create do
         output = stream.read
         output.must_include 'creation initialized for test-stack'
       end
-
     end
 
     describe 'nesting behavior' do
-
       it 'should remove stack property from template when using nested stack' do
-        $mock.expects(:post).with{|url, opts|
-          if(url.end_with?('/deployments') && opts[:json]['name'] == 'test-stack')
+        $mock.expects(:post).with { |url, opts|
+          if url.end_with?('/deployments') && opts[:json]['name'] == 'test-stack'
             import = opts[:json]['target']['imports'].detect do |i|
               i['name'] == 'test-stack.jinja'
             end
@@ -392,13 +375,11 @@ describe Sfn::Command::Create do
             :file => 'nested_dummy_google',
             :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
             :poll => false,
-            :credentials => google_creds
+            :credentials => google_creds,
           ), ['test-stack']
         )
         instance.execute!
       end
     end
-
   end
-
 end

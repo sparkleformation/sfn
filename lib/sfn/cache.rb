@@ -5,14 +5,13 @@ require 'sfn'
 module Sfn
   # Data caching helper
   class Cache
-
     class << self
 
       # Configure the caching approach to use
       #
       # @param type [Symbol] :redis or :local
       # @param args [Hash] redis connection arguments if used
-      def configure(type, args={})
+      def configure(type, args = {})
         type = type.to_sym
         case type
         when :redis
@@ -49,9 +48,9 @@ module Sfn
       # @param kind [String, Symbol] data type
       # @param seconds [Integer]
       # return [Integer] seconds
-      def apply_limit(kind, seconds=nil)
+      def apply_limit(kind, seconds = nil)
         @apply_limit ||= {}
-        if(seconds)
+        if seconds
           @apply_limit[kind.to_sym] = seconds.to_i
         end
         @apply_limit[kind.to_sym].to_i
@@ -64,12 +63,11 @@ module Sfn
 
       # Ping the redis connection and reconnect if dead
       def redis_ping!
-        if((@_pid && @_pid != Process.pid) || !Redis::Objects.redis.connected?)
+        if (@_pid && @_pid != Process.pid) || !Redis::Objects.redis.connected?
           Redis::Objects.redis.client.reconnect
           @_pid = Process.pid
         end
       end
-
     end
 
     # @return [String] custom key for this cache
@@ -79,7 +77,7 @@ module Sfn
     #
     # @param key [String, Array]
     def initialize(key)
-      if(key.respond_to?(:sort))
+      if key.respond_to?(:sort)
         key = key.flatten if key.respond_to?(:flatten)
         key = key.map(&:to_s).sort
       end
@@ -92,7 +90,7 @@ module Sfn
     # @param name [Symbol] name of data
     # @param kind [Symbol] data type
     # @param args [Hash] options for data type
-    def init(name, kind, args={})
+    def init(name, kind, args = {})
       get_storage(self.class.type, kind, name, args)
       true
     end
@@ -112,9 +110,9 @@ module Sfn
         args = registry.keys if args.empty?
         args.each do |key|
           value = self[key]
-          if(value.respond_to?(:clear))
+          if value.respond_to?(:clear)
             value.clear
-          elsif(value.respond_to?(:value))
+          elsif value.respond_to?(:value)
             value.value = nil
           end
           registry.delete(key)
@@ -131,7 +129,7 @@ module Sfn
     # @param name [Symbol] name of data
     # @param args [Hash] options for underlying storage
     # @return [Object]
-    def get_storage(store_type, data_type, name, args={})
+    def get_storage(store_type, data_type, name, args = {})
       full_name = "#{key}_#{name}"
       result = nil
       case store_type.to_sym
@@ -139,14 +137,14 @@ module Sfn
         result = get_redis_storage(data_type, full_name.to_s, args)
       when :local
         @_local_cache ||= {}
-        unless(@_local_cache[full_name.to_s])
+        unless @_local_cache[full_name.to_s]
           @_local_cache[full_name.to_s] = get_local_storage(data_type, full_name.to_s, args)
         end
         result = @_local_cache[full_name.to_s]
       else
         raise TypeError.new("Unsupported caching storage type encountered: #{store_type}")
       end
-      unless(full_name == "#{key}_registry_#{key}")
+      unless full_name == "#{key}_registry_#{key}"
         registry[name.to_s] = data_type
       end
       result
@@ -158,7 +156,7 @@ module Sfn
     # @param full_name [Symbol]
     # @param args [Hash]
     # @return [Object]
-    def get_redis_storage(data_type, full_name, args={})
+    def get_redis_storage(data_type, full_name, args = {})
       self.class.redis_ping!
       case data_type.to_sym
       when :array
@@ -183,22 +181,22 @@ module Sfn
     # @param args [Hash]
     # @return [Object]
     # @todo make proper singleton for local storage
-    def get_local_storage(data_type, full_name, args={})
+    def get_local_storage(data_type, full_name, args = {})
       @storage ||= {}
       @storage[full_name] ||= case data_type.to_sym
-        when :array
-          []
-        when :hash
-          {}
-        when :value
-          LocalValue.new
-        when :lock
-          LocalLock.new(full_name, {:expiration => 60, :timeout => 0.1}.merge(args))
-        when :stamped
-          Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name), self)
-        else
-          raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
-        end
+                              when :array
+                                []
+                              when :hash
+                                {}
+                              when :value
+                                LocalValue.new
+                              when :lock
+                                LocalLock.new(full_name, {:expiration => 60, :timeout => 0.1}.merge(args))
+                              when :stamped
+                                Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name), self)
+                              else
+                                raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
+                              end
     end
 
     # Execute block within internal lock
@@ -216,7 +214,7 @@ module Sfn
     # @param name [String, Symbol]
     # @return [Object, NilClass]
     def [](name)
-      if(kind = registry[name.to_s])
+      if kind = registry[name.to_s]
         get_storage(self.class.type, kind, name)
       else
         nil
@@ -246,9 +244,9 @@ module Sfn
     # @param kind [String, Symbol] data type
     # @param seconds [Integer]
     # return [Integer]
-    def apply_limit(kind, seconds=nil)
+    def apply_limit(kind, seconds = nil)
       @apply_limit ||= {}
-      if(seconds)
+      if seconds
         @apply_limit[kind.to_sym] = seconds.to_i
       end
       @apply_limit[kind.to_sym].to_i
@@ -259,13 +257,13 @@ module Sfn
     # @param lock_name [String, Symbol] name of lock
     # @param raise_on_locked [TrueClass, FalseClass] raise execption if lock wait times out
     # @return [Object] result of yield
-    def locked_action(lock_name, raise_on_locked=false)
+    def locked_action(lock_name, raise_on_locked = false)
       begin
         self[lock_name].lock do
           yield
         end
       rescue => e
-        if(e.class.to_s.end_with?('Timeout'))
+        if e.class.to_s.end_with?('Timeout')
           raise if raise_on_locked
         else
           raise
@@ -277,6 +275,7 @@ module Sfn
     class LocalValue
       # @return [Object] value
       attr_accessor :value
+
       def initialize(*args)
         @value = nil
       end
@@ -284,7 +283,6 @@ module Sfn
 
     # Simple lock for memory cache
     class LocalLock
-
       class LocalLockTimeout < RuntimeError
       end
 
@@ -300,7 +298,7 @@ module Sfn
       # @param name [Symbol] name of lock
       # @param args [Hash]
       # @option args [Numeric] :timeout
-      def initialize(name, args={})
+      def initialize(name, args = {})
         @_key = name
         @_timeout = args.fetch(:timeout, -1).to_f
         @_lock = Mutex.new
@@ -313,17 +311,17 @@ module Sfn
       def lock
         locked = false
         attempt_start = Time.now.to_f
-        while(!locked && (_timeout < 0 || Time.now.to_f - attempt_start < _timeout))
+        while (!locked && (_timeout < 0 || Time.now.to_f - attempt_start < _timeout))
           locked = _lock.try_lock
         end
-        if(locked)
+        if locked
           begin
             yield
           ensure
             _lock.unlock if _lock.locked?
           end
         else
-          if(defined?(Redis))
+          if defined?(Redis)
             raise Redis::Lock::LockTimeout.new "Timeout on lock #{_key} exceeded #{_timeout} sec"
           else
             raise LocalLockTimeout.new "Timeout on lock #{_key} exceeded #{_timeout} sec"
@@ -387,6 +385,5 @@ module Sfn
         !set? || @cache.time_check_allow?(@name, @base.value[:stamp])
       end
     end
-
   end
 end

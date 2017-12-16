@@ -4,11 +4,10 @@ module Sfn
   class Command
     # Cloudformation describe command
     class Describe < Command
-
       include Sfn::CommandModule::Base
 
       # information available
-      unless(defined?(AVAILABLE_DISPLAYS))
+      unless defined?(AVAILABLE_DISPLAYS)
         AVAILABLE_DISPLAYS = [:resources, :outputs, :tags]
       end
 
@@ -19,12 +18,12 @@ module Sfn
         root_stack = api_action! do
           provider.stack(stack_name)
         end
-        if(root_stack)
+        if root_stack
           ([root_stack] + root_stack.nested_stacks).compact.each do |stack|
             ui.info "Stack description of #{ui.color(stack.name, :bold)}:"
             display = [].tap do |to_display|
               AVAILABLE_DISPLAYS.each do |display_option|
-                if(config[display_option])
+                if config[display_option]
                   to_display << display_option
                 end
               end
@@ -54,7 +53,7 @@ module Sfn
           table(:border => false) do
             row(:header => true) do
               allowed_attributes.each do |attr|
-                column as_title(attr), :width => stack_resources.map{|r| r[attr].to_s.length}.push(as_title(attr).length).max + 2
+                column as_title(attr), :width => stack_resources.map { |r| r[attr].to_s.length }.push(as_title(attr).length).max + 2
               end
             end
             stack_resources.each do |resource|
@@ -73,7 +72,7 @@ module Sfn
       # @param stack [Miasma::Models::Orchestration::Stack]
       def outputs(stack)
         ui.info "Outputs for stack: #{ui.color(stack.name, :bold)}"
-        unless(stack.outputs.nil? || stack.outputs.empty?)
+        unless stack.outputs.nil? || stack.outputs.empty?
           stack.outputs.each do |output|
             key, value = output.key, output.value
             key = snake(key).to_s.split('_').map(&:capitalize).join(' ')
@@ -89,7 +88,7 @@ module Sfn
       # @param stack [Miasma::Models::Orchestration::Stack]
       def tags(stack)
         ui.info "Tags for stack: #{ui.color(stack.name, :bold)}"
-        if(stack.tags && !stack.tags.empty?)
+        if stack.tags && !stack.tags.empty?
           stack.tags.each do |key, value|
             ui.info ['  ', ui.color("#{key}:", :bold), value].join(' ')
           end
@@ -102,7 +101,6 @@ module Sfn
       def default_attributes
         %w(updated logical_id type status status_reason)
       end
-
     end
   end
 end

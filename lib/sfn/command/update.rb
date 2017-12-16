@@ -4,7 +4,6 @@ module Sfn
   class Command
     # Update command
     class Update < Command
-
       include Sfn::CommandModule::Base
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
@@ -23,16 +22,16 @@ module Sfn
 
         config[:compile_parameters] ||= Smash.new
 
-        if(config[:file])
+        if config[:file]
           s_name = [name]
 
           c_setter = lambda do |c_stack|
-            if(c_stack.outputs)
+            if c_stack.outputs
               compile_params = c_stack.outputs.detect do |output|
                 output.key == 'CompileState'
               end
             end
-            if(compile_params)
+            if compile_params
               compile_params = MultiJson.load(compile_params.value)
               c_current = config[:compile_parameters].fetch(s_name.join('__'), Smash.new)
               config[:compile_parameters][s_name.join('__')] = compile_params.merge(c_current)
@@ -44,7 +43,7 @@ module Sfn
             end
           end
 
-          if(stack)
+          if stack
             c_setter.call(stack)
           end
 
@@ -55,28 +54,28 @@ module Sfn
           file = stack.template.dup if config[:plan]
         end
 
-        unless(stack)
+        unless stack
           ui.fatal "Failed to locate requested stack: #{ui.color(name, :red, :bold)}"
           raise "Failed to locate stack: #{name}"
         end
 
-        unless(config[:print_only])
+        unless config[:print_only]
           ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('update', :green)}"
         end
 
-        unless(file)
-          if(config[:template])
+        unless file
+          if config[:template]
             file = config[:template]
             stack_info << " #{ui.color('(template provided)', :green)}"
           else
             stack_info << " #{ui.color('(no template update)', :yellow)}"
           end
         end
-        unless(config[:print_only])
+        unless config[:print_only]
           ui.info "  -> #{stack_info}"
         end
-        if(file)
-          if(config[:print_only])
+        if file
+          if config[:print_only]
             ui.puts format_json(parameter_scrub!(template_content(file)))
             return
           end
@@ -89,12 +88,12 @@ module Sfn
           populate_parameters!(file, :current_parameters => stack.root_parameters)
           update_template = stack.template
 
-          if(config[:plan])
+          if config[:plan]
             begin
               stack.template = original_template
               stack.parameters = original_parameters
               plan = build_planner(stack)
-              if(plan)
+              if plan
                 result = plan.generate_plan(
                   file.respond_to?(:dump) ? file.dump : file,
                   config_root_parameters
@@ -102,7 +101,7 @@ module Sfn
                 display_plan_information(result)
               end
             rescue => e
-              unless(e.message.include?('Confirmation declined'))
+              unless e.message.include?('Confirmation declined')
                 ui.error "Unexpected error when generating plan information: #{e.class} - #{e}"
                 ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
                 ui.confirm 'Continue with stack update?' unless config[:plan_only]
@@ -110,14 +109,14 @@ module Sfn
                 raise
               end
             end
-            if(config[:plan_only])
+            if config[:plan_only]
               ui.info 'Plan only mode requested. Exiting.'
               exit 0
             end
           end
           stack.parameters = config_root_parameters
 
-          if(config[:upload_root_template])
+          if config[:upload_root_template]
             upload_result = store_template(name, file, Smash.new)
             stack.template_url = upload_result[:url]
           else
@@ -131,9 +130,9 @@ module Sfn
         end
 
         # Set options defined within config into stack instance for update request
-        if(config[:merge_api_options])
+        if config[:merge_api_options]
           config.fetch(:options, Smash.new).each_pair do |key, value|
-            if(stack.respond_to?("#{key}="))
+            if stack.respond_to?("#{key}=")
               stack.send("#{key}=", value)
             end
           end
@@ -142,9 +141,9 @@ module Sfn
         begin
           api_action!(:api_stack => stack) do
             stack.save
-            if(config[:poll])
+            if config[:poll]
               poll_stack(stack.name)
-              if(stack.reload.state == :update_complete)
+              if stack.reload.state == :update_complete
                 ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
                 namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
               else
@@ -157,18 +156,17 @@ module Sfn
             end
           end
         rescue Miasma::Error::ApiError::RequestError => e
-          if(e.message.downcase.include?('no updates'))
+          if e.message.downcase.include?('no updates')
             ui.warn "No updates detected for stack (#{stack.name})"
           else
             raise
           end
         end
-
       end
 
       def build_planner(stack)
         klass_name = stack.api.class.to_s.split('::').last
-        if(Planner.const_defined?(klass_name))
+        if Planner.const_defined?(klass_name)
           Planner.const_get(klass_name).new(ui, config, arguments, stack)
         else
           warn "Failed to build planner for current provider. No provider implemented. (`#{klass_name}`)"
@@ -178,62 +176,61 @@ module Sfn
 
       def display_plan_information(result)
         ui.info ui.color('Pre-update resource planning report:', :bold)
-        unless(print_plan_result(result))
+        unless print_plan_result(result)
           ui.info 'No resources life cycle changes detected in this update!'
         end
         ui.confirm 'Apply this stack update?' unless config[:plan_only]
       end
 
-
-      def print_plan_result(info, names=[])
+      def print_plan_result(info, names = [])
         said_any_things = false
-        unless(info[:stacks].empty?)
+        unless info[:stacks].empty?
           info[:stacks].each do |s_name, s_info|
             result = print_plan_result(s_info, [*names, s_name].compact)
             said_any_things ||= result
           end
         end
-        unless(names.flatten.compact.empty?)
+        unless names.flatten.compact.empty?
           said_things = false
           ui.puts
           ui.puts "  #{ui.color('Update plan for:', :bold)} #{ui.color(names.join(' > '), :blue)}"
-          unless(info[:unknown].empty?)
+          unless info[:unknown].empty?
             ui.puts "    #{ui.color('!!! Unknown update effect:', :red, :bold)}"
             print_plan_items(info, :unknown, :red)
             ui.puts
             said_any_things = said_things = true
           end
-          unless(info[:unavailable].empty?)
+          unless info[:unavailable].empty?
             ui.puts "    #{ui.color('Update request not allowed:', :red, :bold)}"
             print_plan_items(info, :unavailable, :red)
             ui.puts
             said_any_things = said_things = true
           end
-          unless(info[:replace].empty?)
+          unless info[:replace].empty?
             ui.puts "    #{ui.color('Resources to be replaced:', :red, :bold)}"
             print_plan_items(info, :replace, :red)
             ui.puts
             said_any_things = said_things = true
           end
-          unless(info[:interrupt].empty?)
+          unless info[:interrupt].empty?
             ui.puts "    #{ui.color('Resources to be interrupted:', :yellow, :bold)}"
             print_plan_items(info, :interrupt, :yellow)
             ui.puts
             said_any_things = said_things = true
           end
-          unless(info[:removed].empty?)
+          unless info[:removed].empty?
             ui.puts "    #{ui.color('Resources to be removed:', :red, :bold)}"
             print_plan_items(info, :removed, :red)
             ui.puts
             said_any_things = said_things = true
           end
-          unless(info[:added].empty?)
+          unless info[:added].empty?
             ui.puts "    #{ui.color('Resources to be added:', :green, :bold)}"
             print_plan_items(info, :added, :green)
             ui.puts
             said_any_things = said_things = true
           end
-          unless(said_things)
+          unless said_things
             ui.puts "    #{ui.color('No resource lifecycle changes detected!', :green)}"
             ui.puts
             said_any_things = true
@@ -249,26 +246,26 @@ module Sfn
       # @param color [Symbol] color to flag
       def print_plan_items(info, key, color)
         max_name = info[key].keys.map(&:size).max
-        max_type = info[key].values.map{|i|i[:type]}.map(&:size).max
-        max_p = info[key].values.map{|i| i.fetch(:diffs, [])}.flatten(1).map{|d| d.fetch(:property_name, :path).to_s.size}.max
-        max_o = info[key].values.map{|i| i.fetch(:diffs, [])}.flatten(1).map{|d| d[:original].to_s.size}.max
+        max_type = info[key].values.map { |i| i[:type] }.map(&:size).max
+        max_p = info[key].values.map { |i| i.fetch(:diffs, []) }.flatten(1).map { |d| d.fetch(:property_name, :path).to_s.size }.max
+        max_o = info[key].values.map { |i| i.fetch(:diffs, []) }.flatten(1).map { |d| d[:original].to_s.size }.max
         info[key].each do |name, val|
           ui.print ' ' * 6
           ui.print ui.color("[#{val[:type]}]", color)
           ui.print ' ' * (max_type - val[:type].size)
           ui.print ' ' * 4
           ui.print ui.color(name, :bold)
-          unless(val[:properties].nil? || val[:properties].empty?)
+          unless val[:properties].nil? || val[:properties].empty?
             ui.print ' ' * (max_name - name.size)
             ui.print ' ' * 4
             ui.print "Reason: Updated properties: `#{val[:properties].join('`, `')}`"
           end
           ui.puts
-          if(config[:diffs])
-            unless(val[:diffs].empty?)
+          if config[:diffs]
+            unless val[:diffs].empty?
               p_name = nil
               val[:diffs].each do |diff|
-                if(!diff[:updated].nil? || !diff[:original].nil?)
+                if !diff[:updated].nil? || !diff[:original].nil?
                   p_name = diff.fetch(:property_name, :path)
                   ui.print ' ' * 8
                   ui.print "#{p_name}: "
@@ -276,10 +273,10 @@ module Sfn
                   ui.print ui.color("-#{diff[:original]}", :red) unless diff[:original].nil?
                   ui.print ' ' * (max_o - diff[:original].to_s.size)
                   ui.print ' '
-                  if(diff[:updated] == Sfn::Planner::RUNTIME_MODIFIED)
+                  if diff[:updated] == Sfn::Planner::RUNTIME_MODIFIED
                     ui.puts ui.color("+#{diff[:original]} <Dependency Modified>", :green)
                   else
-                    if(diff[:updated].nil?)
+                    if diff[:updated].nil?
                       ui.puts
                     else
                       ui.puts ui.color("+#{diff[:updated].to_s.gsub('__MODIFIED_REFERENCE_VALUE__', '<Dependency Modified>')}", :green)
@@ -292,7 +289,6 @@ module Sfn
           end
         end
       end
-
     end
   end
 end

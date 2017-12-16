@@ -5,7 +5,6 @@ module Sfn
   module CommandModule
     # Stack handling helper methods
     module Stack
-
       module InstanceMethods
 
         # maximum number of attempts to get valid parameter value
@@ -30,7 +29,7 @@ module Sfn
             stack_info.unshift(nil) if stack_info.size == 1
             stack_location, stack_name = stack_info
             remote_stack = provider_for(stack_location).stack(stack_name)
-            if(remote_stack)
+            if remote_stack
               apply_nested_stacks!(remote_stack, stack)
               mappings = generate_custom_apply_mappings(remote_stack)
               execute_apply_stack(remote_stack, stack, mappings)
@@ -49,7 +48,7 @@ module Sfn
         # @return [Miasma::Models::Orchestration::Stack]
         def apply_nested_stacks!(remote_stack, stack)
           remote_stack.resources.all.each do |resource|
-            if(valid_stack_types.include?(resource.type))
+            if valid_stack_types.include?(resource.type)
               nested_stack = resource.expand
               apply_nested_stacks!(nested_stack, stack)
               mappings = generate_custom_apply_mappings(nested_stack)
@@ -64,7 +63,7 @@ module Sfn
         # @param provider_stack [Miasma::Models::Orchestration::Stack] stack providing outputs
         # @return [Hash] output to parameter mapping
         def generate_custom_apply_mappings(provider_stack)
-          if(config[:apply_mapping])
+          if config[:apply_mapping]
             valid_keys = config[:apply_mapping].keys.find_all do |a_key|
               a_key = a_key.to_s
               key_parts = a_key.split('__')
@@ -81,7 +80,7 @@ module Sfn
               end
             end
             to_remove = valid_keys.find_all do |key|
-              valid_keys.any?{|v_key| v_key.match(/__#{Regexp.escape(key)}$/)}
+              valid_keys.any? { |v_key| v_key.match(/__#{Regexp.escape(key)}$/) }
             end
             valid_keys -= to_remove
             Hash[
@@ -130,15 +129,14 @@ module Sfn
 
         # Format config defined parameters to ensure expected layout
         def format_config_parameters!
-          if(config.get(:parameter).is_a?(Array))
+          if config.get(:parameter).is_a?(Array)
             config[:parameter] = Smash[
               *config.get(:parameter).map(&:to_a).flatten
             ]
           end
-          if(config.get(:parameters))
+          if config.get(:parameters)
             config.set(:parameters,
-              config.get(:parameters).merge(config.fetch(:parameter, Smash.new))
-            )
+                       config.get(:parameters).merge(config.fetch(:parameter, Smash.new)))
           else
             config.set(:parameters, config.fetch(:parameter, Smash.new))
           end
@@ -151,16 +149,16 @@ module Sfn
         # @return [Array<String>] [expected_template_key, configuration_used_key]
         def locate_config_parameter_key(parameter_prefix, parameter_name, root_name)
           check_name = parameter_name.downcase.tr('-_', '')
-          check_prefix = parameter_prefix.map{|i| i.downcase.tr('-_', '') }
+          check_prefix = parameter_prefix.map { |i| i.downcase.tr('-_', '') }
           key_match = config[:parameters].keys.detect do |cp_key|
-            cp_key = cp_key.to_s.downcase.split('__').map{|i| i.tr('-_', '') }.join('__')
+            cp_key = cp_key.to_s.downcase.split('__').map { |i| i.tr('-_', '') }.join('__')
             non_root_matcher = (check_prefix + [check_name]).join('__')
             root_matcher = ([root_name] + check_prefix + [check_name]).join('__')
             cp_key == non_root_matcher ||
               cp_key == root_matcher
           end
           actual_key = (parameter_prefix + [parameter_name]).compact.join('__')
-          if(key_match)
+          if key_match
             ui.debug "Remapping configuration runtime parameter `#{key_match}` -> `#{actual_key}`"
             config[:parameters][actual_key] = config[:parameters].delete(key_match)
           end
@@ -179,23 +177,23 @@ module Sfn
         def set_parameter(sparkle, ns_key, param_name, param_value, current_parameters, param_banner)
           valid = false
           attempt = 0
-          if(!valid && !param_banner)
-            if(sparkle.is_a?(SparkleFormation))
+          if !valid && !param_banner
+            if sparkle.is_a?(SparkleFormation)
               ui.info "#{ui.color('Stack runtime parameters:', :bold)} - template: #{ui.color(sparkle.root_path.map(&:name).map(&:to_s).join(' > '), :green, :bold)}"
             else
               ui.info ui.color('Stack runtime parameters:', :bold)
             end
             param_banner = true
           end
-          until(valid)
+          until valid
             attempt += 1
             default = config[:parameters].fetch(
               ns_key, current_parameters.fetch(
-                param_name, TEMPLATE_PARAMETER_DEFAULTS.map{|loc_key| param_value[loc_key]}.compact.first
+                param_name, TEMPLATE_PARAMETER_DEFAULTS.map { |loc_key| param_value[loc_key] }.compact.first
               )
             )
-            if(config[:interactive_parameters])
-              no_echo = !!TEMPLATE_PARAMETER_NOECHO.detect{|loc_key|
+            if config[:interactive_parameters]
+              no_echo = !!TEMPLATE_PARAMETER_NOECHO.detect { |loc_key|
                 param_value[loc_key].to_s.downcase == 'true'
               }
               sfn_no_echo = TEMPLATE_PARAMETER_SFN_NOECHO.map do |loc_key|
@@ -204,16 +202,16 @@ module Sfn
               end.compact.first
               no_echo = sfn_no_echo if sfn_no_echo
               answer = ui.ask_question(
-                "#{param_name.split(/([A-Z]+[^A-Z]*)/).find_all{|s|!s.empty?}.join(' ')}",
+                "#{param_name.split(/([A-Z]+[^A-Z]*)/).find_all { |s| !s.empty? }.join(' ')}",
                 :default => default,
                 :hide_default => sfn_no_echo == 'all',
-                :no_echo => !!no_echo
+                :no_echo => !!no_echo,
               )
             else
               answer = default
             end
             validation = validate_parameter(answer, param_value)
-            if(validation == true)
+            if validation == true
               config[:parameters][ns_key] = answer
               valid = true
             else
@@ -221,7 +219,7 @@ module Sfn
                 ui.error validation_error.last
               end
             end
-            if(attempt > MAX_PARAMETER_ATTEMPTS)
+            if attempt > MAX_PARAMETER_ATTEMPTS
               ui.fatal 'Failed to receive allowed parameter!'
               exit 1
             end
@@ -236,29 +234,29 @@ module Sfn
         # @option opts [Hash] :current_parameters current stack parameter values
         # @option opts [Miasma::Models::Orchestration::Stack] :stack existing stack
         # @return [Hash]
-        def populate_parameters!(sparkle, opts={})
+        def populate_parameters!(sparkle, opts = {})
           current_parameters = opts[:current_parameters] || {}
           current_stack = opts[:stack]
           parameter_prefix, stack_parameters = prefix_parameters_setup(sparkle)
           sparkle_root_name = sparkle.is_a?(SparkleFormation) ? sparkle.root.name : nil
-          unless(stack_parameters.empty?)
+          unless stack_parameters.empty?
             format_config_parameters!
             param_banner = false
             stack_parameters.each do |param_name, param_value|
               ns_key = locate_config_parameter_key(parameter_prefix, param_name, sparkle_root_name)
               # When parameter is a hash type, it is being set via
               # intrinsic function and we don't modify
-              if(function_set_parameter?(current_parameters[param_name]))
-                if(!config[:parameters][ns_key].nil?)
+              if function_set_parameter?(current_parameters[param_name])
+                if !config[:parameters][ns_key].nil?
                   ui.warn "Overriding mapped parameter value with explicit assignment `#{ns_key}`!"
                 else
-                  if(current_stack)
+                  if current_stack
                     enable_set = validate_stack_parameter(current_stack, param_name, ns_key, current_parameters[param_name])
                   else
                     enable_set = true
                   end
                 end
-                if(enable_set)
+                if enable_set
                   # NOTE: direct set dumps the stack (nfi). Smash will
                   # auto dup it, and works, so yay i guess.
                   config[:parameters][ns_key] = current_parameters[param_name].is_a?(Hash) ?
@@ -267,22 +265,22 @@ module Sfn
                   valid = true
                 end
               else
-                if(current_stack && current_stack.data[:parent_stack])
+                if current_stack && current_stack.data[:parent_stack]
                   use_expected = validate_stack_parameter(current_stack, param_name, ns_key, current_parameters[param_name])
-                  unless(use_expected)
+                  unless use_expected
                     current_parameters[param_name] = current_stack.parameters[param_name]
                   end
                 end
               end
-              unless(valid)
+              unless valid
                 param_banner = set_parameter(sparkle, ns_key, param_name, param_value, current_parameters, param_banner)
               end
             end
           end
           Smash[
-            config.fetch(:parameters, {}).map do |k,v|
+            config.fetch(:parameters, {}).map do |k, v|
               strip_key = parameter_prefix ? k.sub(/#{parameter_prefix.join('__')}_{2}?/, '') : k
-              unless(strip_key.include?('__'))
+              unless strip_key.include?('__')
                 [strip_key, v]
               end
             end.compact
@@ -300,7 +298,7 @@ module Sfn
         # @return [Hash] parameters for root stack create/update
         def config_root_parameters
           Hash[
-            config.fetch(:parameters, {}).find_all do |k,v|
+            config.fetch(:parameters, {}).find_all do |k, v|
               !k.include?('__')
             end
           ]
@@ -320,19 +318,19 @@ module Sfn
         def validate_stack_parameter(c_stack, p_key, p_ns_key, c_value)
           stack_value = c_stack.parameters[p_key]
           p_stack = c_stack.data[:parent_stack]
-          unless(config[:parameter_validation] == 'none')
-            if(c_value.is_a?(Hash))
+          unless config[:parameter_validation] == 'none'
+            if c_value.is_a?(Hash)
               case c_value.keys.first
               when 'Ref'
                 current_value = p_stack.parameters[c_value.values.first]
               when 'Fn::Att'
                 resource_name, output_name = c_value.values.first.split('.', 2)
-                ref_stack = p_stack.nested_stacks.detect{|i| i.data[:logical_id] == resource_name}
-                if(ref_stack)
+                ref_stack = p_stack.nested_stacks.detect { |i| i.data[:logical_id] == resource_name }
+                if ref_stack
                   output = ref_stack.outputs.detect do |o|
                     o.key == output_name
                   end
-                  if(output)
+                  if output
                     current_value = output.value
                   end
                 end
@@ -340,8 +338,8 @@ module Sfn
             else
               current_value = c_value
             end
-            if(current_value && current_value.to_s != stack_value.to_s)
-              if(config[:parameter_validation] == 'default')
+            if current_value && current_value.to_s != stack_value.to_s
+              if config[:parameter_validation] == 'default'
                 ui.warn 'Nested stack has been altered directly! This update may cause unexpected modifications!'
                 ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. Current value: #{stack_value}. Expected value: #{current_value} (via: #{c_value.inspect})"
                 answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ['current', 'expected'])
@@ -356,7 +354,6 @@ module Sfn
             true
           end
         end
-
       end
 
       module ClassMethods
@@ -372,7 +369,6 @@ module Sfn
           include Utils::StackParameterValidator
         end
       end
-
     end
   end
 end

@@ -1,23 +1,21 @@
 require_relative '../../helper'
 
 describe Sfn::CommandModule::Stack do
-
   before do
     @stack = Class.new do
       def initialize
         @config = Smash.new
       end
+
       attr_reader :config
     end
     @stack.include Sfn::CommandModule::Stack
   end
 
-  let(:instance){ @instance ||= @stack.new }
+  let(:instance) { @instance ||= @stack.new }
 
   describe 'Parameter population helpers' do
-
     describe 'Config parameters location' do
-
       before do
         instance.config.set(:parameters, :nested__StackItem__MyParameter, 'value')
         instance.config.set(:parameters, :NotNestedParameter, 'value')
@@ -60,9 +58,6 @@ describe Sfn::CommandModule::Stack do
       it 'should return composite key via arg values when not found' do
         instance.locate_config_parameter_key(['nested', 'StackItem'], 'Unknown').must_equal 'nested__StackItem__Unknown'
       end
-
     end
-
   end
-
 end

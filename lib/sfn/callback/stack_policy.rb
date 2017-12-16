@@ -7,11 +7,11 @@ module Sfn
       # Policy to apply prior to stack deletion
       DEFENSELESS_POLICY = {
         'Statement' => [{
-            'Effect' => 'Allow',
-            'Action' => 'Update:*',
-            'Resource' => '*',
-            'Principal' => '*'
-          }]
+          'Effect' => 'Allow',
+          'Action' => 'Update:*',
+          'Resource' => '*',
+          'Principal' => '*',
+        }],
       }
 
       # @return [Smash] cached policies
@@ -38,6 +38,7 @@ module Sfn
         end
         ui.info 'Stack policy documents successfully submitted!'
       end
+
       alias_method :after_create, :submit_policy
       alias_method :after_update, :submit_policy
 
@@ -45,7 +46,7 @@ module Sfn
       #
       # @param args [Hash]
       def before_update(args)
-        if(config.get(:stack_policy, :update).to_s == 'defenseless')
+        if config.get(:stack_policy, :update).to_s == 'defenseless'
           ui.warn 'Disabling all stack policies for update.'
           stack = args[:api_stack]
           ([stack] + stack.nested_stacks).compact.each do |p_stack|
@@ -62,10 +63,9 @@ module Sfn
       #
       # @param info [Hash]
       def template(info)
-        if(info[:sparkle_stack])
+        if info[:sparkle_stack]
           @policies.set(info.fetch(:stack_name, 'unknown'),
-            info[:sparkle_stack].generate_policy
-          )
+                        info[:sparkle_stack].generate_policy)
         end
       end
 
@@ -76,15 +76,14 @@ module Sfn
       def save_stack_policy(p_stack)
         valid_logical_ids = p_stack.resources.reload.all.map(&:logical_id)
         stack_policy = @policies.fetch(p_stack.id,
-          @policies.fetch(p_stack.data[:logical_id]),
-          @policies[p_stack.name]
-        ).to_smash
-        if(stack_policy)
+                                       @policies.fetch(p_stack.data[:logical_id]),
+                                       @policies[p_stack.name]).to_smash
+        if stack_policy
           stack_policy[:Statement].delete_if do |policy_item|
             policy_match = policy_item[:Resource].to_s.match(
               %r{LogicalResourceId/(?<logical_id>.+)$}
             )
-            if(policy_match)
+            if policy_match
               !valid_logical_ids.include?(policy_match["logical_id"])
             end
           end
@@ -95,11 +94,10 @@ module Sfn
           :form => Smash.new(
             'Action' => 'SetStackPolicy',
             'StackName' => p_stack.id,
-            'StackPolicyBody' => MultiJson.dump(stack_policy)
-          )
+            'StackPolicyBody' => MultiJson.dump(stack_policy),
+          ),
         )
       end
-
     end
   end
 end

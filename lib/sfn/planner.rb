@@ -3,7 +3,6 @@ require 'sfn'
 module Sfn
   # Interface for generating plan report
   class Planner
-
     autoload :Aws, 'sfn/planner/aws'
 
     # Value to flag runtime modification
@@ -29,7 +28,7 @@ module Sfn
     # @param opts [Hash]
     #
     # @return [self]
-    def initialize(ui, config, arguments, stack, opts={})
+    def initialize(ui, config, arguments, stack, opts = {})
       @ui = ui
       @config = config
       @arguments = arguments
@@ -46,6 +45,5 @@ module Sfn
     def generate_plan(template, parameters)
       raise NotImplementedError
     end
-
   end
 end

@@ -2,7 +2,6 @@ require 'sfn'
 
 module Sfn
   module ApiProvider
-
     module Google
 
       # Disable remote template storage
@@ -21,11 +20,11 @@ module Sfn
       # @param c_stack [Miasma::Models::Orchestration::Stack]
       # @return [Hash]
       def extract_current_nested_template_parameters(stack, stack_name, c_stack)
-        if(c_stack && c_stack.data[:parent_stack])
+        if c_stack && c_stack.data[:parent_stack]
           c_stack.data[:parent_stack].sparkleish_template(:remove_wrapper).fetch(
             :resources, stack_name, :properties, :parameters, Smash.new
           )
-        elsif(stack.parent)
+        elsif stack.parent
           val = stack.parent.compile.resources.set!(stack_name).properties
           val.nil? ? Smash.new : val._dump
         else
@@ -43,16 +42,16 @@ module Sfn
       # @param val [Object]
       # @return [TrueClass, FalseClass]
       def function_set_parameter?(val)
-        if(val)
+        if val
           val.start_with?('$(') || val.start_with?('{{')
         end
       end
 
       # Set parameters into parent resource properites
-      def populate_parameters!(template, opts={})
+      def populate_parameters!(template, opts = {})
         result = super
         result.each_pair do |key, value|
-          if(template.parent)
+          if template.parent
             template.parent.compile.resources.set!(template.name).properties.set!(key, value)
           else
             template.compile.resources.set!(template.name).properties.set!(key, value)
@@ -71,14 +70,12 @@ module Sfn
       # @param thing [SparkleFormation, Hash]
       # @return [Hash]
       def template_content(thing, *_)
-        if(thing.is_a?(SparkleFormation))
+        if thing.is_a?(SparkleFormation)
           config[:sparkle_dump] ? thing.sparkle_dump : thing.dump
         else
           thing
         end
       end
-
     end
-
   end
 end

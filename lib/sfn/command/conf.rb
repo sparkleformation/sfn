@@ -4,19 +4,18 @@ module Sfn
   class Command
     # Config command
     class Conf < Command
-
       include Sfn::CommandModule::Base
 
       # Run the list command
       def execute!
         ui.info ui.color("Current configuration state:")
         Config::Conf.attributes.sort_by(&:first).each do |k, val|
-          if(config.has_key?(k))
+          if config.has_key?(k)
             ui.print "  #{ui.color(k, :bold, :green)}: "
             format_value(config[k], '  ')
           end
         end
-        if(config[:generate])
+        if config[:generate]
           ui.puts
           ui.info 'Generating .sfn configuration file..'
           generate_config!
@@ -25,7 +24,7 @@ module Sfn
       end
 
       def generate_config!
-        if(File.exists?('.sfn'))
+        if File.exists?('.sfn')
           ui.warn 'Existing .sfn configuration file detected!'
           ui.confirm 'Overwrite current .sfn configuration file?'
         end
@@ -37,14 +36,14 @@ module Sfn
         end
       end
 
-      def format_value(value, indent='')
-        if(value.is_a?(Hash))
+      def format_value(value, indent = '')
+        if value.is_a?(Hash)
           ui.puts
-          value.sort_by(&:first).each do |k,v|
+          value.sort_by(&:first).each do |k, v|
             ui.print "#{indent}  #{ui.color(k, :bold)}: "
             format_value(v, indent + '  ')
           end
-        elsif(value.is_a?(Array))
+        elsif value.is_a?(Array)
           ui.puts
           value.map(&:to_s).sort.each do |v|
             ui.print "#{indent}  "
@@ -134,8 +133,6 @@ Configuration.new do
   end
 end
 EOF
-
-
     end
   end
 end

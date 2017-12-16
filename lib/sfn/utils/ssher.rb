@@ -13,8 +13,8 @@ module Sfn
       # @param path [String] remote file path
       # @param ssh_opts [Hash]
       # @return [String, NilClass]
-      def remote_file_contents(address, user, path, ssh_opts={})
-        if(path.to_s.strip.empty?)
+      def remote_file_contents(address, user, path, ssh_opts = {})
+        if path.to_s.strip.empty?
           raise ArgumentError.new 'No file path provided!'
         end
         require 'net/ssh'
@@ -23,7 +23,6 @@ module Sfn
         content = ssh_session.exec!("sudo cat #{path}")
         content.empty? ? nil : content
       end
-
     end
   end
 end

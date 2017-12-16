@@ -4,7 +4,6 @@ module Sfn
   class Command
     # Inspect command
     class Inspect < Command
-
       include Sfn::CommandModule::Base
       include Sfn::Utils::Ssher
 
@@ -16,19 +15,19 @@ module Sfn
         ui.info "Stack inspection #{ui.color(stack_name, :bold)}:"
         outputs = api_action!(:api_stack => stack) do
           [:attribute, :nodes, :load_balancers, :instance_failure].map do |key|
-            if(config.has_key?(key))
+            if config.has_key?(key)
               send("display_#{key}", stack)
               key
             end
           end.compact
         end
-        if(outputs.empty?)
+        if outputs.empty?
           ui.info '  Stack dump:'
           ui.puts MultiJson.dump(
             MultiJson.load(
               stack.reload.to_json
             ),
-            :pretty => true
+            :pretty => true,
           )
         end
       end
@@ -38,32 +37,32 @@ module Sfn
           resource.state.to_s.end_with?('failed')
         end.map do |resource|
           # If compute instance, simply expand
-          if(resource.within?(:compute, :servers))
+          if resource.within?(:compute, :servers)
             resource.instance
-          # If a waitcondition, check for instance ID
-          elsif(resource.type.to_s.downcase.end_with?('waitcondition'))
-            if(resource.status_reason.to_s.include?('uniqueId'))
+            # If a waitcondition, check for instance ID
+          elsif resource.type.to_s.downcase.end_with?('waitcondition')
+            if resource.status_reason.to_s.include?('uniqueId')
               srv_id = resource.status_reason.split(' ').last.strip
               provider.connection.api_for(:compute).servers.get(srv_id)
             end
           end
         end.compact
-        if(instances.empty?)
+        if instances.empty?
           ui.error 'Failed to locate any failed instances'
         else
           log_path = config[:failure_log_path]
-          if(log_path.to_s.empty?)
+          if log_path.to_s.empty?
             log_path = '/var/log/chef/client.log'
           end
           opts = ssh_key ? {:keys => [ssh_key]} : {}
           instances.each do |instance|
             ui.info "  -> Log inspect for #{instance.id}:"
             address = instance.addresses_public.map do |address|
-              if(address.version == 4)
+              if address.version == 4
                 address.address
               end
             end
-            if(address)
+            if address
               ssh_attempt_users.each do |user|
                 begin
                   ui.info remote_file_contents(address.first, user, log_path, opts)
@@ -96,12 +95,12 @@ module Sfn
         [config[:attribute]].flatten.compact.each do |stack_attribute|
           attr = stack_attribute.split('.').inject(stack) do |memo, key|
             args = key.scan(/\(([^\)]*)\)/).flatten.first.to_s
-            if(args)
-              args = args.split(',').map{|a| a.to_i.to_s == a ? a.to_i : a}
+            if args
+              args = args.split(',').map { |a| a.to_i.to_s == a ? a.to_i : a }
               key = key.split('(').first
             end
-            if(memo.public_methods.include?(key.to_sym))
-              if(args.size == 1 && args.first.to_s.start_with?('&'))
+            if memo.public_methods.include?(key.to_sym)
+              if args.size == 1 && args.first.to_s.start_with?('&')
                 memo.send(key, &args.first.slice(2, args.first.size).to_sym)
               else
                 memo.send(*[key, args].flatten.compact)
@@ -115,7 +114,7 @@ module Sfn
             MultiJson.load(
               MultiJson.dump(attr)
             ),
-            :pretty => true
+            :pretty => true,
           )
         end
       end
@@ -129,13 +128,13 @@ module Sfn
             [
               asg.name,
               Smash[
-                asg.servers.map(&:expand).compact.map{|s|
+                asg.servers.map(&:expand).compact.map { |s|
                   [s.id, Smash.new(
-                      :name => s.name,
-                      :addresses => s.addresses.map(&:address)
+                    :name => s.name,
+                    :addresses => s.addresses.map(&:address),
                   )]
                 }
-              ]
+              ],
             ]
           end
         ]
@@ -144,19 +143,19 @@ module Sfn
             resource.within?(:compute, :servers)
           end.map do |srv|
             srv = srv.instance
-            if(srv)
+            if srv
               [srv.id, Smash.new(
                 :name => srv.name,
-                :addresses => srv.addresses.map(&:address)
+                :addresses => srv.addresses.map(&:address),
               )]
             end
           end.compact
         ]
-        unless(asg_nodes.empty?)
+        unless asg_nodes.empty?
           ui.info '  AutoScale Group Instances:'
           ui.puts MultiJson.dump(asg_nodes, :pretty => true)
         end
-        unless(compute_nodes.empty?)
+        unless compute_nodes.empty?
           ui.info '  Compute Instances:'
           ui.puts MultiJson.dump(compute_nodes, :pretty => true)
         end
@@ -175,9 +174,8 @@ module Sfn
               :state => exp_lb.state,
               :public_addresses => lb_pub_addrs,
               :private_addresses => lb_priv_addrs,
-              :server_states => exp_lb.server_states
-            ).delete_if {|k,v| v.nil?}
-            ]
+              :server_states => exp_lb.server_states,
+            ).delete_if { |k, v| v.nil? }]
           end
         ]
         unless load_balancers.empty?
@@ -185,7 +183,6 @@ module Sfn
           ui.puts MultiJson.dump(load_balancers, :pretty => true)
         end
       end
-
     end
   end
 end

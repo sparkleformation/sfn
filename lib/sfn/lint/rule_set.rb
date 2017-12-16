@@ -7,7 +7,6 @@ module Sfn
 
       # Helper class for ruleset generation
       class Creator
-
         attr_reader :items, :provider
 
         def initialize(provider)
@@ -16,34 +15,28 @@ module Sfn
         end
 
         class RuleSet < Creator
-
           def rule(name, &block)
             r = Rule.new(provider)
             r.instance_exec(&block)
             items << Sfn::Lint::Rule.new(name, r.items, r.fail_message, provider)
           end
-
         end
 
         class Rule < Creator
-
-          def definition(expr, evaluator=nil, &block)
+          def definition(expr, evaluator = nil, &block)
             items << Sfn::Lint::Definition.new(expr, provider, evaluator, &block)
           end
 
-          def fail_message(val=nil)
-            unless(val.nil?)
+          def fail_message(val = nil)
+            unless val.nil?
               @fail_message = val
             end
             @fail_message
           end
-
         end
-
       end
 
       class << self
-
         @@_rule_set_registry = Smash.new
 
         # RuleSet generator helper for quickly building simple rule sets
@@ -51,7 +44,7 @@ module Sfn
         # @param name [String] name of rule set
         # @param provider [String, Symbol] target provider
         # @yieldblock rule set content
-        def build(name, provider=:aws, &block)
+        def build(name, provider = :aws, &block)
           provider = Bogo::Utility.snake(provider).to_sym
           rs = Creator::RuleSet.new(provider)
           rs.instance_exec(&block)
@@ -72,7 +65,7 @@ module Sfn
         # @param name [String] name of rule set
         # @param provider [String] target provider
         # @return [RuleSet, NilClass]
-        def get(name, provider=:aws)
+        def get(name, provider = :aws)
           provider = Bogo::Utility.snake(provider)
           @@_rule_set_registry.get(provider, name)
         end
@@ -81,10 +74,9 @@ module Sfn
         #
         # @param provider [String] target provider
         # @return [Array<RuleSet>]
-        def get_all(provider=:aws)
+        def get_all(provider = :aws)
           @@_rule_set_registry.fetch(provider, {}).values
         end
-
       end
 
       include Bogo::Memoization
@@ -102,7 +94,7 @@ module Sfn
       # @param provider [String, Symbol] name of target provider
       # @param rules [Array<Rule>] list of rules defining this set
       # @return [self]
-      def initialize(name, provider=:aws, rules=[])
+      def initialize(name, provider = :aws, rules = [])
         @name = name.to_sym
         @provider = Bogo::Utility.snake(provider).to_sym
         @rules = rules.dup.uniq.freeze
@@ -138,7 +130,7 @@ module Sfn
       # @return [TrueClass, Array<String>] true on success, list failure messages on failure
       def apply(template)
         failures = collect_failures(template)
-        if(failures.empty?)
+        if failures.empty?
           true
         else
           failures.map do |failure|
@@ -157,7 +149,7 @@ module Sfn
           result = rule.apply(template)
           result == true ? true : Smash.new(:rule => rule, :result => result)
         end
-        results.delete_if{|i| i == true}
+        results.delete_if { |i| i == true }
         results
       end
 
@@ -166,12 +158,11 @@ module Sfn
         non_match = rules.find_all do |rule|
           rule.provider != provider
         end
-        unless(non_match.empty?)
+        unless non_match.empty?
           raise ArgumentError.new "Rule set defines `#{provider}` as provider but includes rules for " \
-            "non matching providers. (#{non_match.map(&:provider).map(&:to_s).uniq.sort.join(', ')})"
+                                  "non matching providers. (#{non_match.map(&:provider).map(&:to_s).uniq.sort.join(', ')})"
         end
       end
-
     end
   end
 end

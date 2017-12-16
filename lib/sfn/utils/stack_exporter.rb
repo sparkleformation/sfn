@@ -10,7 +10,6 @@ module Sfn
 
     # Stack serialization helper
     class StackExporter
-
       include Bogo::AnimalStrings
       include Sfn::Utils::JSON
 
@@ -20,7 +19,7 @@ module Sfn
       DEFAULT_OPTIONS = Mash.new(
         :chef_popsicle => true,
         :ignored_parameters => ['Environment', 'StackCreator', 'Creator'],
-        :chef_environment_parameter => 'Environment'
+        :chef_environment_parameter => 'Environment',
       )
       # default structure of export payload
       DEFAULT_EXPORT_STRUCTURE = {
@@ -29,15 +28,15 @@ module Sfn
           :options => {
             :parameters => Mash.new,
             :capabilities => [],
-            :notification_topics => []
-          }
+            :notification_topics => [],
+          },
         ),
         :generator => {
           :timestamp => Time.now.to_i,
           :name => 'SparkleFormation',
           :version => Sfn::VERSION.version,
-          :provider => nil
-        }
+          :provider => nil,
+        },
       }
 
       # @return [Miasma::Models::Orchestration::Stack]
@@ -55,7 +54,7 @@ module Sfn
       # @option options [TrueClass, FalseClass] :chef_popsicle freeze run list
       # @option options [Array<String>] :ignored_parameters
       # @option options [String] :chef_environment_parameter
-      def initialize(stack, options={})
+      def initialize(stack, options = {})
         @stack = stack
         @options = DEFAULT_OPTIONS.merge(options)
         @stack_export = Smash.new
@@ -67,14 +66,14 @@ module Sfn
       def export
         @stack_export = Smash.new(DEFAULT_EXPORT_STRUCTURE).tap do |stack_export|
           [:parameters, :capabilities, :notification_topics].each do |key|
-            if(val = stack.send(key))
+            if val = stack.send(key)
               stack_export[:stack][key] = val
             end
           end
           stack_export[:stack][:template] = stack.template
           stack_export[:generator][:timestamp] = Time.now.to_i
           stack_export[:generator][:provider] = stack.provider.connection.provider
-          if(chef_popsicle? && defined?(Chef))
+          if chef_popsicle? && defined?(Chef)
             freeze_runlists(stack_export)
           end
           remove_ignored_parameters(stack_export)
@@ -90,7 +89,7 @@ module Sfn
       # @return [Object]
       def method_missing(*args)
         m = args.first.to_s
-        if(m.end_with?('?') && options.has_key?(k = m.sub('?', '').to_sym))
+        if m.end_with?('?') && options.has_key?(k = m.sub('?', '').to_sym)
           !!options[k]
         else
           super
@@ -106,7 +105,7 @@ module Sfn
       # @return [Hash]
       def remove_ignored_parameters(export)
         options[:ignored_parameters].each do |param|
-          if(export[:stack][:options][:parameters])
+          if export[:stack][:options][:parameters]
             export[:stack][:options][:parameters].delete(param)
           end
         end
@@ -118,7 +117,7 @@ module Sfn
       # @param export [Hash] current export state
       # @return [String] environment name
       def chef_environment_name(export)
-        if(chef_environment_parameter?)
+        if chef_environment_parameter?
           name = export[:stack][:options][:parameters][options[:chef_environment_parameter]]
         end
         name || DEFAULT_CHEF_ENVIRONMENT
@@ -126,7 +125,7 @@ module Sfn
 
       # @return [Chef::Environment]
       def environment
-        unless(@env)
+        unless @env
           @env = Chef::Environment.load('_default')
         end
         @env
@@ -154,11 +153,11 @@ module Sfn
       def extract_runlist_item(item)
         rl_item = item.is_a?(Chef::RunList::RunListItem) ? item : Chef::RunList::RunListItem.new(item)
         static_content = Mash.new(:run_list => [])
-        if(rl_item.recipe?)
+        if rl_item.recipe?
           cookbook, recipe = rl_item.name.split('::')
           peg_version = allowed_cookbook_version(cookbook)
           static_content[:run_list] << "recipe[#{[cookbook, recipe || 'default'].join('::')}@#{peg_version}]"
-        elsif(rl_item.role?)
+        elsif rl_item.role?
           role = Chef::Role.load(rl_item.name)
           role.run_list.each do |item|
             static_content = Chef::Mixin::DeepMerge.merge(static_content, extract_runlist_item(item))
@@ -209,10 +208,10 @@ module Sfn
         result = []
         case thing
         when Hash
-          if(thing['content'] && thing['content']['run_list'])
+          if thing['content'] && thing['content']['run_list']
             result << thing['content']
           else
-            thing.each do |k,v|
+            thing.each do |k, v|
               result += locate_runlists(v)
             end
           end
@@ -229,7 +228,7 @@ module Sfn
       # @param hsh [Object] stack template item
       # @return [Object]
       def cf_replace(hsh)
-        if(hsh.is_a?(Hash))
+        if hsh.is_a?(Hash)
           case hsh.keys.first
           when 'Fn::Join'
             cf_join(*hsh.values.first)
@@ -248,11 +247,11 @@ module Sfn
       # @param ref_name [Hash]
       # @return [Object] value in parameters
       def cf_ref(ref_name)
-        if(stack.parameters.has_key?(ref_name))
+        if stack.parameters.has_key?(ref_name)
           stack.parameters[ref_name]
         else
           raise KeyError.new("No parameter found with given reference name (#{ref_name}). " <<
-            "Only parameter based references supported!")
+                             "Only parameter based references supported!")
         end
       end
 
@@ -263,7 +262,7 @@ module Sfn
       # @return [String]
       def cf_join(delim, args)
         args.map do |arg|
-          if(arg.is_a?(Hash))
+          if arg.is_a?(Hash)
             cf_replace(arg)
           else
             arg.to_s

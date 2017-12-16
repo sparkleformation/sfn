@@ -1,10 +1,10 @@
 require_relative '../helper'
 
 describe 'sfn' do
-  def be_sh(command, options={})
+  def be_sh(command, options = {})
     result = `bundle exec #{command} 2>&1`
-    unless($?.success?)
-      unless(options[:fail] == true || options[:fail] == $?.exitstatus)
+    unless $?.success?
+      unless options[:fail] == true || options[:fail] == $?.exitstatus
         raise "Command Failed `#{command}` - #{result}"
       end
     end
@@ -24,7 +24,7 @@ describe 'sfn' do
   end
 
   it 'errors on unknown flags' do
-    ->{ be_sh('sfn create --fubar') }.must_raise StandardError
+    -> { be_sh('sfn create --fubar') }.must_raise StandardError
     be_sh('sfn create --fubar', :fail => true).must_include '--fubar'
   end
 
@@ -33,8 +33,7 @@ describe 'sfn' do
   end
 
   describe 'configuration file' do
-
-    let(:config_dir){ File.join(File.dirname(__FILE__), 'config') }
+    let(:config_dir) { File.join(File.dirname(__FILE__), 'config') }
 
     it 'should load configuration file with no extension' do
       result = Dir.chdir(File.join(config_dir, 'no-ext')) do
@@ -92,7 +91,5 @@ describe 'sfn' do
       result.must_include 'Stacktrace'
       result.must_include 'SyntaxError'
     end
-
   end
-
 end

@@ -6,7 +6,6 @@ module Sfn
 
     # Expand stack model functionality
     module Stack
-
       autoload :Azure, 'sfn/monkey_patch/stack/azure'
       autoload :Google, 'sfn/monkey_patch/stack/google'
 
@@ -92,7 +91,7 @@ module Sfn
 
       # @return [String] action currently being performed
       def performing
-        if(in_progress?)
+        if in_progress?
           status.to_s.downcase.split('_').first.to_sym
         end
       end
@@ -140,10 +139,10 @@ module Sfn
       # @param min [Integer] lowest allowed return value (defaults 5)
       # @return [Integer] percent complete (0..100)
       def percent_complete(min = 5)
-        if(self.respond_to?("percent_complete_#{api.provider}"))
+        if self.respond_to?("percent_complete_#{api.provider}")
           self.send("percent_complete_#{api.provider}", min)
         else
-          if(in_progress?)
+          if in_progress?
             total_resources = template.fetch('Resources', []).size
             total_complete = resources.all.find_all do |resource|
               resource.status.downcase.end_with?('complete')
@@ -166,21 +165,21 @@ module Sfn
       # @return [self]
       # @note setting `DisableApply` within parameter hash will
       #   prevent parameters being overridden
-      def apply_stack(remote_stack, opts={}, ignore_params=nil)
-        if(self.respond_to?("apply_stack_#{api.provider}"))
+      def apply_stack(remote_stack, opts = {}, ignore_params = nil)
+        if self.respond_to?("apply_stack_#{api.provider}")
           self.send("apply_stack_#{api.provider}", remote_stack, opts, ignore_params)
         else
-          unless(opts[:mapping])
+          unless opts[:mapping]
             opts[:mapping] = {}
           end
-          if(opts[:parameter_key])
+          if opts[:parameter_key]
             stack_parameters = template[opts[:parameter_key]]
             default_key = opts.fetch(
               :default_key,
-              opts[:parameter_key].to_s[0,1].match(/[a-z]/) ? 'default' : 'Default'
+              opts[:parameter_key].to_s[0, 1].match(/[a-z]/) ? 'default' : 'Default'
             )
           else
-            if(template['Parameters'])
+            if template['Parameters']
               default_key = 'Default'
               stack_parameters = template['Parameters']
             else
@@ -188,11 +187,11 @@ module Sfn
               stack_parameters = template['parameters']
             end
           end
-          if(stack_parameters)
+          if stack_parameters
             valid_parameters = stack_parameters.find_all do |key, val|
               !val['DisableApply'] && !val['disable_apply']
             end.map(&:first)
-            if(ignore_params)
+            if ignore_params
               valid_parameters.reject! do |key|
                 ignore_params.include?(key)
               end
@@ -202,17 +201,17 @@ module Sfn
               p_key = valid_parameters.detect do |v_param|
                 v_param.downcase.tr('_', '') == o_key
               end
-              unless(p_key)
+              unless p_key
                 map_key = opts[:mapping].keys.detect do |map_key|
                   map_key.downcase.tr('_', '') == o_key
                 end
-                if(map_key)
+                if map_key
                   p_key = valid_parameters.detect do |v_param|
                     v_param.downcase.tr('_', '') == opts[:mapping][map_key].downcase.tr('_', '')
                   end
                 end
               end
-              if(p_key)
+              if p_key
                 self.parameters = parameters.merge(p_key => output.value)
               end
             end
@@ -225,30 +224,30 @@ module Sfn
       #
       # @param recurse [TrueClass, FalseClass] recurse to fetch _all_ stacks
       # @return [Array<Miasma::Models::Orchestration::Stack>]
-      def nested_stacks(recurse=true)
-        if(self.respond_to?("nested_stacks_#{api.provider}"))
+      def nested_stacks(recurse = true)
+        if self.respond_to?("nested_stacks_#{api.provider}")
           self.send("nested_stacks_#{api.provider}", recurse)
         else
           resources.reload.all.map do |resource|
-            if(api.data.fetch(:stack_types, []).include?(resource.type))
+            if api.data.fetch(:stack_types, []).include?(resource.type)
               # Custom remote load support
-              if(resource.type == 'Custom::JackalStack')
+              if resource.type == 'Custom::JackalStack'
                 location, stack_id = resource.id.to_s.split('-', 2)
-                if(l_conf = api.data[:locations][location])
+                if l_conf = api.data[:locations][location]
                   n_stack = Miasma.api(
                     :type => :orchestration,
                     :provider => l_conf[:provider],
-                    :credentials => l_conf
+                    :credentials => l_conf,
                   ).stacks.get(stack_id)
                 end
               else
                 n_stack = resource.expand
               end
-              if(n_stack)
+              if n_stack
                 n_stack.data[:logical_id] = resource.name
                 n_stack.data[:parent_stack] = self
                 n_stack.api.data[:stack_types] = api.data[:stack_types]
-                if(recurse)
+                if recurse
                   [n_stack] + n_stack.nested_stacks(recurse)
                 else
                   n_stack
@@ -261,7 +260,7 @@ module Sfn
 
       # @return [TrueClass, FalseClass] stack contains nested stacks
       def nested?
-        if(self.respond_to?("nested_#{api.provider}?"))
+        if self.respond_to?("nested_#{api.provider}?")
           self.send("nested_#{api.provider}?")
         else
           !!resources.detect do |resource|
@@ -274,22 +273,22 @@ module Sfn
       #
       # @return [Smash, NilClass]
       def policy
-        if(self.respond_to?("policy_#{api.provider}"))
+        if self.respond_to?("policy_#{api.provider}")
           self.send("policy_#{api.provider}")
         else
-          if(self.api.provider == :aws) # cause this is the only one
+          if (self.api.provider == :aws) # cause this is the only one
             begin
               result = self.api.request(
                 :path => '/',
                 :form => Smash.new(
                   'Action' => 'GetStackPolicy',
-                  'StackName' => self.id
-                )
+                  'StackName' => self.id,
+                ),
               )
               serialized_policy = result.get(:body, 'GetStackPolicyResult', 'StackPolicyBody')
               MultiJson.load(serialized_policy).to_smash
             rescue Miasma::Error::ApiError::RequestError => e
-              if(e.response.code == 404)
+              if e.response.code == 404
                 nil
               else
                 raise
@@ -307,10 +306,10 @@ module Sfn
       #   contain any direct values for parameters (which is what we
       #   are testing for)
       def nesting_style
-        if(self.respond_to?("nesting_style_#{api.provider}"))
+        if self.respond_to?("nesting_style_#{api.provider}")
           self.send("nesting_style_#{api.provider}")
         else
-          if(nested?)
+          if nested?
             self.template['Resources'].find_all do |t_resource|
               t_resource['Type'] == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
             end.detect do |t_resource|
@@ -326,7 +325,7 @@ module Sfn
       #
       # @return [Hash]
       def sparkleish_template(*args)
-        if(self.respond_to?("sparkleish_template_#{api.provider}"))
+        if self.respond_to?("sparkleish_template_#{api.provider}")
           self.send("sparkleish_template_#{api.provider}", *args)
         else
           template
@@ -337,13 +336,12 @@ module Sfn
       #
       # @return [Hash]
       def root_parameters
-        if(self.respond_to?("root_parameters_#{api.provider}"))
+        if self.respond_to?("root_parameters_#{api.provider}")
           self.send("root_parameters_#{api.provider}")
         else
           parameters
         end
       end
-
     end
   end
 end

@@ -13,9 +13,9 @@ module Sfn
     # @param type [Class, Array<Class>] valid types
     # @param info [Hash] attribute information
     # @return [Hash]
-    def self.attribute(name, type, info=Smash.new)
-      if([type].flatten.any?{|t| t.ancestors.include?(Hash)})
-        unless(info[:coerce])
+    def self.attribute(name, type, info = Smash.new)
+      if [type].flatten.any? { |t| t.ancestors.include?(Hash) }
+        unless info[:coerce]
           info[:coerce] = lambda do |v|
             case v
             when String
@@ -62,65 +62,65 @@ module Sfn
     attribute(
       :config, String,
       :description => 'Configuration file path',
-      :short_flag => 'c'
+      :short_flag => 'c',
     )
 
     attribute(
       :credentials, Smash,
       :description => 'Provider credentials',
-      :short_flag => 'C'
+      :short_flag => 'C',
     )
     attribute(
       :ignore_parameters, String,
       :multiple => true,
       :description => 'Parameters to ignore during modifications',
-      :short_flag => 'i'
+      :short_flag => 'i',
     )
     attribute(
       :interactive_parameters, [TrueClass, FalseClass],
       :default => true,
       :description => 'Prompt for template parameters',
-      :short_flag => 'I'
+      :short_flag => 'I',
     )
     attribute(
       :poll, [TrueClass, FalseClass],
       :default => true,
       :description => 'Poll stack events on modification actions',
-      :short_flag => 'p'
+      :short_flag => 'p',
     )
     attribute(
       :defaults, [TrueClass, FalseClass],
       :description => 'Automatically accept default values',
-      :short_flag => 'd'
+      :short_flag => 'd',
     )
     attribute(
       :yes, [TrueClass, FalseClass],
       :description => 'Automatically accept any requests for confirmation',
-      :short_flag => 'y'
+      :short_flag => 'y',
     )
     attribute(
       :debug, [TrueClass, FalseClass],
       :description => 'Enable debug output',
-      :short_flag => 'u'
+      :short_flag => 'u',
     )
     attribute(
       :colors, [TrueClass, FalseClass],
       :description => 'Enable colorized output',
-      :default => true
+      :default => true,
     )
 
-    attribute :conf, Conf, :coerce => proc{|v| Conf.new(v)}
-    attribute :create, Create, :coerce => proc{|v| Create.new(v)}
-    attribute :update, Update, :coerce => proc{|v| Update.new(v)}
-    attribute :destroy, Destroy, :coerce => proc{|v| Destroy.new(v)}
-    attribute :events, Events, :coerce => proc{|v| Events.new(v)}
-    attribute :export, Export, :coerce => proc{|v| Export.new(v)}
-    attribute :import, Import, :coerce => proc{|v| Import.new(v)}
-    attribute :inspect, Inspect, :coerce => proc{|v| Inpsect.new(v)}
-    attribute :describe, Describe, :coerce => proc{|v| Describe.new(v)}
-    attribute :list, List, :coerce => proc{|v| List.new(v)}
-    attribute :promote, Promote, :coerce => proc{|v| Promote.new(v)}
-    attribute :validate, Validate, :coerce => proc{|v| Validate.new(v)}
+    attribute :conf, Conf, :coerce => proc { |v| Conf.new(v) }
+    attribute :create, Create, :coerce => proc { |v| Create.new(v) }
+    attribute :update, Update, :coerce => proc { |v| Update.new(v) }
+    attribute :destroy, Destroy, :coerce => proc { |v| Destroy.new(v) }
+    attribute :events, Events, :coerce => proc { |v| Events.new(v) }
+    attribute :export, Export, :coerce => proc { |v| Export.new(v) }
+    attribute :import, Import, :coerce => proc { |v| Import.new(v) }
+    attribute :inspect, Inspect, :coerce => proc { |v| Inpsect.new(v) }
+    attribute :describe, Describe, :coerce => proc { |v| Describe.new(v) }
+    attribute :list, List, :coerce => proc { |v| List.new(v) }
+    attribute :promote, Promote, :coerce => proc { |v| Promote.new(v) }
+    attribute :validate, Validate, :coerce => proc { |v| Validate.new(v) }
 
     # Provide all options for config class (includes global configs)
     #
@@ -139,25 +139,24 @@ module Sfn
     def self._options_for(klass, shorts)
       Smash[
         ([klass] + klass.ancestors).map do |a|
-          if(a.ancestors.include?(Bogo::Config) && !a.attributes.empty?)
+          if a.ancestors.include?(Bogo::Config) && !a.attributes.empty?
             a.attributes
           end
-        end.compact.reverse.inject(Smash.new){|m, n| m.deep_merge(n)}.map do |name, info|
+        end.compact.reverse.inject(Smash.new) { |m, n| m.deep_merge(n) }.map do |name, info|
           next unless info[:description]
           short = info[:short_flag]
-          if(!short.to_s.empty? && shorts.include?(short))
+          if !short.to_s.empty? && shorts.include?(short)
             raise ArgumentError.new "Short flag already in use! (`#{short}` not available for `#{klass}`)"
           end
-          unless(short.to_s.empty?)
+          unless short.to_s.empty?
             shorts << short
             info[:short] = short
           end
           info[:long] = name.tr('_', '-')
-          info[:boolean] = [info[:type]].compact.flatten.all?{|t| BOOLEAN_VALUES.include?(t)}
+          info[:boolean] = [info[:type]].compact.flatten.all? { |t| BOOLEAN_VALUES.include?(t) }
           [name, info]
         end.compact
       ]
     end
-
   end
 end

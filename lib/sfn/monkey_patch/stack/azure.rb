@@ -16,7 +16,6 @@ module Sfn
           end
           resources.size == new_template[:resources].size ? new_template : template
         end
-
       end
     end
   end

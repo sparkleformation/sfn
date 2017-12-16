@@ -17,12 +17,11 @@ module Sfn
         content = object.is_a?(String) ? object : Utils._format_json(object)
         directory.files.create(
           :identity => path,
-          :body => content
+          :body => content,
         )
         loc = directory.service.service.name.split('::').last.downcase
         "#{loc}://#{directory.identity}/#{path}"
       end
-
     end
   end
 end

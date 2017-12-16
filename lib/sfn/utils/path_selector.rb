@@ -26,11 +26,11 @@ module Sfn
       # @option opts [String] :files_name title for files
       # @option opts [String] :filter_prefix only return results matching filter
       # @return [String] file path
-      def prompt_for_file(directory, opts={})
+      def prompt_for_file(directory, opts = {})
         file_list = Dir.glob(File.join(directory, '**', '**', '*')).find_all do |file|
           File.file?(file)
         end
-        if(opts[:filter_prefix])
+        if opts[:filter_prefix]
           file_list = file_list.find_all do |file|
             file.start_with?(options[:filter_prefix])
           end
@@ -41,12 +41,12 @@ module Sfn
         files = file_list.find_all do |path|
           path.sub(directory, '').split('/').size == 2
         end
-        if(opts[:ignore_directories])
+        if opts[:ignore_directories]
           directories.delete_if do |dir|
             opts[:ignore_directories].include?(File.basename(dir))
           end
         end
-        if(directories.empty? && files.empty?)
+        if directories.empty? && files.empty?
           ui.fatal 'No formation paths discoverable!'
         else
           output = ['Please select an entry']
@@ -55,7 +55,7 @@ module Sfn
           output.clear
           idx = 1
           valid = {}
-          unless(directories.empty?)
+          unless directories.empty?
             output << ui.color("#{opts.fetch(:directories_name, 'Directories')}:", :bold)
             directories.each do |dir|
               valid[idx] = {:path => dir, :type => :directory}
@@ -63,7 +63,7 @@ module Sfn
               idx += 1
             end
           end
-          unless(files.empty?)
+          unless files.empty?
             output << ui.color("#{opts.fetch(:files_name, 'Files')}:", :bold)
             files.each do |file|
               valid[idx] = {:path => file, :type => :file}
@@ -73,7 +73,7 @@ module Sfn
           end
           max = idx.to_s.length
           output.map! do |o|
-            if(o.is_a?(Array))
+            if o.is_a?(Array)
               "  #{o.first}.#{' ' * (max - o.first.to_s.length)} #{o.last}"
             else
               o
@@ -81,12 +81,12 @@ module Sfn
           end
           ui.info "#{output.join("\n")}\n"
           response = ui.ask_question('Enter selection: ').to_i
-          unless(valid[response])
+          unless valid[response]
             ui.fatal 'How about using a real value'
             exit 1
           else
             entry = valid[response.to_i]
-            if(entry[:type] == :directory)
+            if entry[:type] == :directory
               prompt_for_file(entry[:path], opts)
             elsif Pathname(entry[:path]).absolute?
               entry[:path]
@@ -96,7 +96,6 @@ module Sfn
           end
         end
       end
-
     end
   end
 end

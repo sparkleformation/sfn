@@ -4,7 +4,6 @@ require 'bogo'
 require 'sparkle_formation'
 
 module Sfn
-
   autoload :ApiProvider, 'sfn/api_provider'
   autoload :Callback, 'sfn/callback'
   autoload :Provider, 'sfn/provider'
@@ -18,5 +17,4 @@ module Sfn
   autoload :CommandModule, 'sfn/command_module'
   autoload :Planner, 'sfn/planner'
   autoload :Lint, 'sfn/lint'
-
 end

@@ -13,15 +13,15 @@ module Sfn
 
             attr_accessor :name
 
-            def initialize(template, args={})
+            def initialize(template, args = {})
               super
               @name = args[:name]
             end
 
-            def dereference_processor(obj, funcs=[])
+            def dereference_processor(obj, funcs = [])
               case obj
               when Array
-                obj = obj.map{|v| dereference_processor(v, funcs)}
+                obj = obj.map { |v| dereference_processor(v, funcs) }
               when Hash
                 new_hash = {}
                 obj.each do |k, v|
@@ -50,10 +50,10 @@ module Sfn
               @original.fetch('outputs', {})
             end
 
-            def apply_function(string, funcs=[])
+            def apply_function(string, funcs = [])
               # first check for vars and replace with params
               string.scan(/(\$\{var\.(.+?)\})/).each do |match|
-                if(parameters[match.last])
+                if parameters[match.last]
                   string.sub!(match.first, parameters[match.last])
                 end
               end
@@ -61,24 +61,24 @@ module Sfn
             end
           end
 
-          def output_discovery(template, outputs, resource_name, parent_template, name='')
-            if(template['resources'])
+          def output_discovery(template, outputs, resource_name, parent_template, name = '')
+            if template['resources']
               template['resources'].keys.each do |r_name|
                 r_info = template['resources'][r_name]
-                if(r_info['type'] == 'module')
+                if r_info['type'] == 'module'
                   output_discovery(r_info['properties']['stack'], outputs, r_name, template, r_name)
                 end
               end
             end
-            if(parent_template)
+            if parent_template
               ui.debug "Pre-processing stack resource `#{resource_name}`"
               substack_parameters = Smash[
                 parent_template.fetch('resources', resource_name, 'properties', 'parameters', {}).map do |key, value|
                   result = [key, value]
-                  if(value.to_s.start_with?('${module.'))
+                  if value.to_s.start_with?('${module.')
                     output_key = value.sub('${module.', '').sub('}', '').sub('.', '__')
                     ui.debug "Output key for check: #{output_key}"
-                    if(outputs.key?(output_key))
+                    if outputs.key?(output_key)
                       new_value = outputs[output_key]
                       result = [key, new_value]
                       ui.debug "Parameter for output swap `#{key}`: #{value} -> #{new_value}"
@@ -91,8 +91,7 @@ module Sfn
               ui.debug "Generated internal parameters for `#{resource_name}`: #{substack_parameters}"
 
               processor = TerraformGraphProcessor.new({},
-                :parameters => substack_parameters
-              )
+                                                      :parameters => substack_parameters)
               template['resources'] = processor.dereference_processor(
                 template['resources'], []
               )
@@ -103,7 +102,7 @@ module Sfn
               derefed_outs.each do |o_name, o_data|
                 o_key = [name, o_name].join('__')
                 val = o_data['value']
-                if(val.start_with?('${') && val.scan('.').count == 2)
+                if val.start_with?('${') && val.scan('.').count == 2
                   val = val.split('.')
                   val[1] = "#{name}__#{val[1]}"
                   val = val.join('.')
@@ -112,9 +111,9 @@ module Sfn
               end
             end
             outputs.dup.each do |key, value|
-              if(value.to_s.start_with?('${module.'))
+              if value.to_s.start_with?('${module.')
                 output_key = value.to_s.sub('${module.', '').sub('}', '').sub('.', '__')
-                if(outputs.key?(output_key))
+                if outputs.key?(output_key)
                   outputs[key] = outputs[output_key]
                 end
               end
@@ -126,12 +125,12 @@ module Sfn
             node_prefix = name
             resources.each do |resource_name, resource_data|
               node_name = [node_prefix, resource_name].join('__')
-              if(resource_data['type'] == 'module')
+              if resource_data['type'] == 'module'
                 graph.subgraph << generate_graph(
                   resource_data['properties'].delete('stack'),
                   :name => resource_name,
                   :type => resource_data['type'],
-                  :resource_names => resource_names
+                  :resource_names => resource_names,
                 )
                 next
               else
@@ -141,24 +140,24 @@ module Sfn
               graph.filled << graph.node(node_name)
               graph.node(node_name).label "#{resource_name}\n<#{resource_data['type']}>\n#{name}"
               resource_dependencies(resource_data, resource_names + resources.keys).each do |dep_name|
-                if(resources.keys.include?(dep_name))
+                if resources.keys.include?(dep_name)
                   dep_name = [node_prefix, dep_name].join('__')
                 end
-                if(config[:graph_style] == 'creation')
+                if config[:graph_style] == 'creation'
                   @root_graph.edge(dep_name, node_name)
                 else
                   @root_graph.edge(node_name, dep_name)
                 end
               end
             end
-            resource_names.concat resources.keys.map{|r_name| [node_prefix, r_name].join('__')}
+            resource_names.concat resources.keys.map { |r_name| [node_prefix, r_name].join('__') }
           end
 
           def resource_dependencies(data, names)
             case data
             when String
               result = []
-              if(data.start_with?('${') && data.scan('.').count >= 1)
+              if data.start_with?('${') && data.scan('.').count >= 1
                 data = data.tr('${}', '')
                 check_name = data.split('.')[1]
                 if names.include?(check_name)
@@ -168,7 +167,7 @@ module Sfn
               result
             when Hash
               data.map do |key, value|
-                if(key == 'depends_on')
+                if key == 'depends_on'
                   [value].flatten.compact.map do |dependson_name|
                     dep_name = dependson_name.split('.').last
                     dep_name if names.include?(dep_name)

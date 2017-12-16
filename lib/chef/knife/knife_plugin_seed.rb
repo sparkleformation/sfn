@@ -6,36 +6,31 @@ rescue Gem::LoadError => e
   # ignore
 end
 
-unless(defined?(Chef::Knife::CloudformationCreate))
-
+unless defined?(Chef::Knife::CloudformationCreate)
   require 'sfn'
   require 'bogo'
 
   Chef::Config[:knife][:cloudformation] = {
     :options => {},
     :create => {},
-    :update => {}
+    :update => {},
   }
   Chef::Config[:knife][:sparkleformation] = Chef::Config[:knife][:cloudformation]
 
   VALID_PREFIX = ['cloudformation', 'sparkleformation']
 
-
   Sfn::Config.constants.map do |konst|
     const = Sfn::Config.const_get(konst)
-    if(const.is_a?(Class) && const.ancestors.include?(Bogo::Config))
+    if const.is_a?(Class) && const.ancestors.include?(Bogo::Config)
       const
     end
   end.compact.sort_by(&:to_s).each do |klass|
-
     VALID_PREFIX.each do |prefix|
-
       klass_name = klass.name.split('::').last
       command_class = "#{prefix.capitalize}#{klass_name}"
 
       knife_klass = Class.new(Chef::Knife)
       knife_klass.class_eval do
-
         include Bogo::AnimalStrings
 
         # Stub in names so knife will detect
@@ -54,7 +49,7 @@ unless(defined?(Chef::Knife::CloudformationCreate))
         # Properly load in configurations and execute command
         def run
           knife = Chef::Config[:knife]
-          if(knife.respond_to?(:hash_dup))
+          if knife.respond_to?(:hash_dup)
             knife = knife.hash_dup
           end
           base = knife.to_smash
@@ -64,15 +59,15 @@ unless(defined?(Chef::Knife::CloudformationCreate))
           end.compact.first || {}
           cmd_config = cmd_config.to_smash
 
-          reconfig = config.find_all do |k,v|
+          reconfig = config.find_all do |k, v|
             !v.nil?
           end
           # Split up options provided multiple arguments
-          reconfig.map! do |k,v|
-            if(v.is_a?(String) && v.include?(','))
+          reconfig.map! do |k, v|
+            if v.is_a?(String) && v.include?(',')
               v = v.split(',').map(&:strip)
             end
-            [k,v]
+            [k, v]
           end
           n_config = Smash[reconfig]
           cmd_config = cmd_config.deep_merge(n_config)
@@ -83,7 +78,6 @@ unless(defined?(Chef::Knife::CloudformationCreate))
         def merge_configs
           config
         end
-
       end
       knife_klass.instance_variable_set(:@name, "Chef::Knife::#{command_class}")
       knife_klass.instance_variable_set(
@@ -93,12 +87,12 @@ unless(defined?(Chef::Knife::CloudformationCreate))
       knife_klass.banner "knife #{prefix} #{Bogo::Utility.snake(klass_name)}"
 
       Sfn::Config.options_for(klass).each do |name, info|
-        if(info[:boolean])
+        if info[:boolean]
           short = "-#{info[:short]}"
           long = "--[no-]#{info[:long]}"
         else
           val = 'VALUE'
-          if(info[:multiple])
+          if info[:multiple]
             val << '[,VALUE]'
           end
           short = "-#{info[:short]} #{val}"
@@ -110,7 +104,7 @@ unless(defined?(Chef::Knife::CloudformationCreate))
             :long => long,
             :boolean => info[:boolean],
             :default => info[:default],
-            :description => info[:description]
+            :description => info[:description],
           }
         )
       end

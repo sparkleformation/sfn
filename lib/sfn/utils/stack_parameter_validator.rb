@@ -5,7 +5,6 @@ module Sfn
 
     # Helper utility for validating stack parameters
     module StackParameterValidator
-
       include Bogo::AnimalStrings
 
       # HOT parameter mapping
@@ -15,19 +14,19 @@ module Sfn
         'MaxValue' => [:range, :max],
         'MinValue' => [:range, :min],
         'AllowedValues' => [:allowed_values],
-        'AllowedPattern' => [:allowed_pattern]
+        'AllowedPattern' => [:allowed_pattern],
       }
 
       # GCDM parameter mapping
       GOOGLE_CONSTRAINT_MAP = {
         'AllowedPattern' => [:pattern],
         'MaxValue' => [:maximum],
-        'MinValue' => [:minimum]
+        'MinValue' => [:minimum],
       }
 
       # Parameter mapping identifier and content
       PARAMETER_DEFINITION_MAP = {
-        'constraints' => HEAT_CONSTRAINT_MAP
+        'constraints' => HEAT_CONSTRAINT_MAP,
       }
 
       # Supported parameter validations
@@ -37,7 +36,7 @@ module Sfn
         'max_length',
         'min_length',
         'max_value',
-        'min_value'
+        'min_value',
       ]
 
       # Validate a parameters
@@ -59,7 +58,7 @@ module Sfn
           valid_key = parameter_definition.keys.detect do |pdef_key|
             pdef_key.downcase.gsub('_', '') == validator_key.downcase.gsub('_', '')
           end
-          if(valid_key)
+          if valid_key
             value_list.map do |value|
               res = self.send(validator_key, value, parameter_definition[valid_key])
               res == true ? true : [validator_key, res]
@@ -68,7 +67,7 @@ module Sfn
             true
           end
         end.flatten(1)
-        result.delete_if{|x| x == true}
+        result.delete_if { |x| x == true }
         result.empty? ? true : result
       end
 
@@ -81,10 +80,10 @@ module Sfn
       def reformat_definition(pdef)
         new_def = pdef
         PARAMETER_DEFINITION_MAP.each do |ident, mapping|
-          if(pdef[ident])
+          if pdef[ident]
             new_def = Smash.new
             mapping.each do |new_key, current_path|
-              if(pdef.get(*current_path))
+              if pdef.get(*current_path)
                 new_def[new_key] = pdef.get(*current_path)
               end
             end
@@ -100,7 +99,7 @@ module Sfn
       # @option pdef [Array<String>] 'AllowedValues'
       # @return [TrueClass, String]
       def allowed_values(value, pdef)
-        if(pdef.include?(value))
+        if pdef.include?(value)
           true
         else
           "Not an allowed value: #{pdef.join(', ')}"
@@ -114,7 +113,7 @@ module Sfn
       # @option pdef [String] 'AllowedPattern'
       # @return [TrueClass, String]
       def allowed_pattern(value, pdef)
-        if(value.match(%r{#{pdef}}))
+        if value.match(%r{#{pdef}})
           true
         else
           "Not a valid pattern. Must match: #{pdef}"
@@ -128,7 +127,7 @@ module Sfn
       # @option pdef [String] 'MaxLength'
       # @return [TrueClass, String]
       def max_length(value, pdef)
-        if(value.length <= pdef.to_i)
+        if value.length <= pdef.to_i
           true
         else
           "Value must not exceed #{pdef} characters"
@@ -142,7 +141,7 @@ module Sfn
       # @option pdef [String] 'MinLength'
       # @return [TrueClass, String]
       def min_length(value, pdef)
-        if(value.length >= pdef.to_i)
+        if value.length >= pdef.to_i
           true
         else
           "Value must be at least #{pdef} characters"
@@ -156,7 +155,7 @@ module Sfn
       # @option pdef [String] 'MaxValue'
       # @return [TrueClass, String]
       def max_value(value, pdef)
-        if(value.to_i <= pdef.to_i)
+        if value.to_i <= pdef.to_i
           true
         else
           "Value must not be greater than #{pdef}"
@@ -170,7 +169,7 @@ module Sfn
       # @option pdef [String] 'MinValue'
       # @return [TrueClass, String]
       def min_value(value, pdef)
-        if(value.to_i >= pdef.to_i)
+        if value.to_i >= pdef.to_i
           true
         else
           "Value must not be less than #{pdef}"
@@ -185,7 +184,6 @@ module Sfn
         type = type.downcase
         type.start_with?('comma') || type.start_with?('list<')
       end
-
     end
   end
 end

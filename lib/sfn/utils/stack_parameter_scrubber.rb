@@ -18,7 +18,7 @@ module Sfn
       # @return [Hash] template
       def parameter_scrub!(template)
         parameters = template['Parameters']
-        if(parameters)
+        if parameters
           parameters.each do |name, options|
             options.delete_if do |attribute, value|
               !ALLOWED_PARAMETER_ATTRIBUTES.include?(attribute)
@@ -28,7 +28,6 @@ module Sfn
         end
         template
       end
-
     end
   end
 end

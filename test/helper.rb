@@ -9,7 +9,6 @@ require 'openssl'
 require 'http'
 
 module HTTP
-
   class << self
     HTTP::Request::METHODS.each do |h_method|
       define_method(h_method) do |*args|
@@ -19,15 +18,12 @@ module HTTP
   end
 
   class Client
-
     HTTP::Request::METHODS.each do |h_method|
       define_method(h_method) do |*args|
         $mock.send(h_method, *args)
       end
     end
-
   end
-
 end
 
 module SfnHttpMock
@@ -39,7 +35,7 @@ module SfnHttpMock
     $mock = nil
     @ui = nil
     @stream = nil
-    if(@google_key && File.exist?(@google_key))
+    if @google_key && File.exist?(@google_key)
       File.delete(@google_key)
     end
   end
@@ -52,7 +48,7 @@ module SfnHttpMock
     @ui ||= Bogo::Ui.new(
       :app_name => 'TestUi',
       :output_to => stream,
-      :colors => false
+      :colors => false,
     )
   end
 
@@ -67,7 +63,7 @@ module SfnHttpMock
   def azure_creds
     Smash[
       %w(azure_tenant_id azure_client_id azure_subscription_id azure_client_secret
-        azure_region azure_blob_account_name azure_blob_secret_key).map do |key|
+         azure_region azure_blob_account_name azure_blob_secret_key).map do |key|
         [key, key.upcase]
       end
     ].merge(:provider => :azure)
@@ -87,7 +83,7 @@ module SfnHttpMock
       end
     ].merge(
       :provider => :google,
-      :google_service_account_private_key => @google_key
+      :google_service_account_private_key => @google_key,
     )
   end
 
@@ -102,7 +98,7 @@ module SfnHttpMock
     ].merge(:provider => :rackspace)
   end
 
-  def http_response(opts={})
+  def http_response(opts = {})
     opts[:version] ||= '1.1'
     opts[:status] ||= 200
     opts[:body] ||= ''

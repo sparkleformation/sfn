@@ -12,12 +12,12 @@ module Sfn
       # @option args [TrueClass, FalseClass] :flat flatten result array
       # @option args [Array] :attributes attributes to extract
       # @todo this was extracted from events and needs to be cleaned up
-      def process(things, args={})
+      def process(things, args = {})
         @event_ids ||= []
         processed = things.reverse.map do |thing|
           next if @event_ids.include?(thing['id'])
           @event_ids.push(thing['id']).compact!
-          if(args[:attributes])
+          if args[:attributes]
             args[:attributes].map do |key|
               thing[key].to_s
             end
@@ -34,9 +34,9 @@ module Sfn
       # @param args [Hash]
       # @option args [Array] :attributes
       # @return [Array<String>] formatted titles
-      def get_titles(thing, args={})
+      def get_titles(thing, args = {})
         attrs = args[:attributes] || []
-        if(attrs.empty?)
+        if attrs.empty?
           hash = thing.is_a?(Array) ? thing.first : thing
           hash ||= {}
           attrs = hash.keys
@@ -44,8 +44,8 @@ module Sfn
         titles = attrs.map do |key|
           camel(key).gsub(/([a-z])([A-Z])/, '\1 \2')
         end.compact
-        if(args[:format])
-          titles.map{|s| @ui.color(s, :bold)}
+        if args[:format]
+          titles.map { |s| @ui.color(s, :bold) }
         else
           titles
         end
@@ -58,7 +58,7 @@ module Sfn
       # @param what [String] description of things for output
       # @param args [Symbol] options (:ignore_empty_output)
       def things_output(stack, things, what, *args)
-        unless(args.include?(:no_title))
+        unless args.include?(:no_title)
           output = get_titles(things, :format => true, :attributes => allowed_attributes)
         else
           output = []
@@ -66,14 +66,13 @@ module Sfn
         columns = allowed_attributes.size
         output += process(things, :flat => true, :attributes => allowed_attributes)
         output.compact!
-        if(output.empty?)
+        if output.empty?
           ui.warn 'No information found' unless args.include?(:ignore_empty_output)
         else
           ui.info "#{what.to_s.capitalize} for stack: #{ui.color(stack, :bold)}" if stack
           ui.info "#{ui.list(output, :uneven_columns_across, columns)}"
         end
       end
-
     end
   end
 end

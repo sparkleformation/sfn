@@ -9,7 +9,6 @@ module Sfn
 
       # Customized translator to dereference template
       class Translator < SparkleFormation::Translation
-
         MAP = {}
         REF_MAPPING = {}
         FN_MAPPING = {}
@@ -20,7 +19,7 @@ module Sfn
         attr_reader :flagged
 
         # Override to init flagged array
-        def initialize(template_hash, args={})
+        def initialize(template_hash, args = {})
           super
           @flagged = []
         end
@@ -54,19 +53,19 @@ module Sfn
         # @return [Hash]
         # @note also allows 'Ref' within funcs to provide mapping
         #   replacements using the REF_MAPPING constant
-        def apply_function(hash, funcs=[])
-          if(hash.is_a?(Hash))
-            k,v = hash.first
-            if(hash.size == 1 && (k.start_with?('Fn') || k == 'Ref') && (funcs.include?(:all) || funcs.empty? || funcs.include?(k) || funcs == ['DEREF']))
+        def apply_function(hash, funcs = [])
+          if hash.is_a?(Hash)
+            k, v = hash.first
+            if hash.size == 1 && (k.start_with?('Fn') || k == 'Ref') && (funcs.include?(:all) || funcs.empty? || funcs.include?(k) || funcs == ['DEREF'])
               method_name = Bogo::Utility.snake(k.gsub('::', ''))
-              if((funcs.include?(k) || funcs.include?(:all)) && respond_to?(method_name))
+              if (funcs.include?(k) || funcs.include?(:all)) && respond_to?(method_name)
                 apply_function(send(method_name, v), funcs)
               else
                 case k
                 when 'Fn::GetAtt'
                   funcs.include?('DEREF') ? dereference(hash) : hash
                 when 'Ref'
-                  if(funcs.include?('DEREF'))
+                  if funcs.include?('DEREF')
                     dereference(hash)
                   else
                     {'Ref' => self.class.const_get(:REF_MAPPING).fetch(v, v)}
@@ -89,7 +88,7 @@ module Sfn
         # @return [TrueClass, FalseClass]
         def apply_condition(name)
           condition = conditions[name]
-          if(condition)
+          if condition
             apply_function(condition, [:all, 'DEREF'])
           else
             raise "Failed to locate condition with name `#{name}`!"
@@ -102,7 +101,7 @@ module Sfn
         # @return [Object] true or false value
         def fn_if(value)
           result = apply_condition(value[0])
-          if(result != UNKNOWN_RUNTIME_RESULT)
+          if result != UNKNOWN_RUNTIME_RESULT
             result ? value[1] : value[2]
           else
             UNKNOWN_RUNTIME_RESULT
@@ -118,7 +117,7 @@ module Sfn
           result = value.map do |val|
             apply_condition(val)
           end
-          if(result.to_s.include?(RUNTIME_MODIFIED))
+          if result.to_s.include?(RUNTIME_MODIFIED)
             UNKNOWN_RUNTIME_RESULT
           else
             result.all?
@@ -133,7 +132,7 @@ module Sfn
           result = value.map do |val|
             apply_condition(val)
           end
-          if(result.to_s.include?(RUNTIME_MODIFIED))
+          if result.to_s.include?(RUNTIME_MODIFIED)
             UNKNOWN_RUNTIME_RESULT
           else
             result.any?
@@ -157,7 +156,7 @@ module Sfn
           value = value.map do |val|
             apply_function(val)
           end
-          if(value.to_s.include?(RUNTIME_MODIFIED))
+          if value.to_s.include?(RUNTIME_MODIFIED)
             UNKNOWN_RUNTIME_RESULT
           else
             value.first == value.last
@@ -169,7 +168,7 @@ module Sfn
         # @param value [Array<String,Array<String>>]
         # @return [String]
         def fn_join(value)
-          unless(value.last.is_a?(Array))
+          unless value.last.is_a?(Array)
             val = value.last.to_s.split(',')
           else
             val = value.last
@@ -183,9 +182,9 @@ module Sfn
         # @return [String, Fixnum]
         def fn_find_in_map(value)
           map_holder = mappings[value[0]]
-          if(map_holder)
+          if map_holder
             map_item = map_holder[dereference(value[1])]
-            if(map_item)
+            if map_item
               map_item[value[2]]
             else
               raise "Failed to find mapping item! (#{value[0]} -> #{value[1]})"
@@ -202,32 +201,31 @@ module Sfn
         # @return [Hash, String]
         def dereference(hash)
           result = nil
-          if(hash.is_a?(Hash))
-            if(hash.keys.first == 'Ref' && flagged?(hash.values.first))
+          if hash.is_a?(Hash)
+            if hash.keys.first == 'Ref' && flagged?(hash.values.first)
               result = RUNTIME_MODIFIED
-            elsif(hash.keys.first == 'Fn::GetAtt')
-              if(hash.values.last.last.start_with?('Outputs.'))
-                if(flagged?(hash.values.join('_')))
+            elsif hash.keys.first == 'Fn::GetAtt'
+              if hash.values.last.last.start_with?('Outputs.')
+                if flagged?(hash.values.join('_'))
                   result = RUNTIME_MODIFIED
                 end
-              elsif(flagged?(hash.values.first))
+              elsif flagged?(hash.values.first)
                 result = RUNTIME_MODIFIED
               end
             end
           end
           result = result.nil? ? super : result
-          unless(result.is_a?(Enumerable))
+          unless result.is_a?(Enumerable)
             result = result.to_s
           end
           result
         end
-
       end
 
       # Resources that will be replaced on metadata init updates
       REPLACE_ON_CFN_INIT_UPDATE = [
         'AWS::AutoScaling::LaunchConfiguration',
-        'AWS::EC2::Instance'
+        'AWS::EC2::Instance',
       ]
 
       # @return [Smash] initialized translators
@@ -248,21 +246,21 @@ module Sfn
       #
       # @return [Hash] report
       def generate_plan(template, parameters)
-        parameters = Smash[parameters.map{|k,v| [k, v.to_s]}]
+        parameters = Smash[parameters.map { |k, v| [k, v.to_s] }]
         result = Smash.new(
           :stacks => Smash.new(
             origin_stack.name => plan_stack(
               origin_stack,
               template,
               parameters
-            )
+            ),
           ),
           :added => Smash.new,
           :removed => Smash.new,
           :replace => Smash.new,
           :interrupt => Smash.new,
           :unavailable => Smash.new,
-          :unknown => Smash.new
+          :unknown => Smash.new,
         )
         result
       end
@@ -274,9 +272,9 @@ module Sfn
       # @param template [Hash]
       # @return [TrueClass]
       def scrub_stack_properties(template)
-        if(template['Resources'])
+        if template['Resources']
           template['Resources'].each do |name, info|
-            if(is_stack?(info['Type']) && info['Properties'].is_a?(Hash))
+            if is_stack?(info['Type']) && info['Properties'].is_a?(Hash)
               info['Properties'].delete('Stack')
             end
           end
@@ -295,7 +293,7 @@ module Sfn
           'AWS::AccountId' => stack.id.split(':')[4],
           'AWS::NotificationARNs' => stack.notification_topics,
           'AWS::StackId' => stack.id,
-          'AWS::StackName' => stack.name
+          'AWS::StackName' => stack.name,
         ).merge(config.fetch(:planner, :global_parameters, {}))
       end
 
@@ -315,14 +313,14 @@ module Sfn
           :unavailable => Smash.new,
           :unknown => Smash.new,
           :outputs => Smash.new,
-          :n_outputs => []
+          :n_outputs => [],
         )
 
         origin_template = dereference_template(
           "#{stack.data.checksum}_origin",
           stack.template,
           Smash[
-            stack.parameters.map do |k,v|
+            stack.parameters.map do |k, v|
               [k, v.to_s]
             end
           ].merge(get_global_parameters(stack))
@@ -333,7 +331,7 @@ module Sfn
 
         new_checksum = nil
         current_checksum = false
-        until(new_checksum == current_checksum)
+        until new_checksum == current_checksum
           current_checksum = plan_results.checksum
           run_stack_diff(stack, translator_key, plan_results, origin_template, new_template, new_parameters)
           new_checksum = plan_results.checksum
@@ -357,7 +355,7 @@ module Sfn
       # @return [NilClass]
       def scrub_plan(results)
         precedence = [:unavailable, :replace, :interrupt, :unavailable, :unknown]
-        until(precedence.empty?)
+        until precedence.empty?
           key = precedence.shift
           results[key].keys.each do |k|
             precedence.each do |p_key|
@@ -380,9 +378,9 @@ module Sfn
       def run_stack_diff(stack, t_key, plan_results, origin_template, new_template, new_parameters)
         translator = translator_for(t_key)
         new_parameters = new_parameters.dup
-        if(stack.parameters)
-          stack.parameters.each do |k,v|
-            if(new_parameters[k].is_a?(Hash))
+        if stack.parameters
+          stack.parameters.each do |k, v|
+            if new_parameters[k].is_a?(Hash)
               val = translator.dereference(new_parameters[k])
               new_parameters[k] = val == new_parameters[k] ? v : val
             end
@@ -406,7 +404,7 @@ module Sfn
             plan_results, a_path, diff_items, translator_for(t_key),
             Smash.new(
               :origin => origin_template,
-              :update => update_template
+              :update => update_template,
             )
           )
         end
@@ -436,14 +434,13 @@ module Sfn
           new_stack_template = new_template_hash.fetch('Resources', stack_name, 'Properties', 'Stack', Smash.new)
           new_stack_parameters = new_template_hash.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new)
           new_stack_type = new_template_hash.fetch('Resources', stack_name, 'Type',
-            origin_template.get('Resources', stack_name, 'Type')
-          )
+                                                   origin_template.get('Resources', stack_name, 'Type'))
           resource = Smash.new(
             :name => stack_name,
             :type => new_stack_type,
-            :properties => []
+            :properties => [],
           )
-          if(original_stack && new_stack_template)
+          if original_stack && new_stack_template
             new_stack_parameters = Smash[
               new_stack_parameters.map do |new_param_key, new_param_value|
                 [new_param_key, translator.dereference(new_param_value)]
@@ -454,9 +451,9 @@ module Sfn
               translator.flag_ref("#{stack_name}_Outputs.#{modified_output}")
             end
             plan_results[:stacks][stack_name] = result
-          elsif(original_stack && (!new_stack_template && !new_stack_exists))
+          elsif original_stack && (!new_stack_template && !new_stack_exists)
             plan_results[:removed][stack_name] = resource
-          elsif(new_stack_template && !original_stack)
+          elsif new_stack_template && !original_stack
             plan_results[:added][stack_name] = resource
           end
         end
@@ -470,15 +467,15 @@ module Sfn
       # @return [Smash]
       def diff_init(diff, path)
         Smash.new.tap do |di|
-          if(diff.size > 1)
-            updated = diff.detect{|x| x.first == '+'}
-            original = diff.detect{|x| x.first == '-'}
+          if diff.size > 1
+            updated = diff.detect { |x| x.first == '+' }
+            original = diff.detect { |x| x.first == '-' }
             di[:original] = original.last.to_s
             di[:updated] = updated.last.to_s
           else
             diff_data = diff.first
             di[:path] = path
-            if(diff_data.size == 3)
+            if diff_data.size == 3
               di[diff_data.first == '+' ? :updated : :original] = diff_data.last
             else
               di[:original] = diff_data[diff_data.size - 2].to_s
@@ -498,9 +495,9 @@ module Sfn
       # @option :templates [Smash] :update
       def register_diff(results, path, diff, translator, templates)
         diff_info = diff_init(diff, path)
-        if(path.start_with?('Resources'))
+        if path.start_with?('Resources')
           p_path = path.split('.')
-          if(p_path.size == 2)
+          if p_path.size == 2
             diff = diff.first
             key = diff.first == '+' ? :added : :removed
             type = (key == :added ? templates[:update] : templates[:origin]).get('Resources', p_path.last, 'Type')
@@ -509,13 +506,13 @@ module Sfn
               :type => type,
               :properties => [],
               :diffs => [
-                diff_info
-              ]
+                diff_info,
+              ],
             )
           else
-            if(p_path.include?('Properties'))
+            if p_path.include?('Properties')
               resource_name = p_path[1]
-              if(p_path.size < 4 && p_path.last == 'Properties')
+              if p_path.size < 4 && p_path.last == 'Properties'
                 property_name = diff.flatten.compact.last.keys.first
               else
                 property_name = p_path[3].to_s.sub(/\[\d+\]$/, '')
@@ -526,16 +523,16 @@ module Sfn
                 :type => type,
                 :properties => [property_name],
                 :diffs => [
-                  diff_info.merge(:property_name => property_name)
-                ]
+                  diff_info.merge(:property_name => property_name),
+                ],
               )
               begin
-                if(templates.get(:update, 'Resources', resource_name, 'Properties', property_name) == Translator::UNKNOWN_RUNTIME_RESULT)
+                if templates.get(:update, 'Resources', resource_name, 'Properties', property_name) == Translator::UNKNOWN_RUNTIME_RESULT
                   effect = :unknown
                 else
                   r_info = SparkleFormation::Resources::Aws.resource_lookup(type)
                   r_property = r_info.property(property_name)
-                  if(r_property)
+                  if r_property
                     effect = r_property.update_causes(
                       templates.get(:update, 'Resources', resource_name),
                       templates.get(:origin, 'Resources', resource_name)
@@ -559,32 +556,31 @@ module Sfn
               rescue KeyError
                 set_resource(:unknown, results, resource_name, resource)
               end
-            elsif(p_path.include?('AWS::CloudFormation::Init'))
+            elsif p_path.include?('AWS::CloudFormation::Init')
               resource_name = p_path[1]
               type = templates[:origin]['Resources'][resource_name]['Type']
-              if(REPLACE_ON_CFN_INIT_UPDATE.include?(type))
+              if REPLACE_ON_CFN_INIT_UPDATE.include?(type)
                 set_resource(:replace, results, resource_name,
-                  Smash.new(
-                    :name => resource_name,
-                    :type => type,
-                    :properties => ['AWS::CloudFormation::Init'],
-                    :diffs => [
-                      diff_info
-                    ]
-                  )
-                )
+                             Smash.new(
+                  :name => resource_name,
+                  :type => type,
+                  :properties => ['AWS::CloudFormation::Init'],
+                  :diffs => [
+                    diff_info,
+                  ],
+                ))
               end
             end
           end
-        elsif(path.start_with?('Outputs'))
+        elsif path.start_with?('Outputs')
           o_resource_name = path.split('.')[1]
-          if(o_resource_name)
+          if o_resource_name
             set_resource(
               :outputs, results, o_resource_name,
               :properties => [],
               :diffs => [
-                diff_info
-              ]
+                diff_info,
+              ],
             )
           end
         end
@@ -597,7 +593,7 @@ module Sfn
       # @param name [String]
       # @param resource [Hash]
       def set_resource(kind, results, name, resource)
-        if(results[kind][name])
+        if results[kind][name]
           results[kind][name][:properties] += resource[:properties]
           results[kind][name][:properties].uniq!
           results[kind][name][:diffs] += resource[:diffs]
@@ -616,7 +612,7 @@ module Sfn
       # @param flagged [Array<String>]
       #
       # @return [Hash]
-      def dereference_template(t_key, template, parameters, flagged=[])
+      def dereference_template(t_key, template, parameters, flagged = [])
         template = template.to_smash
         translator = translator_for(t_key, template, parameters)
         flagged.each do |item|
@@ -630,16 +626,16 @@ module Sfn
         end
         translator.original.replace(template)
         ['Outputs', 'Resources'].each do |t_key|
-          if(template[t_key])
+          if template[t_key]
             template[t_key] = translator.dereference_processor(
               template[t_key], ['DEREF', :all]
             )
           end
         end
-        if(template['Resources'])
+        if template['Resources']
           valid_resources = template['Resources'].map do |resource_name, resource_value|
-            if(resource_value['OnCondition'])
-              if(translator.apply_condition(resource_value['OnCondition']))
+            if resource_value['OnCondition']
+              if translator.apply_condition(resource_value['OnCondition'])
                 resource_name
               end
             else
@@ -660,13 +656,12 @@ module Sfn
       # @param template [Hash] stack template
       # @param parameters [Hash] stack parameters
       # @return [Translator]
-      def translator_for(t_key, template=nil, parameters=nil)
+      def translator_for(t_key, template = nil, parameters = nil)
         o_translator = translators[t_key]
-        if(template)
+        if template
           translator = Translator.new(template,
-            :parameters => parameters
-          )
-          if(o_translator)
+                                      :parameters => parameters)
+          if o_translator
             o_translator.flagged.each do |i|
               translator.flag_ref(i)
             end
@@ -674,15 +669,13 @@ module Sfn
           translators[t_key] = translator
           o_translator = translator
         else
-          unless(o_translator)
+          unless o_translator
             o_translator = Translator.new({},
-              :parameters => {}
-            )
+                                          :parameters => {})
           end
         end
         o_translator
       end
-
     end
   end
 end

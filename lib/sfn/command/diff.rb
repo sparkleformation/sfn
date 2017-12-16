@@ -6,7 +6,6 @@ module Sfn
   class Command
     # Diff command
     class Diff < Command
-
       include Sfn::CommandModule::Base
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
@@ -22,7 +21,7 @@ module Sfn
           stack = nil
         end
 
-        if(stack)
+        if stack
           config[:print_only] = true
           file = load_template_file
           file = parameter_scrub!(file.dump)
@@ -38,7 +37,7 @@ module Sfn
       end
 
       # @todo needs updates for better provider compat
-      def diff_stack(stack, file, parent_names=[])
+      def diff_stack(stack, file, parent_names = [])
         stack_template = stack.template
         nested_stacks = Hash[
           file.fetch('Resources', file.fetch('resources', {})).find_all do |name, value|
@@ -49,7 +48,7 @@ module Sfn
           n_stack = stack.nested_stacks(false).detect do |ns|
             ns.data[:logical_id] == name
           end
-          if(n_stack)
+          if n_stack
             diff_stack(n_stack, value['Properties']['Stack'], [*parent_names, stack.data.fetch(:logical_id, stack.name)].compact)
           end
           file['Resources'][name]['Properties'].delete('Stack')
@@ -59,12 +58,11 @@ module Sfn
 
         stack_diff = HashDiff.diff(stack.template, file)
 
-        if(config[:raw_diff])
+        if config[:raw_diff]
           ui.info "Dumping raw template diff:"
           require 'pp'
           pp stack_diff
         else
-
           added_resources = stack_diff.find_all do |item|
             item.first == '+' && item[1].match(/Resources\.[^.]+$/)
           end
@@ -77,12 +75,11 @@ module Sfn
               !item[1].include?('Properties.Parameters')
           end - added_resources - removed_resources
 
-          if(added_resources.empty? && removed_resources.empty? && modified_resources.empty?)
+          if added_resources.empty? && removed_resources.empty? && modified_resources.empty?
             ui.info 'No changes detected'
             ui.puts
           else
-
-            unless(added_resources.empty?)
+            unless added_resources.empty?
               ui.info ui.color('Added Resources:', :green, :bold)
               added_resources.each do |item|
                 ui.print ui.color("  -> #{item[1].split('.').last}", :green)
@@ -91,7 +88,7 @@ module Sfn
               ui.puts
             end
 
-            unless(modified_resources.empty?)
+            unless modified_resources.empty?
               ui.info ui.color('Modified Resources:', :yellow, :bold)
               m_resources = Hash.new.tap do |hash|
                 modified_resources.each do |item|
@@ -102,8 +99,8 @@ module Sfn
                   matched = hash[key][prefix].detect do |i|
                     i[:path] == a_key
                   end
-                  if(matched)
-                    if(item.first == '-')
+                  if matched
+                    if item.first == '-'
                       matched[:original] = item[2]
                     else
                       matched[:new] = item[2]
@@ -137,7 +134,7 @@ module Sfn
               ui.puts
             end
 
-            unless(removed_resources.empty?)
+            unless removed_resources.empty?
               ui.info ui.color('Removed Resources:', :red, :bold)
               removed_resources.each do |item|
                 ui.print ui.color("  <- #{item[1].split('.').last}", :red)
@@ -147,21 +144,17 @@ module Sfn
             end
 
             run_callbacks_for(:after_stack_diff,
-              :diff => stack_diff,
-              :diff_info => {
-                :added => added_resources,
-                :modified => modified_resources,
-                :removed => removed_resources
-              },
-              :api_stack => stack,
-              :new_template => file
-            )
+                              :diff => stack_diff,
+                              :diff_info => {
+                                :added => added_resources,
+                                :modified => modified_resources,
+                                :removed => removed_resources,
+                              },
+                              :api_stack => stack,
+                              :new_template => file)
           end
-
         end
-
       end
-
     end
   end
 end

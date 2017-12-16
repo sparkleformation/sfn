@@ -1,15 +1,14 @@
 require_relative '../../helper'
 
 describe Sfn::Command::Lint do
-
-  let(:creds){ aws_creds }
+  let(:creds) { aws_creds }
 
   before do
     rs = Sfn::Lint::RuleSet.build(:resource_check) do
       rule :aws_resources_only do
         definition 'Resources.[*][0][*].Type' do |search|
-          unless(search.nil?)
-            result = search.find_all{|i| !i.start_with?('AWS')}
+          unless search.nil?
+            result = search.find_all { |i| !i.start_with?('AWS') }
             result.empty? ? true : result
           else
             true
@@ -28,7 +27,7 @@ describe Sfn::Command::Lint do
         :ui => ui,
         :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
         :credentials => aws_creds,
-        :file => 'lint_valid'
+        :file => 'lint_valid',
       ),
       []
     )
@@ -43,13 +42,12 @@ describe Sfn::Command::Lint do
         :ui => ui,
         :base_directory => File.join(File.dirname(__FILE__), 'sparkleformation'),
         :credentials => aws_creds,
-        :file => 'lint_invalid'
+        :file => 'lint_invalid',
       ),
       []
     )
-    ->{ instance.execute! }.must_raise RuntimeError
+    -> { instance.execute! }.must_raise RuntimeError
     stream.rewind
     stream.read.must_include 'INVALID'
   end
-
 end

@@ -13,6 +13,7 @@ module Sfn
       def _to_json(thing)
         MultiJson.dump(thing)
       end
+
       alias_method :dump_json, :_to_json
 
       # Load JSON data
@@ -22,6 +23,7 @@ module Sfn
       def _from_json(thing)
         MultiJson.load(thing)
       end
+
       alias_method :load_json, :_from_json
 
       # Format object into pretty JSON
@@ -32,9 +34,8 @@ module Sfn
         thing = _from_json(thing) if thing.is_a?(String)
         MultiJson.dump(thing, :pretty => true)
       end
+
       alias_method :format_json, :_format_json
-
     end
-
   end
 end

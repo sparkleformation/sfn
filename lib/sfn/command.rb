@@ -3,7 +3,6 @@ require 'bogo-cli'
 
 module Sfn
   class Command < Bogo::Cli::Command
-
     include CommandModule::Callbacks
 
     autoload :Conf, 'sfn/command/conf'
@@ -34,15 +33,15 @@ module Sfn
       '.json',
       '.yaml',
       '.yml',
-      '.xml'
+      '.xml',
     ]
 
     # Override to provide config file searching
     def initialize(cli_opts, args)
-      unless(cli_opts['config'])
+      unless cli_opts['config']
         discover_config(cli_opts)
       end
-      unless(ENV['DEBUG'])
+      unless ENV['DEBUG']
         ENV['DEBUG'] = 'true' if cli_opts[:debug]
       end
       super(cli_opts, args)
@@ -64,14 +63,14 @@ module Sfn
     #
     # @return [TrueClass, FalseClass]
     def load_api_provider_extensions!
-      if(config.get(:credentials, :provider))
+      if config.get(:credentials, :provider)
         base_ext = Bogo::Utility.camel(config.get(:credentials, :provider)).to_sym
         targ_ext = self.class.name.split('::').last
-        if(ApiProvider.constants.include?(base_ext))
+        if ApiProvider.constants.include?(base_ext)
           base_module = ApiProvider.const_get(base_ext)
           ui.debug "Loading core provider extensions via `#{base_module}`"
           extend base_module
-          if(base_module.constants.include?(targ_ext))
+          if base_module.constants.include?(targ_ext)
             targ_module = base_module.const_get(targ_ext)
             ui.debug "Loading targeted provider extensions via `#{targ_module}`"
             extend targ_module
@@ -89,7 +88,7 @@ module Sfn
     def discover_config(opts)
       cwd = Dir.pwd.split(File::SEPARATOR)
       detected_path = ''
-      until(cwd.empty? || File.exists?(detected_path.to_s))
+      until cwd.empty? || File.exists?(detected_path.to_s)
         detected_path = Dir.glob(
           (cwd + ["#{CONFIG_BASE_NAME}{#{VALID_CONFIG_EXTENSIONS.join(',')}}"]).join(
             File::SEPARATOR
@@ -97,7 +96,7 @@ module Sfn
         ).first
         cwd.pop
       end
-      if(opts.respond_to?(:fetch_option))
+      if opts.respond_to?(:fetch_option)
         opts.fetch_option('config').value = detected_path if detected_path
       else
         opts['config'] = detected_path if detected_path
@@ -108,12 +107,11 @@ module Sfn
     # @return [Class] attempt to return customized configuration class
     def config_class
       klass_name = self.class.name.split('::').last
-      if(Sfn::Config.const_defined?(klass_name))
+      if Sfn::Config.const_defined?(klass_name)
         Sfn::Config.const_get(klass_name)
       else
         super
       end
     end
-
   end
 end
