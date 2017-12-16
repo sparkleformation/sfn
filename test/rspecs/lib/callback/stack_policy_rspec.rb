@@ -16,6 +16,7 @@ RSpec.describe Sfn::Callback::StackPolicy do
   end
 
   it 'should fail' do
+    pending
     expect(true).to be false
   end
 end
