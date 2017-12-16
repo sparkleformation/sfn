@@ -5,7 +5,7 @@ describe Sfn::Command::Create do
   describe 'AWS' do
     describe 'default behavior' do
       before do
-        $mock.expects(:post).returns(http_response(:body => '[]'))
+        $mock.expects(:post).returns(http_response(:body => '{}'))
       end
 
       it 'should display create initialize' do
@@ -50,7 +50,7 @@ describe Sfn::Command::Create do
       end
 
       it 'should store nested template in bucket' do
-        $mock.expects(:post).returns(http_response(:body => '[]'))
+        $mock.expects(:post).returns(http_response(:body => '{}'))
         $mock.expects(:put).with { |url, opts|
           opts[:body].must_equal({'Value' => true}.to_json)
           url.include?('s3') && url.end_with?('.json')
@@ -87,7 +87,7 @@ describe Sfn::Command::Create do
             'Resources', 'Dummy', 'Properties', 'Stack'
           ).must_be_nil
           opts.to_smash.get(:form, 'Action') == 'CreateStack'
-        }.returns(http_response(:body => '[]'))
+        }.returns(http_response(:body => '{}'))
         instance = Sfn::Command::Create.new(
           Smash.new(
             :ui => ui,

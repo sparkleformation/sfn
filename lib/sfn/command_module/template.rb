@@ -267,6 +267,9 @@ module Sfn
               if non_named && !compile_state.key?(named_cs_key)
                 ui.debug "Setting non-named compile parameter `#{cs_key}` into `#{named_cs_key}`"
                 compile_state[named_cs_key] = non_named
+              elsif non_named && compile_state.key?(named_cs_key)
+                ui.debug "Merging none-named `#{cs_key}` with named `#{named_cs_key}`"
+                compile_state[named_cs_key].merge!(non_named)
               else
                 ui.debug "Discarding non-named compile parameter due to set named - `#{cs_key}` </> `#{named_cs_key}`"
               end

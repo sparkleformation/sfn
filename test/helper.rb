@@ -101,7 +101,7 @@ module SfnHttpMock
   def http_response(opts = {})
     opts[:version] ||= '1.1'
     opts[:status] ||= 200
-    opts[:body] ||= ''
+    opts[:body] ||= '{}'
     HTTP::Response.new(opts)
   end
 end
