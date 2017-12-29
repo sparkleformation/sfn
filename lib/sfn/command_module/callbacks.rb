@@ -15,9 +15,15 @@ module Sfn
       def api_action!(*args)
         type = self.class.name.split('::').last.downcase
         run_callbacks_for(["before_#{type}", :before], *args)
-        result = yield if block_given?
-        run_callbacks_for(["after_#{type}", :after], *args)
-        result
+        result = nil
+        begin
+          result = yield if block_given?
+          run_callbacks_for(["after_#{type}", :after], *args)
+          result
+        rescue => err
+          run_callbacks_for(["failed_#{type}", :failed], *(args + [err]))
+          raise
+        end
       end
 
       # Process requested callbacks
@@ -56,7 +62,7 @@ module Sfn
               klass.new(ui, config, arguments, provider)
             rescue NameError => e
               ui.debug "Callback type lookup error: #{e.class} - #{e}"
-              raise "Unknown #{type} callback requested: #{c_name} (not found)"
+              raise NameError.new("Unknown #{type} callback requested: #{c_name} (not found)")
             end
           end
           if instance.respond_to?(type)
