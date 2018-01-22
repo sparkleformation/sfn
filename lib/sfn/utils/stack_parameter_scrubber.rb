@@ -6,11 +6,11 @@ module Sfn
     module StackParameterScrubber
 
       # Validate attributes within Parameter blocks
-      ALLOWED_PARAMETER_ATTRIBUTES = %w(
-        Type Default NoEcho AllowedValues AllowedPattern
-        MaxLength MinLength MaxValue MinValue Description
-        ConstraintDescription
-      )
+      ALLOWED_PARAMETER_ATTRIBUTES = [
+        'Type', 'Default', 'NoEcho', 'AllowedValues', 'AllowedPattern',
+        'MaxLength', 'MinLength', 'MaxValue', 'MinValue', 'Description',
+        'ConstraintDescription',
+      ]
 
       # Clean the parameters of the template
       #
