@@ -1,3 +1,8 @@
+# v3.0.30
+* [fix] Comma delimited parameter type parsing (#270)
+* [fix] Constant deprecations
+* [enhancement] Add support for failed callbacks (#271)
+
 # v3.0.28
 * [fix] Fix stack save policy callback (#264)
 * [fix] Prevent processing unset event arrays
