@@ -216,7 +216,7 @@ module Sfn
               valid = true
             else
               validation.each do |validation_error|
-                ui.error validation_error.last
+                ui.error "#{param_name}: #{validation_error.last}"
               end
             end
             if attempt > MAX_PARAMETER_ATTEMPTS
