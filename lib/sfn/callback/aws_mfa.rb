@@ -45,6 +45,7 @@ module Sfn
           end
         end
       end
+      alias_method :failed, :after
 
       # @return [TrueClass, FalseClass]
       def enabled?
