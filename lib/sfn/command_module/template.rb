@@ -97,7 +97,7 @@ module Sfn
               unless valid == true
                 result = nil
                 valid.each do |invalid_msg|
-                  ui.error invalid_msg.last
+                  ui.error "#{p_name}: #{invalid_msg.last}"
                 end
               end
               if result.nil? || (result.respond_to?(:empty?) && result.empty?)
