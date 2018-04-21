@@ -262,10 +262,54 @@ module Sfn
           :unavailable => Smash.new,
           :unknown => Smash.new,
         )
-        result
+        convert_to_plan(result)
       end
 
       protected
+
+      PLAN_CLASS = Miasma::Models::Orchestration::Stack::Plan
+      PLAN_MAP = {
+        :added => :add,
+        :removed => :remove,
+        :replace => :replace,
+        :interrupt => :interrupt,
+        :unavailable => :unavailable,
+        :unknown => :unknown,
+      }
+
+      # Convert result hash into plan object
+      #
+      # @param [Hash] plan hash data
+      # @return [Miasma::Models::Orchestration::Stack::Plan]
+      def convert_to_plan(result)
+        plan = PLAN_CLASS.new(origin_stack)
+        PLAN_MAP.each do |src, dst|
+          collection = result[src].map do |name, info|
+            item = PLAN_CLASS::Item.new(
+              :name => name,
+              :type => info[:type],
+            )
+            unless info[:diffs].empty?
+              item.diffs = info[:diffs].map do |d_info|
+                diff = PLAN_CLASS::Diff.new(
+                  :name => d_info.fetch(:property_name, d_info[:path]),
+                  :current => d_info[:original].to_json,
+                  :proposed => d_info[:updated].to_json,
+                )
+                diff.valid_state
+              end
+            end
+            item.valid_state
+          end
+          plan.send("#{dst}=", collection)
+        end
+        plan.stacks = Smash[
+          result.fetch(:stacks, {}).map { |name, info|
+            [name, convert_to_plan(info)]
+          }
+        ]
+        plan.valid_state
+      end
 
       # Remote custom Stack property from Stack resources within template
       #

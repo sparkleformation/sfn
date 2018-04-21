@@ -41,7 +41,7 @@ module Sfn
     # @param template [Hash] updated template
     # @param parameters [Hash] runtime parameters for update
     #
-    # @return [Hash] report
+    # @return [Miasma::Models::Orchestration::Stack::Plan] report
     def generate_plan(template, parameters)
       raise NotImplementedError
     end

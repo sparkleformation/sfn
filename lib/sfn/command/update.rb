@@ -184,8 +184,8 @@ module Sfn
 
       def print_plan_result(info, names = [])
         said_any_things = false
-        unless info[:stacks].empty?
-          info[:stacks].each do |s_name, s_info|
+        unless info.stacks.empty?
+          info.stacks.each do |s_name, s_info|
             result = print_plan_result(s_info, [*names, s_name].compact)
             said_any_things ||= result
           end
@@ -193,40 +193,40 @@ module Sfn
         unless names.flatten.compact.empty?
           said_things = false
           ui.puts
-          ui.puts "  #{ui.color("Update plan for:", :bold)} #{ui.color(names.join(" > "), :blue)}"
-          unless info[:unknown].empty?
-            ui.puts "    #{ui.color("!!! Unknown update effect:", :red, :bold)}"
+          ui.puts "  #{ui.color('Update plan for:', :bold)} #{ui.color(names.join(' > '), :blue)}"
+          unless info.unknown.empty?
+            ui.puts "    #{ui.color('!!! Unknown update effect:', :red, :bold)}"
             print_plan_items(info, :unknown, :red)
             ui.puts
             said_any_things = said_things = true
           end
-          unless info[:unavailable].empty?
-            ui.puts "    #{ui.color("Update request not allowed:", :red, :bold)}"
+          unless info.unavailable.empty?
+            ui.puts "    #{ui.color('Update request not allowed:', :red, :bold)}"
             print_plan_items(info, :unavailable, :red)
             ui.puts
             said_any_things = said_things = true
           end
-          unless info[:replace].empty?
-            ui.puts "    #{ui.color("Resources to be replaced:", :red, :bold)}"
+          unless info.replace.empty?
+            ui.puts "    #{ui.color('Resources to be replaced:', :red, :bold)}"
             print_plan_items(info, :replace, :red)
             ui.puts
             said_any_things = said_things = true
           end
-          unless info[:interrupt].empty?
-            ui.puts "    #{ui.color("Resources to be interrupted:", :yellow, :bold)}"
+          unless info.interrupt.empty?
+            ui.puts "    #{ui.color('Resources to be interrupted:', :yellow, :bold)}"
             print_plan_items(info, :interrupt, :yellow)
             ui.puts
             said_any_things = said_things = true
           end
-          unless info[:removed].empty?
-            ui.puts "    #{ui.color("Resources to be removed:", :red, :bold)}"
-            print_plan_items(info, :removed, :red)
+          unless info.remove.empty?
+            ui.puts "    #{ui.color('Resources to be removed:', :red, :bold)}"
+            print_plan_items(info, :remove, :red)
             ui.puts
             said_any_things = said_things = true
           end
-          unless info[:added].empty?
-            ui.puts "    #{ui.color("Resources to be added:", :green, :bold)}"
-            print_plan_items(info, :added, :green)
+          unless info.add.empty?
+            ui.puts "    #{ui.color('Resources to be added:', :green, :bold)}"
+            print_plan_items(info, :add, :green)
             ui.puts
             said_any_things = said_things = true
           end
@@ -241,45 +241,48 @@ module Sfn
 
       # Print planning items
       #
-      # @param info [Hash] plan
+      # @param info [Miasma::Models::Orchestration::Stack::Plan] plan
       # @param key [Symbol] key of items
       # @param color [Symbol] color to flag
       def print_plan_items(info, key, color)
-        max_name = info[key].keys.map(&:size).max
-        max_type = info[key].values.map { |i| i[:type] }.map(&:size).max
-        max_p = info[key].values.map { |i| i.fetch(:diffs, []) }.flatten(1).map { |d| d.fetch(:property_name, :path).to_s.size }.max
-        max_o = info[key].values.map { |i| i.fetch(:diffs, []) }.flatten(1).map { |d| d[:original].to_s.size }.max
-        info[key].each do |name, val|
-          ui.print " " * 6
-          ui.print ui.color("[#{val[:type]}]", color)
-          ui.print " " * (max_type - val[:type].size)
-          ui.print " " * 4
+        collection = info.send(key)
+        max_name = collection.map(&:name).map(&:size).max
+        max_type = collection.map(&:type).map(&:size).max
+        max_p = collection.map(&:diffs).flatten(1).map(&:name).map(&:to_s).map(&:size).max
+        max_o = collection.map(&:diffs).flatten(1).map(&:current).map(&:to_s).map(&:size).max
+        collection.each do |val|
+          name = val.name
+          ui.print ' ' * 6
+          ui.print ui.color("[#{val.type}]", color)
+          ui.print ' ' * (max_type - val.type.size)
+          ui.print ' ' * 4
           ui.print ui.color(name, :bold)
-          unless val[:properties].nil? || val[:properties].empty?
-            ui.print " " * (max_name - name.size)
-            ui.print " " * 4
-            ui.print "Reason: Updated properties: `#{val[:properties].join("`, `")}`"
+          properties = Array(val.diffs).map(&:name)
+          unless properties.empty?
+            ui.print ' ' * (max_name - name.size)
+            ui.print ' ' * 4
+            ui.print "Reason: Updated properties: `#{properties.join('`, `')}`"
           end
           ui.puts
           if config[:diffs]
-            unless val[:diffs].empty?
+            unless val.diffs.empty?
               p_name = nil
-              val[:diffs].each do |diff|
-                if !diff[:updated].nil? || !diff[:original].nil?
-                  p_name = diff.fetch(:property_name, :path)
-                  ui.print " " * 8
+              val.diffs.each do |diff|
+                if !diff.proposed.nil? || !diff.current.nil?
+                  p_name = diff.name
+                  ui.print ' ' * 8
                   ui.print "#{p_name}: "
-                  ui.print " " * (max_p - p_name.size)
-                  ui.print ui.color("-#{diff[:original]}", :red) unless diff[:original].nil?
-                  ui.print " " * (max_o - diff[:original].to_s.size)
-                  ui.print " "
-                  if diff[:updated] == Sfn::Planner::RUNTIME_MODIFIED
-                    ui.puts ui.color("+#{diff[:original]} <Dependency Modified>", :green)
+                  ui.print ' ' * (max_p - p_name.size)
+                  ui.print ui.color("-#{diff.current}", :red) if diff.current
+                  ui.print ' ' * (max_o - diff.current.to_s.size)
+                  ui.print ' '
+                  if diff.proposed == Sfn::Planner::RUNTIME_MODIFIED
+                    ui.puts ui.color("+#{diff.current} <Dependency Modified>", :green)
                   else
-                    if diff[:updated].nil?
+                    if diff.proposed.nil?
                       ui.puts
                     else
-                      ui.puts ui.color("+#{diff[:updated].to_s.gsub("__MODIFIED_REFERENCE_VALUE__", "<Dependency Modified>")}", :green)
+                      ui.puts ui.color("+#{diff.proposed.to_s.gsub('__MODIFIED_REFERENCE_VALUE__', '<Dependency Modified>')}", :green)
                     end
                   end
                 end
