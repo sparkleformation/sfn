@@ -40,24 +40,25 @@ module Sfn
     # Only values allowed designating bool type
     BOOLEAN_VALUES = [TrueClass, FalseClass]
 
-    autoload :Conf, "sfn/config/conf"
-    autoload :Create, "sfn/config/create"
-    autoload :Describe, "sfn/config/describe"
-    autoload :Destroy, "sfn/config/destroy"
-    autoload :Describe, "sfn/config/describe"
-    autoload :Diff, "sfn/config/diff"
-    autoload :Events, "sfn/config/events"
-    autoload :Export, "sfn/config/export"
-    autoload :Graph, "sfn/config/graph"
-    autoload :Import, "sfn/config/import"
-    autoload :Init, "sfn/config/init"
-    autoload :Inspect, "sfn/config/inspect"
-    autoload :Lint, "sfn/config/lint"
-    autoload :List, "sfn/config/list"
-    autoload :Print, "sfn/config/print"
-    autoload :Promote, "sfn/config/promote"
-    autoload :Update, "sfn/config/update"
-    autoload :Validate, "sfn/config/validate"
+    autoload :Conf, 'sfn/config/conf'
+    autoload :Create, 'sfn/config/create'
+    autoload :Describe, 'sfn/config/describe'
+    autoload :Destroy, 'sfn/config/destroy'
+    autoload :Describe, 'sfn/config/describe'
+    autoload :Diff, 'sfn/config/diff'
+    autoload :Events, 'sfn/config/events'
+    autoload :Export, 'sfn/config/export'
+    autoload :Graph, 'sfn/config/graph'
+    autoload :Import, 'sfn/config/import'
+    autoload :Init, 'sfn/config/init'
+    autoload :Inspect, 'sfn/config/inspect'
+    autoload :Lint, 'sfn/config/lint'
+    autoload :List, 'sfn/config/list'
+    autoload :Planner, 'sfn/config/planner'
+    autoload :Print, 'sfn/config/print'
+    autoload :Promote, 'sfn/config/promote'
+    autoload :Update, 'sfn/config/update'
+    autoload :Validate, 'sfn/config/validate'
 
     attribute(
       :config, String,
