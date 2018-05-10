@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -15,7 +15,7 @@ module Sfn
               allowed_attributes.each do |attr|
                 width_val = stacks.map { |e| e[attr].to_s.length }.push(attr.length).max + 2
                 width_val = width_val > 70 ? 70 : width_val < 20 ? 20 : width_val
-                column attr.split('_').map(&:capitalize).join(' '), :width => width_val
+                column attr.split("_").map(&:capitalize).join(" "), :width => width_val
               end
             end
             get_stacks.each do |stack|

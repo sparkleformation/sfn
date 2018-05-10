@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module CommandModule
@@ -23,7 +23,7 @@ module Sfn
         # @param location [Symbol, String] name of location
         # @return [Sfn::Provider]
         def provider_for(location = nil)
-          key = ['provider', location].compact.map(&:to_s).join('_')
+          key = ["provider", location].compact.map(&:to_s).join("_")
           if location
             credentials = config.get(:locations, location)
             unless credentials
@@ -55,7 +55,7 @@ module Sfn
               result
             end
           rescue => e
-            ui.error 'Failed to create remote API connection. Please validate configuration!'
+            ui.error "Failed to create remote API connection. Please validate configuration!"
             ui.error "Connection failure reason - #{e.class} - #{e}"
             raise
           end
@@ -70,7 +70,7 @@ module Sfn
         def _debug(e, *args)
           if config[:verbose] || config[:debug]
             ui.fatal "Exception information: #{e.class}: #{e.message}"
-            if ENV['DEBUG'] || config[:debug]
+            if ENV["DEBUG"] || config[:debug]
               puts "#{e.backtrace.join("\n")}\n"
               if e.is_a?(Miasma::Error::ApiError)
                 ui.fatal "Response body: #{e.response.body.to_s.inspect}"
@@ -87,7 +87,7 @@ module Sfn
         # @param string [String, Symbol]
         # @return [String
         def as_title(string)
-          string.to_s.split('_').map(&:capitalize).join(' ')
+          string.to_s.split("_").map(&:capitalize).join(" ")
         end
 
         # Get stack
@@ -137,7 +137,7 @@ module Sfn
           begin
             yield
           rescue => e
-            ui.fatal "#{message || 'Failed to retrieve information'}#{" for requested stack: #{stack}" if stack}"
+            ui.fatal "#{message || "Failed to retrieve information"}#{" for requested stack: #{stack}" if stack}"
             ui.fatal "Reason: #{e}"
             _debug(e)
             exit 1
@@ -172,8 +172,8 @@ module Sfn
         # @raise [ArgumentError]
         def name_required!
           if name_args.empty?
-            ui.error 'Name argument must be provided!'
-            raise ArgumentError.new 'Missing required name argument'
+            ui.error "Name argument must be provided!"
+            raise ArgumentError.new "Missing required name argument"
           end
         end
       end

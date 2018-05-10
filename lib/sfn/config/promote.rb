@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Config
@@ -6,15 +6,15 @@ module Sfn
     class Promote < Config
       attribute(
         :accounts, String,
-        :description => 'JSON accounts file path',
+        :description => "JSON accounts file path",
       )
       attribute(
         :bucket, String,
-        :description => 'Bucket name containing the exports',
+        :description => "Bucket name containing the exports",
       )
       attribute(
         :bucket_prefix, String,
-        :description => 'Key prefix within remote bucket',
+        :description => "Key prefix within remote bucket",
       )
     end
   end

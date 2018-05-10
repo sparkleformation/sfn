@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Lint
@@ -160,7 +160,7 @@ module Sfn
         end
         unless non_match.empty?
           raise ArgumentError.new "Rule set defines `#{provider}` as provider but includes rules for " \
-                                  "non matching providers. (#{non_match.map(&:provider).map(&:to_s).uniq.sort.join(', ')})"
+                                  "non matching providers. (#{non_match.map(&:provider).map(&:to_s).uniq.sort.join(", ")})"
         end
       end
     end

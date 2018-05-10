@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -13,7 +13,7 @@ module Sfn
         name_required!
         name = name_args.first
 
-        stack_info = "#{ui.color('Name:', :bold)} #{name}"
+        stack_info = "#{ui.color("Name:", :bold)} #{name}"
         begin
           stack = provider.stacks.get(name)
         rescue Miasma::Error::ApiError::RequestError
@@ -28,13 +28,13 @@ module Sfn
           c_setter = lambda do |c_stack|
             if c_stack.outputs
               compile_params = c_stack.outputs.detect do |output|
-                output.key == 'CompileState'
+                output.key == "CompileState"
               end
             end
             if compile_params
               compile_params = MultiJson.load(compile_params.value)
-              c_current = config[:compile_parameters].fetch(s_name.join('__'), Smash.new)
-              config[:compile_parameters][s_name.join('__')] = compile_params.merge(c_current)
+              c_current = config[:compile_parameters].fetch(s_name.join("__"), Smash.new)
+              config[:compile_parameters][s_name.join("__")] = compile_params.merge(c_current)
             end
             c_stack.nested_stacks(false).each do |n_stack|
               s_name.push(n_stack.data.fetch(:logical_id, n_stack.name))
@@ -49,7 +49,7 @@ module Sfn
 
           ui.debug "Compile parameters - #{config[:compile_parameters]}"
           file = load_template_file(:stack => stack)
-          stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
+          stack_info << " #{ui.color("Path:", :bold)} #{config[:file]}"
         else
           file = stack.template.dup if config[:plan]
         end
@@ -60,15 +60,15 @@ module Sfn
         end
 
         unless config[:print_only]
-          ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('update', :green)}"
+          ui.info "#{ui.color("SparkleFormation:", :bold)} #{ui.color("update", :green)}"
         end
 
         unless file
           if config[:template]
             file = config[:template]
-            stack_info << " #{ui.color('(template provided)', :green)}"
+            stack_info << " #{ui.color("(template provided)", :green)}"
           else
-            stack_info << " #{ui.color('(no template update)', :yellow)}"
+            stack_info << " #{ui.color("(no template update)", :yellow)}"
           end
         end
         unless config[:print_only]
@@ -101,16 +101,16 @@ module Sfn
                 display_plan_information(result)
               end
             rescue => e
-              unless e.message.include?('Confirmation declined')
+              unless e.message.include?("Confirmation declined")
                 ui.error "Unexpected error when generating plan information: #{e.class} - #{e}"
                 ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-                ui.confirm 'Continue with stack update?' unless config[:plan_only]
+                ui.confirm "Continue with stack update?" unless config[:plan_only]
               else
                 raise
               end
             end
             if config[:plan_only]
-              ui.info 'Plan only mode requested. Exiting.'
+              ui.info "Plan only mode requested. Exiting."
               exit 0
             end
           end
@@ -144,19 +144,19 @@ module Sfn
             if config[:poll]
               poll_stack(stack.name)
               if stack.reload.state == :update_complete
-                ui.info "Stack update complete: #{ui.color('SUCCESS', :green)}"
+                ui.info "Stack update complete: #{ui.color("SUCCESS", :green)}"
                 namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
               else
-                ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-                raise 'Stack did not reach a successful update completion state.'
+                ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color("FAILED", :red, :bold)}"
+                raise "Stack did not reach a successful update completion state."
               end
             else
-              ui.warn 'Stack state polling has been disabled.'
+              ui.warn "Stack state polling has been disabled."
               ui.info "Stack update initialized for #{ui.color(name, :green)}"
             end
           end
         rescue Miasma::Error::ApiError::RequestError => e
-          if e.message.downcase.include?('no updates')
+          if e.message.downcase.include?("no updates")
             ui.warn "No updates detected for stack (#{stack.name})"
           else
             raise
@@ -165,7 +165,7 @@ module Sfn
       end
 
       def build_planner(stack)
-        klass_name = stack.api.class.to_s.split('::').last
+        klass_name = stack.api.class.to_s.split("::").last
         if Planner.const_defined?(klass_name)
           Planner.const_get(klass_name).new(ui, config, arguments, stack)
         else
@@ -175,11 +175,11 @@ module Sfn
       end
 
       def display_plan_information(result)
-        ui.info ui.color('Pre-update resource planning report:', :bold)
+        ui.info ui.color("Pre-update resource planning report:", :bold)
         unless print_plan_result(result)
-          ui.info 'No resources life cycle changes detected in this update!'
+          ui.info "No resources life cycle changes detected in this update!"
         end
-        ui.confirm 'Apply this stack update?' unless config[:plan_only]
+        ui.confirm "Apply this stack update?" unless config[:plan_only]
       end
 
       def print_plan_result(info, names = [])
@@ -193,45 +193,45 @@ module Sfn
         unless names.flatten.compact.empty?
           said_things = false
           ui.puts
-          ui.puts "  #{ui.color('Update plan for:', :bold)} #{ui.color(names.join(' > '), :blue)}"
+          ui.puts "  #{ui.color("Update plan for:", :bold)} #{ui.color(names.join(" > "), :blue)}"
           unless info[:unknown].empty?
-            ui.puts "    #{ui.color('!!! Unknown update effect:', :red, :bold)}"
+            ui.puts "    #{ui.color("!!! Unknown update effect:", :red, :bold)}"
             print_plan_items(info, :unknown, :red)
             ui.puts
             said_any_things = said_things = true
           end
           unless info[:unavailable].empty?
-            ui.puts "    #{ui.color('Update request not allowed:', :red, :bold)}"
+            ui.puts "    #{ui.color("Update request not allowed:", :red, :bold)}"
             print_plan_items(info, :unavailable, :red)
             ui.puts
             said_any_things = said_things = true
           end
           unless info[:replace].empty?
-            ui.puts "    #{ui.color('Resources to be replaced:', :red, :bold)}"
+            ui.puts "    #{ui.color("Resources to be replaced:", :red, :bold)}"
             print_plan_items(info, :replace, :red)
             ui.puts
             said_any_things = said_things = true
           end
           unless info[:interrupt].empty?
-            ui.puts "    #{ui.color('Resources to be interrupted:', :yellow, :bold)}"
+            ui.puts "    #{ui.color("Resources to be interrupted:", :yellow, :bold)}"
             print_plan_items(info, :interrupt, :yellow)
             ui.puts
             said_any_things = said_things = true
           end
           unless info[:removed].empty?
-            ui.puts "    #{ui.color('Resources to be removed:', :red, :bold)}"
+            ui.puts "    #{ui.color("Resources to be removed:", :red, :bold)}"
             print_plan_items(info, :removed, :red)
             ui.puts
             said_any_things = said_things = true
           end
           unless info[:added].empty?
-            ui.puts "    #{ui.color('Resources to be added:', :green, :bold)}"
+            ui.puts "    #{ui.color("Resources to be added:", :green, :bold)}"
             print_plan_items(info, :added, :green)
             ui.puts
             said_any_things = said_things = true
           end
           unless said_things
-            ui.puts "    #{ui.color('No resource lifecycle changes detected!', :green)}"
+            ui.puts "    #{ui.color("No resource lifecycle changes detected!", :green)}"
             ui.puts
             said_any_things = true
           end
@@ -250,15 +250,15 @@ module Sfn
         max_p = info[key].values.map { |i| i.fetch(:diffs, []) }.flatten(1).map { |d| d.fetch(:property_name, :path).to_s.size }.max
         max_o = info[key].values.map { |i| i.fetch(:diffs, []) }.flatten(1).map { |d| d[:original].to_s.size }.max
         info[key].each do |name, val|
-          ui.print ' ' * 6
+          ui.print " " * 6
           ui.print ui.color("[#{val[:type]}]", color)
-          ui.print ' ' * (max_type - val[:type].size)
-          ui.print ' ' * 4
+          ui.print " " * (max_type - val[:type].size)
+          ui.print " " * 4
           ui.print ui.color(name, :bold)
           unless val[:properties].nil? || val[:properties].empty?
-            ui.print ' ' * (max_name - name.size)
-            ui.print ' ' * 4
-            ui.print "Reason: Updated properties: `#{val[:properties].join('`, `')}`"
+            ui.print " " * (max_name - name.size)
+            ui.print " " * 4
+            ui.print "Reason: Updated properties: `#{val[:properties].join("`, `")}`"
           end
           ui.puts
           if config[:diffs]
@@ -267,19 +267,19 @@ module Sfn
               val[:diffs].each do |diff|
                 if !diff[:updated].nil? || !diff[:original].nil?
                   p_name = diff.fetch(:property_name, :path)
-                  ui.print ' ' * 8
+                  ui.print " " * 8
                   ui.print "#{p_name}: "
-                  ui.print ' ' * (max_p - p_name.size)
+                  ui.print " " * (max_p - p_name.size)
                   ui.print ui.color("-#{diff[:original]}", :red) unless diff[:original].nil?
-                  ui.print ' ' * (max_o - diff[:original].to_s.size)
-                  ui.print ' '
+                  ui.print " " * (max_o - diff[:original].to_s.size)
+                  ui.print " "
                   if diff[:updated] == Sfn::Planner::RUNTIME_MODIFIED
                     ui.puts ui.color("+#{diff[:original]} <Dependency Modified>", :green)
                   else
                     if diff[:updated].nil?
                       ui.puts
                     else
-                      ui.puts ui.color("+#{diff[:updated].to_s.gsub('__MODIFIED_REFERENCE_VALUE__', '<Dependency Modified>')}", :green)
+                      ui.puts ui.color("+#{diff[:updated].to_s.gsub("__MODIFIED_REFERENCE_VALUE__", "<Dependency Modified>")}", :green)
                     end
                   end
                 end

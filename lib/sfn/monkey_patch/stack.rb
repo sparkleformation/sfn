@@ -1,13 +1,13 @@
-require 'base64'
-require 'sfn'
+require "base64"
+require "sfn"
 
 module Sfn
   module MonkeyPatch
 
     # Expand stack model functionality
     module Stack
-      autoload :Azure, 'sfn/monkey_patch/stack/azure'
-      autoload :Google, 'sfn/monkey_patch/stack/google'
+      autoload :Azure, "sfn/monkey_patch/stack/azure"
+      autoload :Google, "sfn/monkey_patch/stack/google"
 
       include Bogo::AnimalStrings
       include Azure
@@ -92,7 +92,7 @@ module Sfn
       # @return [String] action currently being performed
       def performing
         if in_progress?
-          status.to_s.downcase.split('_').first.to_sym
+          status.to_s.downcase.split("_").first.to_sym
         end
       end
 
@@ -143,9 +143,9 @@ module Sfn
           self.send("percent_complete_#{api.provider}", min)
         else
           if in_progress?
-            total_resources = template.fetch('Resources', []).size
+            total_resources = template.fetch("Resources", []).size
             total_complete = resources.all.find_all do |resource|
-              resource.status.downcase.end_with?('complete')
+              resource.status.downcase.end_with?("complete")
             end.size
             result = ((total_complete.to_f / total_resources) * 100).to_i
             result > min.to_i ? result : min
@@ -176,20 +176,20 @@ module Sfn
             stack_parameters = template[opts[:parameter_key]]
             default_key = opts.fetch(
               :default_key,
-              opts[:parameter_key].to_s[0, 1].match(/[a-z]/) ? 'default' : 'Default'
+              opts[:parameter_key].to_s[0, 1].match(/[a-z]/) ? "default" : "Default"
             )
           else
-            if template['Parameters']
-              default_key = 'Default'
-              stack_parameters = template['Parameters']
+            if template["Parameters"]
+              default_key = "Default"
+              stack_parameters = template["Parameters"]
             else
-              default_key = 'default'
-              stack_parameters = template['parameters']
+              default_key = "default"
+              stack_parameters = template["parameters"]
             end
           end
           if stack_parameters
             valid_parameters = stack_parameters.find_all do |key, val|
-              !val['DisableApply'] && !val['disable_apply']
+              !val["DisableApply"] && !val["disable_apply"]
             end.map(&:first)
             if ignore_params
               valid_parameters.reject! do |key|
@@ -197,17 +197,17 @@ module Sfn
               end
             end
             remote_stack.outputs.each do |output|
-              o_key = output.key.downcase.tr('_', '')
+              o_key = output.key.downcase.tr("_", "")
               p_key = valid_parameters.detect do |v_param|
-                v_param.downcase.tr('_', '') == o_key
+                v_param.downcase.tr("_", "") == o_key
               end
               unless p_key
                 map_key = opts[:mapping].keys.detect do |map_key|
-                  map_key.downcase.tr('_', '') == o_key
+                  map_key.downcase.tr("_", "") == o_key
                 end
                 if map_key
                   p_key = valid_parameters.detect do |v_param|
-                    v_param.downcase.tr('_', '') == opts[:mapping][map_key].downcase.tr('_', '')
+                    v_param.downcase.tr("_", "") == opts[:mapping][map_key].downcase.tr("_", "")
                   end
                 end
               end
@@ -231,8 +231,8 @@ module Sfn
           resources.reload.all.map do |resource|
             if api.data.fetch(:stack_types, []).include?(resource.type)
               # Custom remote load support
-              if resource.type == 'Custom::JackalStack'
-                location, stack_id = resource.id.to_s.split('-', 2)
+              if resource.type == "Custom::JackalStack"
+                location, stack_id = resource.id.to_s.split("-", 2)
                 if l_conf = api.data[:locations][location]
                   n_stack = Miasma.api(
                     :type => :orchestration,
@@ -279,13 +279,13 @@ module Sfn
           if (self.api.provider == :aws) # cause this is the only one
             begin
               result = self.api.request(
-                :path => '/',
+                :path => "/",
                 :form => Smash.new(
-                  'Action' => 'GetStackPolicy',
-                  'StackName' => self.id,
+                  "Action" => "GetStackPolicy",
+                  "StackName" => self.id,
                 ),
               )
-              serialized_policy = result.get(:body, 'GetStackPolicyResult', 'StackPolicyBody')
+              serialized_policy = result.get(:body, "GetStackPolicyResult", "StackPolicyBody")
               MultiJson.load(serialized_policy).to_smash
             rescue Miasma::Error::ApiError::RequestError => e
               if e.response.code == 404
@@ -310,10 +310,10 @@ module Sfn
           self.send("nesting_style_#{api.provider}")
         else
           if nested?
-            self.template['Resources'].find_all do |t_resource|
-              t_resource['Type'] == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
+            self.template["Resources"].find_all do |t_resource|
+              t_resource["Type"] == self.api.class.const_get(:RESOURCE_MAPPING).key(self.class)
             end.detect do |t_resource|
-              t_resource['Properties'].fetch('Parameters', {}).values.detect do |t_value|
+              t_resource["Properties"].fetch("Parameters", {}).values.detect do |t_value|
                 !t_value.is_a?(Hash)
               end
             end ? :deep : :shallow

@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Utils
@@ -10,7 +10,7 @@ module Sfn
         #
         # @param msg [String]
         def debug(msg)
-          if ENV['DEBUG'] || (respond_to?(:config) && config[:debug])
+          if ENV["DEBUG"] || (respond_to?(:config) && config[:debug])
             puts "<sfn - debug>: #{msg}"
           end
         end

@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Utils
@@ -7,9 +7,9 @@ module Sfn
 
       # Validate attributes within Parameter blocks
       ALLOWED_PARAMETER_ATTRIBUTES = [
-        'Type', 'Default', 'NoEcho', 'AllowedValues', 'AllowedPattern',
-        'MaxLength', 'MinLength', 'MaxValue', 'MinValue', 'Description',
-        'ConstraintDescription',
+        "Type", "Default", "NoEcho", "AllowedValues", "AllowedPattern",
+        "MaxLength", "MinLength", "MaxValue", "MinValue", "Description",
+        "ConstraintDescription",
       ]
 
       # Clean the parameters of the template
@@ -17,14 +17,14 @@ module Sfn
       # @param template [Hash]
       # @return [Hash] template
       def parameter_scrub!(template)
-        parameters = template['Parameters']
+        parameters = template["Parameters"]
         if parameters
           parameters.each do |name, options|
             options.delete_if do |attribute, value|
               !ALLOWED_PARAMETER_ATTRIBUTES.include?(attribute)
             end
           end
-          template['Parameters'] = parameters
+          template["Parameters"] = parameters
         end
         template
       end

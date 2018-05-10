@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Utils
@@ -13,13 +13,13 @@ module Sfn
       # @param directory [Miasma::Models::Storage::Directory]
       # @return [String] file path
       def file_store(object, path, directory)
-        raise NotImplementedError.new 'Internal updated required! :('
+        raise NotImplementedError.new "Internal updated required! :("
         content = object.is_a?(String) ? object : Utils._format_json(object)
         directory.files.create(
           :identity => path,
           :body => content,
         )
-        loc = directory.service.service.name.split('::').last.downcase
+        loc = directory.service.service.name.split("::").last.downcase
         "#{loc}://#{directory.identity}/#{path}"
       end
     end

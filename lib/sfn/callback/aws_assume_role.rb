@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Callback
@@ -31,14 +31,14 @@ module Sfn
       def after(*_)
         if enabled?
           if api.connection.aws_sts_role_arn && api.connection.aws_sts_token
-            path = config.fetch(:aws_assume_role, :cache_file, '.sfn-aws')
+            path = config.fetch(:aws_assume_role, :cache_file, ".sfn-aws")
             FileUtils.touch(path)
             File.chmod(0600, path)
             values = load_stored_values(path)
             STS_STORE_ITEMS.map do |key|
               values[key] = api.connection.data[key]
             end
-            File.open(path, 'w') do |file|
+            File.open(path, "w") do |file|
               file.puts MultiJson.dump(values)
             end
           end
@@ -47,14 +47,14 @@ module Sfn
 
       # @return [TrueClass, FalseClass]
       def enabled?
-        config.fetch(:aws_assume_role, :status, 'enabled').to_s == 'enabled'
+        config.fetch(:aws_assume_role, :status, "enabled").to_s == "enabled"
       end
 
       # Load stored configuration data into the api connection
       #
       # @return [TrueClass, FalseClass]
       def load_stored_session
-        path = config.fetch(:aws_assume_role, :cache_file, '.sfn-aws')
+        path = config.fetch(:aws_assume_role, :cache_file, ".sfn-aws")
         if File.exists?(path)
           values = load_stored_values(path)
           STS_STORE_ITEMS.each do |key|

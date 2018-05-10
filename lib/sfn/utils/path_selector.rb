@@ -1,5 +1,5 @@
-require 'sfn'
-require 'pathname'
+require "sfn"
+require "pathname"
 
 module Sfn
   module Utils
@@ -13,8 +13,8 @@ module Sfn
       # @return [String]
       def humanize_path_basename(path)
         File.basename(path).sub(
-          File.extname(path), ''
-        ).split(/[-_]/).map(&:capitalize).join(' ')
+          File.extname(path), ""
+        ).split(/[-_]/).map(&:capitalize).join(" ")
       end
 
       # Prompt user for file selection
@@ -27,7 +27,7 @@ module Sfn
       # @option opts [String] :filter_prefix only return results matching filter
       # @return [String] file path
       def prompt_for_file(directory, opts = {})
-        file_list = Dir.glob(File.join(directory, '**', '**', '*')).find_all do |file|
+        file_list = Dir.glob(File.join(directory, "**", "**", "*")).find_all do |file|
           File.file?(file)
         end
         if opts[:filter_prefix]
@@ -39,7 +39,7 @@ module Sfn
           File.dirname(file)
         end.uniq
         files = file_list.find_all do |path|
-          path.sub(directory, '').split('/').size == 2
+          path.sub(directory, "").split("/").size == 2
         end
         if opts[:ignore_directories]
           directories.delete_if do |dir|
@@ -47,16 +47,16 @@ module Sfn
           end
         end
         if directories.empty? && files.empty?
-          ui.fatal 'No formation paths discoverable!'
+          ui.fatal "No formation paths discoverable!"
         else
-          output = ['Please select an entry']
-          output << '(or directory to list):' unless directories.empty?
-          ui.info output.join(' ')
+          output = ["Please select an entry"]
+          output << "(or directory to list):" unless directories.empty?
+          ui.info output.join(" ")
           output.clear
           idx = 1
           valid = {}
           unless directories.empty?
-            output << ui.color("#{opts.fetch(:directories_name, 'Directories')}:", :bold)
+            output << ui.color("#{opts.fetch(:directories_name, "Directories")}:", :bold)
             directories.each do |dir|
               valid[idx] = {:path => dir, :type => :directory}
               output << [idx, humanize_path_basename(dir)]
@@ -64,7 +64,7 @@ module Sfn
             end
           end
           unless files.empty?
-            output << ui.color("#{opts.fetch(:files_name, 'Files')}:", :bold)
+            output << ui.color("#{opts.fetch(:files_name, "Files")}:", :bold)
             files.each do |file|
               valid[idx] = {:path => file, :type => :file}
               output << [idx, humanize_path_basename(file)]
@@ -74,15 +74,15 @@ module Sfn
           max = idx.to_s.length
           output.map! do |o|
             if o.is_a?(Array)
-              "  #{o.first}.#{' ' * (max - o.first.to_s.length)} #{o.last}"
+              "  #{o.first}.#{" " * (max - o.first.to_s.length)} #{o.last}"
             else
               o
             end
           end
           ui.info "#{output.join("\n")}\n"
-          response = ui.ask_question('Enter selection: ').to_i
+          response = ui.ask_question("Enter selection: ").to_i
           unless valid[response]
-            ui.fatal 'How about using a real value'
+            ui.fatal "How about using a real value"
             exit 1
           else
             entry = valid[response.to_i]

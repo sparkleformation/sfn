@@ -1,14 +1,14 @@
 begin
-  kcfn = Gem::Specification.find_by_name('knife-cloudformation')
+  kcfn = Gem::Specification.find_by_name("knife-cloudformation")
   $stderr.puts "[WARN]: Deprecated gem detected: #{kcfn.name} [V: #{kcfn.version}]"
-  $stderr.puts '[WARN]: Uninstall gem to prevent any conflicts (`gem uninstall knife-cloudformation -a`)'
+  $stderr.puts "[WARN]: Uninstall gem to prevent any conflicts (`gem uninstall knife-cloudformation -a`)"
 rescue Gem::LoadError => e
   # ignore
 end
 
 unless defined?(Chef::Knife::CloudformationCreate)
-  require 'sfn'
-  require 'bogo'
+  require "sfn"
+  require "bogo"
 
   Chef::Config[:knife][:cloudformation] = {
     :options => {},
@@ -17,7 +17,7 @@ unless defined?(Chef::Knife::CloudformationCreate)
   }
   Chef::Config[:knife][:sparkleformation] = Chef::Config[:knife][:cloudformation]
 
-  VALID_PREFIX = ['cloudformation', 'sparkleformation']
+  VALID_PREFIX = ["cloudformation", "sparkleformation"]
 
   Sfn::Config.constants.map do |konst|
     const = Sfn::Config.const_get(konst)
@@ -26,7 +26,7 @@ unless defined?(Chef::Knife::CloudformationCreate)
     end
   end.compact.sort_by(&:to_s).each do |klass|
     VALID_PREFIX.each do |prefix|
-      klass_name = klass.name.split('::').last
+      klass_name = klass.name.split("::").last
       command_class = "#{prefix.capitalize}#{klass_name}"
 
       knife_klass = Class.new(Chef::Knife)
@@ -54,7 +54,7 @@ unless defined?(Chef::Knife::CloudformationCreate)
           end
           base = knife.to_smash
           keys = VALID_PREFIX.dup
-          cmd_config = keys.unshift(keys.delete(snake(self.class.name.split('::').last).to_s.split('_').first)).map do |k|
+          cmd_config = keys.unshift(keys.delete(snake(self.class.name.split("::").last).to_s.split("_").first)).map do |k|
             base[k]
           end.compact.first || {}
           cmd_config = cmd_config.to_smash
@@ -64,8 +64,8 @@ unless defined?(Chef::Knife::CloudformationCreate)
           end
           # Split up options provided multiple arguments
           reconfig.map! do |k, v|
-            if v.is_a?(String) && v.include?(',')
-              v = v.split(',').map(&:strip)
+            if v.is_a?(String) && v.include?(",")
+              v = v.split(",").map(&:strip)
             end
             [k, v]
           end
@@ -82,7 +82,7 @@ unless defined?(Chef::Knife::CloudformationCreate)
       knife_klass.instance_variable_set(:@name, "Chef::Knife::#{command_class}")
       knife_klass.instance_variable_set(
         :@sfn_class,
-        Bogo::Utility.constantize(klass.name.sub('Config', 'Command'))
+        Bogo::Utility.constantize(klass.name.sub("Config", "Command"))
       )
       knife_klass.banner "knife #{prefix} #{Bogo::Utility.snake(klass_name)}"
 
@@ -91,9 +91,9 @@ unless defined?(Chef::Knife::CloudformationCreate)
           short = "-#{info[:short]}"
           long = "--[no-]#{info[:long]}"
         else
-          val = 'VALUE'
+          val = "VALUE"
           if info[:multiple]
-            val << '[,VALUE]'
+            val << "[,VALUE]"
           end
           short = "-#{info[:short]} #{val}"
           long = "--#{info[:long]} #{val}"

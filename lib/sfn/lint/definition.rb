@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Lint
@@ -20,7 +20,7 @@ module Sfn
       # @return [self]
       def initialize(expr, provider = :aws, evaluator = nil, &block)
         if evaluator && block
-          raise ArgumentError.new 'Only evaluator or block can be provided, not both.'
+          raise ArgumentError.new "Only evaluator or block can be provided, not both."
         end
         @provider = Bogo::Utility.snake(provider).to_sym
         @search_expression = expr
@@ -46,7 +46,7 @@ module Sfn
       # @note override this method when subclassing
       def run(result, template)
         unless evaluator
-          raise NotImplementedError.new 'No evaluator has been defined for this definition!'
+          raise NotImplementedError.new "No evaluator has been defined for this definition!"
         end
         evaluator.call(result, template)
       end

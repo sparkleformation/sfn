@@ -1,4 +1,4 @@
-require_relative '../../../rspecs'
+require_relative "../../../rspecs"
 
 RSpec.describe Sfn::Callback::StackPolicy do
   let(:ui) { double(:ui) }
@@ -8,14 +8,14 @@ RSpec.describe Sfn::Callback::StackPolicy do
 
   let(:instance) { subject.new(ui, config, arguments, api) }
 
-  context 'with no stack polciies defined' do
+  context "with no stack polciies defined" do
     before do
     end
-    it 'should not error if no policies are defined' do
+    it "should not error if no policies are defined" do
     end
   end
 
-  it 'should fail' do
+  it "should fail" do
     pending
     expect(true).to be false
   end

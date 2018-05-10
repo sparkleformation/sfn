@@ -1,5 +1,5 @@
-require 'sparkle_formation'
-require 'sfn'
+require "sparkle_formation"
+require "sfn"
 
 module Sfn
   class Command
@@ -24,12 +24,12 @@ module Sfn
         end
 
         unless config[:print_only]
-          ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('create', :green)}"
+          ui.info "#{ui.color("SparkleFormation:", :bold)} #{ui.color("create", :green)}"
         end
 
-        stack_info = "#{ui.color('Name:', :bold)} #{name}"
+        stack_info = "#{ui.color("Name:", :bold)} #{name}"
         if config[:path]
-          stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
+          stack_info << " #{ui.color("Path:", :bold)} #{config[:file]}"
         end
 
         if config[:print_only]
@@ -66,14 +66,14 @@ module Sfn
             stack = provider.stack(name)
 
             if stack.reload.state == :create_complete
-              ui.info "Stack create complete: #{ui.color('SUCCESS', :green)}"
+              ui.info "Stack create complete: #{ui.color("SUCCESS", :green)}"
               namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
             else
-              ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-              raise 'Stack did not reach a successful completion state.'
+              ui.fatal "Create of new stack #{ui.color(name, :bold)}: #{ui.color("FAILED", :red, :bold)}"
+              raise "Stack did not reach a successful completion state."
             end
           else
-            ui.warn 'Stack state polling has been disabled.'
+            ui.warn "Stack state polling has been disabled."
             ui.info "Stack creation initialized for #{ui.color(name, :green)}"
           end
         end

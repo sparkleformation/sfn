@@ -1,5 +1,5 @@
-require 'sfn'
-require 'sparkle_formation'
+require "sfn"
+require "sparkle_formation"
 
 module Sfn
   module CommandModule
@@ -13,7 +13,7 @@ module Sfn
       # @yieldresult [Object] result from call
       # @return [Object] result of yield block
       def api_action!(*args)
-        type = self.class.name.split('::').last.downcase
+        type = self.class.name.split("::").last.downcase
         run_callbacks_for(["before_#{type}", :before], *args)
         result = nil
         begin
@@ -38,13 +38,13 @@ module Sfn
         end.flatten(1).compact.uniq.each do |item|
           callback_name, callback, quiet = item
           quiet = true if config[:print_only]
-          ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('starting', :yellow)}" unless quiet
+          ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color("starting", :yellow)}" unless quiet
           if args.empty?
             callback.call
           else
             callback.call(*args)
           end
-          ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color('complete', :green)}" unless quiet
+          ui.info "Callback #{ui.color(type.to_s, :bold)} #{callback_name}: #{ui.color("complete", :green)}" unless quiet
         end
         nil
       end

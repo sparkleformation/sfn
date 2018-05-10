@@ -1,5 +1,5 @@
-require 'logger'
-require 'sfn'
+require "logger"
+require "sfn"
 
 module Sfn
   # Remote provider interface
@@ -41,14 +41,14 @@ module Sfn
       args = args.to_smash
       unless args.get(:miasma, :provider)
         best_guess = (args[:miasma] || {}).keys.group_by do |key|
-          key.to_s.split('_').first
+          key.to_s.split("_").first
         end.sort do |x, y|
           y.size <=> x.size
         end.first
         if best_guess
           provider = best_guess.first.to_sym
         else
-          raise ArgumentError.new 'Cannot auto determine :provider value for credentials'
+          raise ArgumentError.new "Cannot auto determine :provider value for credentials"
         end
       else
         provider = args[:miasma].delete(:provider).to_sym
@@ -58,13 +58,13 @@ module Sfn
           args[:miasma][:aws_region] = args[:miasma].delete(:region)
         end
       end
-      if ENV['DEBUG'].to_s.downcase == 'true'
+      if ENV["DEBUG"].to_s.downcase == "true"
         log_to = STDOUT
       else
         if Gem.win_platform?
-          log_to = 'NUL'
+          log_to = "NUL"
         else
-          log_to = '/dev/null'
+          log_to = "/dev/null"
         end
       end
       @logger = args.fetch(:logger, Logger.new(log_to))
@@ -101,7 +101,7 @@ module Sfn
         fetch_stacks(stack_id) if recache
       end
       value = cache[:stacks].value
-      value ? MultiJson.dump(MultiJson.load(value).values) : '[]'
+      value ? MultiJson.dump(MultiJson.load(value).values) : "[]"
     end
 
     # @return [Miasma::Orchestration::Stack, NilClass]
@@ -118,7 +118,7 @@ module Sfn
       current_stacks = MultiJson.load(cached_stacks)
       cache.locked_action(:stacks_lock) do
         logger.info "Saving expanded stack attributes in cache (#{stack_id})"
-        current_stacks[stack_id] = stack_attributes.merge('Cached' => Time.now.to_i)
+        current_stacks[stack_id] = stack_attributes.merge("Cached" => Time.now.to_i)
         cache[:stacks].value = MultiJson.dump(current_stacks)
       end
       true
@@ -144,14 +144,14 @@ module Sfn
     # @param stack [Miasma::Models::Orchestration::Stack]
     def expand_stack(stack)
       logger.info "Stack expansion requested (#{stack.id})"
-      if ((stack.in_progress? && Time.now.to_i - stack.attributes['Cached'].to_i > stack_expansion_interval) ||
-          !stack.attributes['Cached'])
+      if ((stack.in_progress? && Time.now.to_i - stack.attributes["Cached"].to_i > stack_expansion_interval) ||
+          !stack.attributes["Cached"])
         begin
           expanded = false
           cache.locked_action(:stack_expansion_lock) do
             expanded = true
             stack.reload
-            stack.data['Cached'] = Time.now.to_i
+            stack.data["Cached"] = Time.now.to_i
           end
           if expanded
             save_expanded_stack(stack.id, stack.to_json)
@@ -196,7 +196,7 @@ module Sfn
           end
         end
         cache[:stacks].value = stacks.to_json
-        logger.info 'Stack list has been updated from upstream and cached locally'
+        logger.info "Stack list has been updated from upstream and cached locally"
       end
       @initial_fetch_complete = true
     end

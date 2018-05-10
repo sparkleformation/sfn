@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -75,11 +75,11 @@ module Sfn
         unless stack.outputs.nil? || stack.outputs.empty?
           stack.outputs.each do |output|
             key, value = output.key, output.value
-            key = snake(key).to_s.split('_').map(&:capitalize).join(' ')
-            ui.info ['  ', ui.color("#{key}:", :bold), value].join(' ')
+            key = snake(key).to_s.split("_").map(&:capitalize).join(" ")
+            ui.info ["  ", ui.color("#{key}:", :bold), value].join(" ")
           end
         else
-          ui.info "  #{ui.color('No outputs found')}"
+          ui.info "  #{ui.color("No outputs found")}"
         end
       end
 
@@ -90,10 +90,10 @@ module Sfn
         ui.info "Tags for stack: #{ui.color(stack.name, :bold)}"
         if stack.tags && !stack.tags.empty?
           stack.tags.each do |key, value|
-            ui.info ['  ', ui.color("#{key}:", :bold), value].join(' ')
+            ui.info ["  ", ui.color("#{key}:", :bold), value].join(" ")
           end
         else
-          ui.info "  #{ui.color('No tags found')}"
+          ui.info "  #{ui.color("No tags found")}"
         end
       end
 

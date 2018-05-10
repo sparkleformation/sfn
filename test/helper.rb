@@ -1,12 +1,12 @@
-require 'sfn'
-require 'bogo-ui'
-require 'minitest/autorun'
-require 'mocha/mini_test'
-require 'tempfile'
-require 'openssl'
+require "sfn"
+require "bogo-ui"
+require "minitest/autorun"
+require "mocha/mini_test"
+require "tempfile"
+require "openssl"
 
 # Stub out HTTP so we can easily intercept remote calls
-require 'http'
+require "http"
 
 module HTTP
   class << self
@@ -41,12 +41,12 @@ module SfnHttpMock
   end
 
   def stream
-    @stream ||= StringIO.new('')
+    @stream ||= StringIO.new("")
   end
 
   def ui
     @ui ||= Bogo::Ui.new(
-      :app_name => 'TestUi',
+      :app_name => "TestUi",
       :output_to => stream,
       :colors => false,
     )
@@ -70,10 +70,10 @@ module SfnHttpMock
   end
 
   def google_creds
-    key_file = Tempfile.new('sfn-test')
+    key_file = Tempfile.new("sfn-test")
     key_path = key_file.path
     key_file.delete
-    key_file = File.open(key_path, 'w')
+    key_file = File.open(key_path, "w")
     key_file.puts OpenSSL::PKey::RSA.new(2048).to_pem
     key_file.close
     @google_key = key_file.path
@@ -99,9 +99,9 @@ module SfnHttpMock
   end
 
   def http_response(opts = {})
-    opts[:version] ||= '1.1'
+    opts[:version] ||= "1.1"
     opts[:status] ||= 200
-    opts[:body] ||= '{}'
+    opts[:body] ||= "{}"
     HTTP::Response.new(opts)
   end
 end

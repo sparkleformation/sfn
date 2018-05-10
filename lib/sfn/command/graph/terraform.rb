@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -36,18 +36,18 @@ module Sfn
 
             def parameters
               Hash[
-                @original.fetch('parameters', {}).map do |k, v|
-                  [k, v.fetch('default', '')]
+                @original.fetch("parameters", {}).map do |k, v|
+                  [k, v.fetch("default", "")]
                 end
               ].merge(@parameters)
             end
 
             def resources
-              @original.fetch('resources', {})
+              @original.fetch("resources", {})
             end
 
             def outputs
-              @original.fetch('outputs', {})
+              @original.fetch("outputs", {})
             end
 
             def apply_function(string, funcs = [])
@@ -61,22 +61,22 @@ module Sfn
             end
           end
 
-          def output_discovery(template, outputs, resource_name, parent_template, name = '')
-            if template['resources']
-              template['resources'].keys.each do |r_name|
-                r_info = template['resources'][r_name]
-                if r_info['type'] == 'module'
-                  output_discovery(r_info['properties']['stack'], outputs, r_name, template, r_name)
+          def output_discovery(template, outputs, resource_name, parent_template, name = "")
+            if template["resources"]
+              template["resources"].keys.each do |r_name|
+                r_info = template["resources"][r_name]
+                if r_info["type"] == "module"
+                  output_discovery(r_info["properties"]["stack"], outputs, r_name, template, r_name)
                 end
               end
             end
             if parent_template
               ui.debug "Pre-processing stack resource `#{resource_name}`"
               substack_parameters = Smash[
-                parent_template.fetch('resources', resource_name, 'properties', 'parameters', {}).map do |key, value|
+                parent_template.fetch("resources", resource_name, "properties", "parameters", {}).map do |key, value|
                   result = [key, value]
-                  if value.to_s.start_with?('${module.')
-                    output_key = value.sub('${module.', '').sub('}', '').sub('.', '__')
+                  if value.to_s.start_with?("${module.")
+                    output_key = value.sub("${module.", "").sub("}", "").sub(".", "__")
                     ui.debug "Output key for check: #{output_key}"
                     if outputs.key?(output_key)
                       new_value = outputs[output_key]
@@ -92,27 +92,27 @@ module Sfn
 
               processor = TerraformGraphProcessor.new({},
                                                       :parameters => substack_parameters)
-              template['resources'] = processor.dereference_processor(
-                template['resources'], []
+              template["resources"] = processor.dereference_processor(
+                template["resources"], []
               )
-              template['outputs'] = processor.dereference_processor(
-                template['outputs'], []
+              template["outputs"] = processor.dereference_processor(
+                template["outputs"], []
               )
-              derefed_outs = template['outputs'] || {}
+              derefed_outs = template["outputs"] || {}
               derefed_outs.each do |o_name, o_data|
-                o_key = [name, o_name].join('__')
-                val = o_data['value']
-                if val.start_with?('${') && val.scan('.').count == 2
-                  val = val.split('.')
+                o_key = [name, o_name].join("__")
+                val = o_data["value"]
+                if val.start_with?("${") && val.scan(".").count == 2
+                  val = val.split(".")
                   val[1] = "#{name}__#{val[1]}"
-                  val = val.join('.')
+                  val = val.join(".")
                 end
                 outputs[o_key] = val
               end
             end
             outputs.dup.each do |key, value|
-              if value.to_s.start_with?('${module.')
-                output_key = value.to_s.sub('${module.', '').sub('}', '').sub('.', '__')
+              if value.to_s.start_with?("${module.")
+                output_key = value.to_s.sub("${module.", "").sub("}", "").sub(".", "__")
                 if outputs.key?(output_key)
                   outputs[key] = outputs[output_key]
                 end
@@ -120,16 +120,16 @@ module Sfn
             end
           end
 
-          def edge_detection(template, graph, name = '', resource_names = [])
-            resources = (template.fetch('resources', {}) || {})
+          def edge_detection(template, graph, name = "", resource_names = [])
+            resources = (template.fetch("resources", {}) || {})
             node_prefix = name
             resources.each do |resource_name, resource_data|
-              node_name = [node_prefix, resource_name].join('__')
-              if resource_data['type'] == 'module'
+              node_name = [node_prefix, resource_name].join("__")
+              if resource_data["type"] == "module"
                 graph.subgraph << generate_graph(
-                  resource_data['properties'].delete('stack'),
+                  resource_data["properties"].delete("stack"),
                   :name => resource_name,
-                  :type => resource_data['type'],
+                  :type => resource_data["type"],
                   :resource_names => resource_names,
                 )
                 next
@@ -138,28 +138,28 @@ module Sfn
                 graph.box3d << graph.node(node_name)
               end
               graph.filled << graph.node(node_name)
-              graph.node(node_name).label "#{resource_name}\n<#{resource_data['type']}>\n#{name}"
+              graph.node(node_name).label "#{resource_name}\n<#{resource_data["type"]}>\n#{name}"
               resource_dependencies(resource_data, resource_names + resources.keys).each do |dep_name|
                 if resources.keys.include?(dep_name)
-                  dep_name = [node_prefix, dep_name].join('__')
+                  dep_name = [node_prefix, dep_name].join("__")
                 end
-                if config[:graph_style] == 'creation'
+                if config[:graph_style] == "creation"
                   @root_graph.edge(dep_name, node_name)
                 else
                   @root_graph.edge(node_name, dep_name)
                 end
               end
             end
-            resource_names.concat resources.keys.map { |r_name| [node_prefix, r_name].join('__') }
+            resource_names.concat resources.keys.map { |r_name| [node_prefix, r_name].join("__") }
           end
 
           def resource_dependencies(data, names)
             case data
             when String
               result = []
-              if data.start_with?('${') && data.scan('.').count >= 1
-                data = data.tr('${}', '')
-                check_name = data.split('.')[1]
+              if data.start_with?("${") && data.scan(".").count >= 1
+                data = data.tr("${}", "")
+                check_name = data.split(".")[1]
                 if names.include?(check_name)
                   result.push(check_name)
                 end
@@ -167,9 +167,9 @@ module Sfn
               result
             when Hash
               data.map do |key, value|
-                if key == 'depends_on'
+                if key == "depends_on"
                   [value].flatten.compact.map do |dependson_name|
-                    dep_name = dependson_name.split('.').last
+                    dep_name = dependson_name.split(".").last
                     dep_name if names.include?(dep_name)
                   end
                 else

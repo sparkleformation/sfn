@@ -1,11 +1,11 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   # Interface for injecting custom functionality
   class Callback
-    autoload :AwsAssumeRole, 'sfn/callback/aws_assume_role'
-    autoload :AwsMfa, 'sfn/callback/aws_mfa'
-    autoload :StackPolicy, 'sfn/callback/stack_policy'
+    autoload :AwsAssumeRole, "sfn/callback/aws_assume_role"
+    autoload :AwsMfa, "sfn/callback/aws_mfa"
+    autoload :StackPolicy, "sfn/callback/stack_policy"
 
     # @return [Bogo::Ui]
     attr_reader :ui
@@ -40,10 +40,10 @@ module Sfn
       ui.info("#{msg}... ", :nonewline)
       begin
         result = yield
-        ui.puts ui.color('complete!', :green, :bold)
+        ui.puts ui.color("complete!", :green, :bold)
         result
       rescue => e
-        ui.puts ui.color('error!', :red, :bold)
+        ui.puts ui.color("error!", :red, :bold)
         ui.error "Reason - #{e}"
         raise
       end
