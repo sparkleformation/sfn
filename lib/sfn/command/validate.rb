@@ -23,7 +23,11 @@ module Sfn
         else
           validate_stack(
             file.respond_to?(:dump) ? file.dump : file,
-            sparkle_collection.get(:template, config[:file])[:name]
+            if config[:processing]
+              sparkle_collection.get(:template, config[:file])[:name]
+            else
+              config[:file]
+            end
           )
         end
       end
