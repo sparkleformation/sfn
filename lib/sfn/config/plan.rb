@@ -15,14 +15,14 @@ module Sfn
 
       attribute(
         :plan_name, String,
-        :description => 'Custom plan name or ID (not applicable to all providers)'
+        :description => 'Custom plan name or ID (not applicable to all providers)',
       )
 
       attribute(
         :list, BOOLEAN,
         :description => 'List all available plans for stack',
         :default => false,
-        :short_flag => 'l'
+        :short_flag => 'l',
       )
     end
   end
