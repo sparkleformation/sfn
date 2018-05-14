@@ -18,7 +18,7 @@ module Sfn
     autoload :Inspect, 'sfn/command/inspect'
     autoload :Lint, 'sfn/command/lint'
     autoload :List, 'sfn/command/list'
-    autoload :Planner, 'sfn/command/planner'
+    autoload :Plan, 'sfn/command/plan'
     autoload :Print, 'sfn/command/print'
     autoload :Promote, 'sfn/command/promote'
     autoload :Update, 'sfn/command/update'
