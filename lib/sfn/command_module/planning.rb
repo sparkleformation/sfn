@@ -5,7 +5,10 @@ module Sfn
   module CommandModule
     # Planning helpers
     module Planning
-
+      # Create a new planner instance
+      #
+      # @param [Miasma::Models::Orchestration::Stack]
+      # @return [Sfn::Planner]
       def build_planner(stack)
         klass_name = stack.api.class.to_s.split('::').last
         if Planner.const_defined?(klass_name)
@@ -16,14 +19,22 @@ module Sfn
         end
       end
 
+      # Display plan result on the UI
+      #
+      # @param result [Miasma::Models::Orchestration::Stack::Plan]
       def display_plan_information(result)
         ui.info ui.color('Pre-update resource planning report:', :bold)
         unless print_plan_result(result)
           ui.info 'No resources life cycle changes detected in this update!'
         end
-        ui.confirm "Apply this stack #{self.class.to_s.split('::').last.downcase}?" unless config[:plan_only]
+        cmd = self.class.to_s.split('::').last.downcase
+        ui.confirm "Apply this stack #{cmd}?" unless config[:plan_only]
       end
 
+      # Print plan information to the UI
+      #
+      # @param info [Miasma::Models::Orchestration::Stack::Plan]
+      # @param names [Array<String>] nested names
       def print_plan_result(info, names = [])
         said_any_things = false
         unless Array(info.stacks).empty?
