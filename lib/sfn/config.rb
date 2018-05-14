@@ -38,7 +38,7 @@ module Sfn
     end
 
     # Only values allowed designating bool type
-    BOOLEAN_VALUES = [TrueClass, FalseClass]
+    BOOLEAN = BOOLEAN_VALUES = [TrueClass, FalseClass]
 
     autoload :Conf, 'sfn/config/conf'
     autoload :Create, 'sfn/config/create'
@@ -54,7 +54,7 @@ module Sfn
     autoload :Inspect, 'sfn/config/inspect'
     autoload :Lint, 'sfn/config/lint'
     autoload :List, 'sfn/config/list'
-    autoload :Planner, 'sfn/config/planner'
+    autoload :Plan, 'sfn/config/plan'
     autoload :Print, 'sfn/config/print'
     autoload :Promote, 'sfn/config/promote'
     autoload :Update, 'sfn/config/update'
@@ -138,8 +138,8 @@ module Sfn
     # @param shorts [Array<String>]
     # @return [Smash]
     def self._options_for(klass, shorts)
-      Smash[
-        ([klass] + klass.ancestors).map do |a|
+      opts = Smash[
+        [klass].map do |a|
           if a.ancestors.include?(Bogo::Config) && !a.attributes.empty?
             a.attributes
           end
@@ -158,6 +158,7 @@ module Sfn
           [name, info]
         end.compact
       ]
+      opts
     end
   end
 end
