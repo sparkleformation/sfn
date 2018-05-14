@@ -21,7 +21,7 @@ module Sfn
         unless print_plan_result(result)
           ui.info 'No resources life cycle changes detected in this update!'
         end
-        ui.confirm 'Apply this stack update?' unless config[:plan_only]
+        ui.confirm "Apply this stack #{self.class.to_s.split('::').last.downcase}?" unless config[:plan_only]
       end
 
       def print_plan_result(info, names = [])
