@@ -18,7 +18,7 @@ module Sfn
         begin
           stack = provider.stacks.get(name)
         rescue Miasma::Error::ApiError::RequestError
-          stack = nil
+          stack = provider.stacks.build(name: name)
         end
 
         return display_plan_lists(stack) if config[:list]
@@ -46,7 +46,7 @@ module Sfn
             end
           end
 
-          if stack
+          if stack && stack.persisted?
             c_setter.call(stack)
           end
 
@@ -59,9 +59,15 @@ module Sfn
 
         unless config[:print_only]
           ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('plan', :green)}"
-          if stack.plan
-            ui.warn "Destroying stale plan..."
-            stack.plan.destroy
+          if stack && stack.plan
+            ui.warn "Found existing plan for this stack"
+            begin
+              ui.confirm "Destroy existing plan?"
+              ui.info "Destroying existing plan to generate new plan"
+              stack.plan.destroy
+            rescue Bogo::Ui::ConfirmationDeclined
+              ui.info "Using existing stack plan"
+            end
           end
         end
 
@@ -112,7 +118,23 @@ module Sfn
         ui.info "  -> Generating plan information..."
 
         plan = stack.plan || stack.plan_generate
-        display_plan_information(plan)
+
+        begin
+          display_plan_information(plan)
+        rescue Bogo::Ui::ConfirmationDeclined
+          stack.reload
+          if (stack.template.nil? || stack.template.empty?) && stack.state == :unknown
+            ui.auto_confirm = false
+            ui.warn "Stack appears to be empty and should be destroyed"
+            ui.confirm "Destroy stack?"
+            stack.destroy
+            poll_stack(stack.name)
+          else
+            ui.confirm "Destroy generated plan?"
+            plan.destroy
+          end
+          raise
+        end
 
         if config[:merge_api_options]
           config.fetch(:options, Smash.new).each_pair do |key, value|
@@ -183,7 +205,7 @@ module Sfn
                 end
               end
             end
-          end
+          end.display
         end
       end
     end
