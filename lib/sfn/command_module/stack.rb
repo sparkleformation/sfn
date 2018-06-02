@@ -1,5 +1,5 @@
-require 'sfn'
-require 'sparkle_formation'
+require "sfn"
+require "sparkle_formation"
 
 module Sfn
   module CommandModule
@@ -10,13 +10,13 @@ module Sfn
         # maximum number of attempts to get valid parameter value
         MAX_PARAMETER_ATTEMPTS = 5
         # Template parameter locations
-        TEMPLATE_PARAMETER_LOCATIONS = ['Parameters', 'parameters']
+        TEMPLATE_PARAMETER_LOCATIONS = ["Parameters", "parameters"]
         # Template parameter default value locations
-        TEMPLATE_PARAMETER_DEFAULTS = ['Default', 'defaultValue', 'default']
+        TEMPLATE_PARAMETER_DEFAULTS = ["Default", "defaultValue", "default"]
         # Template parameter no echo locations
-        TEMPLATE_PARAMETER_NOECHO = ['NoEcho']
+        TEMPLATE_PARAMETER_NOECHO = ["NoEcho"]
         # Template parameter no echo custom
-        TEMPLATE_PARAMETER_SFN_NOECHO = ['Quiet', 'quiet']
+        TEMPLATE_PARAMETER_SFN_NOECHO = ["Quiet", "quiet"]
 
         # Apply any defined remote stacks
         #
@@ -25,7 +25,7 @@ module Sfn
         def apply_stacks!(stack)
           remote_stacks = [config[:apply_stack]].flatten.compact
           remote_stacks.each do |stack_name|
-            stack_info = stack_name.split('__')
+            stack_info = stack_name.split("__")
             stack_info.unshift(nil) if stack_info.size == 1
             stack_location, stack_name = stack_info
             remote_stack = provider_for(stack_location).stack(stack_name)
@@ -66,7 +66,7 @@ module Sfn
           if config[:apply_mapping]
             valid_keys = config[:apply_mapping].keys.find_all do |a_key|
               a_key = a_key.to_s
-              key_parts = a_key.split('__')
+              key_parts = a_key.split("__")
               case key_parts.size
               when 3
                 provider_stack.api.data[:location] == key_parts[0] &&
@@ -85,7 +85,7 @@ module Sfn
             valid_keys -= to_remove
             Hash[
               valid_keys.map do |a_key|
-                cut_key = a_key.split('__').last
+                cut_key = a_key.split("__").last
                 [cut_key, config[:apply_mapping][a_key]]
               end
             ]
@@ -148,16 +148,16 @@ module Sfn
         # @param parameter_name [String] parameter name
         # @return [Array<String>] [expected_template_key, configuration_used_key]
         def locate_config_parameter_key(parameter_prefix, parameter_name, root_name)
-          check_name = parameter_name.downcase.tr('-_', '')
-          check_prefix = parameter_prefix.map { |i| i.downcase.tr('-_', '') }
+          check_name = parameter_name.downcase.tr("-_", "")
+          check_prefix = parameter_prefix.map { |i| i.downcase.tr("-_", "") }
           key_match = config[:parameters].keys.detect do |cp_key|
-            cp_key = cp_key.to_s.downcase.split('__').map { |i| i.tr('-_', '') }.join('__')
-            non_root_matcher = (check_prefix + [check_name]).join('__')
-            root_matcher = ([root_name] + check_prefix + [check_name]).join('__')
+            cp_key = cp_key.to_s.downcase.split("__").map { |i| i.tr("-_", "") }.join("__")
+            non_root_matcher = (check_prefix + [check_name]).join("__")
+            root_matcher = ([root_name] + check_prefix + [check_name]).join("__")
             cp_key == non_root_matcher ||
               cp_key == root_matcher
           end
-          actual_key = (parameter_prefix + [parameter_name]).compact.join('__')
+          actual_key = (parameter_prefix + [parameter_name]).compact.join("__")
           if key_match
             ui.debug "Remapping configuration runtime parameter `#{key_match}` -> `#{actual_key}`"
             config[:parameters][actual_key] = config[:parameters].delete(key_match)
@@ -179,9 +179,9 @@ module Sfn
           attempt = 0
           if !valid && !param_banner
             if sparkle.is_a?(SparkleFormation)
-              ui.info "#{ui.color('Stack runtime parameters:', :bold)} - template: #{ui.color(sparkle.root_path.map(&:name).map(&:to_s).join(' > '), :green, :bold)}"
+              ui.info "#{ui.color("Stack runtime parameters:", :bold)} - template: #{ui.color(sparkle.root_path.map(&:name).map(&:to_s).join(" > "), :green, :bold)}"
             else
-              ui.info ui.color('Stack runtime parameters:', :bold)
+              ui.info ui.color("Stack runtime parameters:", :bold)
             end
             param_banner = true
           end
@@ -194,17 +194,17 @@ module Sfn
             )
             if config[:interactive_parameters]
               no_echo = !!TEMPLATE_PARAMETER_NOECHO.detect { |loc_key|
-                param_value[loc_key].to_s.downcase == 'true'
+                param_value[loc_key].to_s.downcase == "true"
               }
               sfn_no_echo = TEMPLATE_PARAMETER_SFN_NOECHO.map do |loc_key|
                 res = param_value.delete(loc_key).to_s.downcase
-                res if !res.empty? && res != 'false'
+                res if !res.empty? && res != "false"
               end.compact.first
               no_echo = sfn_no_echo if sfn_no_echo
               answer = ui.ask_question(
-                "#{param_name.split(/([A-Z]+[^A-Z]*)/).find_all { |s| !s.empty? }.join(' ')}",
+                "#{param_name.split(/([A-Z]+[^A-Z]*)/).find_all { |s| !s.empty? }.join(" ")}",
                 :default => default,
-                :hide_default => sfn_no_echo == 'all',
+                :hide_default => sfn_no_echo == "all",
                 :no_echo => !!no_echo,
               )
             else
@@ -220,7 +220,7 @@ module Sfn
               end
             end
             if attempt > MAX_PARAMETER_ATTEMPTS
-              ui.fatal 'Failed to receive allowed parameter!'
+              ui.fatal "Failed to receive allowed parameter!"
               exit 1
             end
           end
@@ -279,8 +279,8 @@ module Sfn
           end
           Smash[
             config.fetch(:parameters, {}).map do |k, v|
-              strip_key = parameter_prefix ? k.sub(/#{parameter_prefix.join('__')}_{2}?/, '') : k
-              unless strip_key.include?('__')
+              strip_key = parameter_prefix ? k.sub(/#{parameter_prefix.join("__")}_{2}?/, "") : k
+              unless strip_key.include?("__")
                 [strip_key, v]
               end
             end.compact
@@ -299,7 +299,7 @@ module Sfn
         def config_root_parameters
           Hash[
             config.fetch(:parameters, {}).find_all do |k, v|
-              !k.include?('__')
+              !k.include?("__")
             end
           ]
         end
@@ -318,13 +318,13 @@ module Sfn
         def validate_stack_parameter(c_stack, p_key, p_ns_key, c_value)
           stack_value = c_stack.parameters[p_key]
           p_stack = c_stack.data[:parent_stack]
-          unless config[:parameter_validation] == 'none'
+          unless config[:parameter_validation] == "none"
             if c_value.is_a?(Hash)
               case c_value.keys.first
-              when 'Ref'
+              when "Ref"
                 current_value = p_stack.parameters[c_value.values.first]
-              when 'Fn::Att'
-                resource_name, output_name = c_value.values.first.split('.', 2)
+              when "Fn::Att"
+                resource_name, output_name = c_value.values.first.split(".", 2)
                 ref_stack = p_stack.nested_stacks.detect { |i| i.data[:logical_id] == resource_name }
                 if ref_stack
                   output = ref_stack.outputs.detect do |o|
@@ -339,14 +339,14 @@ module Sfn
               current_value = c_value
             end
             if current_value && current_value.to_s != stack_value.to_s
-              if config[:parameter_validation] == 'default'
-                ui.warn 'Nested stack has been altered directly! This update may cause unexpected modifications!'
+              if config[:parameter_validation] == "default"
+                ui.warn "Nested stack has been altered directly! This update may cause unexpected modifications!"
                 ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. Current value: #{stack_value}. Expected value: #{current_value} (via: #{c_value.inspect})"
-                answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ['current', 'expected'])
+                answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ["current", "expected"])
               else
                 answer = config[:parameter_validation]
               end
-              answer == 'expected'
+              answer == "expected"
             else
               true
             end

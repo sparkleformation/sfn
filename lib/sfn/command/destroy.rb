@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -9,7 +9,7 @@ module Sfn
       def execute!
         name_required!
         stacks = name_args.sort
-        plural = 's' if stacks.size > 1
+        plural = "s" if stacks.size > 1
         globs = stacks.find_all do |s|
           s !~ /^[a-zA-Z0-9-]+$/
         end
@@ -23,7 +23,7 @@ module Sfn
           stacks -= globs
           stacks.sort!
         end
-        ui.warn "Destroying Stack#{plural}: #{ui.color(stacks.join(', '), :bold)}"
+        ui.warn "Destroying Stack#{plural}: #{ui.color(stacks.join(", "), :bold)}"
         ui.confirm "Destroy listed stack#{plural}?"
         stacks.each do |stack_name|
           stack = provider.connection.stacks.get(stack_name)
@@ -56,7 +56,7 @@ module Sfn
             ui.error "Stack polling is not available when multiple stack deletion is requested!"
           end
         end
-        ui.info "  -> Destroyed SparkleFormation#{plural}: #{ui.color(stacks.join(', '), :bold, :red)}"
+        ui.info "  -> Destroyed SparkleFormation#{plural}: #{ui.color(stacks.join(", "), :bold, :red)}"
       end
 
       # Cleanup persisted templates if nested stack resources are included
@@ -64,12 +64,12 @@ module Sfn
         stack.nested_stacks.each do |n_stack|
           nested_stack_cleanup!(n_stack)
         end
-        nest_stacks = stack.template.fetch('Resources', {}).values.find_all do |resource|
-          provider.connection.data[:stack_types].include?(resource['Type'])
+        nest_stacks = stack.template.fetch("Resources", {}).values.find_all do |resource|
+          provider.connection.data[:stack_types].include?(resource["Type"])
         end.each do |resource|
-          url = resource['Properties']['TemplateURL']
+          url = resource["Properties"]["TemplateURL"]
           if url && url.is_a?(String)
-            _, bucket_name, path = URI.parse(url).path.split('/', 3)
+            _, bucket_name, path = URI.parse(url).path.split("/", 3)
             bucket = provider.connection.api_for(:storage).buckets.get(bucket_name)
             if bucket
               file = bucket.files.get(path)

@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module MonkeyPatch
@@ -50,7 +50,7 @@ module Sfn
             my_template = my_template.get(:resources, name, :properties, :stack)
           end
           n_stacks = my_template[:resources].map do |s_name, content|
-            if content[:type] == 'sparkleformation.stack'
+            if content[:type] == "sparkleformation.stack"
               n_stack = self.class.new(api)
               n_stack.extend PretendStack
               n_layout = custom.fetch(:layout, {}).fetch(:resources, []).detect { |r| r[:name] == name }
@@ -59,7 +59,7 @@ module Sfn
                 :name => s_name,
                 :id => s_name,
                 :template => content.get(:properties, :stack),
-                :outputs => n_layout.fetch('outputs', []).map { |o_val| Smash.new(:key => o_val[:name], :value => o_val['finalValue']) },
+                :outputs => n_layout.fetch("outputs", []).map { |o_val| Smash.new(:key => o_val[:name], :value => o_val["finalValue"]) },
                 :custom => {
                   :resources => resources.all.map(&:attributes),
                   :layout => n_layout,
@@ -84,7 +84,7 @@ module Sfn
             result = template.to_smash
             (result.delete(:resources) || []).each do |t_resource|
               t_name = t_resource.delete(:name)
-              if t_resource[:type].to_s.end_with?('.jinja')
+              if t_resource[:type].to_s.end_with?(".jinja")
                 schema = copy_template.fetch(:config, :content, :imports, []).delete("#{t_resource[:type]}.schema")
                 schema_content = copy_template.fetch(:imports, []).detect do |s_item|
                   s_item[:name] == schema
@@ -96,7 +96,7 @@ module Sfn
                   s_item[:name] == t_resource[:type]
                 end
                 if n_template
-                  t_resource[:type] = 'sparkleformation.stack'
+                  t_resource[:type] = "sparkleformation.stack"
                   current_properties = t_resource.delete(:properties)
                   t_resource.set(:properties, :parameters, current_properties) if current_properties
                   t_resource.set(:properties, :stack, deref.call(n_template[:content]))

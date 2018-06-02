@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -22,7 +22,7 @@ module Sfn
           end.compact
         end
         if outputs.empty?
-          ui.info '  Stack dump:'
+          ui.info "  Stack dump:"
           ui.puts MultiJson.dump(
             MultiJson.load(
               stack.reload.to_json
@@ -34,25 +34,25 @@ module Sfn
 
       def display_instance_failure(stack)
         instances = stack.resources.all.find_all do |resource|
-          resource.state.to_s.end_with?('failed')
+          resource.state.to_s.end_with?("failed")
         end.map do |resource|
           # If compute instance, simply expand
           if resource.within?(:compute, :servers)
             resource.instance
             # If a waitcondition, check for instance ID
-          elsif resource.type.to_s.downcase.end_with?('waitcondition')
-            if resource.status_reason.to_s.include?('uniqueId')
-              srv_id = resource.status_reason.split(' ').last.strip
+          elsif resource.type.to_s.downcase.end_with?("waitcondition")
+            if resource.status_reason.to_s.include?("uniqueId")
+              srv_id = resource.status_reason.split(" ").last.strip
               provider.connection.api_for(:compute).servers.get(srv_id)
             end
           end
         end.compact
         if instances.empty?
-          ui.error 'Failed to locate any failed instances'
+          ui.error "Failed to locate any failed instances"
         else
           log_path = config[:failure_log_path]
           if log_path.to_s.empty?
-            log_path = '/var/log/chef/client.log'
+            log_path = "/var/log/chef/client.log"
           end
           opts = ssh_key ? {:keys => [ssh_key]} : {}
           instances.each do |instance|
@@ -84,7 +84,7 @@ module Sfn
       #
       # @return [Array<String>] usernames for ssh connect attempt
       def ssh_attempt_users
-        [config[:ssh_user], config[:ssh_attempt_users], ENV['USER']].flatten.compact.uniq
+        [config[:ssh_user], config[:ssh_attempt_users], ENV["USER"]].flatten.compact.uniq
       end
 
       def ssh_key
@@ -93,14 +93,14 @@ module Sfn
 
       def display_attribute(stack)
         [config[:attribute]].flatten.compact.each do |stack_attribute|
-          attr = stack_attribute.split('.').inject(stack) do |memo, key|
+          attr = stack_attribute.split(".").inject(stack) do |memo, key|
             args = key.scan(/\(([^\)]*)\)/).flatten.first.to_s
             if args
-              args = args.split(',').map { |a| a.to_i.to_s == a ? a.to_i : a }
-              key = key.split('(').first
+              args = args.split(",").map { |a| a.to_i.to_s == a ? a.to_i : a }
+              key = key.split("(").first
             end
             if memo.public_methods.include?(key.to_sym)
-              if args.size == 1 && args.first.to_s.start_with?('&')
+              if args.size == 1 && args.first.to_s.start_with?("&")
                 memo.send(key, &args.first.slice(2, args.first.size).to_sym)
               else
                 memo.send(*[key, args].flatten.compact)
@@ -152,11 +152,11 @@ module Sfn
           end.compact
         ]
         unless asg_nodes.empty?
-          ui.info '  AutoScale Group Instances:'
+          ui.info "  AutoScale Group Instances:"
           ui.puts MultiJson.dump(asg_nodes, :pretty => true)
         end
         unless compute_nodes.empty?
-          ui.info '  Compute Instances:'
+          ui.info "  Compute Instances:"
           ui.puts MultiJson.dump(compute_nodes, :pretty => true)
         end
       end
@@ -179,7 +179,7 @@ module Sfn
           end
         ]
         unless load_balancers.empty?
-          ui.info '  Load Balancer Instances:'
+          ui.info "  Load Balancer Instances:"
           ui.puts MultiJson.dump(load_balancers, :pretty => true)
         end
       end

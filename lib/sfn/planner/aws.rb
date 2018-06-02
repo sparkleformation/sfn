@@ -1,6 +1,6 @@
-require 'sfn'
-require 'sparkle_formation/aws'
-require 'hashdiff'
+require "sfn"
+require "sparkle_formation/aws"
+require "hashdiff"
 
 module Sfn
   class Planner
@@ -13,7 +13,7 @@ module Sfn
         REF_MAPPING = {}
         FN_MAPPING = {}
 
-        UNKNOWN_RUNTIME_RESULT = '__UNKNOWN_RUNTIME_RESULT__'
+        UNKNOWN_RUNTIME_RESULT = "__UNKNOWN_RUNTIME_RESULT__"
 
         # @return [Array<String>] flagged items for value replacement
         attr_reader :flagged
@@ -26,7 +26,7 @@ module Sfn
 
         # @return [Hash] defined conditions
         def conditions
-          @original.fetch('Conditions', {})
+          @original.fetch("Conditions", {})
         end
 
         # Flag a reference as modified
@@ -56,19 +56,19 @@ module Sfn
         def apply_function(hash, funcs = [])
           if hash.is_a?(Hash)
             k, v = hash.first
-            if hash.size == 1 && (k.start_with?('Fn') || k == 'Ref') && (funcs.include?(:all) || funcs.empty? || funcs.include?(k) || funcs == ['DEREF'])
-              method_name = Bogo::Utility.snake(k.gsub('::', ''))
+            if hash.size == 1 && (k.start_with?("Fn") || k == "Ref") && (funcs.include?(:all) || funcs.empty? || funcs.include?(k) || funcs == ["DEREF"])
+              method_name = Bogo::Utility.snake(k.gsub("::", ""))
               if (funcs.include?(k) || funcs.include?(:all)) && respond_to?(method_name)
                 apply_function(send(method_name, v), funcs)
               else
                 case k
-                when 'Fn::GetAtt'
-                  funcs.include?('DEREF') ? dereference(hash) : hash
-                when 'Ref'
-                  if funcs.include?('DEREF')
+                when "Fn::GetAtt"
+                  funcs.include?("DEREF") ? dereference(hash) : hash
+                when "Ref"
+                  if funcs.include?("DEREF")
                     dereference(hash)
                   else
-                    {'Ref' => self.class.const_get(:REF_MAPPING).fetch(v, v)}
+                    {"Ref" => self.class.const_get(:REF_MAPPING).fetch(v, v)}
                   end
                 else
                   hash
@@ -89,7 +89,7 @@ module Sfn
         def apply_condition(name)
           condition = conditions[name]
           if condition
-            apply_function(condition, [:all, 'DEREF'])
+            apply_function(condition, [:all, "DEREF"])
           else
             raise "Failed to locate condition with name `#{name}`!"
           end
@@ -169,7 +169,7 @@ module Sfn
         # @return [String]
         def fn_join(value)
           unless value.last.is_a?(Array)
-            val = value.last.to_s.split(',')
+            val = value.last.to_s.split(",")
           else
             val = value.last
           end
@@ -202,11 +202,11 @@ module Sfn
         def dereference(hash)
           result = nil
           if hash.is_a?(Hash)
-            if hash.keys.first == 'Ref' && flagged?(hash.values.first)
+            if hash.keys.first == "Ref" && flagged?(hash.values.first)
               result = RUNTIME_MODIFIED
-            elsif hash.keys.first == 'Fn::GetAtt'
-              if hash.values.last.last.start_with?('Outputs.')
-                if flagged?(hash.values.join('_'))
+            elsif hash.keys.first == "Fn::GetAtt"
+              if hash.values.last.last.start_with?("Outputs.")
+                if flagged?(hash.values.join("_"))
                   result = RUNTIME_MODIFIED
                 end
               elsif flagged?(hash.values.first)
@@ -224,8 +224,8 @@ module Sfn
 
       # Resources that will be replaced on metadata init updates
       REPLACE_ON_CFN_INIT_UPDATE = [
-        'AWS::AutoScaling::LaunchConfiguration',
-        'AWS::EC2::Instance',
+        "AWS::AutoScaling::LaunchConfiguration",
+        "AWS::EC2::Instance",
       ]
 
       # @return [Smash] initialized translators
@@ -272,10 +272,10 @@ module Sfn
       # @param template [Hash]
       # @return [TrueClass]
       def scrub_stack_properties(template)
-        if template['Resources']
-          template['Resources'].each do |name, info|
-            if is_stack?(info['Type']) && info['Properties'].is_a?(Hash)
-              info['Properties'].delete('Stack')
+        if template["Resources"]
+          template["Resources"].each do |name, info|
+            if is_stack?(info["Type"]) && info["Properties"].is_a?(Hash)
+              info["Properties"].delete("Stack")
             end
           end
         end
@@ -289,11 +289,11 @@ module Sfn
       # @return [Hash]
       def get_global_parameters(stack)
         Smash.new(
-          'AWS::Region' => stack.api.aws_region,
-          'AWS::AccountId' => stack.id.split(':')[4],
-          'AWS::NotificationARNs' => stack.notification_topics,
-          'AWS::StackId' => stack.id,
-          'AWS::StackName' => stack.name,
+          "AWS::Region" => stack.api.aws_region,
+          "AWS::AccountId" => stack.id.split(":")[4],
+          "AWS::NotificationARNs" => stack.notification_topics,
+          "AWS::StackId" => stack.id,
+          "AWS::StackName" => stack.name,
         ).merge(config.fetch(:planner, :global_parameters, {}))
       end
 
@@ -345,7 +345,7 @@ module Sfn
       # @param type [String]
       # @return [TrueClass, FalseClass]
       def is_stack?(type)
-        origin_stack.api.data.fetch(:stack_types, ['AWS::CloudFormation::Stack']).include?(type)
+        origin_stack.api.data.fetch(:stack_types, ["AWS::CloudFormation::Stack"]).include?(type)
       end
 
       # Scrub the plan results to only provide highest precedence diff
@@ -420,21 +420,21 @@ module Sfn
       # @param plan_results [Smash]
       # @return [NilClass]
       def plan_nested_stacks(stack, translator, origin_template, new_template_hash, plan_results)
-        origin_stacks = origin_template.fetch('Resources', {}).find_all do |s_name, s_val|
-          is_stack?(s_val['Type'])
+        origin_stacks = origin_template.fetch("Resources", {}).find_all do |s_name, s_val|
+          is_stack?(s_val["Type"])
         end.map(&:first)
-        new_stacks = (new_template_hash['Resources'] || {}).find_all do |s_name, s_val|
-          is_stack?(s_val['Type'])
+        new_stacks = (new_template_hash["Resources"] || {}).find_all do |s_name, s_val|
+          is_stack?(s_val["Type"])
         end.map(&:first)
         [origin_stacks + new_stacks].flatten.compact.uniq.each do |stack_name|
           original_stack = stack.nested_stacks(false).detect do |stk|
             stk.data[:logical_id] == stack_name
           end
-          new_stack_exists = is_stack?(new_template_hash.get('Resources', stack_name, 'Type'))
-          new_stack_template = new_template_hash.fetch('Resources', stack_name, 'Properties', 'Stack', Smash.new)
-          new_stack_parameters = new_template_hash.fetch('Resources', stack_name, 'Properties', 'Parameters', Smash.new)
-          new_stack_type = new_template_hash.fetch('Resources', stack_name, 'Type',
-                                                   origin_template.get('Resources', stack_name, 'Type'))
+          new_stack_exists = is_stack?(new_template_hash.get("Resources", stack_name, "Type"))
+          new_stack_template = new_template_hash.fetch("Resources", stack_name, "Properties", "Stack", Smash.new)
+          new_stack_parameters = new_template_hash.fetch("Resources", stack_name, "Properties", "Parameters", Smash.new)
+          new_stack_type = new_template_hash.fetch("Resources", stack_name, "Type",
+                                                   origin_template.get("Resources", stack_name, "Type"))
           resource = Smash.new(
             :name => stack_name,
             :type => new_stack_type,
@@ -468,15 +468,15 @@ module Sfn
       def diff_init(diff, path)
         Smash.new.tap do |di|
           if diff.size > 1
-            updated = diff.detect { |x| x.first == '+' }
-            original = diff.detect { |x| x.first == '-' }
+            updated = diff.detect { |x| x.first == "+" }
+            original = diff.detect { |x| x.first == "-" }
             di[:original] = original.last.to_s
             di[:updated] = updated.last.to_s
           else
             diff_data = diff.first
             di[:path] = path
             if diff_data.size == 3
-              di[diff_data.first == '+' ? :updated : :original] = diff_data.last
+              di[diff_data.first == "+" ? :updated : :original] = diff_data.last
             else
               di[:original] = diff_data[diff_data.size - 2].to_s
               di[:updated] = diff_data.last.to_s
@@ -495,12 +495,12 @@ module Sfn
       # @option :templates [Smash] :update
       def register_diff(results, path, diff, translator, templates)
         diff_info = diff_init(diff, path)
-        if path.start_with?('Resources')
-          p_path = path.split('.')
+        if path.start_with?("Resources")
+          p_path = path.split(".")
           if p_path.size == 2
             diff = diff.first
-            key = diff.first == '+' ? :added : :removed
-            type = (key == :added ? templates[:update] : templates[:origin]).get('Resources', p_path.last, 'Type')
+            key = diff.first == "+" ? :added : :removed
+            type = (key == :added ? templates[:update] : templates[:origin]).get("Resources", p_path.last, "Type")
             results[key][p_path.last] = Smash.new(
               :name => p_path.last,
               :type => type,
@@ -510,14 +510,14 @@ module Sfn
               ],
             )
           else
-            if p_path.include?('Properties')
+            if p_path.include?("Properties")
               resource_name = p_path[1]
-              if p_path.size < 4 && p_path.last == 'Properties'
+              if p_path.size < 4 && p_path.last == "Properties"
                 property_name = diff.flatten.compact.last.keys.first
               else
-                property_name = p_path[3].to_s.sub(/\[\d+\]$/, '')
+                property_name = p_path[3].to_s.sub(/\[\d+\]$/, "")
               end
-              type = templates.get(:origin, 'Resources', resource_name, 'Type')
+              type = templates.get(:origin, "Resources", resource_name, "Type")
               resource = Smash.new(
                 :name => resource_name,
                 :type => type,
@@ -527,18 +527,18 @@ module Sfn
                 ],
               )
               begin
-                if templates.get(:update, 'Resources', resource_name, 'Properties', property_name) == Translator::UNKNOWN_RUNTIME_RESULT
+                if templates.get(:update, "Resources", resource_name, "Properties", property_name) == Translator::UNKNOWN_RUNTIME_RESULT
                   effect = :unknown
                 else
                   r_info = SparkleFormation::Resources::Aws.resource_lookup(type)
                   r_property = r_info.property(property_name)
                   if r_property
                     effect = r_property.update_causes(
-                      templates.get(:update, 'Resources', resource_name),
-                      templates.get(:origin, 'Resources', resource_name)
+                      templates.get(:update, "Resources", resource_name),
+                      templates.get(:origin, "Resources", resource_name)
                     )
                   else
-                    raise KeyError.new 'Unknown property'
+                    raise KeyError.new "Unknown property"
                   end
                 end
                 case effect.to_sym
@@ -556,15 +556,15 @@ module Sfn
               rescue KeyError
                 set_resource(:unknown, results, resource_name, resource)
               end
-            elsif p_path.include?('AWS::CloudFormation::Init')
+            elsif p_path.include?("AWS::CloudFormation::Init")
               resource_name = p_path[1]
-              type = templates[:origin]['Resources'][resource_name]['Type']
+              type = templates[:origin]["Resources"][resource_name]["Type"]
               if REPLACE_ON_CFN_INIT_UPDATE.include?(type)
                 set_resource(:replace, results, resource_name,
                              Smash.new(
                   :name => resource_name,
                   :type => type,
-                  :properties => ['AWS::CloudFormation::Init'],
+                  :properties => ["AWS::CloudFormation::Init"],
                   :diffs => [
                     diff_info,
                   ],
@@ -572,8 +572,8 @@ module Sfn
               end
             end
           end
-        elsif path.start_with?('Outputs')
-          o_resource_name = path.split('.')[1]
+        elsif path.start_with?("Outputs")
+          o_resource_name = path.split(".")[1]
           if o_resource_name
             set_resource(
               :outputs, results, o_resource_name,
@@ -619,31 +619,31 @@ module Sfn
           translator.flag_ref(item)
         end
         template.keys.each do |t_key|
-          next if ['Outputs', 'Resources'].include?(t_key)
+          next if ["Outputs", "Resources"].include?(t_key)
           template[t_key] = translator.dereference_processor(
-            template[t_key], ['DEREF']
+            template[t_key], ["DEREF"]
           )
         end
         translator.original.replace(template)
-        ['Outputs', 'Resources'].each do |t_key|
+        ["Outputs", "Resources"].each do |t_key|
           if template[t_key]
             template[t_key] = translator.dereference_processor(
-              template[t_key], ['DEREF', :all]
+              template[t_key], ["DEREF", :all]
             )
           end
         end
-        if template['Resources']
-          valid_resources = template['Resources'].map do |resource_name, resource_value|
-            if resource_value['OnCondition']
-              if translator.apply_condition(resource_value['OnCondition'])
+        if template["Resources"]
+          valid_resources = template["Resources"].map do |resource_name, resource_value|
+            if resource_value["OnCondition"]
+              if translator.apply_condition(resource_value["OnCondition"])
                 resource_name
               end
             else
               resource_name
             end
           end.compact
-          (template['Resources'].keys - valid_resources).each do |resource_to_remove|
-            template['Resources'].delete(resource_to_remove)
+          (template["Resources"].keys - valid_resources).each do |resource_to_remove|
+            template["Resources"].delete(resource_to_remove)
           end
         end
         translator.original.replace({})

@@ -1,4 +1,4 @@
-require_relative '../../../rspecs'
+require_relative "../../../rspecs"
 
 RSpec.describe Sfn::CommandModule::Callbacks do
   let(:ui) { double(:ui) }
@@ -20,7 +20,7 @@ RSpec.describe Sfn::CommandModule::Callbacks do
       end
 
       def self.name
-        'Sfn::Callback::Status'
+        "Sfn::Callback::Status"
       end
     }
   }
@@ -34,52 +34,52 @@ RSpec.describe Sfn::CommandModule::Callbacks do
     allow(ui).to receive(:color)
   end
 
-  describe '#api_action!' do
+  describe "#api_action!" do
     before { allow(instance).to receive(:run_callbacks_for) }
 
-    it 'should run specific and general before and after callbacks' do
+    it "should run specific and general before and after callbacks" do
       expect(instance).to receive(:run_callbacks_for).with(["before_status", :before], any_args)
       expect(instance).to receive(:run_callbacks_for).with(["after_status", :after], any_args)
       instance.api_action!
     end
 
-    it 'should run failed callbacks on error' do
+    it "should run failed callbacks on error" do
       expect(instance).to receive(:run_callbacks_for).with(["before_status", :before], any_args)
       expect(instance).to receive(:run_callbacks_for).with(["failed_status", :failed], any_args)
-      expect { instance.api_action! { raise 'error' } }.to raise_error(RuntimeError)
+      expect { instance.api_action! { raise "error" } }.to raise_error(RuntimeError)
     end
 
-    it 'should provide exception to callbacks on error' do
+    it "should provide exception to callbacks on error" do
       expect(instance).to receive(:run_callbacks_for).with(["failed_status", :failed], instance_of(RuntimeError))
-      expect { instance.api_action! { raise 'error' } }.to raise_error(RuntimeError)
+      expect { instance.api_action! { raise "error" } }.to raise_error(RuntimeError)
     end
   end
 
-  describe '#run_callbacks_for' do
-    let(:callbacks) { ['status'] }
+  describe "#run_callbacks_for" do
+    let(:callbacks) { ["status"] }
 
-    it 'should run the callback' do
+    it "should run the callback" do
       expect_any_instance_of(klass).to receive(:before)
       instance.run_callbacks_for(:before)
     end
   end
 
-  describe '#callbacks_for' do
-    it 'should load callbacks defined within configuration' do
+  describe "#callbacks_for" do
+    it "should load callbacks defined within configuration" do
       expect(config).to receive(:fetch).with(:callbacks, :before, []).and_return([])
       expect(config).to receive(:fetch).with(:callbacks, :default, []).and_return([])
       expect(instance.callbacks_for(:before)).to eq([])
     end
 
-    context 'callback name configured' do
-      let(:callbacks) { ['status'] }
+    context "callback name configured" do
+      let(:callbacks) { ["status"] }
 
-      it 'should lookup callbacks within namespace' do
-        expect(Sfn::Callback).to receive(:const_get).with('Status').and_return(klass)
+      it "should lookup callbacks within namespace" do
+        expect(Sfn::Callback).to receive(:const_get).with("Status").and_return(klass)
         expect(instance.callbacks_for(:before)).to be_a(Array)
       end
 
-      it 'should raise error when class not found' do
+      it "should raise error when class not found" do
         expect(Sfn::Callback).to receive(:const_get).and_call_original
         expect { instance.callbacks_for(:before) }.to raise_error(NameError)
       end

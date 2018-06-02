@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -25,7 +25,7 @@ module Sfn
                   allowed_attributes.each do |attr|
                     width_val = events.map { |e| e[attr].to_s.length }.push(attr.length).max + 2
                     width_val = width_val > 70 ? 70 : width_val < 20 ? 20 : width_val
-                    column attr.split('_').map(&:capitalize).join(' '), :width => width_val
+                    column attr.split("_").map(&:capitalize).join(" "), :width => width_val
                   end
                 end
                 events.each do |event|
@@ -70,7 +70,7 @@ module Sfn
               i_events = i_stack.events.all
             end
           rescue => e
-            if e.class.to_s.start_with?('Errno')
+            if e.class.to_s.start_with?("Errno")
               ui.warn "Connection error encountered: #{e.message} (retrying)"
               ui.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
             else
@@ -93,8 +93,8 @@ module Sfn
           unless config[:all_events]
             start_index = stack_events.rindex do |item|
               item[:stack_name] == stack.name &&
-                item[:resource_state].to_s.end_with?('in_progress') &&
-                item[:resource_status_reason].to_s.downcase.include?('user init')
+                item[:resource_state].to_s.end_with?("in_progress") &&
+                item[:resource_status_reason].to_s.downcase.include?("user init")
             end
             if start_index
               stack_events.slice!(0, start_index)
@@ -121,7 +121,7 @@ module Sfn
       def allowed_attributes
         result = super
         unless @stacks.size > 1
-          result.delete('stack_name')
+          result.delete("stack_name")
         end
         result
       end

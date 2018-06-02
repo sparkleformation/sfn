@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Config
@@ -7,8 +7,8 @@ module Sfn
       attribute(
         :raw_diff, [TrueClass, FalseClass],
         :default => false,
-        :description => 'Display raw diff information',
-        :short_flag => 'w',
+        :description => "Display raw diff information",
+        :short_flag => "w",
       )
     end
   end

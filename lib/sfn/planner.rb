@@ -1,12 +1,12 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   # Interface for generating plan report
   class Planner
-    autoload :Aws, 'sfn/planner/aws'
+    autoload :Aws, "sfn/planner/aws"
 
     # Value to flag runtime modification
-    RUNTIME_MODIFIED = '__MODIFIED_REFERENCE_VALUE__'
+    RUNTIME_MODIFIED = "__MODIFIED_REFERENCE_VALUE__"
 
     # @return [Bogo::Ui]
     attr_reader :ui

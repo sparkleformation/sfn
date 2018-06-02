@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -9,10 +9,10 @@ module Sfn
 
       # Run export action
       def execute!
-        raise NotImplementedError.new 'Implementation updates required'
+        raise NotImplementedError.new "Implementation updates required"
         stack_name = name_args.first
-        ui.info "#{ui.color('Stack Export:', :bold)} #{stack_name}"
-        ui.confirm 'Perform export'
+        ui.info "#{ui.color("Stack Export:", :bold)} #{stack_name}"
+        ui.confirm "Perform export"
         stack = provider.stacks.get(stack_name)
         if stack
           export_options = Smash.new.tap do |opts|
@@ -27,10 +27,10 @@ module Sfn
             write_to_bucket(result, stack),
           ].compact
           if outputs.empty?
-            ui.warn 'No persistent output location defined. Printing export:'
+            ui.warn "No persistent output location defined. Printing export:"
             ui.info _format_json(result)
           end
-          ui.info "#{ui.color('Stack export', :bold)} (#{name_args.first}): #{ui.color('complete', :green)}"
+          ui.info "#{ui.color("Stack export", :bold)} (#{name_args.first}): #{ui.color("complete", :green)}"
           unless outputs.empty?
             outputs.each do |output|
               ui.info ui.color("  -> #{output}", :blue)
@@ -71,10 +71,10 @@ module Sfn
             config[:path],
             export_file_name(stack)
           )
-          _, bucket, path = full_path.split('/', 3)
+          _, bucket, path = full_path.split("/", 3)
           directory = provider.service_for(:storage,
                                            :provider => :local,
-                                           :local_root => '/').directories.get(bucket)
+                                           :local_root => "/").directories.get(bucket)
           file_store(payload, path, directory)
         end
       end

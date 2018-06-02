@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -12,42 +12,42 @@ module Sfn
         Config::Conf.attributes.sort_by(&:first).each do |k, val|
           if config.has_key?(k)
             ui.print "  #{ui.color(k, :bold, :green)}: "
-            format_value(config[k], '  ')
+            format_value(config[k], "  ")
           end
         end
         if config[:generate]
           ui.puts
-          ui.info 'Generating .sfn configuration file..'
+          ui.info "Generating .sfn configuration file.."
           generate_config!
-          ui.info "Generation of .sfn configuration file #{ui.color('complete!', :green, :bold)}"
+          ui.info "Generation of .sfn configuration file #{ui.color("complete!", :green, :bold)}"
         end
       end
 
       def generate_config!
-        if File.exists?('.sfn')
-          ui.warn 'Existing .sfn configuration file detected!'
-          ui.confirm 'Overwrite current .sfn configuration file?'
+        if File.exists?(".sfn")
+          ui.warn "Existing .sfn configuration file detected!"
+          ui.confirm "Overwrite current .sfn configuration file?"
         end
-        run_action 'Writing .sfn file' do
-          File.open('.sfn', 'w') do |file|
+        run_action "Writing .sfn file" do
+          File.open(".sfn", "w") do |file|
             file.write SFN_CONFIG_CONTENTS
           end
           nil
         end
       end
 
-      def format_value(value, indent = '')
+      def format_value(value, indent = "")
         if value.is_a?(Hash)
           ui.puts
           value.sort_by(&:first).each do |k, v|
             ui.print "#{indent}  #{ui.color(k, :bold)}: "
-            format_value(v, indent + '  ')
+            format_value(v, indent + "  ")
           end
         elsif value.is_a?(Array)
           ui.puts
           value.map(&:to_s).sort.each do |v|
             ui.print "#{indent}  "
-            format_value(v, indent + '  ')
+            format_value(v, indent + "  ")
           end
         else
           ui.puts value.to_s

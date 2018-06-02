@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Callback
@@ -6,11 +6,11 @@ module Sfn
 
       # Policy to apply prior to stack deletion
       DEFENSELESS_POLICY = {
-        'Statement' => [{
-          'Effect' => 'Allow',
-          'Action' => 'Update:*',
-          'Resource' => '*',
-          'Principal' => '*',
+        "Statement" => [{
+          "Effect" => "Allow",
+          "Action" => "Update:*",
+          "Resource" => "*",
+          "Principal" => "*",
         }],
       }
 
@@ -29,14 +29,14 @@ module Sfn
       #
       # @param args [Hash]
       def submit_policy(args)
-        ui.info 'Submitting stack policy documents'
+        ui.info "Submitting stack policy documents"
         stack = args[:api_stack]
         ([stack] + stack.nested_stacks).compact.each do |p_stack|
           run_action "Applying stack policy to #{ui.color(p_stack.name, :yellow)}" do
             save_stack_policy(p_stack)
           end
         end
-        ui.info 'Stack policy documents successfully submitted!'
+        ui.info "Stack policy documents successfully submitted!"
       end
 
       alias_method :after_create, :submit_policy
@@ -46,8 +46,8 @@ module Sfn
       #
       # @param args [Hash]
       def before_update(args)
-        if config.get(:stack_policy, :update).to_s == 'defenseless'
-          ui.warn 'Disabling all stack policies for update.'
+        if config.get(:stack_policy, :update).to_s == "defenseless"
+          ui.warn "Disabling all stack policies for update."
           stack = args[:api_stack]
           ([stack] + stack.nested_stacks).compact.each do |p_stack|
             @policies[p_stack.name] = DEFENSELESS_POLICY
@@ -64,7 +64,7 @@ module Sfn
       # @param info [Hash]
       def template(info)
         if info[:sparkle_stack]
-          @policies.set(info.fetch(:stack_name, 'unknown'),
+          @policies.set(info.fetch(:stack_name, "unknown"),
                         info[:sparkle_stack].generate_policy)
         end
       end
@@ -89,12 +89,12 @@ module Sfn
           end
         end
         result = p_stack.api.request(
-          :path => '/',
+          :path => "/",
           :method => :post,
           :form => Smash.new(
-            'Action' => 'SetStackPolicy',
-            'StackName' => p_stack.id,
-            'StackPolicyBody' => MultiJson.dump(stack_policy),
+            "Action" => "SetStackPolicy",
+            "StackName" => p_stack.id,
+            "StackPolicyBody" => MultiJson.dump(stack_policy),
           ),
         )
       end

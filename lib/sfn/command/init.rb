@@ -1,5 +1,5 @@
-require 'sfn'
-require 'fileutils'
+require "sfn"
+require "fileutils"
 
 module Sfn
   class Command
@@ -8,15 +8,15 @@ module Sfn
       include Sfn::CommandModule::Base
 
       INIT_DIRECTORIES = [
-        'sparkleformation/dynamics',
-        'sparkleformation/components',
-        'sparkleformation/registry',
+        "sparkleformation/dynamics",
+        "sparkleformation/components",
+        "sparkleformation/registry",
       ]
 
       # Run the init command to initialize new project
       def execute!
         unless name_args.size == 1
-          raise ArgumentError.new 'Please provide path argument only for project initialization'
+          raise ArgumentError.new "Please provide path argument only for project initialization"
         else
           path = name_args.first
         end
@@ -25,33 +25,33 @@ module Sfn
         end
         if File.directory?(path)
           ui.warn "Project directory already exists at given path. (`#{path}`)"
-          ui.confirm 'Overwrite existing files?'
+          ui.confirm "Overwrite existing files?"
         end
-        run_action 'Creating base project directories' do
+        run_action "Creating base project directories" do
           INIT_DIRECTORIES.each do |new_dir|
             FileUtils.mkdir_p(File.join(path, new_dir))
           end
           nil
         end
-        run_action 'Creating project bundle' do
-          File.open(File.join(path, 'Gemfile'), 'w') do |file|
+        run_action "Creating project bundle" do
+          File.open(File.join(path, "Gemfile"), "w") do |file|
             file.puts "source 'https://rubygems.org'\n\ngem 'sfn'"
           end
           nil
         end
-        ui.info 'Generating .sfn configuration file'
+        ui.info "Generating .sfn configuration file"
         Dir.chdir(path) do
           Conf.new({:generate => true}, []).execute!
         end
-        ui.info 'Installing project bundle'
+        ui.info "Installing project bundle"
         Dir.chdir(path) do
           if defined?(Bundler)
-            Bundler.clean_system('bundle install')
+            Bundler.clean_system("bundle install")
           else
-            system('bundle install')
+            system("bundle install")
           end
         end
-        ui.info 'Project initialization complete!'
+        ui.info "Project initialization complete!"
         ui.puts "  Project path -> #{File.expand_path(path)}"
       end
     end

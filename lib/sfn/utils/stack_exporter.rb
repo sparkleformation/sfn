@@ -1,9 +1,9 @@
 begin
-  require 'chef'
+  require "chef"
 rescue LoadError
   $stderr.puts "WARN: Failed to load Chef. Chef specific features will be disabled!"
 end
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Utils
@@ -14,12 +14,12 @@ module Sfn
       include Sfn::Utils::JSON
 
       # default chef environment name
-      DEFAULT_CHEF_ENVIRONMENT = '_default'
+      DEFAULT_CHEF_ENVIRONMENT = "_default"
       # default instance options
       DEFAULT_OPTIONS = Mash.new(
         :chef_popsicle => true,
-        :ignored_parameters => ['Environment', 'StackCreator', 'Creator'],
-        :chef_environment_parameter => 'Environment',
+        :ignored_parameters => ["Environment", "StackCreator", "Creator"],
+        :chef_environment_parameter => "Environment",
       )
       # default structure of export payload
       DEFAULT_EXPORT_STRUCTURE = {
@@ -33,7 +33,7 @@ module Sfn
         ),
         :generator => {
           :timestamp => Time.now.to_i,
-          :name => 'SparkleFormation',
+          :name => "SparkleFormation",
           :version => Sfn::VERSION.version,
           :provider => nil,
         },
@@ -89,7 +89,7 @@ module Sfn
       # @return [Object]
       def method_missing(*args)
         m = args.first.to_s
-        if m.end_with?('?') && options.has_key?(k = m.sub('?', '').to_sym)
+        if m.end_with?("?") && options.has_key?(k = m.sub("?", "").to_sym)
           !!options[k]
         else
           super
@@ -126,7 +126,7 @@ module Sfn
       # @return [Chef::Environment]
       def environment
         unless @env
-          @env = Chef::Environment.load('_default')
+          @env = Chef::Environment.load("_default")
         end
         @env
       end
@@ -154,9 +154,9 @@ module Sfn
         rl_item = item.is_a?(Chef::RunList::RunListItem) ? item : Chef::RunList::RunListItem.new(item)
         static_content = Mash.new(:run_list => [])
         if rl_item.recipe?
-          cookbook, recipe = rl_item.name.split('::')
+          cookbook, recipe = rl_item.name.split("::")
           peg_version = allowed_cookbook_version(cookbook)
-          static_content[:run_list] << "recipe[#{[cookbook, recipe || 'default'].join('::')}@#{peg_version}]"
+          static_content[:run_list] << "recipe[#{[cookbook, recipe || "default"].join("::")}@#{peg_version}]"
         elsif rl_item.role?
           role = Chef::Role.load(rl_item.name)
           role.run_list.each do |item|
@@ -177,10 +177,10 @@ module Sfn
       # @param first_run [Hash] chef first run hash
       # @return [Hash]
       def unpack_and_freeze_runlist(first_run)
-        extracted_runlists = first_run['run_list'].map do |item|
+        extracted_runlists = first_run["run_list"].map do |item|
           extract_runlist_item(cf_replace(item))
         end
-        first_run.delete('run_list')
+        first_run.delete("run_list")
         first_run.replace(
           extracted_runlists.inject(first_run) do |memo, first_run_item|
             Chef::Mixin::DeepMerge.merge(memo, first_run_item)
@@ -208,8 +208,8 @@ module Sfn
         result = []
         case thing
         when Hash
-          if thing['content'] && thing['content']['run_list']
-            result << thing['content']
+          if thing["content"] && thing["content"]["run_list"]
+            result << thing["content"]
           else
             thing.each do |k, v|
               result += locate_runlists(v)
@@ -230,9 +230,9 @@ module Sfn
       def cf_replace(hsh)
         if hsh.is_a?(Hash)
           case hsh.keys.first
-          when 'Fn::Join'
+          when "Fn::Join"
             cf_join(*hsh.values.first)
-          when 'Ref'
+          when "Ref"
             cf_ref(hsh.values.first)
           else
             hsh

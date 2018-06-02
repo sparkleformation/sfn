@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module ApiProvider
@@ -43,7 +43,7 @@ module Sfn
       # @return [TrueClass, FalseClass]
       def function_set_parameter?(val)
         if val
-          val.start_with?('$(') || val.start_with?('{{')
+          val.start_with?("$(") || val.start_with?("{{")
         end
       end
 

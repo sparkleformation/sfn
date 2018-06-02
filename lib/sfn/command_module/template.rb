@@ -1,7 +1,7 @@
-require 'sfn'
-require 'sparkle_formation'
+require "sfn"
+require "sparkle_formation"
 
-require 'pathname'
+require "pathname"
 
 module Sfn
   module CommandModule
@@ -48,7 +48,7 @@ module Sfn
         def request_compile_parameter(p_name, p_config, cur_val, nested = false)
           result = nil
           attempts = 0
-          parameter_type = p_config.fetch(:type, 'string').to_s.downcase.to_sym
+          parameter_type = p_config.fetch(:type, "string").to_s.downcase.to_sym
           if parameter_type == :complex
             ui.debug "Compile time parameter `#{p_name}` is a complex type. Not requesting value from user."
             if cur_val.nil?
@@ -61,13 +61,13 @@ module Sfn
               cur_val = p_config[:default]
             end
             if cur_val.is_a?(Array)
-              cur_val = cur_val.map(&:to_s).join(',')
+              cur_val = cur_val.map(&:to_s).join(",")
             end
             until result && (!result.respond_to?(:empty?) || !result.empty?)
               attempts += 1
               if config[:interactive_parameters] && (!nested || !p_config.key?(:prompt_when_nested) || p_config[:prompt_when_nested] == true)
                 result = ui.ask_question(
-                  p_name.to_s.split('_').map(&:capitalize).join,
+                  p_name.to_s.split("_").map(&:capitalize).join,
                   :default => cur_val.to_s.empty? ? nil : cur_val.to_s,
                 )
               else
@@ -76,11 +76,11 @@ module Sfn
               case parameter_type
               when :string
                 if p_config[:multiple]
-                  result = result.split(',').map(&:strip)
+                  result = result.split(",").map(&:strip)
                 end
               when :number
                 if p_config[:multiple]
-                  result = result.split(',').map(&:strip)
+                  result = result.split(",").map(&:strip)
                   new_result = result.map do |item|
                     new_item = item.to_i
                     new_item if new_item.to_s == item
@@ -150,7 +150,7 @@ module Sfn
               end
               collection.set_root(root_pack)
             rescue Errno::ENOENT
-              ui.warn 'No local SparkleFormation files detected'
+              ui.warn "No local SparkleFormation files detected"
             end
             sparkle_packs.each do |pack|
               collection.add_sparkle(pack)
@@ -185,8 +185,8 @@ module Sfn
               end
               sf.compile_time_parameter_setter do |formation|
                 f_name = formation.root_path.map(&:name).map(&:to_s)
-                pathed_name = f_name.join(' > ')
-                f_name = f_name.join('__')
+                pathed_name = f_name.join(" > ")
+                f_name = f_name.join("__")
                 if formation.root? && compile_state[f_name].nil?
                   current_state = compile_state
                 else
@@ -200,7 +200,7 @@ module Sfn
                   current_state = current_state.merge(formation.compile_state)
                 end
                 unless formation.parameters.empty?
-                  ui.info "#{ui.color('Compile time parameters:', :bold)} - template: #{ui.color(pathed_name, :green, :bold)}" unless config[:print_only]
+                  ui.info "#{ui.color("Compile time parameters:", :bold)} - template: #{ui.color(pathed_name, :green, :bold)}" unless config[:print_only]
                   formation.parameters.each do |k, v|
                     valid_keys = [
                       "#{f_name}__#{k}",
@@ -251,7 +251,7 @@ module Sfn
               template
             end
           else
-            raise ArgumentError.new 'Failed to locate template for processing!'
+            raise ArgumentError.new "Failed to locate template for processing!"
           end
         end
 
@@ -262,7 +262,7 @@ module Sfn
           ui.debug "Initial compile parameters - #{compile_state}"
           compile_state.keys.each do |cs_key|
             unless cs_key.to_s.start_with?("#{arguments.first}__")
-              named_cs_key = [arguments.first, cs_key].compact.join('__')
+              named_cs_key = [arguments.first, cs_key].compact.join("__")
               non_named = compile_state.delete(cs_key)
               if non_named && !compile_state.key?(named_cs_key)
                 ui.debug "Setting non-named compile parameter `#{cs_key}` into `#{named_cs_key}`"
@@ -282,8 +282,8 @@ module Sfn
         # Force user friendly error if nesting bucket is not set within configuration
         def validate_nesting_bucket!
           if config[:nesting_bucket].to_s.empty?
-            ui.error 'Missing required configuration value for `nesting_bucket`. Cannot generated nested templates!'
-            raise ArgumentError.new 'Required configuration value for `nesting_bucket` not provided.'
+            ui.error "Missing required configuration value for `nesting_bucket`. Cannot generated nested templates!"
+            raise ArgumentError.new "Required configuration value for `nesting_bucket` not provided."
           end
         end
 
@@ -307,13 +307,13 @@ module Sfn
               end
               file = bucket.files.build
               file.name = "#{name_args.first}_#{stack_name}.json"
-              file.content_type = 'text/json'
+              file.content_type = "text/json"
               file.body = MultiJson.dump(parameter_scrub!(stack_definition))
               file.save
               url = URI.parse(file.url)
               template_url = "#{url.scheme}://#{url.host}#{url.path}"
             end
-            resource.properties.set!('TemplateURL', template_url)
+            resource.properties.set!("TemplateURL", template_url)
           end
         end
 
@@ -331,16 +331,16 @@ module Sfn
             if current_stack && current_stack.data[:parent_stack]
               current_parameters.merge!(
                 current_stack.data[:parent_stack].template.fetch(
-                  'Resources', stack_name, 'Properties', 'Parameters', current_stack.data[:parent_stack].template.fetch(
-                    'resources', stack_name, 'properties', 'parameters', Smash.new
+                  "Resources", stack_name, "Properties", "Parameters", current_stack.data[:parent_stack].template.fetch(
+                    "resources", stack_name, "properties", "parameters", Smash.new
                   )
                 )
               )
             end
             full_stack_name = [
               config[:nesting_prefix],
-              stack.root_path.map(&:name).map(&:to_s).join('_'),
-            ].compact.join('/')
+              stack.root_path.map(&:name).map(&:to_s).join("_"),
+            ].compact.join("/")
             unless config[:print_only]
               result = Smash.new(
                 :parameters => populate_parameters!(stack,
@@ -390,7 +390,7 @@ module Sfn
           end
           file = bucket.files.build
           file.name = "#{full_stack_name}.json"
-          file.content_type = 'text/json'
+          file.content_type = "text/json"
           file.body = MultiJson.dump(parameter_scrub!(stack_definition))
           file.save
           result.merge!(
@@ -422,9 +422,9 @@ module Sfn
         # @return [Hash]
         def scrub_template(template)
           template = parameter_scrub!(template)
-          (template['Resources'] || {}).each do |r_name, r_content|
-            if valid_stack_types.include?(r_content['Type'])
-              result = (r_content['Properties'] || {}).delete('Stack')
+          (template["Resources"] || {}).each do |r_name, r_content|
+            if valid_stack_types.include?(r_content["Type"])
+              result = (r_content["Properties"] || {}).delete("Stack")
             end
           end
           template
@@ -439,11 +439,11 @@ module Sfn
           case provider
           when :aws
             if results[:parameters]
-              results['Parameters'] = results.delete(:parameters)
+              results["Parameters"] = results.delete(:parameters)
             end
             if results[:url]
               url = URI.parse(results.delete(:url))
-              results['TemplateURL'] = "#{url.scheme}://#{url.host}#{url.path}"
+              results["TemplateURL"] = "#{url.scheme}://#{url.host}#{url.path}"
             end
             results
           when :heat, :rackspace
@@ -461,10 +461,10 @@ module Sfn
             if results[:url]
               results[:templateLink] = Smash.new(
                 :uri => results.delete(:url),
-                :contentVersion => '1.0.0.0',
+                :contentVersion => "1.0.0.0",
               )
             end
-            results[:mode] = 'Incremental'
+            results[:mode] = "Incremental"
             results
           else
             raise "Unknown stack provider value given! `#{provider}`"
@@ -491,7 +491,7 @@ module Sfn
             translator = klass.new(template, args)
             translator.translate!
             template = translator.translated
-            ui.info "#{ui.color('Translation applied:', :bold)} #{ui.color(klass_name, :yellow)}"
+            ui.info "#{ui.color("Translation applied:", :bold)} #{ui.color(klass_name, :yellow)}"
           end
           template
         end
@@ -530,9 +530,9 @@ module Sfn
         # @return [String] path to template
         def prompt_for_template(prefix = nil)
           if prefix
-            collection_name = prefix.split('__').map do |c_name|
-              c_name.split('_').map(&:capitalize).join(' ')
-            end.join(' / ')
+            collection_name = prefix.split("__").map do |c_name|
+              c_name.split("_").map(&:capitalize).join(" ")
+            end.join(" / ")
             ui.info "Viewing collection: #{ui.color(collection_name, :bold)}"
             template_names = sparkle_collection.templates.fetch(provider.connection.provider, {}).keys.find_all do |t_name|
               t_name.to_s.start_with?(prefix.to_s)
@@ -541,46 +541,46 @@ module Sfn
             template_names = sparkle_collection.templates.fetch(provider.connection.provider, {}).keys
           end
           collections = template_names.map do |t_name|
-            t_name = t_name.to_s.sub(/^#{Regexp.escape(prefix.to_s)}/, '')
-            if t_name.include?('__')
-              c_name = t_name.split('__').first
-              [[prefix, c_name].compact.join('') + '__', c_name]
+            t_name = t_name.to_s.sub(/^#{Regexp.escape(prefix.to_s)}/, "")
+            if t_name.include?("__")
+              c_name = t_name.split("__").first
+              [[prefix, c_name].compact.join("") + "__", c_name]
             end
           end.compact.uniq(&:first)
           templates = template_names.map do |t_name|
-            t_name = t_name.to_s.sub(/^#{Regexp.escape(prefix.to_s)}/, '')
-            unless t_name.include?('__')
-              [[prefix, t_name].compact.join(''), t_name]
+            t_name = t_name.to_s.sub(/^#{Regexp.escape(prefix.to_s)}/, "")
+            unless t_name.include?("__")
+              [[prefix, t_name].compact.join(""), t_name]
             end
           end.compact
           if collections.empty? && templates.empty?
-            ui.error 'Failed to locate any templates!'
+            ui.error "Failed to locate any templates!"
             return nil
           end
-          ui.info "Please select an entry#{'(or collection to list)' unless collections.empty?}:"
+          ui.info "Please select an entry#{"(or collection to list)" unless collections.empty?}:"
           output = []
           idx = 1
           valid = {}
           unless collections.empty?
-            output << ui.color('Collections:', :bold)
+            output << ui.color("Collections:", :bold)
             collections.each do |full_name, part_name|
               valid[idx] = {:name => full_name, :type => :collection}
-              output << [idx, part_name.split('_').map(&:capitalize).join(' ')]
+              output << [idx, part_name.split("_").map(&:capitalize).join(" ")]
               idx += 1
             end
           end
           unless templates.empty?
-            output << ui.color('Templates:', :bold)
+            output << ui.color("Templates:", :bold)
             templates.each do |full_name, part_name|
               valid[idx] = {:name => full_name, :type => :template}
-              output << [idx, part_name.split('_').map(&:capitalize).join(' ')]
+              output << [idx, part_name.split("_").map(&:capitalize).join(" ")]
               idx += 1
             end
           end
           max = idx.to_s.length
           output.map! do |line|
             if line.is_a?(Array)
-              "  #{line.first}.#{' ' * (max - line.first.to_s.length)} #{line.last}"
+              "  #{line.first}.#{" " * (max - line.first.to_s.length)} #{line.last}"
             else
               line
             end
@@ -588,7 +588,7 @@ module Sfn
           ui.puts "#{output.join("\n")}\n"
           response = nil
           until valid[response]
-            response = ui.ask_question('Enter selection').to_i
+            response = ui.ask_question("Enter selection").to_i
           end
           entry = valid[response]
           if entry[:type] == :collection

@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Callback
@@ -32,31 +32,32 @@ module Sfn
       def after(*_)
         if enabled?
           if api.connection.aws_sts_session_token
-            path = config.fetch(:aws_mfa, :cache_file, '.sfn-aws')
+            path = config.fetch(:aws_mfa, :cache_file, ".sfn-aws")
             FileUtils.touch(path)
             File.chmod(0600, path)
             values = load_stored_values(path)
             SESSION_STORE_ITEMS.map do |key|
               values[key] = api.connection.data[key]
             end
-            File.open(path, 'w') do |file|
+            File.open(path, "w") do |file|
               file.puts MultiJson.dump(values)
             end
           end
         end
       end
+
       alias_method :failed, :after
 
       # @return [TrueClass, FalseClass]
       def enabled?
-        config.fetch(:aws_mfa, :status, 'enabled').to_s == 'enabled'
+        config.fetch(:aws_mfa, :status, "enabled").to_s == "enabled"
       end
 
       # Load stored configuration data into the api connection
       #
       # @return [TrueClass, FalseClass]
       def load_stored_session
-        path = config.fetch(:aws_mfa, :cache_file, '.sfn-aws')
+        path = config.fetch(:aws_mfa, :cache_file, ".sfn-aws")
         if File.exists?(path)
           values = load_stored_values(path)
           SESSION_STORE_ITEMS.each do |key|
@@ -94,7 +95,7 @@ module Sfn
       #
       # @return [String]
       def prompt_for_code
-        result = ui.ask 'AWS MFA code', :valid => /^\d{6}$/
+        result = ui.ask "AWS MFA code", :valid => /^\d{6}$/
         result.strip
       end
     end

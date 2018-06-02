@@ -1,4 +1,4 @@
-require_relative '../rspecs'
+require_relative "../rspecs"
 
 RSpec.describe Sfn do
 end

@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Config
@@ -7,19 +7,19 @@ module Sfn
     class Export < Config
       attribute(
         :name, String,
-        :description => 'Export file base name',
+        :description => "Export file base name",
       )
       attribute(
         :path, String,
-        :description => 'Local path prefix for dump file',
+        :description => "Local path prefix for dump file",
       )
       attribute(
         :bucket, String,
-        :description => 'Remote storage bucket',
+        :description => "Remote storage bucket",
       )
       attribute(
         :bucket_prefix, String,
-        :description => 'Remote key prefix within bucket for dump file',
+        :description => "Remote key prefix within bucket for dump file",
       )
     end
   end

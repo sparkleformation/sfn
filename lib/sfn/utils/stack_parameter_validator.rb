@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Utils
@@ -9,34 +9,34 @@ module Sfn
 
       # HOT parameter mapping
       HEAT_CONSTRAINT_MAP = {
-        'MaxLength' => [:length, :max],
-        'MinLength' => [:length, :min],
-        'MaxValue' => [:range, :max],
-        'MinValue' => [:range, :min],
-        'AllowedValues' => [:allowed_values],
-        'AllowedPattern' => [:allowed_pattern],
+        "MaxLength" => [:length, :max],
+        "MinLength" => [:length, :min],
+        "MaxValue" => [:range, :max],
+        "MinValue" => [:range, :min],
+        "AllowedValues" => [:allowed_values],
+        "AllowedPattern" => [:allowed_pattern],
       }
 
       # GCDM parameter mapping
       GOOGLE_CONSTRAINT_MAP = {
-        'AllowedPattern' => [:pattern],
-        'MaxValue' => [:maximum],
-        'MinValue' => [:minimum],
+        "AllowedPattern" => [:pattern],
+        "MaxValue" => [:maximum],
+        "MinValue" => [:minimum],
       }
 
       # Parameter mapping identifier and content
       PARAMETER_DEFINITION_MAP = {
-        'constraints' => HEAT_CONSTRAINT_MAP,
+        "constraints" => HEAT_CONSTRAINT_MAP,
       }
 
       # Supported parameter validations
       PARAMETER_VALIDATIONS = [
-        'allowed_values',
-        'allowed_pattern',
-        'max_length',
-        'min_length',
-        'max_value',
-        'min_value',
+        "allowed_values",
+        "allowed_pattern",
+        "max_length",
+        "min_length",
+        "max_value",
+        "min_value",
       ]
 
       # Validate a parameters
@@ -51,12 +51,12 @@ module Sfn
       # @option parameter_definition [String, Integer] 'MinValue'
       # @return [TrueClass, Array<String>] true if valid. array of string errors if invalid
       def validate_parameter(value, parameter_definition)
-        return [[:blank, 'Value cannot be blank']] if value.to_s.strip.empty?
+        return [[:blank, "Value cannot be blank"]] if value.to_s.strip.empty?
         parameter_definition = reformat_definition(parameter_definition)
-        value_list = list_type?(parameter_definition.fetch('Type', parameter_definition['type'].to_s)) ? value.to_s.split(',') : [value]
+        value_list = list_type?(parameter_definition.fetch("Type", parameter_definition["type"].to_s)) ? value.to_s.split(",") : [value]
         result = PARAMETER_VALIDATIONS.map do |validator_key|
           valid_key = parameter_definition.keys.detect do |pdef_key|
-            pdef_key.downcase.gsub('_', '') == validator_key.downcase.gsub('_', '')
+            pdef_key.downcase.gsub("_", "") == validator_key.downcase.gsub("_", "")
           end
           if valid_key
             value_list.map do |value|
@@ -102,7 +102,7 @@ module Sfn
         if pdef.include?(value)
           true
         else
-          "Not an allowed value: #{pdef.join(', ')}"
+          "Not an allowed value: #{pdef.join(", ")}"
         end
       end
 
@@ -182,7 +182,7 @@ module Sfn
       # @return [TrueClass, FalseClass]
       def list_type?(type)
         type = type.downcase
-        type.start_with?('comma') || type.start_with?('list<')
+        type.start_with?("comma") || type.start_with?("list<")
       end
     end
   end

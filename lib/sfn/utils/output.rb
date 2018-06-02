@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Utils
@@ -15,8 +15,8 @@ module Sfn
       def process(things, args = {})
         @event_ids ||= []
         processed = things.reverse.map do |thing|
-          next if @event_ids.include?(thing['id'])
-          @event_ids.push(thing['id']).compact!
+          next if @event_ids.include?(thing["id"])
+          @event_ids.push(thing["id"]).compact!
           if args[:attributes]
             args[:attributes].map do |key|
               thing[key].to_s
@@ -67,7 +67,7 @@ module Sfn
         output += process(things, :flat => true, :attributes => allowed_attributes)
         output.compact!
         if output.empty?
-          ui.warn 'No information found' unless args.include?(:ignore_empty_output)
+          ui.warn "No information found" unless args.include?(:ignore_empty_output)
         else
           ui.info "#{what.to_s.capitalize} for stack: #{ui.color(stack, :bold)}" if stack
           ui.info "#{ui.list(output, :uneven_columns_across, columns)}"

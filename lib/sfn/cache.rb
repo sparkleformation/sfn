@@ -1,6 +1,6 @@
-require 'digest/sha2'
-require 'thread'
-require 'sfn'
+require "digest/sha2"
+require "thread"
+require "sfn"
 
 module Sfn
   # Data caching helper
@@ -16,9 +16,9 @@ module Sfn
         case type
         when :redis
           begin
-            require 'redis-objects'
+            require "redis-objects"
           rescue LoadError
-            $stderr.puts 'The `redis-objects` gem is required for Cache support!'
+            $stderr.puts "The `redis-objects` gem is required for Cache support!"
             raise
           end
           @_pid = Process.pid
@@ -168,7 +168,7 @@ module Sfn
       when :lock
         Redis::Lock.new(full_name, {:expiration => 60, :timeout => 0.1}.merge(args))
       when :stamped
-        Stamped.new(full_name.sub("#{key}_", '').to_sym, get_redis_storage(:value, full_name), self)
+        Stamped.new(full_name.sub("#{key}_", "").to_sym, get_redis_storage(:value, full_name), self)
       else
         raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
       end
@@ -193,7 +193,7 @@ module Sfn
                               when :lock
                                 LocalLock.new(full_name, {:expiration => 60, :timeout => 0.1}.merge(args))
                               when :stamped
-                                Stamped.new(full_name.sub("#{key}_", '').to_sym, get_local_storage(:value, full_name), self)
+                                Stamped.new(full_name.sub("#{key}_", "").to_sym, get_local_storage(:value, full_name), self)
                               else
                                 raise TypeError.new("Unsupported caching data type encountered: #{data_type}")
                               end
@@ -227,7 +227,7 @@ module Sfn
     # @param val [Object]
     # @note this will never work, thus you should never use it
     def []=(key, val)
-      raise 'Setting backend data is not allowed'
+      raise "Setting backend data is not allowed"
     end
 
     # Check if cache time has expired
@@ -263,7 +263,7 @@ module Sfn
           yield
         end
       rescue => e
-        if e.class.to_s.end_with?('Timeout')
+        if e.class.to_s.end_with?("Timeout")
           raise if raise_on_locked
         else
           raise

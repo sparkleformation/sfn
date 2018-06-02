@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Utils

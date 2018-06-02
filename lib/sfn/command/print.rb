@@ -1,5 +1,5 @@
-require 'sparkle_formation'
-require 'sfn'
+require "sparkle_formation"
+require "sfn"
 
 module Sfn
   class Command
@@ -16,7 +16,7 @@ module Sfn
 
         output_content = parameter_scrub!(template_content(file))
         if config[:yaml]
-          require 'yaml'
+          require "yaml"
           output_content = YAML.dump(output_content)
         else
           output_content = format_json(output_content)
@@ -24,7 +24,7 @@ module Sfn
 
         if config[:write_to_file]
           unless File.directory?(File.dirname(config[:write_to_file]))
-            run_action 'Creating parent directory' do
+            run_action "Creating parent directory" do
               FileUtils.mkdir_p(File.dirname(config[:write_to_file]))
               nil
             end

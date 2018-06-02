@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   module Lint
@@ -40,7 +40,7 @@ module Sfn
             f_item
           end.flatten.compact.map(&:to_s)
           unless failed_items.empty?
-            msg = "#{msg} (failures: `#{failed_items.join('`, `')}`)"
+            msg = "#{msg} (failures: `#{failed_items.join("`, `")}`)"
           end
         end
         msg
@@ -109,7 +109,7 @@ module Sfn
         end
         unless non_match.empty?
           raise ArgumentError.new "Rule defines `#{provider}` as provider but includes definitions for " \
-                                  "non matching providers. (#{non_match.map(&:provider).map(&:to_s).uniq.sort.join(', ')})"
+                                  "non matching providers. (#{non_match.map(&:provider).map(&:to_s).uniq.sort.join(", ")})"
         end
       end
     end

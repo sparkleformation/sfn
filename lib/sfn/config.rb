@@ -1,5 +1,5 @@
-require 'sfn'
-require 'bogo-config'
+require "sfn"
+require "bogo-config"
 
 module Sfn
 
@@ -30,8 +30,8 @@ module Sfn
               v
             end
           end
-          info[:description] ||= ''
-          info[:description] << ' (Key:Value[,Key:Value,...])'
+          info[:description] ||= ""
+          info[:description] << " (Key:Value[,Key:Value,...])"
         end
       end
       super(name, type, info)
@@ -40,72 +40,72 @@ module Sfn
     # Only values allowed designating bool type
     BOOLEAN_VALUES = [TrueClass, FalseClass]
 
-    autoload :Conf, 'sfn/config/conf'
-    autoload :Create, 'sfn/config/create'
-    autoload :Describe, 'sfn/config/describe'
-    autoload :Destroy, 'sfn/config/destroy'
-    autoload :Describe, 'sfn/config/describe'
-    autoload :Diff, 'sfn/config/diff'
-    autoload :Events, 'sfn/config/events'
-    autoload :Export, 'sfn/config/export'
-    autoload :Graph, 'sfn/config/graph'
-    autoload :Import, 'sfn/config/import'
-    autoload :Init, 'sfn/config/init'
-    autoload :Inspect, 'sfn/config/inspect'
-    autoload :Lint, 'sfn/config/lint'
-    autoload :List, 'sfn/config/list'
-    autoload :Print, 'sfn/config/print'
-    autoload :Promote, 'sfn/config/promote'
-    autoload :Update, 'sfn/config/update'
-    autoload :Validate, 'sfn/config/validate'
+    autoload :Conf, "sfn/config/conf"
+    autoload :Create, "sfn/config/create"
+    autoload :Describe, "sfn/config/describe"
+    autoload :Destroy, "sfn/config/destroy"
+    autoload :Describe, "sfn/config/describe"
+    autoload :Diff, "sfn/config/diff"
+    autoload :Events, "sfn/config/events"
+    autoload :Export, "sfn/config/export"
+    autoload :Graph, "sfn/config/graph"
+    autoload :Import, "sfn/config/import"
+    autoload :Init, "sfn/config/init"
+    autoload :Inspect, "sfn/config/inspect"
+    autoload :Lint, "sfn/config/lint"
+    autoload :List, "sfn/config/list"
+    autoload :Print, "sfn/config/print"
+    autoload :Promote, "sfn/config/promote"
+    autoload :Update, "sfn/config/update"
+    autoload :Validate, "sfn/config/validate"
 
     attribute(
       :config, String,
-      :description => 'Configuration file path',
-      :short_flag => 'c',
+      :description => "Configuration file path",
+      :short_flag => "c",
     )
 
     attribute(
       :credentials, Smash,
-      :description => 'Provider credentials',
-      :short_flag => 'C',
+      :description => "Provider credentials",
+      :short_flag => "C",
     )
     attribute(
       :ignore_parameters, String,
       :multiple => true,
-      :description => 'Parameters to ignore during modifications',
-      :short_flag => 'i',
+      :description => "Parameters to ignore during modifications",
+      :short_flag => "i",
     )
     attribute(
       :interactive_parameters, [TrueClass, FalseClass],
       :default => true,
-      :description => 'Prompt for template parameters',
-      :short_flag => 'I',
+      :description => "Prompt for template parameters",
+      :short_flag => "I",
     )
     attribute(
       :poll, [TrueClass, FalseClass],
       :default => true,
-      :description => 'Poll stack events on modification actions',
-      :short_flag => 'p',
+      :description => "Poll stack events on modification actions",
+      :short_flag => "p",
     )
     attribute(
       :defaults, [TrueClass, FalseClass],
-      :description => 'Automatically accept default values',
-      :short_flag => 'd',
+      :description => "Automatically accept default values",
+      :short_flag => "d",
     )
     attribute(
       :yes, [TrueClass, FalseClass],
-      :description => 'Automatically accept any requests for confirmation',
-      :short_flag => 'y',
+      :description => "Automatically accept any requests for confirmation",
+      :short_flag => "y",
     )
     attribute(
       :debug, [TrueClass, FalseClass],
-      :description => 'Enable debug output',
-      :short_flag => 'u',
+      :description => "Enable debug output",
+      :short_flag => "u",
     )
     attribute(
       :colors, [TrueClass, FalseClass],
-      :description => 'Enable colorized output',
+      :description => "Enable colorized output",
       :default => true,
     )
 
@@ -127,7 +127,7 @@ module Sfn
     # @param klass [Class]
     # @return [Smash]
     def self.options_for(klass)
-      shorts = ['h'] # always reserve `-h` for help
+      shorts = ["h"] # always reserve `-h` for help
       _options_for(klass, shorts)
     end
 
@@ -152,7 +152,7 @@ module Sfn
             shorts << short
             info[:short] = short
           end
-          info[:long] = name.tr('_', '-')
+          info[:long] = name.tr("_", "-")
           info[:boolean] = [info[:type]].compact.flatten.all? { |t| BOOLEAN_VALUES.include?(t) }
           [name, info]
         end.compact
