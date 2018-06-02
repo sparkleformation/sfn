@@ -5,24 +5,24 @@ module Sfn
   class Command < Bogo::Cli::Command
     include CommandModule::Callbacks
 
-    autoload :Conf, 'sfn/command/conf'
-    autoload :Create, 'sfn/command/create'
-    autoload :Describe, 'sfn/command/describe'
-    autoload :Destroy, 'sfn/command/destroy'
-    autoload :Diff, 'sfn/command/diff'
-    autoload :Events, 'sfn/command/events'
-    autoload :Export, 'sfn/command/export'
-    autoload :Graph, 'sfn/command/graph'
-    autoload :Import, 'sfn/command/import'
-    autoload :Init, 'sfn/command/init'
-    autoload :Inspect, 'sfn/command/inspect'
-    autoload :Lint, 'sfn/command/lint'
-    autoload :List, 'sfn/command/list'
-    autoload :Plan, 'sfn/command/plan'
-    autoload :Print, 'sfn/command/print'
-    autoload :Promote, 'sfn/command/promote'
-    autoload :Update, 'sfn/command/update'
-    autoload :Validate, 'sfn/command/validate'
+    autoload :Conf, "sfn/command/conf"
+    autoload :Create, "sfn/command/create"
+    autoload :Describe, "sfn/command/describe"
+    autoload :Destroy, "sfn/command/destroy"
+    autoload :Diff, "sfn/command/diff"
+    autoload :Events, "sfn/command/events"
+    autoload :Export, "sfn/command/export"
+    autoload :Graph, "sfn/command/graph"
+    autoload :Import, "sfn/command/import"
+    autoload :Init, "sfn/command/init"
+    autoload :Inspect, "sfn/command/inspect"
+    autoload :Lint, "sfn/command/lint"
+    autoload :List, "sfn/command/list"
+    autoload :Plan, "sfn/command/plan"
+    autoload :Print, "sfn/command/print"
+    autoload :Promote, "sfn/command/promote"
+    autoload :Update, "sfn/command/update"
+    autoload :Validate, "sfn/command/validate"
 
     # Base name of configuration file
     CONFIG_BASE_NAME = ".sfn"

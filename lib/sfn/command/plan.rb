@@ -1,4 +1,4 @@
-require 'sfn'
+require "sfn"
 
 module Sfn
   class Command
@@ -14,7 +14,7 @@ module Sfn
         name_required!
         name = name_args.first
 
-        stack_info = "#{ui.color('Name:', :bold)} #{name}"
+        stack_info = "#{ui.color("Name:", :bold)} #{name}"
         begin
           stack = provider.stacks.get(name)
         rescue Miasma::Error::ApiError::RequestError
@@ -31,13 +31,13 @@ module Sfn
           c_setter = lambda do |c_stack|
             if c_stack.outputs
               compile_params = c_stack.outputs.detect do |output|
-                output.key == 'CompileState'
+                output.key == "CompileState"
               end
             end
             if compile_params
               compile_params = MultiJson.load(compile_params.value)
-              c_current = config[:compile_parameters].fetch(s_name.join('__'), Smash.new)
-              config[:compile_parameters][s_name.join('__')] = compile_params.merge(c_current)
+              c_current = config[:compile_parameters].fetch(s_name.join("__"), Smash.new)
+              config[:compile_parameters][s_name.join("__")] = compile_params.merge(c_current)
             end
             c_stack.nested_stacks(false).each do |n_stack|
               s_name.push(n_stack.data.fetch(:logical_id, n_stack.name))
@@ -52,13 +52,13 @@ module Sfn
 
           ui.debug "Compile parameters - #{config[:compile_parameters]}"
           file = load_template_file(:stack => stack)
-          stack_info << " #{ui.color('Path:', :bold)} #{config[:file]}"
+          stack_info << " #{ui.color("Path:", :bold)} #{config[:file]}"
         else
           file = stack.template.dup
         end
 
         unless config[:print_only]
-          ui.info "#{ui.color('SparkleFormation:', :bold)} #{ui.color('plan', :green)}"
+          ui.info "#{ui.color("SparkleFormation:", :bold)} #{ui.color("plan", :green)}"
           if stack && stack.plan
             ui.warn "Found existing plan for this stack"
             begin
@@ -74,9 +74,9 @@ module Sfn
         unless file
           if config[:template]
             file = config[:template]
-            stack_info << " #{ui.color('(template provided)', :green)}"
+            stack_info << " #{ui.color("(template provided)", :green)}"
           else
-            stack_info << " #{ui.color('(no template update)', :yellow)}"
+            stack_info << " #{ui.color("(no template update)", :yellow)}"
           end
         end
         unless config[:print_only]
@@ -150,19 +150,19 @@ module Sfn
             if config[:poll]
               poll_stack(stack.name)
               if stack.reload.state == :update_complete || stack.reload.state == :create_complete
-                ui.info "Stack plan apply complete: #{ui.color('SUCCESS', :green)}"
+                ui.info "Stack plan apply complete: #{ui.color("SUCCESS", :green)}"
                 namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
               else
-                ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color('FAILED', :red, :bold)}"
-                raise 'Stack did not reach a successful completion state.'
+                ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color("FAILED", :red, :bold)}"
+                raise "Stack did not reach a successful completion state."
               end
             else
-              ui.warn 'Stack state polling has been disabled.'
+              ui.warn "Stack state polling has been disabled."
               ui.info "Stack plan apply initialized for #{ui.color(name, :green)}"
             end
           end
         rescue Miasma::Error::ApiError::RequestError => e
-          if e.message.downcase.include?('no updates')
+          if e.message.downcase.include?("no updates")
             ui.warn "No changes detected for stack (#{stack.name})"
           else
             raise

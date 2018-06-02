@@ -91,9 +91,9 @@ describe Sfn::Planner do
         ).at_least_once
         result = planner.generate_plan(template, {}).stacks[stack.name]
         item = result.replace.first
-        item.name.must_equal 'Ec2Instance'
-        item.type.must_equal 'AWS::EC2::Instance'
-        item.diffs.map(&:name).must_include 'ImageId'
+        item.name.must_equal "Ec2Instance"
+        item.type.must_equal "AWS::EC2::Instance"
+        item.diffs.map(&:name).must_include "ImageId"
       end
 
       it "should flag Ec2Instance for replacement" do
@@ -112,9 +112,9 @@ describe Sfn::Planner do
         ).at_least_once
         result = planner.generate_plan(template, {}).stacks[stack.name]
         item = result.replace.first
-        item.name.must_equal 'Ec2Instance'
-        item.type.must_equal 'AWS::EC2::Instance'
-        item.diffs.map(&:name).must_include 'AvailabilityZone'
+        item.name.must_equal "Ec2Instance"
+        item.type.must_equal "AWS::EC2::Instance"
+        item.diffs.map(&:name).must_include "AvailabilityZone"
       end
     end
 
@@ -144,8 +144,8 @@ describe Sfn::Planner do
         ).at_least_once
         result = planner.generate_plan(template, {}).stacks[stack.name]
         item = result.remove.first
-        item.name.must_equal 'Ec2Instance'
-        item.type.must_equal 'AWS::EC2::Instance'
+        item.name.must_equal "Ec2Instance"
+        item.type.must_equal "AWS::EC2::Instance"
       end
     end
 
@@ -175,8 +175,8 @@ describe Sfn::Planner do
         ).at_least_once
         result = planner.generate_plan(template, {}).stacks[stack.name]
         item = result.add.first
-        item.name.must_equal 'Ec2Instance'
-        item.type.must_equal 'AWS::EC2::Instance'
+        item.name.must_equal "Ec2Instance"
+        item.type.must_equal "AWS::EC2::Instance"
       end
     end
 
@@ -229,7 +229,7 @@ describe Sfn::Planner do
             },
           }
         ).at_least_once
-        result = planner.generate_plan(template, {'TestParam' => '1'}).stacks[stack.name]
+        result = planner.generate_plan(template, {"TestParam" => "1"}).stacks[stack.name]
         result.replace.must_be :empty?
       end
     end
@@ -321,8 +321,8 @@ describe Sfn::Planner do
 
         it "should flag removal" do
           api.expects(:stack_template_load).returns(template).at_least_once
-          result = planner.generate_plan(template, Smash.new('Enabled' => 'no')).stacks[stack.name]
-          result.replace.map(&:name).must_include 'Ec2Instance'
+          result = planner.generate_plan(template, Smash.new("Enabled" => "no")).stacks[stack.name]
+          result.replace.map(&:name).must_include "Ec2Instance"
         end
       end
 
@@ -372,8 +372,8 @@ describe Sfn::Planner do
 
           it "should flag removal" do
             api.expects(:stack_template_load).returns(template).at_least_once
-            result = planner.generate_plan(template, Smash.new('Enabled' => 'no')).stacks[stack.name]
-            result.remove.map(&:name).must_include 'Ec2Instance'
+            result = planner.generate_plan(template, Smash.new("Enabled" => "no")).stacks[stack.name]
+            result.remove.map(&:name).must_include "Ec2Instance"
           end
         end
       end
@@ -443,8 +443,8 @@ describe Sfn::Planner do
 
           it "should flag unknown" do
             api.expects(:stack_template_load).returns(template).at_least_once
-            result = planner.generate_plan(template, Smash.new('NodeImageId' => '22')).stacks[stack.name]
-            result.unknown.map(&:name).must_include 'OtherEc2Instance'
+            result = planner.generate_plan(template, Smash.new("NodeImageId" => "22")).stacks[stack.name]
+            result.unknown.map(&:name).must_include "OtherEc2Instance"
           end
         end
       end
