@@ -115,7 +115,7 @@ module Sfn
           unless properties.empty?
             ui.print " " * (max_name - name.size)
             ui.print " " * 4
-            ui.print "Reason: Updated properties: `#{properties.join("`, `")}`"
+            ui.print "Reason: `#{properties.join("`, `")}`"
           end
           ui.puts
           if config[:diffs]
