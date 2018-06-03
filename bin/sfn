@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'bogo-cli'
-require 'sfn'
+require "bogo-cli"
+require "sfn"
 
-if(defined?(Bundler))
+if defined?(Bundler)
   begin
     Bundler.require(:sfn)
   rescue Bundler::GemfileNotFound
@@ -12,23 +12,21 @@ if(defined?(Bundler))
 end
 
 Bogo::Cli::Setup.define do
-
-  on :v, :version, 'Print version ' do
+  on :v, :version, "Print version " do
     puts "sfn - SparkleFormation CLI - [Version: #{Sfn::VERSION}]"
     exit
   end
 
   Sfn::Config.constants.map do |konst|
     const = Sfn::Config.const_get(konst)
-    if(const.is_a?(Class) && const.ancestors.include?(Bogo::Config))
+    if const.is_a?(Class) && const.ancestors.include?(Bogo::Config)
       const
     end
   end.compact.sort_by(&:to_s).each do |klass|
-
-    klass_name = klass.name.split('::').last.downcase
+    klass_name = klass.name.split("::").last.downcase
 
     command klass_name do
-      if(klass.const_defined?(:DESCRIPTION))
+      if klass.const_defined?(:DESCRIPTION)
         description klass.const_get(:DESCRIPTION)
       end
 
@@ -36,12 +34,12 @@ Bogo::Cli::Setup.define do
         on_name = info[:boolean] ? info[:long] : "#{info[:long]}="
         opts = Hash.new.tap do |o|
           o[:default] = info[:default] if info.has_key?(:default)
-          if(info[:multiple])
+          if info[:multiple]
             o[:as] = Array
             o[:delimiter] = nil
           end
         end
-        if(info[:short])
+        if info[:short]
           on info[:short], on_name, info[:description], opts
         else
           on on_name, info[:description], opts
@@ -49,10 +47,14 @@ Bogo::Cli::Setup.define do
       end
 
       run do |opts, args|
-        Bogo::Utility.constantize(klass.to_s.sub('Config', 'Command')).new(opts, args).execute!
+        command = Bogo::Utility.constantize(klass.to_s.sub("Config", "Command")).new(opts, args)
+        begin
+          command.execute!
+        rescue Bogo::Ui::ConfirmationDeclined
+          command.ui.error "Confirmation declined!"
+          exit 1
+        end
       end
     end
-
   end
-
 end
