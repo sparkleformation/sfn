@@ -24,7 +24,7 @@ module Sfn
       # @param result [Miasma::Models::Orchestration::Stack::Plan]
       def display_plan_information(result)
         ui.info ui.color("Pre-update resource planning report:", :bold)
-        unless print_plan_result(result)
+        unless print_plan_result(result, [result.name])
           ui.info "No resources life cycle changes detected in this update!"
         end
         cmd = self.class.to_s.split("::").last.downcase
