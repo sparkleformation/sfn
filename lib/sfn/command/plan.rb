@@ -40,7 +40,7 @@ module Sfn
               ui.info "Destroying existing plan to generate new plan"
               stack.plan.destroy
             rescue Bogo::Ui::ConfirmationDeclined
-              ui.info "Loading existing stack plan..."
+              ui.info "Loading existing stack plan for #{ui.color(stack.name, :bold)}..."
               use_existing = true
             end
           end
@@ -192,13 +192,17 @@ module Sfn
           return
         end
         ui.info "Plans for stack: #{ui.color(stack.name, :bold)}\n"
-        n_width = i_width = s_width = 0
+        n_width = "Plan Name".length
+        i_width = "Plan ID".length
+        s_width = "Plan State".length
+        c_width = "Created".length
         plan_info = plans.map do |plan|
           plan_id = plan.id.to_s.split("/").last
           n_width = plan.name.to_s.length if plan.name.to_s.length > n_width
           i_width = plan_id.to_s.length if plan_id.length > i_width
           s_width = plan.state.to_s.length if plan.state.to_s.length > s_width
-          [plan.name, plan_id, plan.state]
+          c_width = plan.created_at.to_s.length if plan.created_at.to_s.length > c_width
+          [plan.name, plan_id, plan.state, plan.created_at]
         end
         table = ui.table(self) do
           table(:border => false) do
@@ -206,6 +210,7 @@ module Sfn
               column "Plan Name", :width => n_width + 5
               column "Plan ID", :width => i_width + 5
               column "Plan State", :width => s_width + 5
+              column "Created", :width => c_width + 5
             end
             plan_info.sort_by(&:first).each do |plan|
               row do
