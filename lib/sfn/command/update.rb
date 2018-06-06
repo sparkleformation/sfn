@@ -7,8 +7,9 @@ module Sfn
       include Sfn::CommandModule::Base
       include Sfn::CommandModule::Template
       include Sfn::CommandModule::Stack
+      include Sfn::CommandModule::Planning
 
-      # Run the stack creation command
+      # Run the stack update command
       def execute!
         name_required!
         name = name_args.first
@@ -160,132 +161,6 @@ module Sfn
             ui.warn "No updates detected for stack (#{stack.name})"
           else
             raise
-          end
-        end
-      end
-
-      def build_planner(stack)
-        klass_name = stack.api.class.to_s.split("::").last
-        if Planner.const_defined?(klass_name)
-          Planner.const_get(klass_name).new(ui, config, arguments, stack)
-        else
-          warn "Failed to build planner for current provider. No provider implemented. (`#{klass_name}`)"
-          nil
-        end
-      end
-
-      def display_plan_information(result)
-        ui.info ui.color("Pre-update resource planning report:", :bold)
-        unless print_plan_result(result)
-          ui.info "No resources life cycle changes detected in this update!"
-        end
-        ui.confirm "Apply this stack update?" unless config[:plan_only]
-      end
-
-      def print_plan_result(info, names = [])
-        said_any_things = false
-        unless info[:stacks].empty?
-          info[:stacks].each do |s_name, s_info|
-            result = print_plan_result(s_info, [*names, s_name].compact)
-            said_any_things ||= result
-          end
-        end
-        unless names.flatten.compact.empty?
-          said_things = false
-          ui.puts
-          ui.puts "  #{ui.color("Update plan for:", :bold)} #{ui.color(names.join(" > "), :blue)}"
-          unless info[:unknown].empty?
-            ui.puts "    #{ui.color("!!! Unknown update effect:", :red, :bold)}"
-            print_plan_items(info, :unknown, :red)
-            ui.puts
-            said_any_things = said_things = true
-          end
-          unless info[:unavailable].empty?
-            ui.puts "    #{ui.color("Update request not allowed:", :red, :bold)}"
-            print_plan_items(info, :unavailable, :red)
-            ui.puts
-            said_any_things = said_things = true
-          end
-          unless info[:replace].empty?
-            ui.puts "    #{ui.color("Resources to be replaced:", :red, :bold)}"
-            print_plan_items(info, :replace, :red)
-            ui.puts
-            said_any_things = said_things = true
-          end
-          unless info[:interrupt].empty?
-            ui.puts "    #{ui.color("Resources to be interrupted:", :yellow, :bold)}"
-            print_plan_items(info, :interrupt, :yellow)
-            ui.puts
-            said_any_things = said_things = true
-          end
-          unless info[:removed].empty?
-            ui.puts "    #{ui.color("Resources to be removed:", :red, :bold)}"
-            print_plan_items(info, :removed, :red)
-            ui.puts
-            said_any_things = said_things = true
-          end
-          unless info[:added].empty?
-            ui.puts "    #{ui.color("Resources to be added:", :green, :bold)}"
-            print_plan_items(info, :added, :green)
-            ui.puts
-            said_any_things = said_things = true
-          end
-          unless said_things
-            ui.puts "    #{ui.color("No resource lifecycle changes detected!", :green)}"
-            ui.puts
-            said_any_things = true
-          end
-        end
-        said_any_things
-      end
-
-      # Print planning items
-      #
-      # @param info [Hash] plan
-      # @param key [Symbol] key of items
-      # @param color [Symbol] color to flag
-      def print_plan_items(info, key, color)
-        max_name = info[key].keys.map(&:size).max
-        max_type = info[key].values.map { |i| i[:type] }.map(&:size).max
-        max_p = info[key].values.map { |i| i.fetch(:diffs, []) }.flatten(1).map { |d| d.fetch(:property_name, :path).to_s.size }.max
-        max_o = info[key].values.map { |i| i.fetch(:diffs, []) }.flatten(1).map { |d| d[:original].to_s.size }.max
-        info[key].each do |name, val|
-          ui.print " " * 6
-          ui.print ui.color("[#{val[:type]}]", color)
-          ui.print " " * (max_type - val[:type].size)
-          ui.print " " * 4
-          ui.print ui.color(name, :bold)
-          unless val[:properties].nil? || val[:properties].empty?
-            ui.print " " * (max_name - name.size)
-            ui.print " " * 4
-            ui.print "Reason: Updated properties: `#{val[:properties].join("`, `")}`"
-          end
-          ui.puts
-          if config[:diffs]
-            unless val[:diffs].empty?
-              p_name = nil
-              val[:diffs].each do |diff|
-                if !diff[:updated].nil? || !diff[:original].nil?
-                  p_name = diff.fetch(:property_name, :path)
-                  ui.print " " * 8
-                  ui.print "#{p_name}: "
-                  ui.print " " * (max_p - p_name.size)
-                  ui.print ui.color("-#{diff[:original]}", :red) unless diff[:original].nil?
-                  ui.print " " * (max_o - diff[:original].to_s.size)
-                  ui.print " "
-                  if diff[:updated] == Sfn::Planner::RUNTIME_MODIFIED
-                    ui.puts ui.color("+#{diff[:original]} <Dependency Modified>", :green)
-                  else
-                    if diff[:updated].nil?
-                      ui.puts
-                    else
-                      ui.puts ui.color("+#{diff[:updated].to_s.gsub("__MODIFIED_REFERENCE_VALUE__", "<Dependency Modified>")}", :green)
-                    end
-                  end
-                end
-              end
-              ui.puts if p_name
-            end
           end
         end
       end
