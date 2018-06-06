@@ -1,3 +1,9 @@
+# v3.0.32
+* [enhancement] Store AWS STS information on failure
+* [enhancement] Show parameter name when validation fails (#273)
+* [fix] Allow template validation without processing (#279)
+* [feature] Add initial implementation of plan command (#281)
+
 # v3.0.30
 * [fix] Comma delimited parameter type parsing (#270)
 * [fix] Constant deprecations
