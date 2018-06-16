@@ -1,5 +1,5 @@
 ---
-title: "Commands and configuration"
+title: "Configuration"
 weight: 6
 anchors:
   - title: "Conf Command"
@@ -28,6 +28,8 @@ anchors:
     url: "#lint-command"
   - title: "List Command"
     url: "#list-command"
+  - title: "Plan Command"
+    url: "#plan-command"
   - title: "Print Command"
     url: "#print-command"
   - title: "Promote Command"
@@ -37,6 +39,24 @@ anchors:
   - title: "Validate Command"
     url: "#validate-command"
 ---
+
+# Command configurations
+
+This lists commands and the options which the commands accept. It also
+includes the valid types which the options will accept. Options can be
+set with the `.sfn` configuration file to apply default values which
+can be overridden on the CLI. Options defined within the `.sfn` configuration
+file are the option name with `-` characters replaced with `_`.
+
+For example, the option `--apply-mapping` can be defined in the `.sfn`
+configuration file as:
+
+~~~ruby
+Configuration.new do
+  apply_mapping true
+end
+~~~
+
 ## Conf Command
 
 ~~~
@@ -57,6 +77,9 @@ $ sfn conf
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--compile-parameters` | Description | Pass template compile time parameters directly |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -174,6 +197,9 @@ $ sfn create
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--compile-parameters` | Description | Pass template compile time parameters directly |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -276,6 +302,9 @@ $ sfn describe
 
 | Option | Attribute | Value
 |--------|-----------|------
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -342,6 +371,9 @@ $ sfn destroy
 
 | Option | Attribute | Value
 |--------|-----------|------
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -396,6 +428,9 @@ $ sfn diff
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--compile-parameters` | Description | Pass template compile time parameters directly |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -498,6 +533,9 @@ $ sfn events
 | `--attribute` | Description | Event attribute to display |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -552,6 +590,9 @@ $ sfn export
 | `--bucket-prefix` | Description | Remote key prefix within bucket for dump file |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -612,6 +653,9 @@ $ sfn graph
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--compile-parameters` | Description | Pass template compile time parameters directly |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -699,6 +743,9 @@ $ sfn import
 | `--bucket-prefix` | Description | Remote key prefix within bucket for dump file |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -753,6 +800,9 @@ $ sfn init
 
 | Option | Attribute | Value
 |--------|-----------|------
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -825,6 +875,9 @@ $ sfn inspect
 | `--attribute` | Description | Dot delimited attribute to view |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -903,6 +956,9 @@ $ sfn lint
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--compile-parameters` | Description | Pass template compile time parameters directly |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -990,6 +1046,9 @@ $ sfn list
 | `--attribute` | Description | Attribute of stack to print |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -1045,6 +1104,126 @@ $ sfn list
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | |
 
+## Plan Command
+
+~~~
+$ sfn plan
+~~~
+
+| Option | Attribute | Value
+|--------|-----------|------
+| `--apply-mapping` | Description | Customize apply stack mapping as [StackName__]OutputName:ParameterName (Key:Value[,Key:Value,...]) |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--apply-nesting` | Description | Apply stack nesting |
+| | Valid | `String`, `Symbol` |
+| | Default | "deep"|
+| `--apply-stack` | Description | Apply outputs from stack to input parameters |
+| | Valid | `String` |
+| | Default | |
+| `--base-directory` | Description | Path to root of of templates directory |
+| | Valid | `String` |
+| | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--compile-parameters` | Description | Pass template compile time parameters directly |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--config` | Description | Configuration file path |
+| | Valid | `String` |
+| | Default | |
+| `--credentials` | Description | Provider credentials (Key:Value[,Key:Value,...]) |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--debug` | Description | Enable debug output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--defaults` | Description | Automatically accept default values |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--diffs` | Description | Show planner content diff |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--file` | Description | Path to template file |
+| | Valid | `String` |
+| | Default | |
+| `--file-path-prompt` | Description | Enable interactive prompt for template path discovery |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--ignore-parameters` | Description | Parameters to ignore during modifications |
+| | Valid | `String` |
+| | Default | |
+| `--interactive-parameters` | Description | Prompt for template parameters |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--list` | Description | List all available plans for stack |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | false|
+| `--merge-api-options` | Description | Merge API options defined within configuration on update |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | false|
+| `--nesting-bucket` | Description | Bucket to use for storing nested stack templates |
+| | Valid | `String` |
+| | Default | |
+| `--nesting-prefix` | Description | File name prefix for storing template in bucket |
+| | Valid | `String` |
+| | Default | |
+| `--no-base-directory` | Description | Unset any value used for the template root directory path |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--notification-topics` | Description | Notification endpoints for stack events |
+| | Valid | `String` |
+| | Default | |
+| `--options` | Description | Extra options to apply to the API call (Key:Value[,Key:Value,...]) |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--parameter` | Description | [DEPRECATED - use `parameters`] Pass template parameters directly (ParamName:ParamValue) |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--parameter-validation` | Description | Stack parameter validation behavior |
+| | Valid | `String` |
+| | Default | "default"|
+| `--parameters` | Description | Pass template parameters directly (Key:Value[,Key:Value,...]) |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--plan-name` | Description | Custom plan name or ID (not applicable to all providers) |
+| | Valid | `String` |
+| | Default | |
+| `--plan-only` | Description | Exit after plan display |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | false|
+| `--poll` | Description | Poll stack events on modification actions |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--print-only` | Description | Print the resulting stack template |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--processing` | Description | Call the unicorns and explode the glitter bombs |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--rollback` | Description | Rollback stack on failure |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--sparkle-pack` | Description | Load SparklePack gem |
+| | Valid | `String` |
+| | Default | |
+| `--timeout` | Description | Seconds to wait for stack to complete |
+| | Valid | `Integer` |
+| | Default | |
+| `--translate` | Description | Translate generated template to given provider |
+| | Valid | `String` |
+| | Default | |
+| `--translate-chunk` | Description | Chunk length for serialization |
+| | Valid | `Integer` |
+| | Default | |
+| `--upload-root-template` | Description | Upload root template to storage bucket |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--yes` | Description | Automatically accept any requests for confirmation |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+
 ## Print Command
 
 ~~~
@@ -1059,6 +1238,9 @@ $ sfn print
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--compile-parameters` | Description | Pass template compile time parameters directly |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -1122,6 +1304,9 @@ $ sfn print
 | `--write-to-file` | Description | Write compiled SparkleFormation template to path provided |
 | | Valid | `String` |
 | | Default | |
+| `--yaml` | Description | Output template content in YAML format |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
 | `--yes` | Description | Automatically accept any requests for confirmation |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | |
@@ -1143,6 +1328,9 @@ $ sfn promote
 | `--bucket-prefix` | Description | Key prefix within remote bucket |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--conf` | Description |  |
 | | Valid | `Sfn::Config::Conf` |
 | | Default | |
@@ -1218,6 +1406,9 @@ $ sfn update
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--compile-parameters` | Description | Pass template compile time parameters directly |
 | | Valid | `Bogo::Smash` |
 | | Default | |
@@ -1314,6 +1505,9 @@ $ sfn validate
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
 | | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
 | `--compile-parameters` | Description | Pass template compile time parameters directly |
 | | Valid | `Bogo::Smash` |
 | | Default | |
