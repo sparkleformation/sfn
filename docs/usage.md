@@ -76,6 +76,7 @@ in loaded [SparklePacks][sparkle_packs].
 Available template related commands:
 
 * `sfn create`
+* `sfn plan`
 * `sfn update`
 * `sfn validate`
 
