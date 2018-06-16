@@ -2,12 +2,12 @@
 title: "CLI Commands"
 weight: 4
 anchors:
-  - title: "Lifecycle commands"
-    url: "#lifecycle-commands"
-  - title: "Inspection and Information commands"
-    url: "#inspection-and-information-commands"
-  - title: "Configuration commands"
-    url: "#configuration-commands"
+  - title: "Lifecycle"
+    url: "#lifecycle"
+  - title: "Informational"
+    url: "#informational"
+  - title: "Configuration"
+    url: "#configuration"
 ---
 
 ## SparkleFormation CLI commands
@@ -16,7 +16,7 @@ The `sfn` command provides a collection of subcommands to handle stack
 lifecycles as well as subcommands to aid in inspection of existing
 stacks.
 
-### Lifecycle commands
+### Lifecycle
 
 #### Stack create
 
@@ -172,6 +172,35 @@ Example of stack update:
 
 ![stack update](./images/d_update.png)
 
+#### Stack plan
+
+The `plan` command allows for a stack to be created or updated via `sfn`. It uses the
+planning functionality of the provider to include planning information prior to
+application of the creation/modifications. The `plan` command is currently only
+supported with the AWS provider. When using the `update` command, the plan generation
+uses the internal planner with `sfn` and supports showing resource  for nested stacks.
+This is currently not supported with the remote planning API.
+
+Available options for the `plan` command are similar to the `create` and `update`
+commands. Additionally, available plans can be listed for a given stack:
+
+~~~
+$ sfn plan my-stack --list
+~~~
+
+By default the plan will be created with a default name (`miasma-changeset-STACKNAME`). A
+custom name can be used for the plan:
+
+~~~
+$ sfn plan my-stack --file my_template --plan-name custom-plan-name
+~~~
+
+It is also possible to apply an existing plan for a stack by providing the plan name:
+
+~~~
+$ sfn plan my-stack --plan-name existing-plan-name
+~~~
+
 #### Stack destroy
 
 Existing stacks can be destroyed via `sfn`:
@@ -209,7 +238,7 @@ Example of stack destroy:
 
 ![stack destroy](./images/d_destroy.png)
 
-### Inspection and Information commands
+### Informational
 
 #### Stack list
 
@@ -386,7 +415,7 @@ is installed on the local system, an image can be generated directly:
 $ sfn graph --file my_template --graph-type png
 ~~~
 
-### Configuration commands
+### Configuration
 
 To aid setup and configuration, `sfn` provides a configuration helper:
 
