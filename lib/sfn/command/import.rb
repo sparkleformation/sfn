@@ -23,7 +23,13 @@ module Sfn
           if entries.size > 1
             valid = false
             until valid
-              answer = ui.ask_question("Import via file system (fs) or remote bucket (remote)?", :default => "remote")
+              if config[:interactive_parameters]
+                answer = ui.ask_question(
+                  "Import via file system (fs) or remote bucket (remote)?",
+                  :default => "remote")
+              else
+                answer = "remote"
+              end
               valid = true if %w(remote fs).include?(answer)
               entries = [answer]
             end

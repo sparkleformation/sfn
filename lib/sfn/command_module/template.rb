@@ -588,7 +588,12 @@ module Sfn
           ui.puts "#{output.join("\n")}\n"
           response = nil
           until valid[response]
-            response = ui.ask_question("Enter selection").to_i
+            if config[:interactive_parameters]
+              response = ui.ask_question("Enter selection").to_i
+            else
+              ui.fatal "Interactive prompting is disabled"
+              exit 1
+            end
           end
           entry = valid[response]
           if entry[:type] == :collection
