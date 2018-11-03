@@ -21,6 +21,7 @@ module Sfn
     autoload :Plan, "sfn/command/plan"
     autoload :Print, "sfn/command/print"
     autoload :Promote, "sfn/command/promote"
+    autoload :Realize, "sfn/command/realize"
     autoload :Update, "sfn/command/update"
     autoload :Validate, "sfn/command/validate"
 

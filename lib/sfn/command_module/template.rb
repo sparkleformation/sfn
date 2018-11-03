@@ -591,8 +591,7 @@ module Sfn
             if config[:interactive_parameters]
               response = ui.ask_question("Enter selection").to_i
             else
-              ui.fatal "Interactive prompting is disabled"
-              exit 1
+              raise Error::InteractionDisabled
             end
           end
           entry = valid[response]

@@ -112,7 +112,7 @@ module Sfn
             end
             if config[:plan_only]
               ui.info "Plan only mode requested. Exiting."
-              exit 0
+              return
             end
           end
           stack.parameters = config_root_parameters

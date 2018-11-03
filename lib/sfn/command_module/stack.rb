@@ -349,8 +349,7 @@ module Sfn
                   answer = ui.ask_question("Use current value or expected value for #{p_key} " \
                     "[current/expected]?", :valid => ["current", "expected"])
                 else
-                  ui.fatal "Interactive prompting is disabled"
-                  exit 1
+                  raise Error::InteractionDisabled
                 end
               else
                 answer = config[:parameter_validation]

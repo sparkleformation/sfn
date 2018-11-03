@@ -38,7 +38,9 @@ module Sfn
     end
 
     # Only values allowed designating bool type
-    BOOLEAN = BOOLEAN_VALUES = [TrueClass, FalseClass]
+    BOOLEAN = BOOLEAN_VALUES = [TrueClass, FalseClass].freeze
+    # Boolean type with nil included
+    TRISTATE_BOOLEAN = (BOOLEAN + [NilClass]).freeze
 
     autoload :Conf, "sfn/config/conf"
     autoload :Create, "sfn/config/create"
@@ -57,6 +59,7 @@ module Sfn
     autoload :Plan, "sfn/config/plan"
     autoload :Print, "sfn/config/print"
     autoload :Promote, "sfn/config/promote"
+    autoload :Realize, "sfn/config/realize"
     autoload :Update, "sfn/config/update"
     autoload :Validate, "sfn/config/validate"
 
