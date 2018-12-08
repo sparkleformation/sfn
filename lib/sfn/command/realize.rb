@@ -53,20 +53,20 @@ module Sfn
             if config[:poll]
               poll_stack(stack.name)
               if [:update_complete, :create_complete].
-                  include?(stack.reload.state)
+                include?(stack.reload.state)
                 ui.info "Stack plan apply complete: " \
-                  "#{ui.color("SUCCESS", :green)}"
+                        "#{ui.color("SUCCESS", :green)}"
                 namespace.const_get(:Describe).
                   new({:outputs => true}, [name]).execute!
               else
                 ui.fatal "Update of stack #{ui.color(name, :bold)}: " \
-                  "#{ui.color("FAILED", :red, :bold)}"
+                         "#{ui.color("FAILED", :red, :bold)}"
                 raise Error::StackStateIncomplete
               end
             else
               ui.warn "Stack state polling has been disabled."
               ui.info "Stack plan apply initialized for " \
-                "#{ui.color(name, :green)}"
+                      "#{ui.color(name, :green)}"
             end
           end
         rescue Miasma::Error::ApiError::RequestError => e

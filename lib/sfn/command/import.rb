@@ -26,7 +26,8 @@ module Sfn
               if config[:interactive_parameters]
                 answer = ui.ask_question(
                   "Import via file system (fs) or remote bucket (remote)?",
-                  :default => "remote")
+                  :default => "remote",
+                )
               else
                 answer = "remote"
               end

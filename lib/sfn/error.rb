@@ -8,14 +8,14 @@ module Sfn
     # Exit code used when no custom code provided
     DEFAULT_EXIT_CODE = 1
 
-    def self.exit_code(c=nil)
+    def self.exit_code(c = nil)
       if c || !defined?(@exit_code)
         @exit_code = c.to_i != 0 ? c : DEFAULT_EXIT_CODE
       end
       @exit_code
     end
 
-    def self.error_msg(m=nil)
+    def self.error_msg(m = nil)
       if m || !defined?(@error_msg)
         @error_msg = m
       end
@@ -23,7 +23,7 @@ module Sfn
     end
 
     def initialize(*args)
-      opts = args.detect{ |a| a.is_a?(Hash) } || {}
+      opts = args.detect { |a| a.is_a?(Hash) } || {}
       opts = opts.to_smash
       msg = args.first.is_a?(String) ? args.first : self.class.error_msg
       super(msg)
@@ -33,7 +33,7 @@ module Sfn
           @original = opts[:original]
         else
           raise TypeError.new "Expected `Exception` type in `:original` " \
-            "option but received `#{opts[:original].class}`"
+                              "option but received `#{opts[:original].class}`"
         end
       end
     end

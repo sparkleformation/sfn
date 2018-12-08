@@ -20,19 +20,19 @@ module Sfn
       attribute(
         :load_existing, TRISTATE_BOOLEAN,
         :description => "Load existing plan if exists",
-        :default => nil
+        :default => nil,
       )
 
       attribute(
         :auto_destroy_stack, TRISTATE_BOOLEAN,
         :description => "Automatically destroy empty stack",
-        :default => nil
+        :default => nil,
       )
 
       attribute(
         :auto_destroy_plan, TRISTATE_BOOLEAN,
         :description => "Automatically destroy generated plan",
-        :default => nil
+        :default => nil,
       )
 
       attribute(
