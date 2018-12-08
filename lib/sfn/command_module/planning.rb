@@ -28,7 +28,12 @@ module Sfn
           ui.info "No resources life cycle changes detected in this update!"
         end
         cmd = self.class.to_s.split("::").last.downcase
-        ui.confirm "Apply this stack #{cmd}?" unless config[:plan_only]
+        if config[:plan_apply]
+          return ui.info "Applying this stack #{cmd}..."
+        elsif config[:plan_only]
+          return
+        end
+        ui.confirm "Apply this stack #{cmd}?"
       end
 
       # Print plan information to the UI

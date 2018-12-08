@@ -340,9 +340,17 @@ module Sfn
             end
             if current_value && current_value.to_s != stack_value.to_s
               if config[:parameter_validation] == "default"
-                ui.warn "Nested stack has been altered directly! This update may cause unexpected modifications!"
-                ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. Current value: #{stack_value}. Expected value: #{current_value} (via: #{c_value.inspect})"
-                answer = ui.ask_question("Use current value or expected value for #{p_key} [current/expected]?", :valid => ["current", "expected"])
+                ui.warn "Nested stack has been altered directly! " \
+                        "This update may cause unexpected modifications!"
+                ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. " \
+                        "Current value: #{stack_value}. Expected value: #{current_value} " \
+                        "(via: #{c_value.inspect})"
+                if config[:interactive_parameters]
+                  answer = ui.ask_question("Use current value or expected value for #{p_key} " \
+                  "[current/expected]?", :valid => ["current", "expected"])
+                else
+                  raise Error::InteractionDisabled
+                end
               else
                 answer = config[:parameter_validation]
               end

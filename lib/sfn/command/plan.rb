@@ -36,7 +36,12 @@ module Sfn
           if stack && stack.plan
             ui.warn "Found existing plan for this stack"
             begin
-              ui.confirm "Destroy existing plan?"
+              if config[:load_existing]
+                raise Bogo::Ui::ConfirmationDeclined
+              end
+              if config[:load_existing].nil?
+                ui.confirm "Destroy existing plan"
+              end
               ui.info "Destroying existing plan to generate new plan"
               stack.plan.destroy
             rescue Bogo::Ui::ConfirmationDeclined
@@ -127,56 +132,8 @@ module Sfn
         end
 
         plan = stack.plan || stack.plan_generate
-
-        begin
-          display_plan_information(plan)
-        rescue Bogo::Ui::ConfirmationDeclined
-          stack.reload
-          if (stack.template.nil? || stack.template.empty?) && stack.state == :unknown
-            ui.auto_confirm = false
-            ui.warn "Stack appears to be empty and should be destroyed"
-            ui.confirm "Destroy stack?"
-            stack.destroy
-            poll_stack(stack.name)
-          else
-            ui.confirm "Destroy generated plan?"
-            plan.destroy
-          end
-          raise
-        end
-
-        if config[:merge_api_options]
-          config.fetch(:options, Smash.new).each_pair do |key, value|
-            if stack.respond_to?("#{key}=")
-              stack.send("#{key}=", value)
-            end
-          end
-        end
-
-        begin
-          api_action!(:api_stack => stack) do
-            stack.plan_execute
-            if config[:poll]
-              poll_stack(stack.name)
-              if stack.reload.state == :update_complete || stack.reload.state == :create_complete
-                ui.info "Stack plan apply complete: #{ui.color("SUCCESS", :green)}"
-                namespace.const_get(:Describe).new({:outputs => true}, [name]).execute!
-              else
-                ui.fatal "Update of stack #{ui.color(name, :bold)}: #{ui.color("FAILED", :red, :bold)}"
-                raise "Stack did not reach a successful completion state."
-              end
-            else
-              ui.warn "Stack state polling has been disabled."
-              ui.info "Stack plan apply initialized for #{ui.color(name, :green)}"
-            end
-          end
-        rescue Miasma::Error::ApiError::RequestError => e
-          if e.message.downcase.include?("no updates")
-            ui.warn "No changes detected for stack (#{stack.name})"
-          else
-            raise
-          end
-        end
+        namespace.const_get(:Realize).
+          new(config, [name]).execute!
       end
 
       # Display plan list in table form
