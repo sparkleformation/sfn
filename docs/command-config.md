@@ -34,6 +34,8 @@ anchors:
     url: "#print-command"
   - title: "Promote Command"
     url: "#promote-command"
+  - title: "Realize Command"
+    url: "#realize-command"
   - title: "Update Command"
     url: "#update-command"
   - title: "Validate Command"
@@ -113,6 +115,9 @@ $ sfn conf
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--merge-api-options` | Description | Merge API options defined within configuration on update |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | false|
@@ -230,6 +235,9 @@ $ sfn create
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--merge-api-options` | Description | Merge API options defined within configuration on update |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | false|
@@ -344,6 +352,9 @@ $ sfn describe
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--outputs` | Description | Display stack outputs |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | |
@@ -398,6 +409,9 @@ $ sfn destroy
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--poll` | Description | Poll stack events on modification actions |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
@@ -461,6 +475,9 @@ $ sfn diff
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--merge-api-options` | Description | Merge API options defined within configuration on update |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | false|
@@ -563,6 +580,9 @@ $ sfn events
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--poll` | Description | Poll stack events on modification actions |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
@@ -623,6 +643,9 @@ $ sfn export
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--name` | Description | Export file base name |
 | | Valid | `String` |
 | | Default | |
@@ -686,6 +709,9 @@ $ sfn graph
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--luckymike` | Description | Force `dependency` style graph |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | false|
@@ -779,6 +805,9 @@ $ sfn import
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--path` | Description | Directory path JSON export files are located |
 | | Valid | `String` |
 | | Default | |
@@ -847,6 +876,9 @@ $ sfn init
 | | Default | true|
 | `--list` | Description |  |
 | | Valid | `Sfn::Config::List` |
+| | Default | |
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
 | | Default | |
 | `--poll` | Description | Poll stack events on modification actions |
 | | Valid | `TrueClass`, `FalseClass` |
@@ -926,6 +958,9 @@ $ sfn inspect
 | `--load-balancers` | Description | Locate all load balancers, display addresses and server states |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | |
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--nodes` | Description | Locate all instances and display addresses |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | |
@@ -998,6 +1033,9 @@ $ sfn lint
 | `--local-rule-sets-only` | Description | Only apply rule sets provided by lint directory |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | false|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--nesting-bucket` | Description | Bucket to use for storing nested stack templates |
 | | Valid | `String` |
 | | Default | |
@@ -1091,6 +1129,9 @@ $ sfn list
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--poll` | Description | Poll stack events on modification actions |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
@@ -1120,6 +1161,12 @@ $ sfn plan
 | | Default | "deep"|
 | `--apply-stack` | Description | Apply outputs from stack to input parameters |
 | | Valid | `String` |
+| | Default | |
+| `--auto-destroy-plan` | Description | Automatically destroy generated plan |
+| | Valid | `TrueClass`, `FalseClass`, `NilClass` |
+| | Default | |
+| `--auto-destroy-stack` | Description | Automatically destroy empty stack |
+| | Valid | `TrueClass`, `FalseClass`, `NilClass` |
 | | Default | |
 | `--base-directory` | Description | Path to root of of templates directory |
 | | Valid | `String` |
@@ -1160,6 +1207,12 @@ $ sfn plan
 | `--list` | Description | List all available plans for stack |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | false|
+| `--load-existing` | Description | Load existing plan if exists |
+| | Valid | `TrueClass`, `FalseClass`, `NilClass` |
+| | Default | |
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--merge-api-options` | Description | Merge API options defined within configuration on update |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | false|
@@ -1268,6 +1321,9 @@ $ sfn print
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--nesting-bucket` | Description | Bucket to use for storing nested stack templates |
 | | Valid | `String` |
 | | Default | |
@@ -1376,11 +1432,92 @@ $ sfn promote
 | `--list` | Description |  |
 | | Valid | `Sfn::Config::List` |
 | | Default | |
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--poll` | Description | Poll stack events on modification actions |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
 | `--update` | Description |  |
 | | Valid | `Sfn::Config::Update` |
+| | Default | |
+| `--yes` | Description | Automatically accept any requests for confirmation |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+
+## Realize Command
+
+~~~
+$ sfn realize
+~~~
+
+| Option | Attribute | Value
+|--------|-----------|------
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--conf` | Description |  |
+| | Valid | `Sfn::Config::Conf` |
+| | Default | |
+| `--config` | Description | Configuration file path |
+| | Valid | `String` |
+| | Default | |
+| `--create` | Description |  |
+| | Valid | `Sfn::Config::Create` |
+| | Default | |
+| `--credentials` | Description | Provider credentials (Key:Value[,Key:Value,...]) |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--debug` | Description | Enable debug output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--defaults` | Description | Automatically accept default values |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--describe` | Description |  |
+| | Valid | `Sfn::Config::Describe` |
+| | Default | |
+| `--destroy` | Description |  |
+| | Valid | `Sfn::Config::Destroy` |
+| | Default | |
+| `--events` | Description |  |
+| | Valid | `Sfn::Config::Events` |
+| | Default | |
+| `--export` | Description |  |
+| | Valid | `Sfn::Config::Export` |
+| | Default | |
+| `--ignore-parameters` | Description | Parameters to ignore during modifications |
+| | Valid | `String` |
+| | Default | |
+| `--import` | Description |  |
+| | Valid | `Sfn::Config::Import` |
+| | Default | |
+| `--inspect` | Description |  |
+| | Valid | `Sfn::Config::Inspect` |
+| | Default | |
+| `--interactive-parameters` | Description | Prompt for template parameters |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--list` | Description |  |
+| | Valid | `Sfn::Config::List` |
+| | Default | |
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
+| `--plan-name` | Description | Custom plan name or ID |
+| | Valid | `String` |
+| | Default | |
+| `--poll` | Description | Poll stack events on modification actions |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--promote` | Description |  |
+| | Valid | `Sfn::Config::Promote` |
+| | Default | |
+| `--update` | Description |  |
+| | Valid | `Sfn::Config::Update` |
+| | Default | |
+| `--validate` | Description |  |
+| | Valid | `Sfn::Config::Validate` |
 | | Default | |
 | `--yes` | Description | Automatically accept any requests for confirmation |
 | | Valid | `TrueClass`, `FalseClass` |
@@ -1439,6 +1576,9 @@ $ sfn update
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--merge-api-options` | Description | Merge API options defined within configuration on update |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | false|
@@ -1535,6 +1675,9 @@ $ sfn validate
 | `--interactive-parameters` | Description | Prompt for template parameters |
 | | Valid | `TrueClass`, `FalseClass` |
 | | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
 | `--nesting-bucket` | Description | Bucket to use for storing nested stack templates |
 | | Valid | `String` |
 | | Default | |
