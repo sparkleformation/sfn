@@ -201,6 +201,23 @@ It is also possible to apply an existing plan for a stack by providing the plan 
 $ sfn plan my-stack --plan-name existing-plan-name
 ~~~
 
+#### Stack realize
+
+The `realize` command loads an existing plan for a given stack and executes the plan. This
+is useful to allow generating plans and then executing a plan at a later time. For example
+a stack plan can be first generated and not applied:
+
+~~~
+$ sfn plan my-stack --file my_template --plan-only
+~~~
+
+This generates the plan and displays the result but does not apply the changes. The plan
+can then be loaded and applied using the `realize` command:
+
+~~~
+$ sfn realize my-stack
+~~~
+
 #### Stack destroy
 
 Existing stacks can be destroyed via `sfn`:
