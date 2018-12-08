@@ -108,6 +108,11 @@ module Sfn
       :short_flag => "u",
     )
     attribute(
+      :log, String,
+      :description => "Enable logging with given level",
+      :short_flag => "G",
+    )
+    attribute(
       :colors, [TrueClass, FalseClass],
       :description => "Enable colorized output",
       :default => true,
