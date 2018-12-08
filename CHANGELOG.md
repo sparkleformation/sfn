@@ -1,3 +1,8 @@
+# v
+* [enhancement] Split `plan` command into `plan` and `realize` (#285)
+* [deprecation] Remove sfn command mapping knife integration (#286)
+* [fix] Properly handle multiple type compile parameters (#287)
+
 # v3.0.32
 * [enhancement] Store AWS STS information on failure
 * [enhancement] Show parameter name when validation fails (#273)
