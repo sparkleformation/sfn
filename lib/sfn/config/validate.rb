@@ -81,7 +81,14 @@ module Sfn
             result = Smash.new
             v.split(",").each do |item_pair|
               key, value = item_pair.split(/[=:]/, 2)
-              result[key] = value
+              if !result[key]
+                result[key] = value
+                next
+              end
+              if !result.is_a?(Array)
+                result[key] = [result[key]]
+              end
+              result[key] << value
             end
             result
           when Hash
