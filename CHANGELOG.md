@@ -1,4 +1,4 @@
-# v
+# v3.1.0
 * [enhancement] Split `plan` command into `plan` and `realize` (#285)
 * [deprecation] Remove sfn command mapping knife integration (#286)
 * [fix] Properly handle multiple type compile parameters (#287)
