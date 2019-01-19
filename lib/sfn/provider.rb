@@ -101,7 +101,15 @@ module Sfn
         fetch_stacks(stack_id) if recache
       end
       value = cache[:stacks].value
-      value ? MultiJson.dump(MultiJson.load(value).values) : "[]"
+      if value
+        value = MultiJson.load(value)
+        if value.respond_to?(:values)
+          value = value.values
+        end
+        MultiJson.dump(value)
+      else
+        "[]"
+      end
     end
 
     # @return [Miasma::Orchestration::Stack, NilClass]
