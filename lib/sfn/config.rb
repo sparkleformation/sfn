@@ -60,6 +60,7 @@ module Sfn
     autoload :Print, "sfn/config/print"
     autoload :Promote, "sfn/config/promote"
     autoload :Realize, "sfn/config/realize"
+    autoload :Trace, "sfn/config/trace"
     autoload :Update, "sfn/config/update"
     autoload :Validate, "sfn/config/validate"
 
