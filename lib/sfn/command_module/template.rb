@@ -295,12 +295,12 @@ module Sfn
         def process_nested_stack_shallow(sf, c_stack = nil)
           sf.apply_nesting(:shallow) do |stack_name, stack, resource|
             run_callbacks_for(:template, :stack_name => stack_name, :sparkle_stack => stack)
-            bucket = provider.connection.api_for(:storage).buckets.get(
-              config[:nesting_bucket]
-            )
             if config[:print_only]
               template_url = "http://example.com/bucket/#{name_args.first}_#{stack_name}.json"
             else
+              bucket = provider.connection.api_for(:storage).buckets.get(
+                config[:nesting_bucket]
+              )
               stack_definition = dump_stack_for_storage(stack)
               unless bucket
                 raise "Failed to locate configured bucket for stack template storage (#{bucket})!"

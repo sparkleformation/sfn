@@ -22,6 +22,7 @@ module Sfn
     autoload :Print, "sfn/command/print"
     autoload :Promote, "sfn/command/promote"
     autoload :Realize, "sfn/command/realize"
+    autoload :Trace, "sfn/command/trace"
     autoload :Update, "sfn/command/update"
     autoload :Validate, "sfn/command/validate"
 
