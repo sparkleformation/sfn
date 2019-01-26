@@ -514,8 +514,8 @@ module Sfn
           if diff.size > 1
             updated = diff.detect { |x| x.first == "+" }
             original = diff.detect { |x| x.first == "-" }
-            di[:original] = original.last.to_s
-            di[:updated] = updated.last.to_s
+            di[:original] = Array(original).last.to_s
+            di[:updated] = Array(updated).last.to_s
           else
             diff_data = diff.first
             di[:path] = path

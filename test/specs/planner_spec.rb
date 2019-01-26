@@ -451,10 +451,6 @@ describe Sfn::Planner do
     end
 
     describe "Parameters AllowedValues" do
-      before do
-        api.expects(:data).returns({}).at_least_once
-      end
-
       let(:template) do
         Smash.new(
           "Parameters" => {
