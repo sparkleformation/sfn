@@ -45,12 +45,17 @@ module Sfn
         end
         if config[:poll]
           if stacks.size == 1
+            pstack = stacks.first
             begin
-              poll_stack(stacks.first)
-            rescue Miasma::Error::ApiError::RequestError => error
-              unless error.response.code == 404
-                raise error
+              poll_stack(pstack)
+              stack = provider.connection.stacks.get(pstack)
+              stack.reload
+              if stack.state.to_s.end_with?("failed")
+                ui.error("Stack #{ui.color(pstack, :bold)} still exists after polling complete.")
+                raise "Failed to successfully destroy stack!"
               end
+            rescue Miasma::Error::ApiError::RequestError => error
+              # Ignore if stack cannot be reloaded
             end
           else
             ui.error "Stack polling is not available when multiple stack deletion is requested!"
