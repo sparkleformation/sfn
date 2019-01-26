@@ -449,5 +449,38 @@ describe Sfn::Planner do
         end
       end
     end
+
+    describe "Parameters AllowedValues" do
+      let(:template) do
+        Smash.new(
+          "Parameters" => {
+            "Param" => {
+              "Type" => "String",
+              "AllowedValues" => ["1", "5", "4", "2", "3"], # XXX: The order is significant.
+            },
+          },
+        )
+      end
+
+      describe "AllowedValues have a different order" do
+        let(:stack_parameters) do
+          Smash.new("Param" => "1")
+        end
+
+        it "does not crash with: NoMethodError: undefined method `last' for nil:NilClass" do
+          api.expects(:stack_template_load).returns(
+            Smash.new(
+              "Parameters" => {
+                "Param" => {
+                  "Type" => "String",
+                  "AllowedValues" => ["2", "4", "1", "3", "5"], # XXX: The order is significant.
+                },
+              },
+            )
+          ).at_least_once
+          result = planner.generate_plan(template, Smash.new("Param" => "2")).stacks[stack.name]
+        end
+      end
+    end
   end
 end
