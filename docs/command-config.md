@@ -36,6 +36,8 @@ anchors:
     url: "#promote-command"
   - title: "Realize Command"
     url: "#realize-command"
+  - title: "Trace Command"
+    url: "#trace-command"
   - title: "Update Command"
     url: "#update-command"
   - title: "Validate Command"
@@ -1518,6 +1520,87 @@ $ sfn realize
 | | Default | |
 | `--validate` | Description |  |
 | | Valid | `Sfn::Config::Validate` |
+| | Default | |
+| `--yes` | Description | Automatically accept any requests for confirmation |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+
+## Trace Command
+
+~~~
+$ sfn trace
+~~~
+
+| Option | Attribute | Value
+|--------|-----------|------
+| `--apply-nesting` | Description | Apply stack nesting |
+| | Valid | `String`, `Symbol` |
+| | Default | "deep"|
+| `--base-directory` | Description | Path to root of of templates directory |
+| | Valid | `String` |
+| | Default | |
+| `--colors` | Description | Enable colorized output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--compile-parameters` | Description | Pass template compile time parameters directly |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--config` | Description | Configuration file path |
+| | Valid | `String` |
+| | Default | |
+| `--credentials` | Description | Provider credentials (Key:Value[,Key:Value,...]) |
+| | Valid | `Bogo::Smash` |
+| | Default | |
+| `--debug` | Description | Enable debug output |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--defaults` | Description | Automatically accept default values |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--file` | Description | Path to template file |
+| | Valid | `String` |
+| | Default | |
+| `--file-path-prompt` | Description | Enable interactive prompt for template path discovery |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--ignore-parameters` | Description | Parameters to ignore during modifications |
+| | Valid | `String` |
+| | Default | |
+| `--interactive-parameters` | Description | Prompt for template parameters |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--log` | Description | Enable logging with given level |
+| | Valid | `String` |
+| | Default | |
+| `--nesting-bucket` | Description | Bucket to use for storing nested stack templates |
+| | Valid | `String` |
+| | Default | |
+| `--nesting-prefix` | Description | File name prefix for storing template in bucket |
+| | Valid | `String` |
+| | Default | |
+| `--no-base-directory` | Description | Unset any value used for the template root directory path |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--poll` | Description | Poll stack events on modification actions |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--print-only` | Description | Print the resulting stack template |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | |
+| `--processing` | Description | Call the unicorns and explode the glitter bombs |
+| | Valid | `TrueClass`, `FalseClass` |
+| | Default | true|
+| `--sparkle-pack` | Description | Load SparklePack gem |
+| | Valid | `String` |
+| | Default | |
+| `--translate` | Description | Translate generated template to given provider |
+| | Valid | `String` |
+| | Default | |
+| `--translate-chunk` | Description | Chunk length for serialization |
+| | Valid | `Integer` |
+| | Default | |
+| `--upload-root-template` | Description | Upload root template to storage bucket |
+| | Valid | `TrueClass`, `FalseClass` |
 | | Default | |
 | `--yes` | Description | Automatically accept any requests for confirmation |
 | | Valid | `TrueClass`, `FalseClass` |
