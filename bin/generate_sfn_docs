@@ -34,4 +34,7 @@ File.open('doc/UserDocs/index.html', 'w') do |file|
   file.puts '<html><head><meta http-equiv="refresh" content="0; url=README.html" /></head></html>'
 end
 
+FileUtils.mkdir('doc/img')
+FileUtils.cp('img/sfn.jpg', 'doc/img/')
+
 puts 'done.'
