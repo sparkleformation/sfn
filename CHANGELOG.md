@@ -1,3 +1,8 @@
+# v3.1.2
+* [feature] Add `trace` command for template composition inspection (#289)
+* [fix] Return non-zero exit code when polling stack destroy fails (#292)
+* [fix] Update planner to handle value re-order (#290)
+
 # v3.1.0
 * [enhancement] Split `plan` command into `plan` and `realize` (#285)
 * [deprecation] Remove sfn command mapping knife integration (#286)
