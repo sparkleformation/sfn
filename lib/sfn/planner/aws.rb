@@ -512,10 +512,10 @@ module Sfn
       def diff_init(diff, path)
         Smash.new.tap do |di|
           if diff.size > 1
-            updated = diff.detect { |x| x.first == "+" }
-            original = diff.detect { |x| x.first == "-" }
-            di[:original] = Array(original).last.to_s
-            di[:updated] = Array(updated).last.to_s
+            updated = diff.find_all { |x| x.first == "+" }
+            original = diff.find_all { |x| x.first == "-" }
+            di[:original] = Array(original).map(&:last).join(", ")
+            di[:updated] = Array(updated).map(&:last).join(", ")
           else
             diff_data = diff.first
             di[:path] = path
