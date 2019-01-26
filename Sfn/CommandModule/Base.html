@@ -6,7 +6,7 @@
 <title>
   Module: Sfn::CommandModule::Base
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -76,7 +76,7 @@
   
   <dl>
     <dt>Included in:</dt>
-    <dd><span class='object_link'><a href="../Command/Conf.html" title="Sfn::Command::Conf (class)">Sfn::Command::Conf</a></span>, <span class='object_link'><a href="../Command/Create.html" title="Sfn::Command::Create (class)">Sfn::Command::Create</a></span>, <span class='object_link'><a href="../Command/Describe.html" title="Sfn::Command::Describe (class)">Sfn::Command::Describe</a></span>, <span class='object_link'><a href="../Command/Destroy.html" title="Sfn::Command::Destroy (class)">Sfn::Command::Destroy</a></span>, <span class='object_link'><a href="../Command/Diff.html" title="Sfn::Command::Diff (class)">Sfn::Command::Diff</a></span>, <span class='object_link'><a href="../Command/Events.html" title="Sfn::Command::Events (class)">Sfn::Command::Events</a></span>, <span class='object_link'><a href="../Command/Export.html" title="Sfn::Command::Export (class)">Sfn::Command::Export</a></span>, <span class='object_link'><a href="../Command/Graph.html" title="Sfn::Command::Graph (class)">Sfn::Command::Graph</a></span>, <span class='object_link'><a href="../Command/Import.html" title="Sfn::Command::Import (class)">Sfn::Command::Import</a></span>, <span class='object_link'><a href="../Command/Init.html" title="Sfn::Command::Init (class)">Sfn::Command::Init</a></span>, <span class='object_link'><a href="../Command/Inspect.html" title="Sfn::Command::Inspect (class)">Sfn::Command::Inspect</a></span>, <span class='object_link'><a href="../Command/Lint.html" title="Sfn::Command::Lint (class)">Sfn::Command::Lint</a></span>, <span class='object_link'><a href="../Command/List.html" title="Sfn::Command::List (class)">Sfn::Command::List</a></span>, <span class='object_link'><a href="../Command/Print.html" title="Sfn::Command::Print (class)">Sfn::Command::Print</a></span>, <span class='object_link'><a href="../Command/Promote.html" title="Sfn::Command::Promote (class)">Sfn::Command::Promote</a></span>, <span class='object_link'><a href="../Command/Update.html" title="Sfn::Command::Update (class)">Sfn::Command::Update</a></span>, <span class='object_link'><a href="../Command/Validate.html" title="Sfn::Command::Validate (class)">Sfn::Command::Validate</a></span></dd>
+    <dd><span class='object_link'><a href="../Command/Conf.html" title="Sfn::Command::Conf (class)">Sfn::Command::Conf</a></span>, <span class='object_link'><a href="../Command/Create.html" title="Sfn::Command::Create (class)">Sfn::Command::Create</a></span>, <span class='object_link'><a href="../Command/Describe.html" title="Sfn::Command::Describe (class)">Sfn::Command::Describe</a></span>, <span class='object_link'><a href="../Command/Destroy.html" title="Sfn::Command::Destroy (class)">Sfn::Command::Destroy</a></span>, <span class='object_link'><a href="../Command/Diff.html" title="Sfn::Command::Diff (class)">Sfn::Command::Diff</a></span>, <span class='object_link'><a href="../Command/Events.html" title="Sfn::Command::Events (class)">Sfn::Command::Events</a></span>, <span class='object_link'><a href="../Command/Export.html" title="Sfn::Command::Export (class)">Sfn::Command::Export</a></span>, <span class='object_link'><a href="../Command/Graph.html" title="Sfn::Command::Graph (class)">Sfn::Command::Graph</a></span>, <span class='object_link'><a href="../Command/Import.html" title="Sfn::Command::Import (class)">Sfn::Command::Import</a></span>, <span class='object_link'><a href="../Command/Init.html" title="Sfn::Command::Init (class)">Sfn::Command::Init</a></span>, <span class='object_link'><a href="../Command/Inspect.html" title="Sfn::Command::Inspect (class)">Sfn::Command::Inspect</a></span>, <span class='object_link'><a href="../Command/Lint.html" title="Sfn::Command::Lint (class)">Sfn::Command::Lint</a></span>, <span class='object_link'><a href="../Command/List.html" title="Sfn::Command::List (class)">Sfn::Command::List</a></span>, <span class='object_link'><a href="../Command/Plan.html" title="Sfn::Command::Plan (class)">Sfn::Command::Plan</a></span>, <span class='object_link'><a href="../Command/Print.html" title="Sfn::Command::Print (class)">Sfn::Command::Print</a></span>, <span class='object_link'><a href="../Command/Promote.html" title="Sfn::Command::Promote (class)">Sfn::Command::Promote</a></span>, <span class='object_link'><a href="../Command/Realize.html" title="Sfn::Command::Realize (class)">Sfn::Command::Realize</a></span>, <span class='object_link'><a href="../Command/Trace.html" title="Sfn::Command::Trace (class)">Sfn::Command::Trace</a></span>, <span class='object_link'><a href="../Command/Update.html" title="Sfn::Command::Update (class)">Sfn::Command::Update</a></span>, <span class='object_link'><a href="../Command/Validate.html" title="Sfn::Command::Validate (class)">Sfn::Command::Validate</a></span></dd>
   </dl>
   
 
@@ -170,27 +170,23 @@
       <pre class="lines">
 
 
+182
+183
+184
+185
 186
 187
 188
 189
 190
 191
-192
-193
-194
-195
-196
-197
-198
-199</pre>
+192</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/base.rb', line 186</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/base.rb', line 182</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_included'>included</span><span class='lparen'>(</span><span class='id identifier rubyid_klass'>klass</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_klass'>klass</span><span class='period'>.</span><span class='id identifier rubyid_instance_eval'>instance_eval</span> <span class='kw'>do</span>
-
     <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../CommandModule.html" title="Sfn::CommandModule (module)">CommandModule</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Sfn::CommandModule::Base (module)">Base</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Base/InstanceMethods.html" title="Sfn::CommandModule::Base::InstanceMethods (module)">InstanceMethods</a></span></span>
     <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../CommandModule.html" title="Sfn::CommandModule (module)">CommandModule</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Callbacks.html" title="Sfn::CommandModule::Callbacks (module)">Callbacks</a></span></span>
     <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../../Sfn.html" title="Sfn (module)">Sfn</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils.html" title="Sfn::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils/JSON.html" title="Sfn::Utils::JSON (module)">JSON</a></span></span>
@@ -198,9 +194,7 @@
     <span class='id identifier rubyid_include'>include</span> <span class='const'>Bogo</span><span class='op'>::</span><span class='const'>AnimalStrings</span>
     <span class='id identifier rubyid_include'>include</span> <span class='const'>Bogo</span><span class='op'>::</span><span class='const'>Memoization</span>
     <span class='id identifier rubyid_include'>include</span> <span class='const'>Bogo</span><span class='op'>::</span><span class='const'>Constants</span>
-
   <span class='kw'>end</span>
-
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -212,9 +206,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:05:54 2017 by
+  Generated on Sat Jan 26 12:10:39 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

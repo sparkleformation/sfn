@@ -6,7 +6,7 @@
 <title>
   Module: Sfn::Utils::ObjectStorage
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -248,13 +248,13 @@
       <pre class="code"><span class="info file"># File 'lib/sfn/utils/object_storage.rb', line 15</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_file_store'>file_store</span><span class='lparen'>(</span><span class='id identifier rubyid_object'>object</span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_directory'>directory</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Internal updated required! :(</span><span class='tstring_end'>&#39;</span></span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Internal updated required! :(</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='id identifier rubyid_object'>object</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_object'>object</span> <span class='op'>:</span> <span class='const'><span class='object_link'><a href="../Utils.html" title="Sfn::Utils (module)">Utils</a></span></span><span class='period'>.</span><span class='id identifier rubyid__format_json'><span class='object_link'><a href="JSON.html#_format_json-instance_method" title="Sfn::Utils::JSON#_format_json (method)">_format_json</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_object'>object</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_directory'>directory</span><span class='period'>.</span><span class='id identifier rubyid_files'>files</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span>
     <span class='symbol'>:identity</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span>
-    <span class='symbol'>:body</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_content'>content</span>
+    <span class='symbol'>:body</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_content'>content</span><span class='comma'>,</span>
   <span class='rparen'>)</span>
-  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='id identifier rubyid_directory'>directory</span><span class='period'>.</span><span class='id identifier rubyid_service'>service</span><span class='period'>.</span><span class='id identifier rubyid_service'>service</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>::</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span>
+  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='id identifier rubyid_directory'>directory</span><span class='period'>.</span><span class='id identifier rubyid_service'>service</span><span class='period'>.</span><span class='id identifier rubyid_service'>service</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>::</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_loc'>loc</span><span class='embexpr_end'>}</span><span class='tstring_content'>://</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_directory'>directory</span><span class='period'>.</span><span class='id identifier rubyid_identity'>identity</span><span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_path'>path</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
@@ -267,9 +267,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:05:55 2017 by
+  Generated on Sat Jan 26 12:10:39 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

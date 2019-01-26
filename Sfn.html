@@ -6,7 +6,7 @@
 <title>
   Module: Sfn
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -79,7 +79,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/sfn.rb<span class="defines">,<br />
-  lib/sfn/lint.rb,<br /> lib/sfn/cache.rb,<br /> lib/sfn/utils.rb,<br /> lib/sfn/config.rb,<br /> lib/sfn/command.rb,<br /> lib/sfn/planner.rb,<br /> lib/sfn/version.rb,<br /> lib/sfn/callback.rb,<br /> lib/sfn/provider.rb,<br /> lib/sfn/lint/rule.rb,<br /> lib/sfn/utils/json.rb,<br /> lib/sfn/config/conf.rb,<br /> lib/sfn/config/diff.rb,<br /> lib/sfn/config/init.rb,<br /> lib/sfn/config/lint.rb,<br /> lib/sfn/config/list.rb,<br /> lib/sfn/planner/aws.rb,<br /> lib/sfn/utils/debug.rb,<br /> lib/sfn/utils/ssher.rb,<br /> lib/sfn/api_provider.rb,<br /> lib/sfn/command/conf.rb,<br /> lib/sfn/command/diff.rb,<br /> lib/sfn/command/init.rb,<br /> lib/sfn/command/lint.rb,<br /> lib/sfn/command/list.rb,<br /> lib/sfn/config/graph.rb,<br /> lib/sfn/config/print.rb,<br /> lib/sfn/monkey_patch.rb,<br /> lib/sfn/utils/output.rb,<br /> lib/sfn/command/graph.rb,<br /> lib/sfn/command/print.rb,<br /> lib/sfn/config/create.rb,<br /> lib/sfn/config/events.rb,<br /> lib/sfn/config/export.rb,<br /> lib/sfn/config/import.rb,<br /> lib/sfn/config/update.rb,<br /> lib/sfn/lint/rule_set.rb,<br /> lib/sfn/command/create.rb,<br /> lib/sfn/command/events.rb,<br /> lib/sfn/command/export.rb,<br /> lib/sfn/command/import.rb,<br /> lib/sfn/command/update.rb,<br /> lib/sfn/command_module.rb,<br /> lib/sfn/config/destroy.rb,<br /> lib/sfn/config/inspect.rb,<br /> lib/sfn/config/promote.rb,<br /> lib/sfn/command/destroy.rb,<br /> lib/sfn/command/inspect.rb,<br /> lib/sfn/command/promote.rb,<br /> lib/sfn/config/describe.rb,<br /> lib/sfn/config/validate.rb,<br /> lib/sfn/lint/definition.rb,<br /> lib/sfn/callback/aws_mfa.rb,<br /> lib/sfn/command/describe.rb,<br /> lib/sfn/command/validate.rb,<br /> lib/sfn/monkey_patch/stack.rb,<br /> lib/sfn/api_provider/google.rb,<br /> lib/sfn/command_module/base.rb,<br /> lib/sfn/utils/path_selector.rb,<br /> lib/sfn/command_module/stack.rb,<br /> lib/sfn/utils/object_storage.rb,<br /> lib/sfn/utils/stack_exporter.rb,<br /> lib/sfn/callback/stack_policy.rb,<br /> lib/sfn/api_provider/terraform.rb,<br /> lib/sfn/command_module/template.rb,<br /> lib/sfn/callback/aws_assume_role.rb,<br /> lib/sfn/command_module/callbacks.rb,<br /> lib/sfn/monkey_patch/stack/azure.rb,<br /> lib/sfn/monkey_patch/stack/google.rb,<br /> lib/sfn/utils/stack_parameter_scrubber.rb,<br /> lib/sfn/utils/stack_parameter_validator.rb</span>
+  lib/sfn/lint.rb,<br /> lib/sfn/cache.rb,<br /> lib/sfn/error.rb,<br /> lib/sfn/utils.rb,<br /> lib/sfn/config.rb,<br /> lib/sfn/command.rb,<br /> lib/sfn/planner.rb,<br /> lib/sfn/version.rb,<br /> lib/sfn/callback.rb,<br /> lib/sfn/provider.rb,<br /> lib/sfn/lint/rule.rb,<br /> lib/sfn/utils/json.rb,<br /> lib/sfn/config/conf.rb,<br /> lib/sfn/config/diff.rb,<br /> lib/sfn/config/init.rb,<br /> lib/sfn/config/lint.rb,<br /> lib/sfn/config/list.rb,<br /> lib/sfn/config/plan.rb,<br /> lib/sfn/planner/aws.rb,<br /> lib/sfn/utils/debug.rb,<br /> lib/sfn/utils/ssher.rb,<br /> lib/sfn/api_provider.rb,<br /> lib/sfn/command/conf.rb,<br /> lib/sfn/command/diff.rb,<br /> lib/sfn/command/init.rb,<br /> lib/sfn/command/lint.rb,<br /> lib/sfn/command/list.rb,<br /> lib/sfn/command/plan.rb,<br /> lib/sfn/config/graph.rb,<br /> lib/sfn/config/print.rb,<br /> lib/sfn/config/trace.rb,<br /> lib/sfn/monkey_patch.rb,<br /> lib/sfn/utils/output.rb,<br /> lib/sfn/command/graph.rb,<br /> lib/sfn/command/print.rb,<br /> lib/sfn/command/trace.rb,<br /> lib/sfn/config/create.rb,<br /> lib/sfn/config/events.rb,<br /> lib/sfn/config/export.rb,<br /> lib/sfn/config/import.rb,<br /> lib/sfn/config/update.rb,<br /> lib/sfn/lint/rule_set.rb,<br /> lib/sfn/command/create.rb,<br /> lib/sfn/command/events.rb,<br /> lib/sfn/command/export.rb,<br /> lib/sfn/command/import.rb,<br /> lib/sfn/command/update.rb,<br /> lib/sfn/command_module.rb,<br /> lib/sfn/config/destroy.rb,<br /> lib/sfn/config/inspect.rb,<br /> lib/sfn/config/promote.rb,<br /> lib/sfn/config/realize.rb,<br /> lib/sfn/command/destroy.rb,<br /> lib/sfn/command/inspect.rb,<br /> lib/sfn/command/promote.rb,<br /> lib/sfn/command/realize.rb,<br /> lib/sfn/config/describe.rb,<br /> lib/sfn/config/validate.rb,<br /> lib/sfn/lint/definition.rb,<br /> lib/sfn/callback/aws_mfa.rb,<br /> lib/sfn/command/describe.rb,<br /> lib/sfn/command/validate.rb,<br /> lib/sfn/command/graph/aws.rb,<br /> lib/sfn/monkey_patch/stack.rb,<br /> lib/sfn/api_provider/google.rb,<br /> lib/sfn/command_module/base.rb,<br /> lib/sfn/utils/path_selector.rb,<br /> lib/sfn/command_module/stack.rb,<br /> lib/sfn/utils/object_storage.rb,<br /> lib/sfn/utils/stack_exporter.rb,<br /> lib/sfn/callback/stack_policy.rb,<br /> lib/sfn/api_provider/terraform.rb,<br /> lib/sfn/command/graph/provider.rb,<br /> lib/sfn/command/graph/terraform.rb,<br /> lib/sfn/command_module/planning.rb,<br /> lib/sfn/command_module/template.rb,<br /> lib/sfn/callback/aws_assume_role.rb,<br /> lib/sfn/command_module/callbacks.rb,<br /> lib/sfn/monkey_patch/stack/azure.rb,<br /> lib/sfn/monkey_patch/stack/google.rb,<br /> lib/sfn/utils/stack_parameter_scrubber.rb,<br /> lib/sfn/utils/stack_parameter_validator.rb</span>
 </dd>
   </dl>
   
@@ -93,16 +93,21 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Sfn/Cache.html" title="Sfn::Cache (class)">Cache</a></span>, <span class='object_link'><a href="Sfn/Callback.html" title="Sfn::Callback (class)">Callback</a></span>, <span class='object_link'><a href="Sfn/Command.html" title="Sfn::Command (class)">Command</a></span>, <span class='object_link'><a href="Sfn/Config.html" title="Sfn::Config (class)">Config</a></span>, <span class='object_link'><a href="Sfn/Planner.html" title="Sfn::Planner (class)">Planner</a></span>, <span class='object_link'><a href="Sfn/Provider.html" title="Sfn::Provider (class)">Provider</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Sfn/Cache.html" title="Sfn::Cache (class)">Cache</a></span>, <span class='object_link'><a href="Sfn/Callback.html" title="Sfn::Callback (class)">Callback</a></span>, <span class='object_link'><a href="Sfn/Command.html" title="Sfn::Command (class)">Command</a></span>, <span class='object_link'><a href="Sfn/Config.html" title="Sfn::Config (class)">Config</a></span>, <span class='object_link'><a href="Sfn/Error.html" title="Sfn::Error (class)">Error</a></span>, <span class='object_link'><a href="Sfn/Planner.html" title="Sfn::Planner (class)">Planner</a></span>, <span class='object_link'><a href="Sfn/Provider.html" title="Sfn::Provider (class)">Provider</a></span>
     
   
 </p>
 
-  <h2>Constant Summary</h2>
-  <dl class="constants">
-    
-      <dt id="VERSION-constant" class="">VERSION =
-        <div class="docstring">
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="VERSION-constant" class="">VERSION =
+          <div class="docstring">
   <div class="discussion">
     
 <p>Current library version</p>
@@ -114,10 +119,11 @@
   
 
 </div>
-      </dt>
-      <dd><pre class="code"><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.24</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span></pre></dd>
-    
-  </dl>
+        </dt>
+        <dd><pre class="code"><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>3.1.2</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre></dd>
+      
+    </dl>
+  
 
 
 
@@ -130,9 +136,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:05:54 2017 by
+  Generated on Sat Jan 26 12:10:39 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

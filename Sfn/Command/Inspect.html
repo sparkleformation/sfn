@@ -6,7 +6,7 @@
 <title>
   Class: Sfn::Command::Inspect
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -374,6 +374,7 @@
       <pre class="lines">
 
 
+94
 95
 96
 97
@@ -399,22 +400,21 @@
 117
 118
 119
-120
-121</pre>
+120</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 95</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 94</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_attribute'>display_attribute</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span>
   <span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:attribute</span><span class='rbracket'>]</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_stack_attribute'>stack_attribute</span><span class='op'>|</span>
-    <span class='id identifier rubyid_attr'>attr</span> <span class='op'>=</span> <span class='id identifier rubyid_stack_attribute'>stack_attribute</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>.</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_inject'>inject</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_memo'>memo</span><span class='comma'>,</span> <span class='id identifier rubyid_key'>key</span><span class='op'>|</span>
+    <span class='id identifier rubyid_attr'>attr</span> <span class='op'>=</span> <span class='id identifier rubyid_stack_attribute'>stack_attribute</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_inject'>inject</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_memo'>memo</span><span class='comma'>,</span> <span class='id identifier rubyid_key'>key</span><span class='op'>|</span>
       <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_scan'>scan</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\(([^\)]*)\)</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
-      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>,</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>==</span> <span class='id identifier rubyid_a'>a</span> <span class='op'>?</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span> <span class='op'>:</span> <span class='id identifier rubyid_a'>a</span><span class='rbrace'>}</span>
-        <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>(</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_args'>args</span>
+        <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>,</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>==</span> <span class='id identifier rubyid_a'>a</span> <span class='op'>?</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span> <span class='op'>:</span> <span class='id identifier rubyid_a'>a</span> <span class='rbrace'>}</span>
+        <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>(</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
       <span class='kw'>end</span>
-      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_memo'>memo</span><span class='period'>.</span><span class='id identifier rubyid_public_methods'>public_methods</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='rparen'>)</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>&amp;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_memo'>memo</span><span class='period'>.</span><span class='id identifier rubyid_public_methods'>public_methods</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&amp;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
           <span class='id identifier rubyid_memo'>memo</span><span class='period'>.</span><span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='lparen'>(</span><span class='int'>2</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span>
         <span class='kw'>else</span>
           <span class='id identifier rubyid_memo'>memo</span><span class='period'>.</span><span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='op'>*</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='rparen'>)</span>
@@ -428,7 +428,7 @@
       <span class='const'>MultiJson</span><span class='period'>.</span><span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span>
         <span class='const'>MultiJson</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='lparen'>(</span><span class='id identifier rubyid_attr'>attr</span><span class='rparen'>)</span>
       <span class='rparen'>)</span><span class='comma'>,</span>
-      <span class='symbol'>:pretty</span> <span class='op'>=&gt;</span> <span class='kw'>true</span>
+      <span class='symbol'>:pretty</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='comma'>,</span>
     <span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -452,6 +452,7 @@
       <pre class="lines">
 
 
+35
 36
 37
 38
@@ -497,43 +498,42 @@
 78
 79
 80
-81
-82</pre>
+81</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 36</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 35</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_instance_failure'>display_instance_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_instances'>instances</span> <span class='op'>=</span> <span class='id identifier rubyid_stack'>stack</span><span class='period'>.</span><span class='id identifier rubyid_resources'>resources</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_find_all'>find_all</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_resource'>resource</span><span class='op'>|</span>
-    <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_state'>state</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>failed</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_state'>state</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>failed</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_resource'>resource</span><span class='op'>|</span>
     <span class='comment'># If compute instance, simply expand
-</span>    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_within?'>within?</span><span class='lparen'>(</span><span class='symbol'>:compute</span><span class='comma'>,</span> <span class='symbol'>:servers</span><span class='rparen'>)</span><span class='rparen'>)</span>
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_within?'>within?</span><span class='lparen'>(</span><span class='symbol'>:compute</span><span class='comma'>,</span> <span class='symbol'>:servers</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_instance'>instance</span>
-    <span class='comment'># If a waitcondition, check for instance ID
-</span>    <span class='kw'>elsif</span><span class='lparen'>(</span><span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>waitcondition</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
-      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_status_reason'>status_reason</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uniqueId</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_srv_id'>srv_id</span> <span class='op'>=</span> <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_status_reason'>status_reason</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
+      <span class='comment'># If a waitcondition, check for instance ID
+</span>    <span class='kw'>elsif</span> <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>waitcondition</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_status_reason'>status_reason</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>uniqueId</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_srv_id'>srv_id</span> <span class='op'>=</span> <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_status_reason'>status_reason</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
         <span class='id identifier rubyid_provider'>provider</span><span class='period'>.</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_api_for'>api_for</span><span class='lparen'>(</span><span class='symbol'>:compute</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_servers'>servers</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_srv_id'>srv_id</span><span class='rparen'>)</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_instances'>instances</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Failed to locate any failed instances</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_instances'>instances</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to locate any failed instances</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_log_path'>log_path</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:failure_log_path</span><span class='rbracket'>]</span>
-    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_log_path'>log_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_log_path'>log_path</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/var/log/chef/client.log</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_log_path'>log_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='id identifier rubyid_log_path'>log_path</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/var/log/chef/client.log</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>end</span>
     <span class='id identifier rubyid_opts'>opts</span> <span class='op'>=</span> <span class='id identifier rubyid_ssh_key'>ssh_key</span> <span class='op'>?</span> <span class='lbrace'>{</span><span class='symbol'>:keys</span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='id identifier rubyid_ssh_key'>ssh_key</span><span class='rbracket'>]</span><span class='rbrace'>}</span> <span class='op'>:</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
     <span class='id identifier rubyid_instances'>instances</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_instance'>instance</span><span class='op'>|</span>
       <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  -&gt; Log inspect for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span>
       <span class='id identifier rubyid_address'>address</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_addresses_public'>addresses_public</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_address'>address</span><span class='op'>|</span>
-        <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_address'>address</span><span class='period'>.</span><span class='id identifier rubyid_version'>version</span> <span class='op'>==</span> <span class='int'>4</span><span class='rparen'>)</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_address'>address</span><span class='period'>.</span><span class='id identifier rubyid_version'>version</span> <span class='op'>==</span> <span class='int'>4</span>
           <span class='id identifier rubyid_address'>address</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
         <span class='kw'>end</span>
       <span class='kw'>end</span>
-      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_address'>address</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_address'>address</span>
         <span class='id identifier rubyid_ssh_attempt_users'>ssh_attempt_users</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_user'>user</span><span class='op'>|</span>
           <span class='kw'>begin</span>
             <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='id identifier rubyid_remote_file_contents'>remote_file_contents</span><span class='lparen'>(</span><span class='id identifier rubyid_address'>address</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='comma'>,</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_log_path'>log_path</span><span class='comma'>,</span> <span class='id identifier rubyid_opts'>opts</span><span class='rparen'>)</span>
@@ -570,6 +570,7 @@
       <pre class="lines">
 
 
+164
 165
 166
 167
@@ -590,12 +591,10 @@
 182
 183
 184
-185
-186
-187</pre>
+185</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 165</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 164</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_load_balancers'>display_load_balancers</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_load_balancers'>load_balancers</span> <span class='op'>=</span> <span class='const'>Smash</span><span class='lbracket'>[</span>
@@ -610,13 +609,12 @@
         <span class='symbol'>:state</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_exp_lb'>exp_lb</span><span class='period'>.</span><span class='id identifier rubyid_state'>state</span><span class='comma'>,</span>
         <span class='symbol'>:public_addresses</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_lb_pub_addrs'>lb_pub_addrs</span><span class='comma'>,</span>
         <span class='symbol'>:private_addresses</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_lb_priv_addrs'>lb_priv_addrs</span><span class='comma'>,</span>
-        <span class='symbol'>:server_states</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_exp_lb'>exp_lb</span><span class='period'>.</span><span class='id identifier rubyid_server_states'>server_states</span>
-      <span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_delete_if'>delete_if</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span><span class='rbrace'>}</span>
-      <span class='rbracket'>]</span>
+        <span class='symbol'>:server_states</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_exp_lb'>exp_lb</span><span class='period'>.</span><span class='id identifier rubyid_server_states'>server_states</span><span class='comma'>,</span>
+      <span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_delete_if'>delete_if</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid_v'>v</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='rbrace'>}</span><span class='rbracket'>]</span>
     <span class='kw'>end</span>
   <span class='rbracket'>]</span>
   <span class='kw'>unless</span> <span class='id identifier rubyid_load_balancers'>load_balancers</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  Load Balancer Instances:</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  Load Balancer Instances:</span><span class='tstring_end'>&quot;</span></span>
     <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='const'>MultiJson</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='lparen'>(</span><span class='id identifier rubyid_load_balancers'>load_balancers</span><span class='comma'>,</span> <span class='symbol'>:pretty</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -640,6 +638,7 @@
       <pre class="lines">
 
 
+122
 123
 124
 125
@@ -679,11 +678,10 @@
 159
 160
 161
-162
-163</pre>
+162</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 123</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 122</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_nodes'>display_nodes</span><span class='lparen'>(</span><span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_asg_nodes'>asg_nodes</span> <span class='op'>=</span> <span class='const'>Smash</span><span class='lbracket'>[</span>
@@ -694,13 +692,13 @@
       <span class='lbracket'>[</span>
         <span class='id identifier rubyid_asg'>asg</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span>
         <span class='const'>Smash</span><span class='lbracket'>[</span>
-          <span class='id identifier rubyid_asg'>asg</span><span class='period'>.</span><span class='id identifier rubyid_servers'>servers</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:expand</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+          <span class='id identifier rubyid_asg'>asg</span><span class='period'>.</span><span class='id identifier rubyid_servers'>servers</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:expand</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
             <span class='lbracket'>[</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
-                <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span>
-                <span class='symbol'>:addresses</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_addresses'>addresses</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:address</span><span class='rparen'>)</span>
+              <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span>
+              <span class='symbol'>:addresses</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_addresses'>addresses</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:address</span><span class='rparen'>)</span><span class='comma'>,</span>
             <span class='rparen'>)</span><span class='rbracket'>]</span>
           <span class='rbrace'>}</span>
-        <span class='rbracket'>]</span>
+        <span class='rbracket'>]</span><span class='comma'>,</span>
       <span class='rbracket'>]</span>
     <span class='kw'>end</span>
   <span class='rbracket'>]</span>
@@ -709,20 +707,20 @@
       <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_within?'>within?</span><span class='lparen'>(</span><span class='symbol'>:compute</span><span class='comma'>,</span> <span class='symbol'>:servers</span><span class='rparen'>)</span>
     <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_srv'>srv</span><span class='op'>|</span>
       <span class='id identifier rubyid_srv'>srv</span> <span class='op'>=</span> <span class='id identifier rubyid_srv'>srv</span><span class='period'>.</span><span class='id identifier rubyid_instance'>instance</span>
-      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_srv'>srv</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_srv'>srv</span>
         <span class='lbracket'>[</span><span class='id identifier rubyid_srv'>srv</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
           <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_srv'>srv</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span>
-          <span class='symbol'>:addresses</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_srv'>srv</span><span class='period'>.</span><span class='id identifier rubyid_addresses'>addresses</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:address</span><span class='rparen'>)</span>
+          <span class='symbol'>:addresses</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_srv'>srv</span><span class='period'>.</span><span class='id identifier rubyid_addresses'>addresses</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:address</span><span class='rparen'>)</span><span class='comma'>,</span>
         <span class='rparen'>)</span><span class='rbracket'>]</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
   <span class='rbracket'>]</span>
-  <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_asg_nodes'>asg_nodes</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  AutoScale Group Instances:</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_asg_nodes'>asg_nodes</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  AutoScale Group Instances:</span><span class='tstring_end'>&quot;</span></span>
     <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='const'>MultiJson</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='lparen'>(</span><span class='id identifier rubyid_asg_nodes'>asg_nodes</span><span class='comma'>,</span> <span class='symbol'>:pretty</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
-  <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_compute_nodes'>compute_nodes</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  Compute Instances:</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_compute_nodes'>compute_nodes</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  Compute Instances:</span><span class='tstring_end'>&quot;</span></span>
     <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='const'>MultiJson</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='lparen'>(</span><span class='id identifier rubyid_compute_nodes'>compute_nodes</span><span class='comma'>,</span> <span class='symbol'>:pretty</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -757,6 +755,7 @@
       <pre class="lines">
 
 
+11
 12
 13
 14
@@ -778,11 +777,10 @@
 30
 31
 32
-33
-34</pre>
+33</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 12</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 11</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute!'>execute!</span>
   <span class='id identifier rubyid_name_required!'>name_required!</span>
@@ -791,19 +789,19 @@
   <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Stack inspection </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_name'>stack_name</span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_outputs'>outputs</span> <span class='op'>=</span> <span class='id identifier rubyid_api_action!'>api_action!</span><span class='lparen'>(</span><span class='symbol'>:api_stack</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span> <span class='kw'>do</span>
     <span class='lbracket'>[</span><span class='symbol'>:attribute</span><span class='comma'>,</span> <span class='symbol'>:nodes</span><span class='comma'>,</span> <span class='symbol'>:load_balancers</span><span class='comma'>,</span> <span class='symbol'>:instance_failure</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='op'>|</span>
-      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_has_key?'>has_key?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_has_key?'>has_key?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>display_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_key'>key</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
   <span class='kw'>end</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_outputs'>outputs</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  Stack dump:</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_outputs'>outputs</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  Stack dump:</span><span class='tstring_end'>&quot;</span></span>
     <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='const'>MultiJson</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='lparen'>(</span>
       <span class='const'>MultiJson</span><span class='period'>.</span><span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span>
         <span class='id identifier rubyid_stack'>stack</span><span class='period'>.</span><span class='id identifier rubyid_reload'>reload</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
       <span class='rparen'>)</span><span class='comma'>,</span>
-      <span class='symbol'>:pretty</span> <span class='op'>=&gt;</span> <span class='kw'>true</span>
+      <span class='symbol'>:pretty</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='comma'>,</span>
     <span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -856,15 +854,15 @@
       <pre class="lines">
 
 
+86
 87
-88
-89</pre>
+88</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 87</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 86</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ssh_attempt_users'>ssh_attempt_users</span>
-  <span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:ssh_user</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:ssh_attempt_users</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>USER</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span>
+  <span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:ssh_user</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:ssh_attempt_users</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>USER</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -886,12 +884,12 @@
       <pre class="lines">
 
 
+90
 91
-92
-93</pre>
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 91</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/inspect.rb', line 90</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ssh_key'>ssh_key</span>
   <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:identity_file</span><span class='rbracket'>]</span>
@@ -906,9 +904,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:06:30 2017 by
+  Generated on Sat Jan 26 12:10:43 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

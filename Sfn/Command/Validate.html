@@ -6,7 +6,7 @@
 <title>
   Class: Sfn::Command::Validate
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -279,6 +279,7 @@
       <pre class="lines">
 
 
+12
 13
 14
 15
@@ -296,26 +297,33 @@
 27
 28
 29
-30</pre>
+30
+31
+32
+33</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/validate.rb', line 13</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/validate.rb', line 12</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute!'>execute!</span>
   <span class='id identifier rubyid_print_only_original'>print_only_original</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:print_only</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:print_only</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>true</span>
   <span class='id identifier rubyid_file'>file</span> <span class='op'>=</span> <span class='id identifier rubyid_load_template_file'>load_template_file</span>
-  <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Template Validation (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_provider'>provider</span><span class='period'>.</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_provider'>provider</span><span class='embexpr_end'>}</span><span class='tstring_content'>): </span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:file</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>^/</span><span class='regexp_end'>}</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Template Validation (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_provider'>provider</span><span class='period'>.</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_provider'>provider</span><span class='embexpr_end'>}</span><span class='tstring_content'>): </span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:file</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>^/</span><span class='regexp_end'>}</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:print_only</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_print_only_original'>print_only_original</span>
 
   <span class='id identifier rubyid_raw_template'>raw_template</span> <span class='op'>=</span> <span class='id identifier rubyid__format_json'>_format_json</span><span class='lparen'>(</span><span class='id identifier rubyid_parameter_scrub!'>parameter_scrub!</span><span class='lparen'>(</span><span class='id identifier rubyid_template_content'>template_content</span><span class='lparen'>(</span><span class='id identifier rubyid_file'>file</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='rparen'>)</span>
 
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:print_only</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:print_only</span><span class='rbracket'>]</span>
     <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_raw_template'>raw_template</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_validate_stack'>validate_stack</span><span class='lparen'>(</span>
       <span class='id identifier rubyid_file'>file</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:dump</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_file'>file</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span> <span class='op'>:</span> <span class='id identifier rubyid_file'>file</span><span class='comma'>,</span>
-      <span class='id identifier rubyid_sparkle_collection'>sparkle_collection</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:template</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:file</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:processing</span><span class='rbracket'>]</span>
+        <span class='id identifier rubyid_sparkle_collection'>sparkle_collection</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='symbol'>:template</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:file</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='symbol'>:name</span><span class='rbracket'>]</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:file</span><span class='rbracket'>]</span>
+      <span class='kw'>end</span>
     <span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -399,9 +407,6 @@
       <pre class="lines">
 
 
-37
-38
-39
 40
 41
 42
@@ -433,42 +438,45 @@
 68
 69
 70
-71</pre>
+71
+72
+73
+74</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command/validate.rb', line 37</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command/validate.rb', line 40</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate_stack'>validate_stack</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_resources'>resources</span> <span class='op'>=</span> <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Resources</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_resources'>resources</span> <span class='op'>=</span> <span class='id identifier rubyid_template'>template</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Resources</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_nested_stacks'>nested_stacks</span> <span class='op'>=</span> <span class='id identifier rubyid_resources'>resources</span><span class='period'>.</span><span class='id identifier rubyid_find_all'>find_all</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_r_name'>r_name</span><span class='comma'>,</span> <span class='id identifier rubyid_r_value'>r_value</span><span class='op'>|</span>
     <span class='id identifier rubyid_r_value'>r_value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span>
-      <span class='id identifier rubyid_provider'>provider</span><span class='period'>.</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:stack_types</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_r_value'>r_value</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_provider'>provider</span><span class='period'>.</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lbracket'>[</span><span class='symbol'>:stack_types</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_r_value'>r_value</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Type</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_nested_stacks'>nested_stacks</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_n_name'>n_name</span><span class='comma'>,</span> <span class='id identifier rubyid_n_resource'>n_resource</span><span class='op'>|</span>
-    <span class='id identifier rubyid_validate_stack'>validate_stack</span><span class='lparen'>(</span><span class='id identifier rubyid_n_resource'>n_resource</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Properties</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Stack</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> &gt; </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_n_name'>n_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_n_resource'>n_resource</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Properties</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Stack</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_validate_stack'>validate_stack</span><span class='lparen'>(</span><span class='id identifier rubyid_n_resource'>n_resource</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Properties</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Stack</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> &gt; </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_n_name'>n_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_n_resource'>n_resource</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Properties</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Stack</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='kw'>begin</span>
     <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Validating: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:upload_root_template</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_upload_result'>upload_result</span> <span class='op'>=</span> <span class='id identifier rubyid_store_template'>store_template</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>validation-stack</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_template'>template</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:upload_root_template</span><span class='rbracket'>]</span>
+      <span class='id identifier rubyid_upload_result'>upload_result</span> <span class='op'>=</span> <span class='id identifier rubyid_store_template'>store_template</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>validation-stack</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_template'>template</span><span class='comma'>,</span> <span class='const'>Smash</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_stack'>stack</span> <span class='op'>=</span> <span class='id identifier rubyid_provider'>provider</span><span class='period'>.</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_stacks'>stacks</span><span class='period'>.</span><span class='id identifier rubyid_build'>build</span><span class='lparen'>(</span>
-        <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>validation-stack</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-        <span class='symbol'>:template_url</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_upload_result'>upload_result</span><span class='lbracket'>[</span><span class='symbol'>:url</span><span class='rbracket'>]</span>
+        <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>validation-stack</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+        <span class='symbol'>:template_url</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_upload_result'>upload_result</span><span class='lbracket'>[</span><span class='symbol'>:url</span><span class='rbracket'>]</span><span class='comma'>,</span>
       <span class='rparen'>)</span>
     <span class='kw'>else</span>
       <span class='id identifier rubyid_stack'>stack</span> <span class='op'>=</span> <span class='id identifier rubyid_provider'>provider</span><span class='period'>.</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_stacks'>stacks</span><span class='period'>.</span><span class='id identifier rubyid_build'>build</span><span class='lparen'>(</span>
-        <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>validation-stack</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-        <span class='symbol'>:template</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_parameter_scrub!'>parameter_scrub!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span>
+        <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>validation-stack</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+        <span class='symbol'>:template</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_parameter_scrub!'>parameter_scrub!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span><span class='comma'>,</span>
       <span class='rparen'>)</span>
     <span class='kw'>end</span>
     <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_api_action!'>api_action!</span><span class='lparen'>(</span><span class='symbol'>:api_stack</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_stack'>stack</span><span class='rparen'>)</span> <span class='kw'>do</span>
       <span class='id identifier rubyid_stack'>stack</span><span class='period'>.</span><span class='id identifier rubyid_validate'>validate</span>
     <span class='kw'>end</span>
-    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  -&gt; VALID</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='comma'>,</span> <span class='symbol'>:green</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  -&gt; VALID</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='comma'>,</span> <span class='symbol'>:green</span><span class='rparen'>)</span>
     <span class='kw'>true</span>
   <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>  -&gt; INVALID</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='comma'>,</span> <span class='symbol'>:red</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_color'>color</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  -&gt; INVALID</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:bold</span><span class='comma'>,</span> <span class='symbol'>:red</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_fatal'>fatal</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span>
     <span class='id identifier rubyid_raise'>raise</span> <span class='id identifier rubyid_e'>e</span>
   <span class='kw'>end</span>
@@ -483,9 +491,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:06:33 2017 by
+  Generated on Sat Jan 26 12:10:43 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

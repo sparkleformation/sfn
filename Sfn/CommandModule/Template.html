@@ -6,7 +6,7 @@
 <title>
   Module: Sfn::CommandModule::Template
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -76,7 +76,7 @@
   
   <dl>
     <dt>Included in:</dt>
-    <dd><span class='object_link'><a href="../Command/Create.html" title="Sfn::Command::Create (class)">Sfn::Command::Create</a></span>, <span class='object_link'><a href="../Command/Diff.html" title="Sfn::Command::Diff (class)">Sfn::Command::Diff</a></span>, <span class='object_link'><a href="../Command/Graph.html" title="Sfn::Command::Graph (class)">Sfn::Command::Graph</a></span>, <span class='object_link'><a href="../Command/Lint.html" title="Sfn::Command::Lint (class)">Sfn::Command::Lint</a></span>, <span class='object_link'><a href="../Command/Print.html" title="Sfn::Command::Print (class)">Sfn::Command::Print</a></span>, <span class='object_link'><a href="../Command/Update.html" title="Sfn::Command::Update (class)">Sfn::Command::Update</a></span>, <span class='object_link'><a href="../Command/Validate.html" title="Sfn::Command::Validate (class)">Sfn::Command::Validate</a></span></dd>
+    <dd><span class='object_link'><a href="../Command/Create.html" title="Sfn::Command::Create (class)">Sfn::Command::Create</a></span>, <span class='object_link'><a href="../Command/Diff.html" title="Sfn::Command::Diff (class)">Sfn::Command::Diff</a></span>, <span class='object_link'><a href="../Command/Graph.html" title="Sfn::Command::Graph (class)">Sfn::Command::Graph</a></span>, <span class='object_link'><a href="../Command/Lint.html" title="Sfn::Command::Lint (class)">Sfn::Command::Lint</a></span>, <span class='object_link'><a href="../Command/Plan.html" title="Sfn::Command::Plan (class)">Sfn::Command::Plan</a></span>, <span class='object_link'><a href="../Command/Print.html" title="Sfn::Command::Print (class)">Sfn::Command::Print</a></span>, <span class='object_link'><a href="../Command/Trace.html" title="Sfn::Command::Trace (class)">Sfn::Command::Trace</a></span>, <span class='object_link'><a href="../Command/Update.html" title="Sfn::Command::Update (class)">Sfn::Command::Update</a></span>, <span class='object_link'><a href="../Command/Validate.html" title="Sfn::Command::Validate (class)">Sfn::Command::Validate</a></span></dd>
   </dl>
   
 
@@ -110,11 +110,16 @@
   
 </p>
 
-  <h2>Constant Summary</h2>
-  <dl class="constants">
-    
-      <dt id="TEMPLATE_IGNORE_DIRECTORIES-constant" class="">TEMPLATE_IGNORE_DIRECTORIES =
-        <div class="docstring">
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="TEMPLATE_IGNORE_DIRECTORIES-constant" class="">TEMPLATE_IGNORE_DIRECTORIES =
+          <div class="docstring">
   <div class="discussion">
     
 <p>cloudformation directories that should be ignored</p>
@@ -126,11 +131,11 @@
   
 
 </div>
-      </dt>
-      <dd><pre class="code"><span class='qwords_beg'>%w(</span><span class='tstring_content'>components</span><span class='words_sep'> </span><span class='tstring_content'>dynamics</span><span class='words_sep'> </span><span class='tstring_content'>registry</span><span class='words_sep'>)</span></pre></dd>
-    
-      <dt id="MAX_PARAMETER_ATTEMPTS-constant" class="">MAX_PARAMETER_ATTEMPTS =
-        <div class="docstring">
+        </dt>
+        <dd><pre class="code"><span class='qwords_beg'>%w(</span><span class='tstring_content'>components</span><span class='words_sep'> </span><span class='tstring_content'>dynamics</span><span class='words_sep'> </span><span class='tstring_content'>registry</span><span class='tstring_end'>)</span></span></pre></dd>
+      
+        <dt id="MAX_PARAMETER_ATTEMPTS-constant" class="">MAX_PARAMETER_ATTEMPTS =
+          <div class="docstring">
   <div class="discussion">
     
 <p>maximum number of attempts to get valid parameter value</p>
@@ -142,11 +147,11 @@
   
 
 </div>
-      </dt>
-      <dd><pre class="code"><span class='int'>5</span></pre></dd>
-    
-      <dt id="DEFAULT_PROVIDER_NAME-constant" class="">DEFAULT_PROVIDER_NAME =
-        <div class="docstring">
+        </dt>
+        <dd><pre class="code"><span class='int'>5</span></pre></dd>
+      
+        <dt id="DEFAULT_PROVIDER_NAME-constant" class="">DEFAULT_PROVIDER_NAME =
+          <div class="docstring">
   <div class="discussion">
     
 <p>default provider used when credentials are unset</p>
@@ -158,10 +163,11 @@
   
 
 </div>
-      </dt>
-      <dd><pre class="code"><span class='symbol'>:aws</span></pre></dd>
-    
-  </dl>
+        </dt>
+        <dd><pre class="code"><span class='symbol'>:aws</span></pre></dd>
+      
+    </dl>
+  
 
 
 
@@ -251,18 +257,18 @@
       <pre class="lines">
 
 
-598
-599
-600
-601
-602
-603
-604
-605
-606</pre>
+617
+618
+619
+620
+621
+622
+623
+624
+625</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 598</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/command_module/template.rb', line 617</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_included'>included</span><span class='lparen'>(</span><span class='id identifier rubyid_klass'>klass</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_klass'>klass</span><span class='period'>.</span><span class='id identifier rubyid_class_eval'>class_eval</span> <span class='kw'>do</span>
@@ -283,9 +289,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:05:55 2017 by
+  Generated on Sat Jan 26 12:10:40 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

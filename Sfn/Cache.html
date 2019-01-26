@@ -6,7 +6,7 @@
 <title>
   Class: Sfn::Cache
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -683,20 +683,20 @@
       <pre class="lines">
 
 
+79
+80
 81
 82
 83
 84
 85
-86
-87
-88</pre>
+86</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 81</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 79</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:sort</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:sort</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span> <span class='kw'>if</span> <span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:flatten</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span>
   <span class='kw'>end</span>
@@ -759,12 +759,12 @@
       <pre class="lines">
 
 
-76
-77
-78</pre>
+74
+75
+76</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 76</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 74</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_key'>key</span>
   <span class='ivar'>@key</span>
@@ -842,20 +842,20 @@
       <pre class="lines">
 
 
+51
 52
 53
 54
 55
 56
-57
-58</pre>
+57</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 52</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 51</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_apply_limit'>apply_limit</span><span class='lparen'>(</span><span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='id identifier rubyid_seconds'>seconds</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_limit'>apply_limit</span><span class='lparen'>(</span><span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='id identifier rubyid_seconds'>seconds</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@apply_limit</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_seconds'>seconds</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_seconds'>seconds</span>
     <span class='ivar'>@apply_limit</span><span class='lbracket'>[</span><span class='id identifier rubyid_kind'>kind</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_seconds'>seconds</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
   <span class='kw'>end</span>
   <span class='ivar'>@apply_limit</span><span class='lbracket'>[</span><span class='id identifier rubyid_kind'>kind</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
@@ -929,6 +929,7 @@
       <pre class="lines">
 
 
+14
 15
 16
 17
@@ -945,20 +946,19 @@
 28
 29
 30
-31
-32</pre>
+31</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 15</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 14</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_configure'>configure</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_configure'>configure</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_type'>type</span> <span class='op'>=</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_type'>type</span>
   <span class='kw'>when</span> <span class='symbol'>:redis</span>
     <span class='kw'>begin</span>
-      <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>redis-objects</span><span class='tstring_end'>&#39;</span></span>
+      <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>redis-objects</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>rescue</span> <span class='const'>LoadError</span>
-      <span class='gvar'>$stderr</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>The `redis-objects` gem is required for Cache support!</span><span class='tstring_end'>&#39;</span></span>
+      <span class='gvar'>$stderr</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>The `redis-objects` gem is required for Cache support!</span><span class='tstring_end'>&quot;</span></span>
       <span class='id identifier rubyid_raise'>raise</span>
     <span class='kw'>end</span>
     <span class='ivar'>@_pid</span> <span class='op'>=</span> <span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_pid'>pid</span>
@@ -1018,12 +1018,12 @@
       <pre class="lines">
 
 
+60
 61
-62
-63</pre>
+62</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 61</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 60</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_default_limits'>default_limits</span>
   <span class='lparen'>(</span><span class='ivar'>@apply_limit</span> <span class='op'>||</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
@@ -1087,12 +1087,12 @@
       <pre class="lines">
 
 
+37
 38
-39
-40</pre>
+39</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 38</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_enable'>enable</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='rparen'>)</span>
   <span class='ivar'>@type</span> <span class='op'>=</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
@@ -1128,18 +1128,18 @@
       <pre class="lines">
 
 
+65
 66
 67
 68
 69
-70
-71</pre>
+70</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 66</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 65</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_redis_ping!'>redis_ping!</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='lparen'>(</span><span class='ivar'>@_pid</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@_pid</span> <span class='op'>!=</span> <span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_pid'>pid</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='op'>!</span><span class='const'>Redis</span><span class='op'>::</span><span class='const'>Objects</span><span class='period'>.</span><span class='id identifier rubyid_redis'>redis</span><span class='period'>.</span><span class='id identifier rubyid_connected?'>connected?</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='lparen'>(</span><span class='ivar'>@_pid</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@_pid</span> <span class='op'>!=</span> <span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_pid'>pid</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='op'>!</span><span class='const'>Redis</span><span class='op'>::</span><span class='const'>Objects</span><span class='period'>.</span><span class='id identifier rubyid_redis'>redis</span><span class='period'>.</span><span class='id identifier rubyid_connected?'>connected?</span>
     <span class='const'>Redis</span><span class='op'>::</span><span class='const'>Objects</span><span class='period'>.</span><span class='id identifier rubyid_redis'>redis</span><span class='period'>.</span><span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_reconnect'>reconnect</span>
     <span class='ivar'>@_pid</span> <span class='op'>=</span> <span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_pid'>pid</span>
   <span class='kw'>end</span>
@@ -1193,12 +1193,12 @@
       <pre class="lines">
 
 
+42
 43
-44
-45</pre>
+44</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 43</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
   <span class='ivar'>@type</span> <span class='op'>||</span> <span class='symbol'>:local</span>
@@ -1268,19 +1268,19 @@
       <pre class="lines">
 
 
+216
+217
 218
 219
 220
 221
-222
-223
-224</pre>
+222</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 218</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 216</span>
 
 <span class='kw'>def</span> <span class='op'>[]</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>=</span> <span class='id identifier rubyid_registry'>registry</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_kind'>kind</span> <span class='op'>=</span> <span class='id identifier rubyid_registry'>registry</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span>
     <span class='id identifier rubyid_get_storage'>get_storage</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>else</span>
     <span class='kw'>nil</span>
@@ -1351,15 +1351,15 @@
       <pre class="lines">
 
 
-231
-232
-233</pre>
+229
+230
+231</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 231</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 229</span>
 
 <span class='kw'>def</span> <span class='op'>[]=</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Setting backend data is not allowed</span><span class='tstring_end'>&#39;</span></span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Setting backend data is not allowed</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1427,20 +1427,20 @@
       <pre class="lines">
 
 
+247
+248
 249
 250
 251
 252
-253
-254
-255</pre>
+253</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 249</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 247</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_apply_limit'>apply_limit</span><span class='lparen'>(</span><span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='id identifier rubyid_seconds'>seconds</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_limit'>apply_limit</span><span class='lparen'>(</span><span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='id identifier rubyid_seconds'>seconds</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@apply_limit</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_seconds'>seconds</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_seconds'>seconds</span>
     <span class='ivar'>@apply_limit</span><span class='lbracket'>[</span><span class='id identifier rubyid_kind'>kind</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_seconds'>seconds</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
   <span class='kw'>end</span>
   <span class='ivar'>@apply_limit</span><span class='lbracket'>[</span><span class='id identifier rubyid_kind'>kind</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
@@ -1517,6 +1517,8 @@
       <pre class="lines">
 
 
+108
+109
 110
 111
 112
@@ -1530,21 +1532,19 @@
 120
 121
 122
-123
-124
-125</pre>
+123</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 110</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 108</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_clear!'>clear!</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_internal_lock'>internal_lock</span> <span class='kw'>do</span>
     <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='id identifier rubyid_registry'>registry</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span> <span class='kw'>if</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
     <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='op'>|</span>
       <span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='kw'>self</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span>
-      <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:clear</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:clear</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_clear'>clear</span>
-      <span class='kw'>elsif</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:value</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='kw'>elsif</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:value</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='kw'>nil</span>
       <span class='kw'>end</span>
       <span class='id identifier rubyid_registry'>registry</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
@@ -1644,6 +1644,8 @@
       <pre class="lines">
 
 
+184
+185
 186
 187
 188
@@ -1658,29 +1660,27 @@
 197
 198
 199
-200
-201
-202</pre>
+200</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 186</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 184</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_get_local_storage'>get_local_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_data_type'>data_type</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_get_local_storage'>get_local_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_data_type'>data_type</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@storage</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
   <span class='ivar'>@storage</span><span class='lbracket'>[</span><span class='id identifier rubyid_full_name'>full_name</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='kw'>case</span> <span class='id identifier rubyid_data_type'>data_type</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
-    <span class='kw'>when</span> <span class='symbol'>:array</span>
-      <span class='lbracket'>[</span><span class='rbracket'>]</span>
-    <span class='kw'>when</span> <span class='symbol'>:hash</span>
-      <span class='lbrace'>{</span><span class='rbrace'>}</span>
-    <span class='kw'>when</span> <span class='symbol'>:value</span>
-      <span class='const'><span class='object_link'><a href="Cache/LocalValue.html" title="Sfn::Cache::LocalValue (class)">LocalValue</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache/LocalValue.html#initialize-instance_method" title="Sfn::Cache::LocalValue#initialize (method)">new</a></span></span>
-    <span class='kw'>when</span> <span class='symbol'>:lock</span>
-      <span class='const'><span class='object_link'><a href="Cache/LocalLock.html" title="Sfn::Cache::LocalLock (class)">LocalLock</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache/LocalLock.html#initialize-instance_method" title="Sfn::Cache::LocalLock#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_full_name'>full_name</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='symbol'>:expiration</span> <span class='op'>=&gt;</span> <span class='int'>60</span><span class='comma'>,</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='float'>0.1</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span><span class='rparen'>)</span>
-    <span class='kw'>when</span> <span class='symbol'>:stamped</span>
-      <span class='const'><span class='object_link'><a href="Cache/Stamped.html" title="Sfn::Cache::Stamped (class)">Stamped</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache/Stamped.html#initialize-instance_method" title="Sfn::Cache::Stamped#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_content'>_</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='comma'>,</span> <span class='id identifier rubyid_get_local_storage'>get_local_storage</span><span class='lparen'>(</span><span class='symbol'>:value</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
-    <span class='kw'>else</span>
-      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>TypeError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unsupported caching data type encountered: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_data_type'>data_type</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
+                          <span class='kw'>when</span> <span class='symbol'>:array</span>
+                            <span class='lbracket'>[</span><span class='rbracket'>]</span>
+                          <span class='kw'>when</span> <span class='symbol'>:hash</span>
+                            <span class='lbrace'>{</span><span class='rbrace'>}</span>
+                          <span class='kw'>when</span> <span class='symbol'>:value</span>
+                            <span class='const'><span class='object_link'><a href="Cache/LocalValue.html" title="Sfn::Cache::LocalValue (class)">LocalValue</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache/LocalValue.html#initialize-instance_method" title="Sfn::Cache::LocalValue#initialize (method)">new</a></span></span>
+                          <span class='kw'>when</span> <span class='symbol'>:lock</span>
+                            <span class='const'><span class='object_link'><a href="Cache/LocalLock.html" title="Sfn::Cache::LocalLock (class)">LocalLock</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache/LocalLock.html#initialize-instance_method" title="Sfn::Cache::LocalLock#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_full_name'>full_name</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='symbol'>:expiration</span> <span class='op'>=&gt;</span> <span class='int'>60</span><span class='comma'>,</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='float'>0.1</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span><span class='rparen'>)</span>
+                          <span class='kw'>when</span> <span class='symbol'>:stamped</span>
+                            <span class='const'><span class='object_link'><a href="Cache/Stamped.html" title="Sfn::Cache::Stamped (class)">Stamped</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache/Stamped.html#initialize-instance_method" title="Sfn::Cache::Stamped#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_content'>_</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='comma'>,</span> <span class='id identifier rubyid_get_local_storage'>get_local_storage</span><span class='lparen'>(</span><span class='symbol'>:value</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
+                          <span class='kw'>else</span>
+                            <span class='id identifier rubyid_raise'>raise</span> <span class='const'>TypeError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unsupported caching data type encountered: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_data_type'>data_type</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+                          <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1765,6 +1765,8 @@
       <pre class="lines">
 
 
+159
+160
 161
 162
 163
@@ -1779,14 +1781,12 @@
 172
 173
 174
-175
-176
-177</pre>
+175</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 161</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 159</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_get_redis_storage'>get_redis_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_data_type'>data_type</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_get_redis_storage'>get_redis_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_data_type'>data_type</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_redis_ping!'>redis_ping!</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_data_type'>data_type</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
   <span class='kw'>when</span> <span class='symbol'>:array</span>
@@ -1798,7 +1798,7 @@
   <span class='kw'>when</span> <span class='symbol'>:lock</span>
     <span class='const'>Redis</span><span class='op'>::</span><span class='const'>Lock</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_full_name'>full_name</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='symbol'>:expiration</span> <span class='op'>=&gt;</span> <span class='int'>60</span><span class='comma'>,</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='float'>0.1</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span><span class='rparen'>)</span>
   <span class='kw'>when</span> <span class='symbol'>:stamped</span>
-    <span class='const'><span class='object_link'><a href="Cache/Stamped.html" title="Sfn::Cache::Stamped (class)">Stamped</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache/Stamped.html#initialize-instance_method" title="Sfn::Cache::Stamped#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_content'>_</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='comma'>,</span> <span class='id identifier rubyid_get_redis_storage'>get_redis_storage</span><span class='lparen'>(</span><span class='symbol'>:value</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
+    <span class='const'><span class='object_link'><a href="Cache/Stamped.html" title="Sfn::Cache::Stamped (class)">Stamped</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Cache/Stamped.html#initialize-instance_method" title="Sfn::Cache::Stamped#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_content'>_</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='comma'>,</span> <span class='id identifier rubyid_get_redis_storage'>get_redis_storage</span><span class='lparen'>(</span><span class='symbol'>:value</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_raise'>raise</span> <span class='const'>TypeError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unsupported caching data type encountered: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_data_type'>data_type</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
@@ -1907,6 +1907,8 @@
       <pre class="lines">
 
 
+132
+133
 134
 135
 136
@@ -1924,14 +1926,12 @@
 148
 149
 150
-151
-152
-153</pre>
+151</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 134</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 132</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_get_storage'>get_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_store_type'>store_type</span><span class='comma'>,</span> <span class='id identifier rubyid_data_type'>data_type</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_get_storage'>get_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_store_type'>store_type</span><span class='comma'>,</span> <span class='id identifier rubyid_data_type'>data_type</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_full_name'>full_name</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_content'>_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_store_type'>store_type</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
@@ -1939,14 +1939,14 @@
     <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_get_redis_storage'>get_redis_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_data_type'>data_type</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='kw'>when</span> <span class='symbol'>:local</span>
     <span class='ivar'>@_local_cache</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
-    <span class='kw'>unless</span><span class='lparen'>(</span><span class='ivar'>@_local_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='kw'>unless</span> <span class='ivar'>@_local_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span>
       <span class='ivar'>@_local_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_get_local_storage'>get_local_storage</span><span class='lparen'>(</span><span class='id identifier rubyid_data_type'>data_type</span><span class='comma'>,</span> <span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
     <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='ivar'>@_local_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_full_name'>full_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_raise'>raise</span> <span class='const'>TypeError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unsupported caching storage type encountered: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_store_type'>store_type</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
-  <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_full_name'>full_name</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_content'>_registry_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_full_name'>full_name</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_content'>_registry_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
     <span class='id identifier rubyid_registry'>registry</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_data_type'>data_type</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_result'>result</span>
@@ -2036,15 +2036,15 @@
       <pre class="lines">
 
 
+93
+94
 95
-96
-97
-98</pre>
+96</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 95</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 93</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_init'>init</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_init'>init</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_get_storage'>get_storage</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='kw'>true</span>
 <span class='kw'>end</span></pre>
@@ -2105,14 +2105,14 @@
       <pre class="lines">
 
 
+206
+207
 208
 209
-210
-211
-212</pre>
+210</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 208</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 206</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_internal_lock'>internal_lock</span>
   <span class='id identifier rubyid_get_storage'>get_storage</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='symbol'>:lock</span><span class='comma'>,</span> <span class='symbol'>:internal_access</span><span class='comma'>,</span> <span class='symbol'>:timeout</span> <span class='op'>=&gt;</span> <span class='int'>20</span><span class='comma'>,</span> <span class='symbol'>:expiration</span> <span class='op'>=&gt;</span> <span class='int'>120</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_lock'>lock</span> <span class='kw'>do</span>
@@ -2206,6 +2206,8 @@
       <pre class="lines">
 
 
+260
+261
 262
 263
 264
@@ -2216,20 +2218,18 @@
 269
 270
 271
-272
-273
-274</pre>
+272</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 262</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 260</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_locked_action'>locked_action</span><span class='lparen'>(</span><span class='id identifier rubyid_lock_name'>lock_name</span><span class='comma'>,</span> <span class='id identifier rubyid_raise_on_locked'>raise_on_locked</span><span class='op'>=</span><span class='kw'>false</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_locked_action'>locked_action</span><span class='lparen'>(</span><span class='id identifier rubyid_lock_name'>lock_name</span><span class='comma'>,</span> <span class='id identifier rubyid_raise_on_locked'>raise_on_locked</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
     <span class='kw'>self</span><span class='lbracket'>[</span><span class='id identifier rubyid_lock_name'>lock_name</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_lock'>lock</span> <span class='kw'>do</span>
       <span class='kw'>yield</span>
     <span class='kw'>end</span>
   <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Timeout</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timeout</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
       <span class='id identifier rubyid_raise'>raise</span> <span class='kw'>if</span> <span class='id identifier rubyid_raise_on_locked'>raise_on_locked</span>
     <span class='kw'>else</span>
       <span class='id identifier rubyid_raise'>raise</span>
@@ -2285,12 +2285,12 @@
       <pre class="lines">
 
 
-101
-102
-103</pre>
+99
+100
+101</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 101</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 99</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_registry'>registry</span>
   <span class='id identifier rubyid_get_storage'>get_storage</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='symbol'>:hash</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>registry_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_key'>key</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -2370,12 +2370,12 @@
       <pre class="lines">
 
 
-240
-241
-242</pre>
+238
+239
+240</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 240</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/cache.rb', line 238</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_time_check_allow?'>time_check_allow?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_stamp'>stamp</span><span class='rparen'>)</span>
   <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span> <span class='op'>-</span> <span class='id identifier rubyid_stamp'>stamp</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span> <span class='op'>&gt;</span> <span class='id identifier rubyid_apply_limit'>apply_limit</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
@@ -2390,9 +2390,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:05:56 2017 by
+  Generated on Sat Jan 26 12:10:40 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

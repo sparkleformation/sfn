@@ -6,7 +6,7 @@
 <title>
   Class: Sfn::Lint::RuleSet::Creator::Rule
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -206,14 +206,14 @@
       <pre class="lines">
 
 
-30
-31
-32</pre>
+26
+27
+28</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/lint/rule_set.rb', line 30</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/lint/rule_set.rb', line 26</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_definition'>definition</span><span class='lparen'>(</span><span class='id identifier rubyid_expr'>expr</span><span class='comma'>,</span> <span class='id identifier rubyid_evaluator'>evaluator</span><span class='op'>=</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_definition'>definition</span><span class='lparen'>(</span><span class='id identifier rubyid_expr'>expr</span><span class='comma'>,</span> <span class='id identifier rubyid_evaluator'>evaluator</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_items'>items</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="../../../../Sfn.html" title="Sfn (module)">Sfn</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../../Lint.html" title="Sfn::Lint (module)">Lint</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Definition.html" title="Sfn::Lint::Definition (class)">Definition</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Definition.html#initialize-instance_method" title="Sfn::Lint::Definition#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_expr'>expr</span><span class='comma'>,</span> <span class='id identifier rubyid_provider'>provider</span><span class='comma'>,</span> <span class='id identifier rubyid_evaluator'>evaluator</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -236,18 +236,18 @@
       <pre class="lines">
 
 
+30
+31
+32
+33
 34
-35
-36
-37
-38
-39</pre>
+35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sfn/lint/rule_set.rb', line 34</span>
+      <pre class="code"><span class="info file"># File 'lib/sfn/lint/rule_set.rb', line 30</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_fail_message'>fail_message</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='kw'>unless</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_fail_message'>fail_message</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
     <span class='ivar'>@fail_message</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
   <span class='kw'>end</span>
   <span class='ivar'>@fail_message</span>
@@ -262,9 +262,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:06:25 2017 by
+  Generated on Sat Jan 26 12:10:42 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

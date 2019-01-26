@@ -6,7 +6,7 @@
 <title>
   Module: Sfn::Utils::StackParameterScrubber
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -95,11 +95,16 @@
   
 
 </div>
-  <h2>Constant Summary</h2>
-  <dl class="constants">
-    
-      <dt id="ALLOWED_PARAMETER_ATTRIBUTES-constant" class="">ALLOWED_PARAMETER_ATTRIBUTES =
-        <div class="docstring">
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="ALLOWED_PARAMETER_ATTRIBUTES-constant" class="">ALLOWED_PARAMETER_ATTRIBUTES =
+          <div class="docstring">
   <div class="discussion">
     
 <p>Validate attributes within Parameter blocks</p>
@@ -111,14 +116,15 @@
   
 
 </div>
-      </dt>
-      <dd><pre class="code"><span class='qwords_beg'>%w(
-</span><span class='tstring_content'>  Type</span><span class='words_sep'> </span><span class='tstring_content'>Default</span><span class='words_sep'> </span><span class='tstring_content'>NoEcho</span><span class='words_sep'> </span><span class='tstring_content'>AllowedValues</span><span class='words_sep'> </span><span class='tstring_content'>AllowedPattern</span><span class='words_sep'>
-</span><span class='tstring_content'>  MaxLength</span><span class='words_sep'> </span><span class='tstring_content'>MinLength</span><span class='words_sep'> </span><span class='tstring_content'>MaxValue</span><span class='words_sep'> </span><span class='tstring_content'>MinValue</span><span class='words_sep'> </span><span class='tstring_content'>Description</span><span class='words_sep'>
-</span><span class='tstring_content'>  ConstraintDescription</span><span class='words_sep'>
-</span><span class='tstring_end'>)</span></span></pre></dd>
-    
-  </dl>
+        </dt>
+        <dd><pre class="code"><span class='lbracket'>[</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Type</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Default</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>NoEcho</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>AllowedValues</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>AllowedPattern</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MaxLength</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MinLength</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MaxValue</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MinValue</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Description</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ConstraintDescription</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+<span class='rbracket'>]</span></pre></dd>
+      
+    </dl>
+  
 
 
 
@@ -243,14 +249,14 @@
       <pre class="code"><span class="info file"># File 'lib/sfn/utils/stack_parameter_scrubber.rb', line 19</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parameter_scrub!'>parameter_scrub!</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_parameters'>parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_template'>template</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Parameters</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_parameters'>parameters</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_parameters'>parameters</span> <span class='op'>=</span> <span class='id identifier rubyid_template'>template</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Parameters</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_parameters'>parameters</span>
     <span class='id identifier rubyid_parameters'>parameters</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='op'>|</span>
       <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_delete_if'>delete_if</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_attribute'>attribute</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
         <span class='op'>!</span><span class='const'><span class='object_link'><a href="#ALLOWED_PARAMETER_ATTRIBUTES-constant" title="Sfn::Utils::StackParameterScrubber::ALLOWED_PARAMETER_ATTRIBUTES (constant)">ALLOWED_PARAMETER_ATTRIBUTES</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_attribute'>attribute</span><span class='rparen'>)</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span>
-    <span class='id identifier rubyid_template'>template</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Parameters</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_parameters'>parameters</span>
+    <span class='id identifier rubyid_template'>template</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Parameters</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_parameters'>parameters</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_template'>template</span>
 <span class='kw'>end</span></pre>
@@ -264,9 +270,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:05:56 2017 by
+  Generated on Sat Jan 26 12:10:40 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>

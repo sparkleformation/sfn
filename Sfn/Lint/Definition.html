@@ -6,7 +6,7 @@
 <title>
   Class: Sfn::Lint::Definition
   
-    &mdash; Documentation by YARD 0.9.8
+    &mdash; Documentation by YARD 0.9.18
   
 </title>
 
@@ -367,9 +367,9 @@
     <td>
       <pre class="code"><span class="info file"># File 'lib/sfn/lint/definition.rb', line 21</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_expr'>expr</span><span class='comma'>,</span> <span class='id identifier rubyid_provider'>provider</span><span class='op'>=</span><span class='symbol'>:aws</span><span class='comma'>,</span> <span class='id identifier rubyid_evaluator'>evaluator</span><span class='op'>=</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
-  <span class='kw'>if</span><span class='lparen'>(</span><span class='id identifier rubyid_evaluator'>evaluator</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Only evaluator or block can be provided, not both.</span><span class='tstring_end'>&#39;</span></span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_expr'>expr</span><span class='comma'>,</span> <span class='id identifier rubyid_provider'>provider</span> <span class='op'>=</span> <span class='symbol'>:aws</span><span class='comma'>,</span> <span class='id identifier rubyid_evaluator'>evaluator</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_evaluator'>evaluator</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_block'>block</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Only evaluator or block can be provided, not both.</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
   <span class='ivar'>@provider</span> <span class='op'>=</span> <span class='const'>Bogo</span><span class='op'>::</span><span class='const'>Utility</span><span class='period'>.</span><span class='id identifier rubyid_snake'>snake</span><span class='lparen'>(</span><span class='id identifier rubyid_provider'>provider</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
   <span class='ivar'>@search_expression</span> <span class='op'>=</span> <span class='id identifier rubyid_expr'>expr</span>
@@ -661,9 +661,9 @@
 </div>
 
       <div id="footer">
-  Generated on Sun May 14 09:06:30 2017 by
+  Generated on Sat Jan 26 12:10:43 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.2.3).
+  0.9.18 (ruby-2.6.0).
 </div>
 
     </div>
