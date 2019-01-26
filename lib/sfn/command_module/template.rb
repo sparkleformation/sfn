@@ -48,6 +48,7 @@ module Sfn
         def request_compile_parameter(p_name, p_config, cur_val, nested = false)
           result = nil
           attempts = 0
+          ui.debug "Fetching compile time param named #{p_name}"
           parameter_type = p_config.fetch(:type, "string").to_s.downcase.to_sym
           if parameter_type == :complex
             ui.debug "Compile time parameter `#{p_name}` is a complex type. Not requesting value from user."
@@ -178,11 +179,11 @@ module Sfn
             config[:template]
           elsif config[:file]
             if config[:processing]
-              compile_state = merge_compile_time_parameters
               sf = SparkleFormation.compile(config[:file], :sparkle)
               if name_args.first
                 sf.name = name_args.first
               end
+              compile_state = merge_compile_time_parameters(sf.root?)
               sf.compile_time_parameter_setter do |formation|
                 f_name = formation.root_path.map(&:name).map(&:to_s)
                 pathed_name = f_name.join(" > ")
@@ -257,13 +258,17 @@ module Sfn
 
         # Merge parameters provided directly via configuration into
         # core parameter set
-        def merge_compile_time_parameters
+        def merge_compile_time_parameters(root_template = false)
           compile_state = config.fetch(:compile_parameters, Smash.new)
           ui.debug "Initial compile parameters - #{compile_state}"
           compile_state.keys.each do |cs_key|
             unless cs_key.to_s.start_with?("#{arguments.first}__")
               named_cs_key = [arguments.first, cs_key].compact.join("__")
-              non_named = compile_state.delete(cs_key)
+              if root_template
+                non_named = compile_state[cs_key]
+              else
+                non_named = compile_state.delete(cs_key)
+              end
               if non_named && !compile_state.key?(named_cs_key)
                 ui.debug "Setting non-named compile parameter `#{cs_key}` into `#{named_cs_key}`"
                 compile_state[named_cs_key] = non_named
