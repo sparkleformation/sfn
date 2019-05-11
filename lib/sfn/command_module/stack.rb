@@ -72,11 +72,12 @@ module Sfn
                 provider_stack.api.data[:location] == key_parts[0] &&
                   provider_stack.name == key_parts[1]
               when 2
-                provider_stack.name == key_parts[1]
+                provider_stack.name == key_parts[0]
               when 1
                 true
               else
-                raise ArgumentError "Invalid name format for apply stack mapping (`#{a_key}`)"
+                raise ArgumentError,
+                  "Invalid name format for apply stack mapping (`#{a_key}`)"
               end
             end
             to_remove = valid_keys.find_all do |key|
@@ -341,10 +342,10 @@ module Sfn
             if current_value && current_value.to_s != stack_value.to_s
               if config[:parameter_validation] == "default"
                 ui.warn "Nested stack has been altered directly! " \
-                        "This update may cause unexpected modifications!"
+                  "This update may cause unexpected modifications!"
                 ui.warn "Stack name: #{c_stack.name}. Parameter: #{p_key}. " \
-                        "Current value: #{stack_value}. Expected value: #{current_value} " \
-                        "(via: #{c_value.inspect})"
+                  "Current value: #{stack_value}. Expected value: #{current_value} " \
+                  "(via: #{c_value.inspect})"
                 if config[:interactive_parameters]
                   answer = ui.ask_question("Use current value or expected value for #{p_key} " \
                   "[current/expected]?", :valid => ["current", "expected"])
