@@ -1,3 +1,6 @@
+# v3.1.4
+* [fix] Fix apply mapping implementation (#295)
+
 # v3.1.2
 * [feature] Add `trace` command for template composition inspection (#289)
 * [fix] Return non-zero exit code when polling stack destroy fails (#292)
