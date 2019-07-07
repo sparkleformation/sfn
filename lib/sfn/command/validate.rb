@@ -10,28 +10,34 @@ module Sfn
       include Sfn::CommandModule::Stack
 
       def execute!
-        print_only_original = config[:print_only]
-        config[:print_only] = true
-        file = load_template_file
-        ui.info "#{ui.color("Template Validation (#{provider.connection.provider}): ", :bold)} #{config[:file].sub(Dir.pwd, "").sub(%r{^/}, "")}"
-        config[:print_only] = print_only_original
-
-        raw_template = _format_json(parameter_scrub!(template_content(file)))
-
-        if config[:print_only]
-          ui.puts raw_template
+        if config[:all]
+          validate_templates = sparkle_collection.templates[sparkle_collection.provider].keys
         else
-          validate_stack(
-            file.respond_to?(:dump) ? file.dump : file,
-            if config[:processing]
-              sparkle_collection.get(:template, config[:file])[:name]
-            else
-              config[:file]
-            end
-          )
+          validate_templates = [config[:file]]
+        end
+        validate_templates.each do |template|
+          config[:file] = template
+          print_only_original = config[:print_only]
+          config[:print_only] = true
+          ui.info "#{ui.color("Template Validation (#{provider.connection.provider}): ", :bold)} #{config[:file].sub(Dir.pwd, "").sub(%r{^/}, "")}"
+          file = load_template_file
+          config[:print_only] = print_only_original
+          raw_template = _format_json(parameter_scrub!(template_content(file)))
+
+          if config[:print_only]
+            ui.puts raw_template
+          else
+            validate_stack(
+              file.respond_to?(:dump) ? file.dump : file,
+              if config[:processing]
+                sparkle_collection.get(:template, config[:file])[:name]
+              else
+                config[:file]
+              end
+            )
+          end
         end
       end
-
       # Validate template with remote API and unpack nested templates if required
       #
       # @param template [Hash] template data structure
@@ -71,6 +77,8 @@ module Sfn
           ui.fatal e.message
           raise e
         end
+        # Clear Compile Time Parameters from Config
+        config[:compile_parameters] = {}
       end
     end
   end
