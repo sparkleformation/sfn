@@ -38,6 +38,7 @@ module Sfn
           end
         end
       end
+
       # Validate template with remote API and unpack nested templates if required
       #
       # @param template [Hash] template data structure
