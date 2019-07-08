@@ -12,6 +12,10 @@ module Sfn
       def execute!
         if config[:all]
           validate_templates = sparkle_collection.templates[sparkle_collection.provider].keys
+        elsif config[:group]
+          validate_templates = sparkle_collection.templates[sparkle_collection.provider].keys.select do |template|
+            template.split('__').first == config[:group]
+          end
         else
           validate_templates = [config[:file]]
         end

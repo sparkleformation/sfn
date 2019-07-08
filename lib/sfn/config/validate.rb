@@ -115,7 +115,11 @@ module Sfn
       )
       attribute(
         :all, [TrueClass, FalseClass],
-        :description => "Validate All Templates",
+        :description => "Validate all templates",
+      )
+      attribute(
+        :group, String,
+        :description => "Validate templates with the specified group prefix",
       )
     end
   end
