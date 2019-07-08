@@ -17,9 +17,14 @@ module Sfn
             template.split("__").first == config[:group]
           end
         else
-          load_template_file
           validate_templates = [config[:file]]
         end
+
+        if validate_templates.empty?
+          load_template_file
+          validate_templates.push(config[:file])
+        end
+
         validate_templates.each do |template|
           config[:file] = template
           print_only_original = config[:print_only]
