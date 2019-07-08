@@ -14,11 +14,11 @@ module Sfn
           validate_templates = sparkle_collection.templates[sparkle_collection.provider].keys
         elsif config[:group]
           validate_templates = sparkle_collection.templates[sparkle_collection.provider].keys.select do |template|
-            template.split('__').first == config[:group]
+            template.split("__").first == config[:group]
           end
         else
           load_template_file
-          validate_templates = [ config[:file] ]
+          validate_templates = [config[:file]]
         end
         validate_templates.each do |template|
           config[:file] = template
