@@ -17,7 +17,8 @@ module Sfn
             template.split('__').first == config[:group]
           end
         else
-          validate_templates = [config[:file]]
+          load_template_file
+          validate_templates = [ config[:file] ]
         end
         validate_templates.each do |template|
           config[:file] = template
