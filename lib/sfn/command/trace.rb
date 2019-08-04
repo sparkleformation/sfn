@@ -35,9 +35,17 @@ module Sfn
               else
                 origin << ui.color(record.caller.path, :yellow)
               end
+              duration = "#{indent} |  duration: "
+              if record.compile_duration
+                duration << Kernel.sprintf("%0.4f", record.compile_duration)
+                duration << "s"
+              else
+                duration < "N/A"
+              end
               ui.info header
               ui.info source
               ui.info origin
+              ui.info duration
               if record.audit_log.count > 0
                 writer.call(record.audit_log, indent + " |")
               end
