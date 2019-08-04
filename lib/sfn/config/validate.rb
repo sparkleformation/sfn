@@ -113,6 +113,14 @@ module Sfn
         :upload_root_template, [TrueClass, FalseClass],
         :description => "Upload root template to storage bucket",
       )
+      attribute(
+        :all, [TrueClass, FalseClass],
+        :description => "Validate all templates",
+      )
+      attribute(
+        :group, String,
+        :description => "Validate templates with the specified group prefix",
+      )
     end
   end
 end
