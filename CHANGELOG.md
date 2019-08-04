@@ -1,3 +1,8 @@
+# v3.1.6
+* [enhancement] Add `all` and `group` validate options (#299)
+* [enhancement] Add timing information to template tracing (#296)
+* [fix] Provide useful error when `nesting_bucket` option is unset
+
 # v3.1.4
 * [fix] Fix apply mapping implementation (#295)
 
