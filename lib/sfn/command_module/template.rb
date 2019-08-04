@@ -387,6 +387,9 @@ module Sfn
         # @return [Hash]
         def store_template(full_stack_name, template, result)
           stack_definition = template.is_a?(SparkleFormation) ? dump_stack_for_storage(template) : template
+          if config[:nesting_bucket].to_s.empty?
+            raise "Missing required value for option `nesting_bucket`."
+          end
           bucket = provider.connection.api_for(:storage).buckets.get(
             config[:nesting_bucket]
           )
