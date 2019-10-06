@@ -124,18 +124,18 @@ module Sfn
             stack.parameters = config_root_parameters
           end
 
-          # Set options defined within config into stack instance for update request
-          if config[:merge_api_options]
-            config.fetch(:options, Smash.new).each_pair do |key, value|
-              if stack.respond_to?("#{key}=")
-                stack.send("#{key}=", value)
-              end
-            end
-          end
-
           ui.info "  -> Generating plan information..."
         else
           ui.info "  -> Loading plan information..."
+        end
+
+        # Set options defined within config into stack instance for update request
+        if config[:merge_api_options]
+          config.fetch(:options, Smash.new).each_pair do |key, value|
+            if stack.respond_to?("#{key}=")
+              stack.send("#{key}=", value)
+            end
+          end
         end
 
         plan = stack.plan || stack.plan_generate
