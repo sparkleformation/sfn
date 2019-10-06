@@ -1,3 +1,6 @@
+# v3.1.8
+* [fix] Merge API options for plans (#300)
+
 # v3.1.6
 * [enhancement] Add `all` and `group` validate options (#299)
 * [enhancement] Add timing information to template tracing (#296)
