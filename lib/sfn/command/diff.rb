@@ -17,7 +17,8 @@ module Sfn
 
         begin
           stack = provider.stack(name)
-        rescue Miasma::Error::ApiError::RequestError
+        rescue Miasma::Error::ApiError::RequestError => error
+          ui.error error.message unless error.response.code == 404
           stack = nil
         end
 

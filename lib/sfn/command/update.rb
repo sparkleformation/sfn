@@ -17,7 +17,8 @@ module Sfn
         stack_info = "#{ui.color("Name:", :bold)} #{name}"
         begin
           stack = provider.stacks.get(name)
-        rescue Miasma::Error::ApiError::RequestError
+        rescue Miasma::Error::ApiError::RequestError => error
+          ui.error error.message unless error.response.code == 404
           stack = nil
         end
 
