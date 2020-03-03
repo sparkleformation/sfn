@@ -56,7 +56,7 @@ module Sfn
 
         ui.info "#{ui.color("Stack diff:", :bold)} #{ui.color((parent_names + [stack.data.fetch(:logical_id, stack.name)]).compact.join(" > "), :blue)}"
 
-        stack_diff = HashDiff.diff(stack.template, file)
+        stack_diff = Hashdiff.diff(stack.template, file)
 
         if config[:raw_diff]
           ui.info "Dumping raw template diff:"

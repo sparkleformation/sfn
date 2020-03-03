@@ -441,7 +441,7 @@ module Sfn
           plan_results[:replace].keys + plan_results[:unavailable].keys
         )
 
-        HashDiff.diff(origin_template, MultiJson.load(MultiJson.dump(update_template))).group_by do |item|
+        Hashdiff.diff(origin_template, MultiJson.load(MultiJson.dump(update_template))).group_by do |item|
           item[1]
         end.each do |a_path, diff_items|
           register_diff(
