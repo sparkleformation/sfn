@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "minitest"
   s.add_development_dependency "rspec", "~> 3.5"
   s.add_development_dependency "rufo", "~> 0.3.0"
-  s.add_development_dependency "mocha"
+  s.add_development_dependency "mocha", ">= 1.4"
   s.add_development_dependency "yard"
   s.executables << "sfn"
   s.files = Dir["{lib,bin,docs}/**/*"] + %w(sfn.gemspec README.md CHANGELOG.md LICENSE)
