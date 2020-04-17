@@ -45,7 +45,7 @@ module Sfn
             :template => template_content(file),
             :parameters => Smash.new,
             :tags => config.fetch(:tags, Smash.new),
-          ) { |key, oldval, newval| oldval.respond_to?(:merge) ? oldval.merge(newval) : newval}
+          ) { |key, oldval, newval| oldval.respond_to?(:merge) ? oldval.merge(newval) : newval }
         )
 
         apply_stacks!(stack)
