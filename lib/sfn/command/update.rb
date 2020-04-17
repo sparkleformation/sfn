@@ -75,6 +75,10 @@ module Sfn
         unless config[:print_only]
           ui.info "  -> #{stack_info}"
         end
+
+        original_tags = stack.tags
+        stack.tags = original_tags.merge(config.fetch(:tags, Smash.new))
+
         if file
           if config[:print_only]
             ui.puts format_json(parameter_scrub!(template_content(file)))

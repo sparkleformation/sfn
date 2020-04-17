@@ -38,6 +38,10 @@ module Sfn
         :short_flag => "m",
       )
       attribute(
+        :tags, Smash,
+        :description => "Pass template tags directly",
+      )
+      attribute(
         :plan, [TrueClass, FalseClass],
         :default => true,
         :description => "Provide planning information prior to update",
