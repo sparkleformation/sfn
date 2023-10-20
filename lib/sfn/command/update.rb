@@ -84,9 +84,19 @@ module Sfn
           original_template = stack.template
           original_parameters = stack.parameters
 
-          apply_stacks!(stack)
+          # Load the template file which might have new parameters
+          stack_update = provider.connection.stacks.build(
+            config.fetch(:options, Smash.new).dup.merge(
+              :name => name,
+              :template => template_content(file),
+              :parameters => Smash.new,
+            )
+          )
+          # Apply provider stack outputs to the receiver stack(stack_update) parameters
+          apply_stacks!(stack_update)
 
-          populate_parameters!(file, :current_parameters => stack.root_parameters)
+          populate_parameters!(file, :current_parameters => stack_update.parameters)
+
           update_template = stack.template
 
           if config[:plan]
